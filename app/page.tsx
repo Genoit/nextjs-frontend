@@ -10,29 +10,28 @@ export default function Home() {
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-20 text-center sm:px-6 lg:px-8">
       <div className="mx-auto max-w-3xl space-y-6">
-        <div className="inline-flex items-center gap-2 rounded-full bg-indigo-50 px-3 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
-          <span className="h-1.5 w-1.5 rounded-full bg-indigo-600" />
+        <div className="inline-flex items-center gap-2 rounded-full bg-orange-50 px-3 py-1 text-xs font-semibold text-[#E85022] border border-orange-200">
+          <span className="h-1.5 w-1.5 rounded-full bg-[#E85022]" />
           TrendED MVP — Sprint 1
         </div>
 
-        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 dark:text-white sm:text-6xl">
-          AI-Powered UGC Videos for{' '}
-          <span className="text-indigo-600 dark:text-indigo-400">E-commerce</span>
+        <h1 className="text-4xl font-extrabold tracking-tight text-zinc-900 sm:text-6xl">
+          AI-Powered UGC Videos for <span className="text-[#E85022]">E-commerce</span>
         </h1>
 
-        <p className="mx-auto max-w-2xl text-lg text-zinc-600 dark:text-zinc-400">
+        <p className="mx-auto max-w-2xl text-lg text-zinc-600">
           Scale your TikTok and Instagram ads with hyper-engaging UGC video ads generated
           effortlessly. Authenticate now to enter the creator workspace.
         </p>
 
         <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
           {isLoading ? (
-            <div className="h-11 w-36 animate-pulse rounded-lg bg-zinc-200 dark:bg-zinc-800" />
+            <div className="h-11 w-36 animate-pulse rounded-lg bg-zinc-200" />
           ) : isAuthenticated ? (
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <Link
                 href="/dashboard"
-                className="rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-500 transition"
+                className="rounded-lg bg-[#E85022] px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-[#D44317] transition"
               >
                 Go to Dashboard ({user?.first_name})
               </Link>
@@ -41,13 +40,13 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row items-center gap-3">
               <Link
                 href="/register"
-                className="rounded-lg bg-indigo-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-indigo-500 transition shadow-indigo-200 dark:shadow-none"
+                className="rounded-lg bg-[#E85022] px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-[#D44317] transition shadow-orange-200"
               >
                 Get started for free
               </Link>
               <Link
                 href="/login"
-                className="rounded-lg border border-zinc-300 bg-white px-6 py-3 text-base font-semibold text-zinc-800 shadow-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-200 dark:hover:bg-zinc-800 transition"
+                className="rounded-lg border border-zinc-300 bg-white px-6 py-3 text-base font-semibold text-zinc-800 shadow-sm hover:bg-zinc-50 transition"
               >
                 Sign in
               </Link>

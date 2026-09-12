@@ -2,22 +2,26 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '../lib/auth';
 
+import { TrendedBrandLogo } from './Icons';
+
 export default function Navbar() {
+  const pathname = usePathname();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
 
+  // Do not render navbar on auth pages (Figma spec has full-screen layout with integrated logo)
+  if (pathname === '/login' || pathname === '/register') {
+    return null;
+  }
+
   return (
-    <header className="border-b border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-950">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-6">
-          <Link href="/" className="text-xl font-bold tracking-tight text-zinc-900 dark:text-white">
-            Trend<span className="text-indigo-600 dark:text-indigo-400">ED</span>
-          </Link>
-          <span className="hidden rounded-full bg-zinc-100 px-2.5 py-0.5 text-xs font-medium text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400 sm:inline-block">
-            AI UGC MVP
-          </span>
-        </div>
+    <header className="border-b border-zinc-200 bg-white">
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+        <Link href="/" className="hover:opacity-90 transition">
+          <TrendedBrandLogo />
+        </Link>
 
         <nav className="flex items-center gap-4">
           {isLoading ? (
@@ -51,7 +55,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-md bg-indigo-600 px-3.5 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 transition shadow-sm"
+                className="rounded-lg bg-[#E85022] px-4 py-2 text-sm font-semibold text-white hover:bg-[#D44317] transition shadow-sm"
               >
                 Sign up
               </Link>

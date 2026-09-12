@@ -90,21 +90,14 @@ export default function DashboardPage() {
               <div className="rounded-lg bg-zinc-50 p-3 border border-zinc-200 dark:bg-zinc-800/50 dark:border-zinc-750 text-xs text-zinc-600 dark:text-zinc-400 space-y-1">
                 <p>
                   ✓ Register endpoint:{' '}
-                  <code className="font-mono text-indigo-600 dark:text-indigo-400">
-                    /api/v1/auth/register
-                  </code>
+                  <code className="font-mono text-[#E85022]">/api/v1/auth/register</code>
                 </p>
                 <p>
                   ✓ Login endpoint:{' '}
-                  <code className="font-mono text-indigo-600 dark:text-indigo-400">
-                    /api/v1/auth/login
-                  </code>
+                  <code className="font-mono text-[#E85022]">/api/v1/auth/login</code>
                 </p>
                 <p>
-                  ✓ Me endpoint:{' '}
-                  <code className="font-mono text-indigo-600 dark:text-indigo-400">
-                    /api/v1/auth/me
-                  </code>
+                  ✓ Me endpoint: <code className="font-mono text-[#E85022]">/api/v1/auth/me</code>
                 </p>
               </div>
             </div>
