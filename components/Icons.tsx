@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 export function MailIcon({ className = 'h-5 w-5' }: { className?: string }) {
   return (
@@ -116,47 +117,162 @@ export function GoogleIcon({ className = 'h-5 w-5' }: { className?: string }) {
 
 export function TrendedBrandLogo({ className = '' }: { className?: string }) {
   return (
-    <div className={`flex flex-col select-none ${className}`}>
-      <div className="flex items-center gap-2">
-        {/* Exact red/orange upward trend icon from Figma */}
-        <div className="relative flex items-center justify-center">
-          <svg className="h-7 w-7" viewBox="0 0 32 32" fill="none">
-            <path
-              d="M4 22L11 15L17 21L27 9M27 9H20M27 9V16"
-              stroke="url(#trend-gradient)"
-              strokeWidth="3.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-            <path
-              d="M5 26H7V22H5V26ZM11 26H13V18H11V26ZM17 26H19V23H17V26Z"
-              fill="url(#trend-gradient)"
-            />
-            <defs>
-              <linearGradient
-                id="trend-gradient"
-                x1="4"
-                y1="26"
-                x2="27"
-                y2="9"
-                gradientUnits="userSpaceOnUse"
-              >
-                <stop stopColor="#F97316" />
-                <stop offset="1" stopColor="#EA580C" />
-              </linearGradient>
-            </defs>
-          </svg>
-        </div>
-        <div className="flex items-baseline">
-          <span className="text-2xl font-black tracking-tight text-[#0F172A]">Trend</span>
-          <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-[#EA580C] to-[#E11D48] bg-clip-text text-transparent">
-            ED
-          </span>
-        </div>
+    <div className={`inline-flex flex-col select-none ${className}`}>
+      <div className="flex items-center">
+        <Image
+          src="/logo.png"
+          alt="TrendED Logo"
+          width={180}
+          height={45}
+          className="h-8 sm:h-9 w-auto object-contain"
+          priority
+        />
       </div>
-      <span className="text-[10px] tracking-wider uppercase font-semibold text-zinc-500 mt-0.5">
+      <span className="text-[10px] tracking-wider uppercase font-semibold text-zinc-500 mt-1">
         E-commerce · Dropshipping · Growth
       </span>
     </div>
+  );
+}
+
+export function TrendedSymbol({ className = 'h-8 w-8' }: { className?: string }) {
+  return (
+    <Image
+      src="/symbol.png"
+      alt="TrendED Symbol"
+      width={64}
+      height={64}
+      className={`${className} object-contain`}
+    />
+  );
+}
+
+export function SparkleIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 2L14.2 8.8L21 11L14.2 13.2L12 20L9.8 13.2L3 11L9.8 8.8L12 2Z" />
+    </svg>
+  );
+}
+
+export function VideoCameraIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+      />
+    </svg>
+  );
+}
+
+export function TrendingUpIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+    </svg>
+  );
+}
+
+export function UsersGroupIcon({ className = 'h-5 w-5' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+      />
+    </svg>
+  );
+}
+
+export function ChatScriptIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+      />
+    </svg>
+  );
+}
+
+export function CaptionsIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path
+        strokeLinecap="round"
+        d="M9.5 9.5H8a1.5 1.5 0 00-1.5 1.5v2A1.5 1.5 0 008 14.5h1.5m6.5-5H14.5a1.5 1.5 0 00-1.5 1.5v2a1.5 1.5 0 001.5 1.5H16"
+      />
+    </svg>
+  );
+}
+
+export function VoiceoverIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15a3 3 0 01-3-3V6a3 3 0 116 0v6a3 3 0 01-3 3z"
+      />
+    </svg>
+  );
+}
+
+export function MusicIcon({ className = 'h-4 w-4' }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+      strokeWidth={1.75}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12 0c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"
+      />
+    </svg>
   );
 }

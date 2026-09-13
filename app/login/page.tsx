@@ -4,6 +4,7 @@ import React, { Suspense, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { tempting } from '../fonts';
 import { useAuth } from '../../lib/auth';
 import { ApiRequestError } from '../../lib/api';
 import {
@@ -12,7 +13,11 @@ import {
   GoogleIcon,
   LockIcon,
   MailIcon,
+  SparkleIcon,
   TrendedBrandLogo,
+  TrendingUpIcon,
+  UsersGroupIcon,
+  VideoCameraIcon,
 } from '../../components/Icons';
 
 function LoginForm() {
@@ -63,21 +68,21 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[420px] space-y-6">
+    <div className="w-full max-w-[390px] space-y-6">
       {/* Mobile logo when left panel is hidden */}
       <div className="lg:hidden mb-4 flex justify-center">
         <TrendedBrandLogo />
       </div>
 
-      <div className="text-left">
+      <div className="text-left space-y-1">
         <h2 className="text-3xl font-bold tracking-tight text-zinc-900">Welcome back</h2>
-        <p className="mt-1 text-sm text-zinc-500">Sign in to continue to TrendED.</p>
+        <p className="text-sm text-zinc-500">Sign in to continue to TrendED.</p>
       </div>
 
       {justRegistered && (
         <div
           role="status"
-          className="rounded-lg bg-emerald-50 p-3.5 text-sm text-emerald-700 border border-emerald-200"
+          className="rounded-xl bg-emerald-50 p-3.5 text-sm text-emerald-700 border border-emerald-200"
         >
           Account created successfully! You can now log in.
         </div>
@@ -86,7 +91,7 @@ function LoginForm() {
       {error && (
         <div
           role="alert"
-          className="rounded-lg bg-red-50 p-3.5 text-sm text-red-700 border border-red-200"
+          className="rounded-xl bg-red-50 p-3.5 text-sm text-red-700 border border-red-200"
         >
           {error}
         </div>
@@ -94,11 +99,11 @@ function LoginForm() {
 
       <form className="space-y-4" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-zinc-800 mb-1.5">
+          <label htmlFor="email" className="block text-xs font-semibold text-zinc-800 mb-1.5">
             Email address
           </label>
           <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400">
               <MailIcon className="h-5 w-5" />
             </div>
             <input
@@ -110,18 +115,18 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="block w-full rounded-lg border border-zinc-300 pl-10 pr-3 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E85022] focus:outline-none focus:ring-1 focus:ring-[#E85022] disabled:opacity-50"
+              className="block w-full rounded-xl border border-zinc-200 pl-10 pr-3.5 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-1 focus:ring-[#E0492A] disabled:opacity-50 transition"
               placeholder="you@example.com"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-medium text-zinc-800 mb-1.5">
+          <label htmlFor="password" className="block text-xs font-semibold text-zinc-800 mb-1.5">
             Password
           </label>
           <div className="relative">
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-400">
               <LockIcon className="h-5 w-5" />
             </div>
             <input
@@ -133,33 +138,30 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
-              className="block w-full rounded-lg border border-zinc-300 pl-10 pr-10 py-2.5 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E85022] focus:outline-none focus:ring-1 focus:ring-[#E85022] disabled:opacity-50"
+              className="block w-full rounded-xl border border-zinc-200 pl-10 pr-11 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-1 focus:ring-[#E0492A] disabled:opacity-50 transition"
               placeholder="Enter your password"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400 hover:text-zinc-600 focus:outline-none"
+              className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400 hover:text-zinc-600 focus:outline-none"
             >
               {showPassword ? <EyeOffIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
             </button>
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-sm">
+        <div className="flex items-center justify-between text-xs pt-0.5">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              className="h-4 w-4 rounded border-zinc-300 text-[#E85022] focus:ring-[#E85022]"
+              className="h-4 w-4 rounded border-zinc-300 text-[#E0492A] focus:ring-[#E0492A]"
             />
             <span className="text-zinc-600">Remember me</span>
           </label>
-          <Link
-            href="/forgot-password"
-            className="font-medium text-[#E85022] hover:text-[#D44317] hover:underline"
-          >
+          <Link href="/forgot-password" className="font-medium text-[#E0492A] hover:underline">
             Forgot password?
           </Link>
         </div>
@@ -167,7 +169,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full justify-center items-center gap-2 rounded-lg bg-[#E85022] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#D44317] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E85022] disabled:opacity-50 transition"
+          className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition"
         >
           {isLoading ? (
             <>
@@ -181,31 +183,28 @@ function LoginForm() {
       </form>
 
       {/* Divider */}
-      <div className="relative my-4">
+      <div className="relative my-5">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-zinc-200" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-white px-3 text-zinc-400 font-medium">OR</span>
+          <span className="bg-white px-3 text-zinc-400 font-medium tracking-wider">OR</span>
         </div>
       </div>
 
       {/* Google login button */}
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-3 rounded-lg border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 transition"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 transition"
       >
         <GoogleIcon className="h-5 w-5" />
         <span>Continue with Google</span>
       </button>
 
       {/* Bottom link */}
-      <div className="text-center text-sm text-zinc-600">
+      <div className="text-center text-sm text-zinc-600 pt-2">
         Don&apos;t have an account?{' '}
-        <Link
-          href="/register"
-          className="font-medium text-[#E85022] hover:text-[#D44317] hover:underline"
-        >
+        <Link href="/register" className="font-medium text-[#E0492A] hover:underline">
           Create an account
         </Link>
       </div>
@@ -215,38 +214,49 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-2 bg-white">
-      {/* Left visual showcase panel - faithfully matching Figma mockup */}
-      <div className="hidden lg:flex flex-col justify-between bg-[#FAF7F0] p-8 xl:p-12 relative overflow-hidden border-r border-amber-950/5">
+    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-white">
+      {/* Left visual showcase panel - faithfully matching Figma login_TrendED.jpg */}
+      <div className="hidden lg:flex lg:col-span-7 flex-col justify-between bg-[#FAF7F0] p-8 xl:p-12 relative overflow-hidden border-r border-amber-950/5 min-h-screen">
+        {/* Subtle background warm radial glow */}
+        <div className="absolute top-1/3 right-1/4 w-96 h-96 rounded-full bg-amber-200/20 blur-3xl pointer-events-none" />
+
         {/* Brand logo at top */}
         <div className="z-10">
           <TrendedBrandLogo />
         </div>
 
         {/* Centerpiece with Typography & UGC phone preview */}
-        <div className="z-10 my-auto grid grid-cols-12 gap-4 items-center">
-          <div className="col-span-6 space-y-4">
-            <h1 className="text-4xl xl:text-5xl font-serif font-bold text-zinc-900 leading-tight">
-              <span className="italic block font-normal text-5xl xl:text-6xl text-zinc-900 mb-1 font-serif">
-                Create.
-              </span>
-              Convert. Grow<span className="text-[#E85022]">.</span>
-            </h1>
+        <div className="z-10 my-auto grid grid-cols-12 gap-6 items-center">
+          {/* Typography & AI Badge */}
+          <div className="col-span-6 space-y-4 pr-2">
+            <div>
+              <h1
+                className={`${tempting.className} font-tempting text-5xl sm:text-6xl xl:text-7xl font-normal text-zinc-900 leading-[1.08] tracking-wide select-none`}
+              >
+                Create<span className="text-[#E0492A]">.</span>
+                <br />
+                Convert<span className="text-[#E0492A]">.</span> Grow
+                <span className="text-[#E0492A]">.</span>
+              </h1>
+            </div>
 
-            <p className="text-sm xl:text-base text-zinc-600 font-medium leading-relaxed">
-              Turn your products into scroll-stopping UGC videos with AI.
+            <p className="text-sm xl:text-base text-zinc-700 font-normal leading-relaxed max-w-sm">
+              Turn your products into
+              <br />
+              scroll-stopping UGC videos with AI.
             </p>
 
             <div className="pt-2">
+              <div className="w-10 h-0.5 bg-amber-300 rounded-full mb-4" />
               <div className="flex items-start gap-3">
-                <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amber-100 text-amber-600 text-xs">
-                  ✨
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-100/70 text-amber-500 shadow-sm">
+                  <SparkleIcon className="h-5 w-5 text-amber-500" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-amber-700 uppercase tracking-wider">
+                  <p className="text-xs font-bold text-amber-800 tracking-wide uppercase">
                     AI-Powered UGC
                   </p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-zinc-500 mt-0.5">
                     Real people. Real results. Made for conversion.
                   </p>
                 </div>
@@ -254,18 +264,70 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Smartphone mockup */}
-          <div className="col-span-6 relative flex justify-center items-center">
-            {/* Ambient circular orbit */}
-            <div className="absolute h-80 w-80 rounded-full border border-dashed border-amber-300/40 pointer-events-none" />
+          {/* Smartphone mockup with orbit badges & avatars */}
+          <div className="col-span-6 relative flex justify-center items-center py-6">
+            {/* Ambient circular orbit rings */}
+            <div className="absolute h-[320px] w-[320px] xl:h-[350px] xl:w-[350px] rounded-full border border-amber-300/35 pointer-events-none" />
+            <div className="absolute h-[420px] w-[420px] xl:h-[460px] xl:w-[460px] rounded-full border border-amber-200/20 pointer-events-none" />
 
-            <div className="relative rounded-[2rem] p-1.5 bg-zinc-900 shadow-2xl shadow-amber-900/10 max-w-[210px] w-full">
+            {/* Orbit Item 1: Top audio wave badge */}
+            <div className="absolute top-0 right-10 xl:right-14 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-amber-950/10 border border-amber-100/80">
+              <div className="flex items-center gap-0.5">
+                <div className="w-0.5 h-2 bg-[#F59E0B] rounded-full" />
+                <div className="w-0.5 h-3.5 bg-[#F59E0B] rounded-full" />
+                <div className="w-0.5 h-5 bg-[#F59E0B] rounded-full" />
+                <div className="w-0.5 h-3 bg-[#F59E0B] rounded-full" />
+                <div className="w-0.5 h-1.5 bg-[#F59E0B] rounded-full" />
+              </div>
+            </div>
+
+            {/* Orbit Item 2: Right avatar (man grey tee thumbs up) */}
+            <div className="absolute top-1/2 -right-3 xl:-right-5 -translate-y-1/2 z-20">
+              <div className="h-12 w-12 xl:h-14 xl:w-14 rounded-full overflow-hidden border-2 border-white shadow-lg shadow-amber-950/15">
+                <Image
+                  src="/login-profile.jpg"
+                  alt="Creator avatar"
+                  width={56}
+                  height={56}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Orbit Item 3: Bottom-right avatar (man grey hoodie) */}
+            <div className="absolute bottom-2 right-6 xl:right-8 z-20">
+              <div className="h-12 w-12 xl:h-14 xl:w-14 rounded-full overflow-hidden border-2 border-white shadow-lg shadow-amber-950/15">
+                <Image
+                  src="/login-profile-2.jpg"
+                  alt="Creator avatar"
+                  width={56}
+                  height={56}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Orbit Item 4: Bottom-left avatar (smiling woman) */}
+            <div className="absolute bottom-4 left-0 xl:left-2 z-20">
+              <div className="h-12 w-12 xl:h-14 xl:w-14 rounded-full overflow-hidden border-2 border-white shadow-lg shadow-amber-950/15">
+                <Image
+                  src="/profile1-login.jpg"
+                  alt="Creator avatar"
+                  width={56}
+                  height={56}
+                  className="h-full w-full object-cover"
+                />
+              </div>
+            </div>
+
+            {/* Smartphone preview - slightly larger and framed with a darker outline for a lifted overlay effect */}
+            <div className="relative max-w-[210px] xl:max-w-[235px] w-full z-10 rounded-[2rem] overflow-hidden border-[3px] border-[#1F2937] shadow-[0_35px_70px_-22px_rgba(15,23,42,0.55)] translate-y-1">
               <Image
-                src="/login-phone-exact.png"
+                src="/login-phone-exact.jpg"
                 alt="AI UGC Video Preview"
-                width={240}
-                height={480}
-                className="w-full h-auto rounded-[1.7rem] object-cover"
+                width={260}
+                height={520}
+                className="w-full h-auto block"
                 priority
               />
             </div>
@@ -273,68 +335,43 @@ export default function LoginPage() {
         </div>
 
         {/* Bottom stats banner */}
-        <div className="z-10 grid grid-cols-3 gap-2 xl:gap-4 rounded-xl bg-white/95 backdrop-blur p-4 border border-amber-950/10 shadow-sm">
+        <div className="z-10 grid grid-cols-3 gap-3 rounded-2xl bg-white p-4 sm:p-5 border border-amber-950/5 shadow-md shadow-amber-950/5">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-[#E85022]">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-50 border border-rose-100/60 text-[#E0492A]">
+              <VideoCameraIcon className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-base font-bold text-zinc-900">50K+</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">AI Videos Created</p>
+              <p className="text-base xl:text-lg font-bold text-zinc-900 leading-none">50K+</p>
+              <p className="text-[11px] text-zinc-500 mt-1 leading-tight">AI Videos Created</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                />
-              </svg>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-50 border border-amber-100/60 text-amber-500">
+              <TrendingUpIcon className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-base font-bold text-zinc-900">3.2X</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">Higher ROAS</p>
+              <p className="text-base xl:text-lg font-bold text-zinc-900 leading-none">3.2X</p>
+              <p className="text-[11px] text-zinc-500 mt-1 leading-tight">Higher ROAS</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-50 border border-orange-100/60 text-orange-500">
+              <UsersGroupIcon className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-base font-bold text-zinc-900">10K+</p>
-              <p className="text-[11px] text-zinc-500 leading-tight">Entrepreneurs Trust</p>
+              <p className="text-base xl:text-lg font-bold text-zinc-900 leading-none">10K+</p>
+              <p className="text-[11px] text-zinc-500 mt-1 leading-tight">
+                Entrepreneurs Trust TrendED
+              </p>
             </div>
           </div>
         </div>
       </div>
 
       {/* Right side form */}
-      <div className="flex flex-col justify-center items-center p-6 sm:p-12 lg:p-16">
+      <div className="lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
         <Suspense fallback={<div className="text-sm text-zinc-500">Loading form...</div>}>
           <LoginForm />
         </Suspense>
