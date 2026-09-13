@@ -21,7 +21,7 @@ import {
 } from '../../components/Icons';
 
 function LoginForm() {
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get('registered') === 'true';
@@ -33,6 +33,40 @@ function LoginForm() {
 
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+
+  const handleGoogleLogin = async () => {
+    setError(null);
+    setIsGoogleLoading(true);
+
+    try {
+      await loginWithGoogle();
+      router.push('/dashboard');
+    } catch (err: unknown) {
+      if (err instanceof ApiRequestError) {
+        if (err.status === 409) {
+          setError(
+            'An account already exists with this email. Please sign in using your existing authentication method.',
+          );
+        } else {
+          setError(err.message || 'Google sign-in failed. Please try again.');
+        }
+      } else if (err && typeof err === 'object' && 'code' in err) {
+        const code = (err as { code: string }).code;
+        if (code === 'auth/popup-closed-by-user') {
+          setError('Google sign-in was cancelled.');
+        } else if (code === 'auth/network-request-failed') {
+          setError('Network error connecting to Google. Please check your connection.');
+        } else {
+          setError('Google sign-in failed. Please try again.');
+        }
+      } else {
+        setError('Google sign-in failed. Please try again later.');
+      }
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,15 +102,15 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-[390px] space-y-6">
+    <div className="w-full max-w-[430px] space-y-6">
       {/* Mobile logo when left panel is hidden */}
       <div className="lg:hidden mb-4 flex justify-center">
         <TrendedBrandLogo />
       </div>
 
       <div className="text-left space-y-1">
-        <h2 className="text-3xl font-bold tracking-tight text-zinc-900">Welcome back</h2>
-        <p className="text-sm text-zinc-500">Sign in to continue to TrendED.</p>
+        <h2 className="text-4xl font-bold tracking-tight text-zinc-900">Welcome back</h2>
+        <p className="text-[15px] text-zinc-500">Sign in to continue to TrendED.</p>
       </div>
 
       {justRegistered && (
@@ -97,9 +131,9 @@ function LoginForm() {
         </div>
       )}
 
-      <form className="space-y-4" onSubmit={handleSubmit}>
+      <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="block text-xs font-semibold text-zinc-800 mb-1.5">
+          <label htmlFor="email" className="block text-sm font-semibold text-zinc-800 mb-2">
             Email address
           </label>
           <div className="relative">
@@ -115,14 +149,14 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="block w-full rounded-xl border border-zinc-200 pl-10 pr-3.5 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-1 focus:ring-[#E0492A] disabled:opacity-50 transition"
+              className="block w-full rounded-xl border border-zinc-200 pl-11 pr-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
               placeholder="you@example.com"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-xs font-semibold text-zinc-800 mb-1.5">
+          <label htmlFor="password" className="block text-sm font-semibold text-zinc-800 mb-2">
             Password
           </label>
           <div className="relative">
@@ -138,7 +172,7 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
-              className="block w-full rounded-xl border border-zinc-200 pl-10 pr-11 py-3 text-sm text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-1 focus:ring-[#E0492A] disabled:opacity-50 transition"
+              className="block w-full rounded-xl border border-zinc-200 pl-11 pr-12 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
               placeholder="Enter your password"
             />
             <button
@@ -151,7 +185,7 @@ function LoginForm() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-xs pt-0.5">
+        <div className="flex items-center justify-between text-sm pt-0.5">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -169,7 +203,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition"
+          className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3.5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition"
         >
           {isLoading ? (
             <>
@@ -195,10 +229,21 @@ function LoginForm() {
       {/* Google login button */}
       <button
         type="button"
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 transition"
+        onClick={handleGoogleLogin}
+        disabled={isLoading || isGoogleLoading}
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 disabled:opacity-50 transition"
       >
-        <GoogleIcon className="h-5 w-5" />
-        <span>Continue with Google</span>
+        {isGoogleLoading ? (
+          <>
+            <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent" />
+            <span>Connecting to Google...</span>
+          </>
+        ) : (
+          <>
+            <GoogleIcon className="h-5 w-5" />
+            <span>Continue with Google</span>
+          </>
+        )}
       </button>
 
       {/* Bottom link */}
@@ -231,12 +276,17 @@ export default function LoginPage() {
           <div className="col-span-6 space-y-4 pr-2">
             <div>
               <h1
-                className={`${tempting.className} font-tempting text-5xl sm:text-6xl xl:text-7xl font-normal text-zinc-900 leading-[1.08] tracking-wide select-none`}
+                className={`${tempting.className} font-tempting text-4xl sm:text-5xl xl:text-6xl font-normal text-zinc-900 leading-[1.3] tracking-wide select-none space-y-2.5`}
               >
-                Create<span className="text-[#E0492A]">.</span>
-                <br />
-                Convert<span className="text-[#E0492A]">.</span> Grow
-                <span className="text-[#E0492A]">.</span>
+                <span className="block">
+                  Create<span className="text-[#E0492A]">.</span>
+                </span>
+                <span className="block pl-6 sm:pl-8 xl:pl-10">
+                  Convert<span className="text-[#E0492A]">.</span>
+                </span>
+                <span className="block pl-12 sm:pl-16 xl:pl-20">
+                  Grow<span className="text-[#E0492A]">.</span>
+                </span>
               </h1>
             </div>
 
@@ -267,8 +317,8 @@ export default function LoginPage() {
           {/* Smartphone mockup with orbit badges & avatars */}
           <div className="col-span-6 relative flex justify-center items-center py-6">
             {/* Ambient circular orbit rings */}
-            <div className="absolute h-[320px] w-[320px] xl:h-[350px] xl:w-[350px] rounded-full border border-amber-300/35 pointer-events-none" />
-            <div className="absolute h-[420px] w-[420px] xl:h-[460px] xl:w-[460px] rounded-full border border-amber-200/20 pointer-events-none" />
+            <div className="absolute h-[320px] w-[320px] xl:h-[350px] xl:w-[350px] rounded-full border-[1.5px] border-amber-300/60 bg-amber-100/10 shadow-[0_0_30px_rgba(251,191,36,0.12)] pointer-events-none" />
+            <div className="absolute h-[420px] w-[420px] xl:h-[460px] xl:w-[460px] rounded-full border-[1.2px] border-amber-200/40 bg-amber-50/10 pointer-events-none" />
 
             {/* Orbit Item 1: Top audio wave badge */}
             <div className="absolute top-0 right-10 xl:right-14 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md shadow-amber-950/10 border border-amber-100/80">
@@ -332,6 +382,8 @@ export default function LoginPage() {
               />
             </div>
           </div>
+          <div className="absolute h-[320px] w-[320px] xl:h-[350px] xl:w-[350px] rounded-full border border-amber-300/35 pointer-events-none" />
+          <div className="absolute h-[420px] w-[420px] xl:h-[460px] xl:w-[460px] rounded-full border border-amber-200/20 pointer-events-none" />
         </div>
 
         {/* Bottom stats banner */}

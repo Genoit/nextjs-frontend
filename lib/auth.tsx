@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
 import { api, ApiRequestError } from './api';
+import { logoutFirebase, signInWithGoogle } from './firebase/auth';
 import { AuthResponse, LoginPayload, RegisterPayload, User } from './types';
 
 interface AuthContextType {
@@ -11,6 +12,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (payload: LoginPayload) => Promise<AuthResponse>;
+  loginWithGoogle: () => Promise<AuthResponse>;
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => void;
 }
@@ -57,11 +59,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return data;
   };
 
+  const loginWithGoogle = async (): Promise<AuthResponse> => {
+    const { idToken } = await signInWithGoogle();
+    const data = await api.loginWithGoogle(idToken);
+    localStorage.setItem(TOKEN_KEY, data.access_token);
+    setToken(data.access_token);
+    setUser(data.user);
+    return data;
+  };
+
   const register = async (payload: RegisterPayload): Promise<User> => {
     return api.register(payload);
   };
 
   const logout = () => {
+    logoutFirebase().catch((err) => {
+      console.error('Firebase sign out error:', err);
+    });
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setUser(null);
@@ -78,6 +92,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         isAuthenticated: !!user,
         isLoading,
         login,
+        loginWithGoogle,
         register,
         logout,
       }}

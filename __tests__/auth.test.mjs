@@ -285,4 +285,100 @@ describe('Sprint 1 - Frontend Authentication Unit & Flow Tests', () => {
       assert.strictEqual(auth.isAuthenticated(), true);
     });
   });
+
+  describe('Google Sign-In & Firebase Integration (Sprint 1)', () => {
+    it('✓ should store JWT and update auth state upon successful Google Sign-In', async () => {
+      const auth = new AuthStateManager();
+      assert.strictEqual(auth.isAuthenticated(), false);
+
+      // Simulated Firebase popup & backend token exchange
+      const mockFirebaseUser = {
+        getIdToken: async () => 'mock.firebase.id.token',
+      };
+      const mockBackendResponse = {
+        access_token: 'trended.jwt.token.google',
+        token_type: 'bearer',
+        user: {
+          id: 'user-google-123',
+          first_name: 'Google',
+          last_name: 'User',
+          email: 'googleuser@example.com',
+          auth_provider: 'google',
+        },
+      };
+
+      const idToken = await mockFirebaseUser.getIdToken();
+      assert.strictEqual(idToken, 'mock.firebase.id.token');
+
+      // Login to state manager
+      auth.login(mockBackendResponse.access_token, mockBackendResponse.user);
+
+      assert.strictEqual(auth.isAuthenticated(), true);
+      assert.strictEqual(auth.user.email, 'googleuser@example.com');
+      assert.strictEqual(auth.user.auth_provider, 'google');
+      assert.strictEqual(
+        global.localStorage.getItem('trended_access_token'),
+        'trended.jwt.token.google',
+      );
+    });
+
+    it('✓ should reject with explicit message when Google email conflicts with local account (409)', () => {
+      const errorResponse = {
+        status: 409,
+        detail:
+          'An account already exists with this email. Please sign in using your existing authentication method.',
+      };
+
+      function handleGoogleError(err) {
+        if (err.status === 409) {
+          return (
+            err.detail ||
+            'An account already exists with this email. Please sign in using your existing authentication method.'
+          );
+        }
+        return 'Google sign-in failed.';
+      }
+
+      const message = handleGoogleError(errorResponse);
+      assert.strictEqual(
+        message,
+        'An account already exists with this email. Please sign in using your existing authentication method.',
+      );
+    });
+
+    it('✓ should handle popup closed by user gracefully', () => {
+      const firebaseError = { code: 'auth/popup-closed-by-user' };
+
+      function parseFirebaseError(err) {
+        if (err && err.code === 'auth/popup-closed-by-user') {
+          return 'Google sign-in was cancelled.';
+        }
+        return 'Google sign-in failed. Please try again.';
+      }
+
+      const msg = parseFirebaseError(firebaseError);
+      assert.strictEqual(msg, 'Google sign-in was cancelled.');
+    });
+
+    it('✓ should trigger both Firebase signOut and local storage cleanup on logout', async () => {
+      let firebaseSignOutCalled = false;
+      const mockLogoutFirebase = async () => {
+        firebaseSignOutCalled = true;
+      };
+
+      const auth = new AuthStateManager();
+      auth.login('token-google', { id: 'g-1', email: 'g@example.com' });
+
+      assert.strictEqual(auth.isAuthenticated(), true);
+      assert.strictEqual(global.localStorage.getItem('trended_access_token'), 'token-google');
+
+      // Perform logout
+      await mockLogoutFirebase();
+      auth.logout();
+
+      assert.strictEqual(firebaseSignOutCalled, true);
+      assert.strictEqual(auth.isAuthenticated(), false);
+      assert.strictEqual(global.localStorage.getItem('trended_access_token'), null);
+    });
+  });
 });

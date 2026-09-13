@@ -78,6 +78,18 @@ export const api = {
     return handleResponse<AuthResponse>(response);
   },
 
+  async loginWithGoogle(idToken: string): Promise<AuthResponse> {
+    const url = `${getApiBaseUrl()}/auth/google`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ id_token: idToken }),
+    });
+    return handleResponse<AuthResponse>(response);
+  },
+
   async getMe(token: string): Promise<User> {
     const url = `${getApiBaseUrl()}/auth/me`;
     const response = await fetch(url, {
