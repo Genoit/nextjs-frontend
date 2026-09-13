@@ -370,8 +370,8 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Smartphone preview - slightly larger and framed with a darker outline for a lifted overlay effect */}
-            <div className="relative max-w-[210px] xl:max-w-[235px] w-full z-10 rounded-[2rem] overflow-hidden border-[3px] border-[#1F2937] shadow-[0_35px_70px_-22px_rgba(15,23,42,0.55)] translate-y-1">
+            {/* Smartphone preview - same soft shadow as the audio badge to feel like a layered overlay */}
+            <div className="relative max-w-[210px] xl:max-w-[235px] w-full z-10 rounded-[2rem] overflow-hidden bg-white/5 shadow-[0_12px_28px_-16px_rgba(120,53,15,0.35)] translate-y-1">
               <Image
                 src="/login-phone-exact.jpg"
                 alt="AI UGC Video Preview"
@@ -382,8 +382,6 @@ export default function LoginPage() {
               />
             </div>
           </div>
-          <div className="absolute h-[320px] w-[320px] xl:h-[350px] xl:w-[350px] rounded-full border border-amber-300/35 pointer-events-none" />
-          <div className="absolute h-[420px] w-[420px] xl:h-[460px] xl:w-[460px] rounded-full border border-amber-200/20 pointer-events-none" />
         </div>
 
         {/* Bottom stats banner */}
