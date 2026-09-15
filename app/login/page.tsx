@@ -54,9 +54,19 @@ function LoginForm() {
       } else if (err && typeof err === 'object' && 'code' in err) {
         const code = (err as { code: string }).code;
         if (code === 'auth/popup-closed-by-user') {
-          setError('Google sign-in was cancelled.');
+          setError(
+            'Google sign-in was cancelled or the popup was closed before completing. If you did not close it, check if your browser or an extension blocked the window or cross-site cookies.',
+          );
         } else if (code === 'auth/network-request-failed') {
           setError('Network error connecting to Google. Please check your connection.');
+        } else if (
+          code === 'auth/configuration-not-found' ||
+          code === 'auth/operation-not-allowed' ||
+          code === 'auth/unauthorized-domain'
+        ) {
+          setError(
+            'Google sign-in is not configured correctly in Firebase. Please check the project settings and authorized domains.',
+          );
         } else {
           setError('Google sign-in failed. Please try again.');
         }
@@ -110,13 +120,13 @@ function LoginForm() {
 
       <div className="text-left space-y-1">
         <h2 className="text-4xl font-bold tracking-tight text-zinc-900">Welcome back</h2>
-        <p className="text-[15px] text-zinc-500">Sign in to continue to TrendED.</p>
+        <p className="text-base text-zinc-500">Sign in to continue to TrendED.</p>
       </div>
 
       {justRegistered && (
         <div
           role="status"
-          className="rounded-xl bg-emerald-50 p-3.5 text-sm text-emerald-700 border border-emerald-200"
+          className="rounded-xl bg-emerald-50 p-3.5 text-base text-emerald-700 border border-emerald-200"
         >
           Account created successfully! You can now log in.
         </div>
@@ -125,7 +135,7 @@ function LoginForm() {
       {error && (
         <div
           role="alert"
-          className="rounded-xl bg-red-50 p-3.5 text-sm text-red-700 border border-red-200"
+          className="rounded-xl bg-red-50 p-3.5 text-base text-red-700 border border-red-200"
         >
           {error}
         </div>
@@ -133,7 +143,7 @@ function LoginForm() {
 
       <form className="space-y-5" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="email" className="block text-sm font-semibold text-zinc-800 mb-2">
+          <label htmlFor="email" className="block text-base font-semibold text-zinc-800 mb-2">
             Email address
           </label>
           <div className="relative">
@@ -149,14 +159,14 @@ function LoginForm() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={isLoading}
-              className="block w-full rounded-xl border border-zinc-200 pl-11 pr-4 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+              className="block w-full rounded-xl border border-zinc-200 pl-11 pr-4 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
               placeholder="you@example.com"
             />
           </div>
         </div>
 
         <div>
-          <label htmlFor="password" className="block text-sm font-semibold text-zinc-800 mb-2">
+          <label htmlFor="password" className="block text-base font-semibold text-zinc-800 mb-2">
             Password
           </label>
           <div className="relative">
@@ -172,7 +182,7 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
-              className="block w-full rounded-xl border border-zinc-200 pl-11 pr-12 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+              className="block w-full rounded-xl border border-zinc-200 pl-11 pr-12 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
               placeholder="Enter your password"
             />
             <button
@@ -185,7 +195,7 @@ function LoginForm() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between text-sm pt-0.5">
+        <div className="flex items-center justify-between text-base pt-0.5">
           <label className="flex items-center gap-2 cursor-pointer select-none">
             <input
               type="checkbox"
@@ -203,7 +213,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3.5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition"
+          className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition"
         >
           {isLoading ? (
             <>
@@ -231,7 +241,7 @@ function LoginForm() {
         type="button"
         onClick={handleGoogleLogin}
         disabled={isLoading || isGoogleLoading}
-        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 disabled:opacity-50 transition"
+        className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-base font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 disabled:opacity-50 transition"
       >
         {isGoogleLoading ? (
           <>
@@ -247,7 +257,7 @@ function LoginForm() {
       </button>
 
       {/* Bottom link */}
-      <div className="text-center text-sm text-zinc-600 pt-2">
+      <div className="text-center text-base text-zinc-600 pt-2">
         Don&apos;t have an account?{' '}
         <Link href="/register" className="font-medium text-[#E0492A] hover:underline">
           Create an account
