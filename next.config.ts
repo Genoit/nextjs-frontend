@@ -16,16 +16,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  async headers() {
+  async rewrites() {
     return [
       {
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'Cross-Origin-Opener-Policy',
-            value: 'same-origin-allow-popups',
-          },
-        ],
+        source: '/__/auth/:path*',
+        destination: `https://${process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'trended-9c0ff'}.firebaseapp.com/__/auth/:path*`,
       },
     ];
   },
