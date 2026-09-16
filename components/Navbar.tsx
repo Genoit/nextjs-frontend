@@ -12,7 +12,7 @@ export default function Navbar() {
   const { user, isAuthenticated, isLoading, logout } = useAuth();
 
   // Do not render navbar on auth pages (Figma spec has full-screen layout with integrated logo)
-  if (pathname === '/login' || pathname === '/register') {
+  if (pathname === '/login' || pathname === '/register' || pathname === '/onboarding') {
     return null;
   }
 
