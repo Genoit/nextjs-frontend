@@ -9,14 +9,9 @@
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --font-tempting: var(--font-tempting), 'Tempting', cursive;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --font-serif: var(--font-playfair), var(--font-instrument), Georgia, serif;
+  --font-editorial: var(--font-instrument), var(--font-playfair), Georgia, serif;
+  --font-script: var(--font-caveat), cursive;
 }
 
 body {
@@ -31,6 +26,14 @@ body {
     sans-serif;
 }
 
-.font-tempting {
-  font-family: var(--font-tempting), 'Tempting', cursive;
+.font-editorial {
+  font-family: var(--font-instrument), var(--font-playfair), Georgia, serif;
+}
+
+.font-playfair {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+.font-script {
+  font-family: var(--font-caveat), cursive;
 }
