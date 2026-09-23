@@ -174,13 +174,13 @@ const profileIconSources = {
   scaling: '/logos/onboarding/profile-growth.svg',
 } as const;
 
-function ProfileAssetIcon({ src }: { src: string }) {
+function SvgAssetIcon({ src, className = 'h-8 w-8' }: { src: string; className?: string }) {
   const mask = `url(${src})`;
 
   return (
     <span
       aria-hidden="true"
-      className="h-8 w-8 bg-current"
+      className={`inline-block ${className} bg-current`}
       style={{
         maskImage: mask,
         maskPosition: 'center',
@@ -476,11 +476,11 @@ function Brand({ className = '' }: { className?: string }) {
 function SelectionDot({ selected, compact = false }: { selected: boolean; compact?: boolean }) {
   return (
     <span
-      className={`flex items-center justify-center rounded-full border ${compact ? 'h-[14px] w-[14px]' : 'h-[17px] w-[17px]'} ${selected ? 'border-[#f1a400] bg-[#f1a400]' : 'border-[#d7d7d7] bg-white'}`}
+      className={`flex items-center justify-center rounded-full border ${compact ? 'h-4 w-4' : 'h-[18px] w-[18px]'} ${selected ? 'border-[#f1a400] bg-[#f1a400]' : 'border-[#d7d7d7] bg-white'}`}
       aria-hidden="true"
     >
       {selected && (
-        <Check className={`${compact ? 'h-2.5 w-2.5' : 'h-3 w-3'} stroke-[3] text-white`} />
+        <Check className={`${compact ? 'h-3 w-3' : 'h-3.5 w-3.5'} stroke-[3] text-white`} />
       )}
     </span>
   );
@@ -589,17 +589,23 @@ function DashboardDecoration() {
 
 function AsideBenefit({
   icon: Icon,
+  iconSrc,
   title,
   text,
 }: {
   icon: IconType;
+  iconSrc?: string;
   title: string;
   text: string;
 }) {
   return (
     <div className="flex gap-3">
       <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#fff5e8] text-[#d47a29]">
-        <Icon className="h-[17px] w-[17px]" strokeWidth={1.7} />
+        {iconSrc ? (
+          <SvgAssetIcon src={iconSrc} className="h-[17px] w-[17px]" />
+        ) : (
+          <Icon className="h-[17px] w-[17px]" strokeWidth={1.7} />
+        )}
       </span>
       <div>
         <p className="text-[12px] font-bold leading-4 text-[#2a2522]">{title}</p>
@@ -611,38 +617,15 @@ function AsideBenefit({
 
 function BusinessIllustration() {
   return (
-    <svg className="mt-5 h-[156px] w-full" viewBox="0 0 260 156" fill="none" aria-hidden="true">
-      <ellipse cx="74" cy="133" rx="62" ry="15" fill="#f4e4b8" />
-      <ellipse cx="185" cy="137" rx="56" ry="12" fill="#f4e4b8" opacity=".72" />
-      <path d="M34 113h78v17c0 10-17 17-39 17s-39-7-39-17v-17Z" fill="#efd18b" />
-      <ellipse cx="73" cy="113" rx="39" ry="15" fill="#fff5dc" />
-      <path d="M52 104h42l-4-42H56l-4 42Z" fill="#f5dfaa" />
-      <path
-        d="M59 63c0-14 8-23 15-23s15 9 15 23"
-        stroke="#e4c87e"
-        strokeWidth="3"
-        strokeLinecap="round"
+    <div className="-mx-[32px] mt-2 h-[180px] w-[300px] overflow-hidden" aria-hidden="true">
+      <Image
+        src="/onboarding/business-growth-illustration.png"
+        alt=""
+        width={1550}
+        height={1024}
+        className="-mt-5 h-auto w-[300px] max-w-none"
       />
-      <path d="M60 75h28" stroke="#eacb84" strokeWidth="1.5" />
-      <rect x="128" y="105" width="14" height="30" rx="1.5" fill="#f5ca64" />
-      <rect x="148" y="85" width="14" height="50" rx="1.5" fill="#efb242" />
-      <rect x="168" y="64" width="14" height="71" rx="1.5" fill="#efc46b" />
-      <rect x="188" y="43" width="14" height="92" rx="1.5" fill="#e7a934" />
-      <path
-        d="m128 84 25-11 20 3 39-34"
-        stroke="#edb13b"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="m197 43 15-1-5 14"
-        stroke="#edb13b"
-        strokeWidth="5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
+    </div>
   );
 }
 
@@ -659,16 +642,19 @@ function WelcomeAside() {
         <div className="mt-5 space-y-5">
           <AsideBenefit
             icon={Search}
+            iconSrc="/logos/onboarding/boxicons--search-big.svg"
             title="Discover winning products"
             text="Find trending products with data-backed demand."
           />
           <AsideBenefit
             icon={Sparkles}
+            iconSrc="/logos/onboarding/akar-icons--sparkles.svg"
             title="Create high-converting ads"
             text="Generate AI ad creatives that convert and scale."
           />
           <AsideBenefit
             icon={BarChart3}
+            iconSrc="/logos/onboarding/bi--bar-chart-line.svg"
             title="Track & grow your business"
             text="Monitor performance and make smarter growth decisions."
           />
@@ -833,6 +819,7 @@ function OptionGroup<T extends string>({
   value,
   onChange,
   icons,
+  assetIcons,
   columns,
   compact = false,
 }: {
@@ -841,12 +828,13 @@ function OptionGroup<T extends string>({
   value: T;
   onChange: (value: T) => void;
   icons: ReferenceIconName[];
+  assetIcons?: string[];
   columns: string;
   compact?: boolean;
 }) {
   return (
     <div>
-      <p className="mb-3 text-[14px] font-semibold">{label}</p>
+      <p className="mb-3 text-[15px] font-semibold">{label}</p>
       <div className={`grid gap-3 ${columns}`}>
         {options.map((option, index) => {
           const selected = value === option;
@@ -856,12 +844,21 @@ function OptionGroup<T extends string>({
               type="button"
               key={option}
               onClick={() => onChange(option)}
-              className={`flex h-[50px] min-w-0 items-center rounded-[6px] border text-left transition ${compact ? 'gap-1 px-1.5 text-[10px]' : 'gap-3 px-3 text-[13px]'} ${selected ? 'border-[#cf9a70] bg-[#fffcf8] shadow-[inset_0_0_0_1px_#f5e3d7]' : 'border-[#e4e4e4] bg-white hover:border-[#cf9a70]'}`}
+              className={`flex h-[54px] min-w-0 items-center rounded-[6px] border text-left transition ${compact ? 'gap-1.5 px-2 text-[12px]' : 'gap-3 px-3 text-[14px]'} ${selected ? 'border-[#cf9a70] bg-[#fffcf8] shadow-[inset_0_0_0_1px_#f5e3d7]' : 'border-[#e4e4e4] bg-white hover:border-[#cf9a70]'}`}
             >
-              <ReferenceIcon
-                name={icon}
-                className={`${compact ? 'h-4 w-4' : 'h-[18px] w-[18px]'} shrink-0 text-[#c58452]`}
-              />
+              {assetIcons ? (
+                <span className="shrink-0 text-[#c58452]">
+                  <SvgAssetIcon
+                    src={assetIcons[index]}
+                    className={compact ? 'h-[18px] w-[18px]' : 'h-5 w-5'}
+                  />
+                </span>
+              ) : (
+                <ReferenceIcon
+                  name={icon}
+                  className={`${compact ? 'h-[18px] w-[18px]' : 'h-5 w-5'} shrink-0 text-[#c58452]`}
+                />
+              )}
               <span className={`min-w-0 font-medium ${compact ? 'whitespace-nowrap' : 'truncate'}`}>
                 {option}
               </span>
@@ -931,7 +928,7 @@ export default function OnboardingPage() {
                     <span
                       className={`mb-4 flex h-[67px] w-[67px] items-center justify-center rounded-full ${selected ? 'bg-[#fff4d9] text-[#e0a400]' : 'bg-[#fff3ef] text-[#c76a3a]'}`}
                     >
-                      <ProfileAssetIcon
+                      <SvgAssetIcon
                         src={profileIconSources[id as keyof typeof profileIconSources]}
                       />
                     </span>
@@ -964,16 +961,19 @@ export default function OnboardingPage() {
       <div className="min-h-[100dvh] bg-[#fffdf9] text-[#161616]">
         <div className="flex min-h-[100dvh] flex-col lg:flex-row">
           <WelcomeAside />
-          <main className="flex flex-1 items-center justify-center px-5 py-8 lg:items-start lg:justify-start lg:py-6 lg:pl-0 lg:pr-6">
-            <section className="flex min-h-[720px] w-full max-w-[956px] flex-col rounded-[8px] border border-[#f0ece7] bg-white shadow-[0_7px_20px_rgba(65,48,24,.04)]">
-              <div className="px-7 pt-[46px] sm:px-10">
+          <main className="flex flex-1 items-center justify-center px-5 py-8 lg:items-start lg:justify-start lg:py-6 lg:pl-0 lg:pr-0">
+            <section className="flex min-h-[720px] w-full max-w-[956px] flex-col rounded-[8px] border border-[#f0ece7] bg-white shadow-[0_7px_20px_rgba(65,48,24,.04)] lg:max-w-none lg:rounded-r-none">
+              <div className="px-7 pt-[46px] sm:px-10 lg:px-[54px]">
                 <span className="flex h-[55px] w-[55px] items-center justify-center rounded-full bg-[#fff5ed] text-[#d77c46]">
-                  <ReferenceIcon name="business" className="h-7 w-7" />
+                  <SvgAssetIcon
+                    src="/logos/onboarding/fluent--clipboard-text-edit-32-regular.svg"
+                    className="h-7 w-7"
+                  />
                 </span>
-                <h1 className="mt-4 text-[31px] font-bold leading-none sm:text-[35px]">
+                <h1 className="mt-4 text-[34px] font-bold leading-none sm:text-[39px]">
                   Tell us about your business.
                 </h1>
-                <p className="mt-4 text-[14px] text-[#686868]">
+                <p className="mt-4 text-[16px] text-[#686868]">
                   This helps TrendED surface more relevant products, insights and recommendations.
                 </p>
                 <div className="mt-8 space-y-6">
@@ -985,6 +985,12 @@ export default function OnboardingPage() {
                     value={businessType}
                     onChange={setBusinessType}
                     icons={['dropshipping', 'dtc', 'marketplace', 'other']}
+                    assetIcons={[
+                      '/logos/onboarding/la--parachute-box.svg',
+                      '/logos/onboarding/streamline-ultimate--delivery-package-person.svg',
+                      '/logos/onboarding/fluent--building-shop-24-regular.svg',
+                      '/logos/onboarding/fluent--more-circle-16-regular.svg',
+                    ]}
                     columns="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
                   />
                   <OptionGroup
@@ -1003,17 +1009,31 @@ export default function OnboardingPage() {
                     value={category}
                     onChange={setCategory}
                     icons={['fashion', 'beauty', 'home', 'electronics', 'fitness', 'pets', 'other']}
+                    assetIcons={[
+                      '/logos/onboarding/keyline-icons--shirt.svg',
+                      '/logos/onboarding/streamline-pixel--beauty-cosmatic-brush-set.svg',
+                      '/logos/onboarding/ant-design--home-outlined.svg',
+                      '/logos/onboarding/gravity-ui--smartphone.svg',
+                      '/logos/onboarding/circum--dumbbell.svg',
+                      '/logos/onboarding/ph--paw-print-light.svg',
+                      '/logos/onboarding/fluent--more-circle-16-regular.svg',
+                    ]}
                     columns="grid-cols-2 sm:grid-cols-4 xl:grid-cols-7"
                     compact
                   />
                   <div>
-                    <p className="mb-3 text-[14px] font-semibold">Target market</p>
+                    <p className="mb-3 text-[15px] font-semibold">Target market</p>
                     <button
                       type="button"
-                      className="flex h-[44px] w-full items-center justify-between rounded-[5px] border border-[#e4e4e4] px-3 text-[14px] text-[#9a9a9a]"
+                      className="flex h-[52px] w-full items-center justify-between rounded-[5px] border border-[#e4e4e4] px-4 text-[15px] text-[#8a8a8a]"
                     >
                       <span className="flex items-center gap-3">
-                        <ReferenceIcon name="world" className="h-5 w-5 text-[#6b6b6b]" />
+                        <span className="text-[#6b6b6b]">
+                          <SvgAssetIcon
+                            src="/logos/onboarding/fluent-mdl2--globe.svg"
+                            className="h-5 w-5"
+                          />
+                        </span>
                         Select country / region
                       </span>
                       <ChevronDown className="h-5 w-5 text-[#222]" />
@@ -1025,11 +1045,16 @@ export default function OnboardingPage() {
                     value={experience}
                     onChange={setExperience}
                     icons={['experience', 'experience', 'experience']}
+                    assetIcons={[
+                      '/logos/onboarding/bi--bar-chart.svg',
+                      '/logos/onboarding/bi--bar-chart.svg',
+                      '/logos/onboarding/bi--bar-chart.svg',
+                    ]}
                     columns="grid-cols-1 sm:grid-cols-3"
                   />
                 </div>
               </div>
-              <footer className="mt-auto flex items-center justify-between border-t border-[#f3f2ef] px-7 py-5 sm:px-10">
+              <footer className="mt-auto flex items-center justify-between border-t border-[#f3f2ef] px-7 py-5 sm:px-10 lg:px-[54px]">
                 <FooterButton onClick={back}>Back</FooterButton>
                 <div className="hidden items-center gap-4 lg:flex">
                   <span className="h-3 w-3 rounded-full bg-[#efefef]" />
