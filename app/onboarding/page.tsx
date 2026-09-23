@@ -500,7 +500,7 @@ function FooterButton({
 function DashboardDecoration() {
   return (
     <div
-      className="pointer-events-none absolute right-[102px] top-[25px] hidden h-[145px] w-[330px] lg:block"
+      className="pointer-events-none absolute right-[-18px] top-[25px] hidden h-[145px] w-[330px] origin-top-right scale-[1.35] lg:block"
       aria-hidden="true"
     >
       <div className="absolute inset-x-0 top-0 h-[121px] rounded-[54px] bg-[#fff8ed]" />
