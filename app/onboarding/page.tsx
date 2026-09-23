@@ -500,59 +500,61 @@ function FooterButton({
 function DashboardDecoration() {
   return (
     <div
-      className="pointer-events-none absolute right-[59px] top-[29px] hidden h-[151px] w-[344px] lg:block"
+      className="pointer-events-none absolute right-[102px] top-[25px] hidden h-[145px] w-[330px] lg:block"
       aria-hidden="true"
     >
+      <div className="absolute inset-x-0 top-0 h-[121px] rounded-[54px] bg-[#fff8ed]" />
       <svg
-        className="absolute right-[-9px] top-[-16px] h-[139px] w-[230px]"
-        viewBox="0 0 230 139"
+        className="absolute right-[-1px] top-0 h-[42px] w-[67px]"
+        viewBox="0 0 67 42"
         fill="none"
         aria-hidden="true"
       >
-        <path
-          d="M76 7c31-17 77-5 89 20 10 22-8 40 12 57 17 15 43 16 49 37 8 29-27 44-71 37-47-8-86-33-103-62C38 69 47 23 76 7Z"
-          fill="#fff1dd"
-        />
-        <path
-          d="M150 2c21-4 43 4 53 20-12 16-35 23-57 16-13-5-19-20 4-36Z"
-          fill="#e85a15"
-          opacity=".2"
-        />
-        <path
-          d="M111 20c25-8 48 2 57 16"
-          stroke="#e85a15"
-          strokeWidth="3"
-          strokeLinecap="round"
-          opacity=".72"
-        />
-        {[145, 159, 173, 187, 201].map((cx) => (
-          <circle key={cx} cx={cx} cy="12" r="1.7" fill="#e7b63e" />
+        {[7, 19, 31, 43, 55].map((cx) => (
+          <circle key={`first-${cx}`} cx={cx} cy="7" r="1.15" fill="#dfbd58" opacity=".72" />
         ))}
-        {[152, 166, 180, 194, 208].map((cx) => (
-          <circle key={cx} cx={cx} cy="23" r="1.7" fill="#e7b63e" />
+        {[7, 19, 31, 43, 55].map((cx) => (
+          <circle key={`second-${cx}`} cx={cx} cy="18" r="1.15" fill="#dfbd58" opacity=".72" />
+        ))}
+        {[7, 19, 31, 43, 55].map((cx) => (
+          <circle key={`third-${cx}`} cx={cx} cy="29" r="1.15" fill="#dfbd58" opacity=".72" />
         ))}
       </svg>
-      <div className="absolute left-0 top-0 h-[111px] w-[166px] rounded-[7px] bg-white px-4 py-3 shadow-[0_8px_22px_rgba(94,68,37,.10)]">
-        <p className="text-[8px] font-medium text-[#6d6d6d]">Total Revenue</p>
-        <p className="mt-0.5 text-[13px] font-bold leading-none text-[#343434]">
-          $24,680 <span className="text-[8px] text-[#5f9e6c]">up 18.6%</span>
+      <div className="absolute left-0 top-[8px] h-[104px] w-[156px] rounded-[5px] border border-[#f4f0e8] bg-white px-3 py-3 shadow-[0_6px_16px_rgba(94,68,37,.07)]">
+        <p className="text-[7px] font-medium text-[#6a6a6a]">Total Revenue</p>
+        <p className="mt-0.5 text-[12px] font-bold leading-none text-[#363636]">
+          $24,680 <span className="ml-0.5 text-[7px] font-medium text-[#64996d]">▲ 18.6%</span>
         </p>
-        <svg className="mt-2 h-[50px] w-full" viewBox="0 0 145 50" fill="none">
-          <path d="M0 39h145" stroke="#f0ede8" />
+        <svg className="mt-3 h-[49px] w-full" viewBox="0 0 132 49" fill="none">
+          <path d="M0 8h132M0 24h132M0 40h132" stroke="#f4f0e9" strokeWidth=".8" />
           <path
-            d="m5 41 15-12 12 8 15-24 14 12 17-5 14 10 17-20 15 17 12-3"
-            stroke="#d1aa52"
-            strokeWidth="1.7"
+            d="m2 40 13-11 11 6 14-19 12 12 15-5 12 7 15-17 13 15 10-4"
+            stroke="#d6b15b"
+            strokeWidth="1.35"
+            strokeLinecap="round"
+            strokeLinejoin="round"
           />
         </svg>
       </div>
-      <div className="absolute right-0 top-[19px] h-[112px] w-[161px] rotate-[2deg] rounded-[8px] bg-white p-4 shadow-[0_8px_22px_rgba(94,68,37,.10)]">
+      <div className="absolute left-[151px] top-[29px] h-[116px] w-[157px] rotate-[2deg] rounded-[6px] border border-[#f4f0e8] bg-white px-4 py-4 shadow-[0_7px_18px_rgba(94,68,37,.08)]">
         <div className="flex items-center gap-3">
-          <span className="h-12 w-12 rounded-full border-[10px] border-[#db9911] border-r-[#f7e8cc]" />
-          <span className="text-[9px] font-semibold text-[#555]">Products</span>
+          <span className="h-10 w-10 shrink-0 rounded-full border-[8px] border-[#d98715] border-r-[#faedce]" />
+          <div>
+            <p className="text-[7px] font-semibold leading-none text-[#505050]">Products</p>
+            <p className="mt-1 text-[6px] text-[#9b9b9b]">Top sellers</p>
+          </div>
+        </div>
+        <div className="mt-3 flex items-end justify-between">
+          <span className="text-[7px] font-medium text-[#c9962a]">$24.6k</span>
+          <Image
+            src="/headphones-product.png"
+            alt=""
+            width={43}
+            height={43}
+            className="h-[43px] w-[43px] rounded-sm object-cover opacity-55"
+          />
         </div>
       </div>
-      <span className="absolute right-4 top-[-10px] text-[19px] text-[#e4ba5d]">....</span>
     </div>
   );
 }
@@ -869,10 +871,6 @@ export default function OnboardingPage() {
         <div className="relative mx-auto min-h-[100dvh] max-w-[1440px] px-8 pb-10 pt-[57px] lg:px-[84px]">
           <Brand />
           <DashboardDecoration />
-          <div className="absolute right-[68px] top-[53px] hidden items-center gap-2 text-[13px] font-medium text-[#3f3f3f] lg:flex">
-            <CircleHelp className="h-5 w-5" strokeWidth={1.8} />
-            Need help?
-          </div>
           <section className="mx-auto mt-[34px] flex w-full max-w-[1028px] flex-col items-center lg:mt-[28px]">
             <StepTracker active={1} />
             <p className="mt-8 text-[13px] font-semibold text-[#bf5d29]">STEP 1 OF 4</p>
