@@ -167,6 +167,34 @@ type ReferenceIconName =
   | 'pets'
   | 'experience';
 
+const profileIconSources = {
+  starting: '/logos/onboarding/profile-store.svg',
+  selling: '/logos/onboarding/profile-cart.svg',
+  dropshipper: '/logos/onboarding/profile-shipping-box.svg',
+  scaling: '/logos/onboarding/profile-growth.svg',
+} as const;
+
+function ProfileAssetIcon({ src }: { src: string }) {
+  const mask = `url(${src})`;
+
+  return (
+    <span
+      aria-hidden="true"
+      className="h-8 w-8 bg-current"
+      style={{
+        maskImage: mask,
+        maskPosition: 'center',
+        maskRepeat: 'no-repeat',
+        maskSize: 'contain',
+        WebkitMaskImage: mask,
+        WebkitMaskPosition: 'center',
+        WebkitMaskRepeat: 'no-repeat',
+        WebkitMaskSize: 'contain',
+      }}
+    />
+  );
+}
+
 function ReferenceIcon({
   name,
   className = 'h-6 w-6',
@@ -500,7 +528,7 @@ function FooterButton({
 function DashboardDecoration() {
   return (
     <div
-      className="pointer-events-none absolute right-[-18px] top-[25px] hidden h-[145px] w-[330px] origin-top-right scale-[1.35] lg:block"
+      className="pointer-events-none absolute right-[-18px] top-0 hidden h-[145px] w-[330px] origin-top-right scale-[1.35] lg:block"
       aria-hidden="true"
     >
       <div className="absolute inset-x-0 top-0 h-[121px] rounded-[54px] bg-[#fff8ed]" />
@@ -903,7 +931,9 @@ export default function OnboardingPage() {
                     <span
                       className={`mb-4 flex h-[67px] w-[67px] items-center justify-center rounded-full ${selected ? 'bg-[#fff4d9] text-[#e0a400]' : 'bg-[#fff3ef] text-[#c76a3a]'}`}
                     >
-                      <ReferenceIcon name={id as ReferenceIconName} className="h-8 w-8" />
+                      <ProfileAssetIcon
+                        src={profileIconSources[id as keyof typeof profileIconSources]}
+                      />
                     </span>
                     <span className="text-[17px] font-bold leading-5">{title as string}</span>
                     <span className="mt-1 text-[16px] leading-5 text-[#6d6d6d]">
