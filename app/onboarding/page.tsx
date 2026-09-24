@@ -2,8 +2,16 @@
 
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '../../lib/auth';
+import { api, ApiRequestError } from '../../lib/api';
+import {
+  OnboardingBusinessType,
+  OnboardingCategory,
+  OnboardingExperience,
+  OnboardingGoal,
+  OnboardingProfile,
+} from '../../lib/types';
 
 type GlyphProps = { className?: string; strokeWidth?: number };
 
@@ -392,8 +400,49 @@ type Category = 'Fashion' | 'Beauty' | 'Home' | 'Electronics' | 'Fitness' | 'Pet
 type Experience = 'Beginner' | 'Intermediate' | 'Advanced';
 type IconType = (props: GlyphProps) => React.ReactNode;
 
+const businessTypeToApi: Record<BusinessType, OnboardingBusinessType> = {
+  Dropshipping: 'dropshipping',
+  'DTC brand': 'dtc_brand',
+  'Marketplace seller': 'marketplace_seller',
+  Other: 'other',
+};
+const businessTypeFromApi: Record<OnboardingBusinessType, BusinessType> = {
+  dropshipping: 'Dropshipping',
+  dtc_brand: 'DTC brand',
+  marketplace_seller: 'Marketplace seller',
+  other: 'Other',
+};
+const categoryToApi: Record<Category, OnboardingCategory> = {
+  Fashion: 'fashion',
+  Beauty: 'beauty',
+  Home: 'home',
+  Electronics: 'electronics',
+  Fitness: 'fitness',
+  Pets: 'pets',
+  Other: 'other',
+};
+const categoryFromApi: Record<OnboardingCategory, Category> = {
+  fashion: 'Fashion',
+  beauty: 'Beauty',
+  home: 'Home',
+  electronics: 'Electronics',
+  fitness: 'Fitness',
+  pets: 'Pets',
+  other: 'Other',
+};
+const experienceToApi: Record<Experience, OnboardingExperience> = {
+  Beginner: 'beginner',
+  Intermediate: 'intermediate',
+  Advanced: 'advanced',
+};
+const experienceFromApi: Record<OnboardingExperience, Experience> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+};
+
 const goalOptions: {
-  id: string;
+  id: OnboardingGoal;
   title: string;
   description: string;
   icon: ReferenceIconName;
@@ -575,18 +624,21 @@ function FooterButton({
   wide = false,
   compact = false,
   onClick,
+  disabled = false,
 }: {
   children: React.ReactNode;
   primary?: boolean;
   wide?: boolean;
   compact?: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808] ${primary ? `${compact ? 'min-w-[170px]' : wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-[#d94808] text-white shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : compact ? 'min-w-[115px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]' : 'min-w-[184px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]'}`}
+      disabled={disabled}
+      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808] disabled:cursor-not-allowed disabled:opacity-60 ${primary ? `${compact ? 'min-w-[170px]' : wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-[#d94808] text-white shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : compact ? 'min-w-[115px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]' : 'min-w-[184px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]'}`}
     >
       {children}
     </button>
@@ -735,35 +787,57 @@ function WelcomeAside() {
 
 function IntroArt() {
   return (
-    <div className="relative mx-auto h-[206px] w-[238px]" aria-hidden="true">
-      <div className="absolute left-3 top-0 h-[177px] w-[182px] rotate-[-6deg] rounded-[6px] border border-[#f2e6d2] bg-white/80 p-3 shadow-[0_13px_25px_rgba(120,93,55,.11)]">
+    <div className="relative mx-auto h-[206px] w-[238px] opacity-90" aria-hidden="true">
+      <div className="absolute left-3 top-0 h-[177px] w-[182px] rotate-[-3deg] rounded-[6px] border border-[#f2e6d2] bg-white/75 p-3 shadow-[0_11px_22px_rgba(120,93,55,.08)]">
         <div className="flex gap-1">
           <span className="h-1.5 w-1.5 rounded-full bg-[#df8054]" />
           <span className="h-1.5 w-1.5 rounded-full bg-[#e7bb5f]" />
           <span className="h-1.5 w-1.5 rounded-full bg-[#c7d28d]" />
         </div>
         <div className="mt-5 flex gap-3">
-          <div className="h-16 w-[65px] overflow-hidden rounded bg-[#f6f3ed]">
+          <div className="flex h-16 w-[65px] items-center justify-center overflow-hidden rounded bg-[#f6f3ed]">
             <Image
               src="/headphones-product.png"
               alt=""
               width={65}
               height={64}
-              className="h-16 w-[65px] object-cover"
+              className="h-[52px] w-[52px] object-contain"
             />
           </div>
-          <div className="h-16 flex-1 rounded bg-[#faf8f4]" />
+          <div className="flex h-16 flex-1 items-center justify-center rounded bg-[#faf8f4]">
+            <svg className="h-10 w-7 opacity-35" viewBox="0 0 28 40" fill="none">
+              <path d="M9 7h10l2 7v20H7V14l2-7Z" fill="#d9d1c4" />
+              <path d="M11 7V4h6v3" stroke="#bdb4a6" strokeWidth="1.3" />
+              <rect x="9" y="17" width="10" height="9" rx="2" fill="#eee9e1" />
+            </svg>
+          </div>
         </div>
         <p className="mt-2 text-[11px] text-[#96908a]">$28.45</p>
         <svg className="mt-1 h-12 w-full" viewBox="0 0 150 48" fill="none">
           <path d="m2 37 21-7 15 4 22-23 19 14 28-6 15-15 24 6" stroke="#e5ad43" strokeWidth="2" />
         </svg>
       </div>
-      <div className="absolute right-0 top-[77px] w-[105px] rounded-[5px] bg-white px-3 py-2 shadow-[0_7px_18px_rgba(121,82,33,.13)]">
-        <p className="text-[7px] text-[#7e766f]">Winning Product!</p>
+      <div className="absolute right-0 top-[61px] z-20 w-[105px] rounded-[5px] bg-white/95 px-3 py-2 shadow-[0_7px_18px_rgba(121,82,33,.1)]">
+        <p className="text-[7px] text-[#7e766f]">Winning Potential</p>
         <p className="mt-1 text-[13px] font-semibold text-[#5d9b67]">High</p>
+        <svg className="absolute bottom-[11px] right-3 h-4 w-5" viewBox="0 0 20 16" fill="none">
+          <path
+            d="m1 13 5-4 3 2 6-7"
+            stroke="#6fa979"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M12 4h3v3"
+            stroke="#6fa979"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
       </div>
-      <div className="absolute bottom-0 right-0 h-[102px] w-[101px] rotate-[3deg] rounded-[5px] bg-white p-3 shadow-[0_7px_18px_rgba(121,82,33,.12)]">
+      <div className="absolute bottom-0 right-0 z-10 h-[102px] w-[101px] rotate-[3deg] rounded-[5px] bg-white p-3 shadow-[0_7px_18px_rgba(121,82,33,.12)]">
         <div className="flex h-full items-end justify-between gap-1">
           <span className="h-[31%] w-4 bg-[#f6ca72]" />
           <span className="h-[51%] w-4 bg-[#e8a737]" />
@@ -777,7 +851,7 @@ function IntroArt() {
 
 function GoalsAside() {
   return (
-    <aside className="hidden w-[323px] shrink-0 bg-[#fffdf9] px-[54px] py-[66px] lg:block">
+    <aside className="hidden w-[323px] shrink-0 bg-[#fff8ed] px-[54px] py-[66px] lg:block">
       <Brand />
       <div className="mt-[139px]">
         <IntroArt />
@@ -949,20 +1023,117 @@ function OptionGroup<T extends string>({
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user } = useAuth();
+  const { user, token, isLoading: isAuthLoading } = useAuth();
   const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState<ReferenceIconName>('scaling');
+  const [profile, setProfile] = useState<OnboardingProfile>('scaling');
   const [businessType, setBusinessType] = useState<BusinessType>('Dropshipping');
   const [category, setCategory] = useState<Category>('Fashion');
   const [experience, setExperience] = useState<Experience>('Beginner');
+  const [targetMarket, setTargetMarket] = useState('');
   const [connection, setConnection] = useState<ConnectionMethod>(null);
-  const [goals, setGoals] = useState<string[]>(goalOptions.map((goal) => goal.id));
+  const [goals, setGoals] = useState<OnboardingGoal[]>(goalOptions.map((goal) => goal.id));
+  const [isProgressLoading, setIsProgressLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState<string | null>(null);
   const displayName = user ? `${user.first_name} ${user.last_name}` : 'John Doe';
   const initials = user
     ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase()
     : 'JD';
+  useEffect(() => {
+    if (isAuthLoading) return;
+    if (!token) {
+      router.replace('/login');
+      return;
+    }
+
+    let active = true;
+    const loadProgress = async () => {
+      try {
+        const progress = await api.getOnboarding(token);
+        if (!active) return;
+        if (progress.is_completed) {
+          router.replace('/dashboard');
+          return;
+        }
+
+        setStep(progress.current_step);
+        if (progress.profile) setProfile(progress.profile);
+        if (progress.business_type) setBusinessType(businessTypeFromApi[progress.business_type]);
+        if (progress.main_category) setCategory(categoryFromApi[progress.main_category]);
+        if (progress.target_market) setTargetMarket(progress.target_market);
+        if (progress.experience_level) setExperience(experienceFromApi[progress.experience_level]);
+        if (progress.store_connection) setConnection(progress.store_connection);
+        if (progress.goals.length) setGoals(progress.goals);
+      } catch (error) {
+        if (error instanceof ApiRequestError && error.status === 401) {
+          router.replace('/login');
+        } else if (active) {
+          setSaveError('Unable to load your onboarding progress. Please try again.');
+        }
+      } finally {
+        if (active) setIsProgressLoading(false);
+      }
+    };
+
+    loadProgress();
+    return () => {
+      active = false;
+    };
+  }, [isAuthLoading, router, token]);
+
   const back = () => (step === 1 ? router.back() : setStep((current) => current - 1));
-  const next = () => (step === 4 ? router.push('/dashboard') : setStep((current) => current + 1));
+  const next = async () => {
+    if (!token || isSaving) return;
+    if (step === 2 && !targetMarket.trim()) {
+      setSaveError('Please select your target market before continuing.');
+      return;
+    }
+    if (step === 3 && !connection) {
+      setSaveError('Please choose how you want to connect your store.');
+      return;
+    }
+    if (step === 4 && goals.length === 0) {
+      setSaveError('Choose at least one goal to continue.');
+      return;
+    }
+
+    setSaveError(null);
+    setIsSaving(true);
+    try {
+      if (step === 1) {
+        await api.saveOnboardingStep1(token, profile);
+      } else if (step === 2) {
+        await api.saveOnboardingStep2(token, {
+          business_type: businessTypeToApi[businessType],
+          main_category: categoryToApi[category],
+          target_market: targetMarket.trim(),
+          experience_level: experienceToApi[experience],
+        });
+      } else if (step === 3 && connection) {
+        await api.saveOnboardingStep3(token, connection);
+      } else {
+        await api.saveOnboardingStep4(token, goals);
+        await api.completeOnboarding(token);
+        router.push('/dashboard');
+        return;
+      }
+      setStep((current) => current + 1);
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 401) {
+        router.replace('/login');
+      } else if (error instanceof ApiRequestError) {
+        setSaveError(error.message);
+      } else {
+        setSaveError('Unable to save your progress. Please try again.');
+      }
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  if (isAuthLoading || isProgressLoading) {
+    return <div className="min-h-screen bg-[#fffefd]" aria-busy="true" />;
+  }
 
   if (step === 1)
     return (
@@ -996,7 +1167,7 @@ export default function OnboardingPage() {
                   <button
                     type="button"
                     key={id}
-                    onClick={() => setProfile(id as ReferenceIconName)}
+                    onClick={() => setProfile(id as OnboardingProfile)}
                     className={`relative flex h-[188px] flex-col items-center justify-center rounded-[7px] border text-center transition ${selected ? 'border-[#d5b15c] bg-[#fffaf0] shadow-[inset_0_0_0_1px_#f1e3bb]' : 'border-[#e7e7e7] bg-white hover:border-[#d5b15c]'}`}
                   >
                     <span
@@ -1020,10 +1191,15 @@ export default function OnboardingPage() {
               })}
             </div>
           </section>
+          {saveError && (
+            <p className="mx-auto mt-5 w-full max-w-[1028px] text-sm text-[#b42318]" role="alert">
+              {saveError}
+            </p>
+          )}
           <footer className="mx-auto mt-10 flex w-full max-w-[1028px] items-center justify-between lg:mt-[40px]">
             <FooterButton onClick={back}>Back</FooterButton>
-            <FooterButton primary onClick={next}>
-              Continue <ArrowRight className="h-5 w-5" />
+            <FooterButton primary onClick={next} disabled={isSaving}>
+              {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-5 w-5" />
             </FooterButton>
           </footer>
         </div>
@@ -1097,10 +1273,7 @@ export default function OnboardingPage() {
                   />
                   <div>
                     <p className="mb-3 text-[15px] font-semibold">Target market</p>
-                    <button
-                      type="button"
-                      className="flex h-[52px] w-full items-center justify-between rounded-[5px] border border-[#e4e4e4] px-4 text-[15px] text-[#8a8a8a]"
-                    >
+                    <label className="flex h-[52px] w-full items-center justify-between rounded-[5px] border border-[#e4e4e4] px-4 text-[15px] text-[#6b6b6b]">
                       <span className="flex items-center gap-3">
                         <span className="text-[#6b6b6b]">
                           <SvgAssetIcon
@@ -1108,10 +1281,22 @@ export default function OnboardingPage() {
                             className="h-5 w-5"
                           />
                         </span>
-                        Select country / region
+                        <select
+                          value={targetMarket}
+                          onChange={(event) => setTargetMarket(event.target.value)}
+                          className="min-w-0 appearance-none bg-transparent pr-8 text-[15px] outline-none"
+                          aria-label="Target market"
+                        >
+                          <option value="">Select country / region</option>
+                          <option value="France">France</option>
+                          <option value="United States">United States</option>
+                          <option value="United Kingdom">United Kingdom</option>
+                          <option value="Canada">Canada</option>
+                          <option value="Worldwide">Worldwide</option>
+                        </select>
                       </span>
                       <ChevronDown className="h-5 w-5 text-[#222]" />
-                    </button>
+                    </label>
                   </div>
                   <OptionGroup
                     label="Experience level"
@@ -1128,6 +1313,11 @@ export default function OnboardingPage() {
                   />
                 </div>
               </div>
+              {saveError && (
+                <p className="px-7 pt-4 text-sm text-[#b42318] sm:px-10 lg:px-[54px]" role="alert">
+                  {saveError}
+                </p>
+              )}
               <footer className="mt-auto flex items-center justify-between border-t border-[#f3f2ef] px-7 py-5 sm:px-10 lg:px-[54px]">
                 <FooterButton onClick={back}>Back</FooterButton>
                 <div className="hidden items-center gap-4 lg:flex">
@@ -1136,8 +1326,8 @@ export default function OnboardingPage() {
                   <span className="h-3 w-3 rounded-full bg-[#ededed]" />
                   <span className="h-3 w-3 rounded-full bg-[#ededed]" />
                 </div>
-                <FooterButton primary onClick={next}>
-                  Continue <ArrowRight className="h-5 w-5" />
+                <FooterButton primary onClick={next} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-5 w-5" />
                 </FooterButton>
               </footer>
             </section>
@@ -1245,12 +1435,17 @@ export default function OnboardingPage() {
                   ✦
                 </span>
               </div>
+              {saveError && (
+                <p className="mt-3 text-sm text-[#b42318]" role="alert">
+                  {saveError}
+                </p>
+              )}
               <div className="mt-[10px] flex items-center justify-between border-t border-[#efefef] pt-[25px]">
                 <FooterButton compact onClick={back}>
                   <ArrowLeft className="h-4 w-4" /> Back
                 </FooterButton>
-                <FooterButton compact primary onClick={next}>
-                  Continue <ArrowRight className="h-4 w-4" />
+                <FooterButton compact primary onClick={next} disabled={isSaving}>
+                  {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-4 w-4" />
                 </FooterButton>
               </div>
             </section>
@@ -1276,7 +1471,7 @@ export default function OnboardingPage() {
               Need help?
             </button>
           </header>
-          <section className="flex w-full max-w-[902px] flex-1 flex-col justify-center pb-7 lg:translate-y-[35px]">
+          <section className="flex w-full max-w-[902px] flex-1 flex-col justify-center pb-7 lg:translate-y-[-12px]">
             <h1 className="font-editorial text-[51px] leading-[1.05] sm:text-[59px]">
               What do you want to <em className="font-normal text-[#c75219]">achieve?</em>
             </h1>
@@ -1295,9 +1490,9 @@ export default function OnboardingPage() {
                         selected ? current.filter((id) => id !== goal.id) : [...current, goal.id],
                       )
                     }
-                    className={`relative h-[188px] rounded-[8px] border p-7 text-left transition ${selected ? 'border-[#cb9665] bg-[#fffdf9] shadow-[inset_0_0_0_1px_#f3e5d7]' : 'border-[#e2e2e2] bg-white hover:border-[#cb9665]'}`}
+                    className={`relative h-[188px] rounded-[8px] border p-7 text-left transition ${selected ? 'border-[#c98652] bg-[#fff8ec] shadow-[inset_0_0_0_1px_#f0ddc9]' : 'border-[#e2e2e2] bg-[#fffdfa] hover:border-[#c98652]'}`}
                   >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fff5e6] text-[#db8a15]">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#ffefd4] text-[#d9820b]">
                       <SvgAssetIcon src={goal.assetIcon} className="h-7 w-7" />
                     </span>
                     <h2 className="mt-4 text-[17px] font-bold">{goal.title}</h2>
@@ -1313,17 +1508,33 @@ export default function OnboardingPage() {
                 );
               })}
             </div>
+            {saveError && (
+              <p className="mt-4 text-sm text-[#b42318]" role="alert">
+                {saveError}
+              </p>
+            )}
             <footer className="mt-[66px] flex items-end justify-between">
               <div>
-                <p className="text-[13px] font-semibold text-[#7a633c]">4 of 4</p>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={back}
+                    title="Back to previous step"
+                    className="flex items-center gap-1 rounded-[4px] px-1 py-1 text-[13px] font-medium text-[#51483d] transition hover:bg-[#fff2df] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808]"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back
+                  </button>
+                  <span className="text-[13px] font-semibold text-[#7a633c]">4 of 4</span>
+                </div>
                 <div className="mt-2 flex gap-1.5">
                   <span className="h-[7px] w-[103px] rounded-full bg-[#d94808]" />
                   <span className="h-[7px] w-[103px] rounded-full bg-[#d94808]" />
                   <span className="h-[7px] w-[103px] rounded-full bg-[#d94808]" />
                 </div>
               </div>
-              <FooterButton primary wide onClick={next}>
-                Enter TrendED <ArrowRight className="h-5 w-5" />
+              <FooterButton primary wide onClick={next} disabled={isSaving}>
+                {isSaving ? 'Saving...' : 'Enter TrendED'} <ArrowRight className="h-5 w-5" />
               </FooterButton>
             </footer>
           </section>
