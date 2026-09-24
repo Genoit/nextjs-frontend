@@ -23,6 +23,12 @@ function Glyph({ name, className = 'h-5 w-5', strokeWidth = 1.75 }: GlyphProps &
     ),
     check: <path d="m5 12 4 4L19 6" />,
     chevron: <path d="m6 9 6 6 6-6" />,
+    clock: (
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M12 6v6h4.5" />
+      </>
+    ),
     help: (
       <>
         <circle cx="12" cy="12" r="9" />
@@ -138,10 +144,8 @@ const BarChart3 = makeIcon('chart');
 const Check = makeIcon('check');
 const ChevronDown = makeIcon('chevron');
 const CircleHelp = makeIcon('help');
-const LockKeyhole = makeIcon('lock');
 const Search = makeIcon('search');
 const Sparkles = makeIcon('sparkles');
-const Store = makeIcon('store');
 
 type ReferenceIconName =
   | 'starting'
@@ -386,38 +390,49 @@ type ConnectionMethod = 'shopify' | 'woocommerce' | 'manual' | null;
 type BusinessType = 'Dropshipping' | 'DTC brand' | 'Marketplace seller' | 'Other';
 type Category = 'Fashion' | 'Beauty' | 'Home' | 'Electronics' | 'Fitness' | 'Pets' | 'Other';
 type Experience = 'Beginner' | 'Intermediate' | 'Advanced';
-type IconType = typeof Store;
+type IconType = (props: GlyphProps) => React.ReactNode;
 
-const goalOptions: { id: string; title: string; description: string; icon: ReferenceIconName }[] = [
+const goalOptions: {
+  id: string;
+  title: string;
+  description: string;
+  icon: ReferenceIconName;
+  assetIcon: string;
+}[] = [
   {
     id: 'products',
     title: 'Find winning products',
     description: 'Discover products with growth potential.',
     icon: 'products',
+    assetIcon: '/logos/onboarding/goal-search.svg',
   },
   {
     id: 'ads',
     title: 'Create better ads',
     description: 'Generate high-performing creative concepts.',
     icon: 'ads',
+    assetIcon: '/logos/onboarding/goal-ads.svg',
   },
   {
     id: 'sales',
     title: 'Increase sales',
     description: 'Identify opportunities to improve conversion.',
     icon: 'sales',
+    assetIcon: '/logos/onboarding/goal-sales.svg',
   },
   {
     id: 'scale',
     title: 'Scale my store',
     description: 'Understand what is driving profitable growth.',
     icon: 'rocket',
+    assetIcon: '/logos/onboarding/goal-scale.svg',
   },
   {
     id: 'performance',
     title: 'Track performance',
     description: 'Monitor revenue, profit and advertising performance.',
     icon: 'performance',
+    assetIcon: '/logos/onboarding/goal-performance.svg',
   },
 ];
 
@@ -486,6 +501,57 @@ function SelectionDot({ selected, compact = false }: { selected: boolean; compac
   );
 }
 
+function SecurityShield({
+  className = 'h-6 w-6',
+  detailed = false,
+}: {
+  className?: string;
+  detailed?: boolean;
+}) {
+  return (
+    <svg className={className} viewBox="0 0 48 52" fill="none" aria-hidden="true">
+      <path
+        d="M24 3 42 10v13c0 12-7.6 21.1-18 26C13.6 44.1 6 35 6 23V10L24 3Z"
+        fill={detailed ? '#fffaf0' : 'currentColor'}
+        fillOpacity={detailed ? 1 : 0.14}
+        stroke="currentColor"
+        strokeWidth="2.2"
+      />
+      <rect
+        x="15"
+        y="23"
+        width="18"
+        height="15"
+        rx="2.3"
+        fill={detailed ? '#f4b52a' : 'none'}
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path d="M19 23v-4a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="2" />
+      {detailed && <circle cx="24" cy="30" r="1.6" fill="#fff8e7" />}
+    </svg>
+  );
+}
+
+function ManualSetupClock() {
+  return (
+    <svg
+      className="h-4 w-4 text-[#c99f38]"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      aria-hidden="true"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0a9 9 0 0 1 18 0Z"
+      />
+    </svg>
+  );
+}
+
 function StepTracker({ active }: { active: number }) {
   return (
     <ol className="flex items-center" aria-label="Onboarding progress">
@@ -507,18 +573,20 @@ function FooterButton({
   children,
   primary = false,
   wide = false,
+  compact = false,
   onClick,
 }: {
   children: React.ReactNode;
   primary?: boolean;
   wide?: boolean;
+  compact?: boolean;
   onClick: () => void;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808] ${primary ? `${wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-[#d94808] text-white shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : 'min-w-[184px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]'}`}
+      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808] ${primary ? `${compact ? 'min-w-[170px]' : wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-[#d94808] text-white shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : compact ? 'min-w-[115px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]' : 'min-w-[184px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]'}`}
     >
       {children}
     </button>
@@ -759,7 +827,11 @@ function ConnectionMark({ id }: { id: Exclude<ConnectionMethod, null> }) {
         aria-hidden="true"
       />
     );
-  return <Store className="h-14 w-14 text-[#f5b82e]" strokeWidth={1.9} aria-hidden="true" />;
+  return (
+    <span className="text-[#f5b82e]" aria-hidden="true">
+      <SvgAssetIcon src="/logos/onboarding/manual-store.svg" className="h-14 w-14" />
+    </span>
+  );
 }
 
 function ConnectionSidebar({ active }: { active: number }) {
@@ -800,7 +872,9 @@ function ConnectionSidebar({ active }: { active: number }) {
       </ol>
       <div className="mt-auto h-[130px] rounded-sm bg-[#fff8e9] px-5 py-4">
         <div className="flex items-start gap-2">
-          <LockKeyhole className="mt-0.5 h-6 w-6 shrink-0 text-[#eab308]" />
+          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fff0be] text-[#e7ad21]">
+            <SecurityShield className="h-5 w-5" />
+          </span>
           <div>
             <p className="text-[13px] font-semibold text-[#333]">Your data is safe with us</p>
             <p className="mt-2 text-[13px] leading-[23px] text-[#6f6f6f]">
@@ -1127,9 +1201,9 @@ export default function OnboardingPage() {
                         className={`mt-[23px] inline-flex w-fit items-center gap-1.5 rounded-sm px-1.5 py-0.5 text-[12px] font-medium ${manual ? 'bg-[#fff9e9] text-[#b98822]' : 'bg-[#f1faef] text-[#42814a]'}`}
                       >
                         <span
-                          className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] text-white ${manual ? 'border border-[#d8bb70] text-[#c99f38]' : 'bg-[#55a153]'}`}
+                          className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] text-white ${manual ? 'text-[#c99f38]' : 'bg-[#55a153]'}`}
                         >
-                          {manual ? 'o' : <Check className="h-3 w-3" />}
+                          {manual ? <ManualSetupClock /> : <Check className="h-3 w-3" />}
                         </span>
                         {selected
                           ? manual
@@ -1150,10 +1224,10 @@ export default function OnboardingPage() {
                   );
                 })}
               </div>
-              <div className="relative mt-[21px] min-h-[79px] overflow-hidden rounded-[5px] border border-[#fff0c6] bg-[#fffaf0] px-6 py-4">
+              <div className="relative mt-[21px] min-h-[76px] overflow-hidden rounded-[5px] border border-[#fff0c6] bg-[#fffaf0] px-6 py-3.5">
                 <div className="flex items-start gap-[18px]">
                   <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1c8] text-[#eab308]">
-                    <LockKeyhole className="h-4 w-4" />
+                    <SecurityShield className="h-[18px] w-[18px]" />
                   </span>
                   <div>
                     <p className="text-[14px] font-semibold text-[#2c2c2c]">
@@ -1164,16 +1238,18 @@ export default function OnboardingPage() {
                     </p>
                   </div>
                 </div>
-                <LockKeyhole
-                  className="absolute right-12 top-5 h-14 w-14 text-[#e5d8b8]"
-                  strokeWidth={1.2}
-                />
+                <span className="absolute right-10 top-2 text-[#e5d8b8]">
+                  <SecurityShield className="h-[66px] w-[61px]" detailed />
+                </span>
+                <span className="absolute right-[106px] top-[19px] text-[22px] text-[#f2cf72]">
+                  ✦
+                </span>
               </div>
-              <div className="mt-[31px] flex items-center justify-between">
-                <FooterButton onClick={back}>
+              <div className="mt-[10px] flex items-center justify-between border-t border-[#efefef] pt-[25px]">
+                <FooterButton compact onClick={back}>
                   <ArrowLeft className="h-4 w-4" /> Back
                 </FooterButton>
-                <FooterButton primary onClick={next}>
+                <FooterButton compact primary onClick={next}>
                   Continue <ArrowRight className="h-4 w-4" />
                 </FooterButton>
               </div>
@@ -1222,7 +1298,7 @@ export default function OnboardingPage() {
                     className={`relative h-[188px] rounded-[8px] border p-7 text-left transition ${selected ? 'border-[#cb9665] bg-[#fffdf9] shadow-[inset_0_0_0_1px_#f3e5d7]' : 'border-[#e2e2e2] bg-white hover:border-[#cb9665]'}`}
                   >
                     <span className="flex h-12 w-12 items-center justify-center rounded-full bg-[#fff5e6] text-[#db8a15]">
-                      <ReferenceIcon name={goal.icon} className="h-7 w-7" />
+                      <SvgAssetIcon src={goal.assetIcon} className="h-7 w-7" />
                     </span>
                     <h2 className="mt-4 text-[17px] font-bold">{goal.title}</h2>
                     <p className="mt-2 max-w-[200px] text-[14px] leading-5 text-[#686868]">
