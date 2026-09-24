@@ -28,6 +28,10 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const TOKEN_KEY = 'trended_access_token';
 const GOOGLE_REDIRECT_FALLBACK_KEY = 'trended_google_redirect_fallback';
 
+export function getPostAuthenticationPath(user: User): '/onboarding' | '/dashboard' {
+  return user.onboarding_completed ? '/dashboard' : '/onboarding';
+}
+
 function shouldFallbackToGoogleRedirect(error: unknown): boolean {
   if (!error || typeof error !== 'object' || !('code' in error)) {
     return false;
@@ -76,7 +80,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setToken(data.access_token);
           setUser(data.user);
           startTransition(() => {
-            router.push('/dashboard');
+            router.push(getPostAuthenticationPath(data.user));
           });
         }
       } catch (err) {

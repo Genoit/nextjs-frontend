@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { tempting } from '../fonts';
-import { useAuth } from '../../lib/auth';
+import { getPostAuthenticationPath, useAuth } from '../../lib/auth';
 import { ApiRequestError } from '../../lib/api';
 import {
   EyeIcon,
@@ -40,8 +40,8 @@ function LoginForm() {
     setIsGoogleLoading(true);
 
     try {
-      await loginWithGoogle();
-      router.push('/dashboard');
+      const result = await loginWithGoogle();
+      router.push(getPostAuthenticationPath(result.user));
     } catch (err: unknown) {
       if (err instanceof ApiRequestError) {
         if (err.status === 409) {
@@ -110,12 +110,12 @@ function LoginForm() {
     setIsLoading(true);
 
     try {
-      await login({
+      const result = await login({
         email: email.trim(),
         password,
       });
 
-      router.push('/dashboard');
+      router.push(getPostAuthenticationPath(result.user));
     } catch (err) {
       if (err instanceof ApiRequestError) {
         if (err.status === 401) {

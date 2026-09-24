@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tempting } from '../fonts';
-import { useAuth } from '../../lib/auth';
+import { getPostAuthenticationPath, useAuth } from '../../lib/auth';
 import { ApiRequestError } from '../../lib/api';
 import {
   CaptionsIcon,
@@ -43,8 +43,8 @@ export default function RegisterPage() {
     setIsGoogleLoading(true);
 
     try {
-      await loginWithGoogle();
-      router.push('/dashboard');
+      const result = await loginWithGoogle();
+      router.push(getPostAuthenticationPath(result.user));
     } catch (err: unknown) {
       if (err instanceof ApiRequestError) {
         if (err.status === 409) {
