@@ -1,4 +1,16 @@
-import { AuthResponse, LoginPayload, RegisterPayload, User } from './types';
+import {
+  AuthResponse,
+  LoginPayload,
+  OnboardingBusinessType,
+  OnboardingCategory,
+  OnboardingExperience,
+  OnboardingGoal,
+  OnboardingProfile,
+  OnboardingProgress,
+  OnboardingStoreConnection,
+  RegisterPayload,
+  User,
+} from './types';
 
 function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
@@ -53,6 +65,23 @@ async function handleResponse<T>(response: Response): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function authenticatedRequest<T>(
+  path: string,
+  token: string,
+  method: 'GET' | 'POST' | 'PUT' = 'GET',
+  body?: object,
+): Promise<T> {
+  const response = await fetch(`${getApiBaseUrl()}${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      ...(body ? { 'Content-Type': 'application/json' } : {}),
+    },
+    ...(body ? { body: JSON.stringify(body) } : {}),
+  });
+  return handleResponse<T>(response);
+}
+
 export const api = {
   async register(payload: RegisterPayload): Promise<User> {
     const url = `${getApiBaseUrl()}/auth/register`;
@@ -99,5 +128,42 @@ export const api = {
       },
     });
     return handleResponse<User>(response);
+  },
+
+  getOnboarding(token: string): Promise<OnboardingProgress> {
+    return authenticatedRequest('/onboarding/me', token);
+  },
+
+  saveOnboardingStep1(token: string, profile: OnboardingProfile): Promise<OnboardingProgress> {
+    return authenticatedRequest('/onboarding/me/step/1', token, 'PUT', { profile });
+  },
+
+  saveOnboardingStep2(
+    token: string,
+    data: {
+      business_type: OnboardingBusinessType;
+      main_category: OnboardingCategory;
+      target_market: string;
+      experience_level: OnboardingExperience;
+    },
+  ): Promise<OnboardingProgress> {
+    return authenticatedRequest('/onboarding/me/step/2', token, 'PUT', data);
+  },
+
+  saveOnboardingStep3(
+    token: string,
+    store_connection: OnboardingStoreConnection,
+  ): Promise<OnboardingProgress> {
+    return authenticatedRequest('/onboarding/me/step/3', token, 'PUT', {
+      store_connection,
+    });
+  },
+
+  saveOnboardingStep4(token: string, goals: OnboardingGoal[]): Promise<OnboardingProgress> {
+    return authenticatedRequest('/onboarding/me/step/4', token, 'PUT', { goals });
+  },
+
+  completeOnboarding(token: string): Promise<OnboardingProgress> {
+    return authenticatedRequest('/onboarding/me/complete', token, 'POST');
   },
 };

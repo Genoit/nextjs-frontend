@@ -122,13 +122,13 @@ export function TrendedBrandLogo({ className = '' }: { className?: string }) {
         <Image
           src="/logo.png"
           alt="TrendED Logo"
-          width={180}
-          height={45}
-          className="h-8 sm:h-9 w-auto object-contain"
+          width={220}
+          height={56}
+          className="h-10 sm:h-12 w-auto object-contain"
           priority
         />
       </div>
-      <span className="text-[10px] tracking-wider uppercase font-semibold text-zinc-500 mt-1">
+      <span className="text-[10px] sm:text-[11px] tracking-wider uppercase font-semibold text-zinc-500 mt-1">
         E-commerce · Dropshipping · Growth
       </span>
     </div>

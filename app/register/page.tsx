@@ -5,7 +5,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tempting } from '../fonts';
-import { useAuth } from '../../lib/auth';
+import { getPostAuthenticationPath, useAuth } from '../../lib/auth';
 import { ApiRequestError } from '../../lib/api';
 import {
   CaptionsIcon,
@@ -22,7 +22,7 @@ import {
 } from '../../components/Icons';
 
 export default function RegisterPage() {
-  const { register, loginWithGoogle } = useAuth();
+  const { register, loginWithGoogle, loginWithGoogleRedirect } = useAuth();
   const router = useRouter();
 
   const [firstName, setFirstName] = useState('');
@@ -43,8 +43,8 @@ export default function RegisterPage() {
     setIsGoogleLoading(true);
 
     try {
-      await loginWithGoogle();
-      router.push('/dashboard');
+      const result = await loginWithGoogle();
+      router.push(getPostAuthenticationPath(result.user));
     } catch (err: unknown) {
       if (err instanceof ApiRequestError) {
         if (err.status === 409) {
@@ -56,10 +56,29 @@ export default function RegisterPage() {
         }
       } else if (err && typeof err === 'object' && 'code' in err) {
         const code = (err as { code: string }).code;
-        if (code === 'auth/popup-closed-by-user') {
+        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
           setError('Google sign-in was cancelled.');
+        } else if (code === 'auth/popup-blocked') {
+          setError(
+            'Google sign-in popup was blocked by your browser. Click below to sign in with page redirect.',
+          );
+        } else if (code === 'auth/web-storage-unsupported') {
+          setError(
+            'Third-party cookies or storage access is disabled by your browser settings. Click below to sign in with page redirect.',
+          );
         } else if (code === 'auth/network-request-failed') {
           setError('Network error connecting to Google. Please check your connection.');
+        } else if (code === 'auth/unauthorized-domain') {
+          setError(
+            'This domain (localhost) is not authorized in Firebase Console. Please add "localhost" in Firebase Console > Authentication > Settings > Authorized domains.',
+          );
+        } else if (
+          code === 'auth/configuration-not-found' ||
+          code === 'auth/operation-not-allowed'
+        ) {
+          setError(
+            'Google sign-in is not configured correctly in Firebase. Please check the project settings and ensure Google provider is enabled.',
+          );
         } else {
           setError('Google sign-in failed. Please try again.');
         }
@@ -68,6 +87,17 @@ export default function RegisterPage() {
       }
     } finally {
       setIsGoogleLoading(false);
+    }
+  };
+
+  const handleGoogleRedirect = async () => {
+    setError(null);
+    setIsGoogleLoading(true);
+    try {
+      await loginWithGoogleRedirect();
+    } catch {
+      setIsGoogleLoading(false);
+      setError('Could not redirect to Google. Please check your browser settings.');
     }
   };
 
@@ -306,15 +336,27 @@ export default function RegisterPage() {
 
           <div className="text-left space-y-1">
             <h2 className="text-4xl font-bold tracking-tight text-zinc-900">Create your account</h2>
-            <p className="text-[15px] text-zinc-500">Start creating with TrendED.</p>
+            <p className="text-base text-zinc-500">Start creating with TrendED.</p>
           </div>
 
           {error && (
             <div
               role="alert"
-              className="rounded-xl bg-red-50 p-3.5 text-sm text-red-700 border border-red-200"
+              className="rounded-xl bg-red-50 p-3.5 text-base text-red-700 border border-red-200 space-y-2"
             >
-              {error}
+              <p>{error}</p>
+              {(error.includes('popup') ||
+                error.includes('redirect') ||
+                error.includes('storage') ||
+                error.includes('cookies')) && (
+                <button
+                  type="button"
+                  onClick={handleGoogleRedirect}
+                  className="text-sm font-semibold text-[#E0492A] hover:underline block"
+                >
+                  Retry with page redirect →
+                </button>
+              )}
             </div>
           )}
 
@@ -334,7 +376,7 @@ export default function RegisterPage() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   disabled={isLoading}
-                  className="block w-full rounded-xl border border-zinc-200 px-3.5 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                  className="block w-full rounded-xl border border-zinc-200 px-3.5 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
                   placeholder="First name"
                 />
               </div>
@@ -352,7 +394,7 @@ export default function RegisterPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   disabled={isLoading}
-                  className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-10 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                  className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-10 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
                   placeholder="Last name"
                 />
                 <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400">
@@ -375,7 +417,7 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-10 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-10 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
                 placeholder="Email address"
               />
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400">
@@ -398,7 +440,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-16 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                  className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-16 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
                   placeholder="Password"
                 />
                 <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 gap-2 text-zinc-400">
@@ -432,7 +474,7 @@ export default function RegisterPage() {
                   ))}
                 </div>
                 <span
-                  className={`text-[11px] font-normal ${
+                  className={`text-xs font-normal ${
                     passwordStrength.label === 'Strong' ? 'text-emerald-600' : 'text-zinc-400'
                   }`}
                 >
@@ -442,7 +484,7 @@ export default function RegisterPage() {
 
               <div className="mt-3 space-y-1.5">
                 {passwordStrength.checks.map((check) => (
-                  <div key={check.label} className="flex items-center gap-2 text-[11px]">
+                  <div key={check.label} className="flex items-center gap-2 text-xs">
                     <span
                       className={`inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold ${
                         check.ok
@@ -474,7 +516,7 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-16 py-3.5 text-[15px] text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-16 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
                 placeholder="Confirm password"
               />
               <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 gap-2 text-zinc-400">
@@ -495,7 +537,7 @@ export default function RegisterPage() {
 
             {/* Terms checkbox */}
             <div className="pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-xs text-zinc-600">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-zinc-600">
                 <input
                   type="checkbox"
                   required
@@ -519,7 +561,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3.5 text-[15px] font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition mt-2"
+              className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition mt-2"
             >
               {isLoading ? (
                 <>
@@ -547,7 +589,7 @@ export default function RegisterPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 disabled:opacity-50 transition"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-base font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 disabled:opacity-50 transition"
           >
             {isGoogleLoading ? (
               <>
@@ -563,7 +605,7 @@ export default function RegisterPage() {
           </button>
 
           {/* Bottom link */}
-          <div className="text-center text-sm text-zinc-600 pt-1">
+          <div className="text-center text-base text-zinc-600 pt-1">
             Already have an account?{' '}
             <Link href="/login" className="font-medium text-[#E0492A] hover:underline">
               Sign in

@@ -360,6 +360,33 @@ describe('Sprint 1 - Frontend Authentication Unit & Flow Tests', () => {
       assert.strictEqual(msg, 'Google sign-in was cancelled.');
     });
 
+    it('✓ should detect all popup-interrupted Firebase errors for redirect fallback', () => {
+      function isPopupBlockedError(err) {
+        if (!err || typeof err !== 'object') return false;
+        const code = err.code || '';
+        const msg = err.message || '';
+        return (
+          [
+            'auth/popup-blocked',
+            'auth/popup-closed-by-user',
+            'auth/cancelled-popup-request',
+            'auth/internal-error',
+            'auth/web-storage-unsupported',
+          ].includes(code) ||
+          msg.toLowerCase().includes('popup') ||
+          msg.toLowerCase().includes('cross-site')
+        );
+      }
+
+      assert.strictEqual(isPopupBlockedError({ code: 'auth/popup-blocked' }), true);
+      assert.strictEqual(isPopupBlockedError({ code: 'auth/popup-closed-by-user' }), true);
+      assert.strictEqual(isPopupBlockedError({ code: 'auth/cancelled-popup-request' }), true);
+      assert.strictEqual(isPopupBlockedError({ code: 'auth/internal-error' }), true);
+      assert.strictEqual(isPopupBlockedError({ code: 'auth/web-storage-unsupported' }), true);
+      assert.strictEqual(isPopupBlockedError({ message: 'The popup was blocked by browser' }), true);
+      assert.strictEqual(isPopupBlockedError({ code: 'auth/invalid-email' }), false);
+    });
+
     it('✓ should trigger both Firebase signOut and local storage cleanup on logout', async () => {
       let firebaseSignOutCalled = false;
       const mockLogoutFirebase = async () => {
