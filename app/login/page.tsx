@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { tempting } from '../fonts';
 import { useAuth } from '../../lib/auth';
 import { ApiRequestError } from '../../lib/api';
+import { isPopupBlockedError, isUnauthorizedDomainError } from '../../lib/firebase/auth';
 import {
   EyeIcon,
   EyeOffIcon,
@@ -53,22 +54,20 @@ function LoginForm() {
         }
       } else if (err && typeof err === 'object' && 'code' in err) {
         const code = (err as { code: string }).code;
-        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
-          setError('Google sign-in was cancelled.');
-        } else if (code === 'auth/popup-blocked') {
+        if (isPopupBlockedError(err)) {
           setError(
-            'Google sign-in popup was blocked by your browser. Click below to sign in with page redirect.',
+            'Google sign-in popup was blocked or closed before completing. Click below to sign in with page redirect.',
           );
         } else if (code === 'auth/web-storage-unsupported') {
           setError(
             'Third-party cookies or storage access is disabled by your browser settings. Click below to sign in with page redirect.',
           );
+        } else if (isUnauthorizedDomainError(err)) {
+          setError(
+            'This domain is not authorized in Firebase Console. Please add "localhost" (or your current domain) in Authentication > Settings > Authorized domains.',
+          );
         } else if (code === 'auth/network-request-failed') {
           setError('Network error connecting to Google. Please check your connection.');
-        } else if (code === 'auth/unauthorized-domain') {
-          setError(
-            'This domain (localhost) is not authorized in Firebase Console. Please add "localhost" in Firebase Console > Authentication > Settings > Authorized domains.',
-          );
         } else if (
           code === 'auth/configuration-not-found' ||
           code === 'auth/operation-not-allowed'

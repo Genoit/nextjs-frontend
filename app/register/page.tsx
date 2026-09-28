@@ -1,12 +1,17 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tempting } from '../fonts';
 import { useAuth } from '../../lib/auth';
-import { ApiRequestError } from '../../lib/api';
+import { ApiRequestError, api } from '../../lib/api';
+import {
+  completeGoogleRedirectSignIn,
+  isPopupBlockedError,
+  isUnauthorizedDomainError,
+} from '../../lib/firebase/auth';
 import {
   CaptionsIcon,
   ChatScriptIcon,
@@ -38,6 +43,40 @@ export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    const finalizeGoogleRedirect = async () => {
+      try {
+        const redirectResult = await completeGoogleRedirectSignIn();
+        if (!redirectResult || isCancelled) {
+          return;
+        }
+
+        const data = await api.loginWithGoogle(redirectResult.idToken);
+        localStorage.setItem('trended_access_token', data.access_token);
+        if (!isCancelled) {
+          router.push('/dashboard');
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          console.error('Google redirect login failed on register page:', err);
+          setError('Google sign-in could not be completed. Please try again.');
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsGoogleLoading(false);
+        }
+      }
+    };
+
+    finalizeGoogleRedirect();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [router]);
+
   const handleGoogleLogin = async () => {
     setError(null);
     setIsGoogleLoading(true);
@@ -56,22 +95,20 @@ export default function RegisterPage() {
         }
       } else if (err && typeof err === 'object' && 'code' in err) {
         const code = (err as { code: string }).code;
-        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
-          setError('Google sign-in was cancelled.');
-        } else if (code === 'auth/popup-blocked') {
+        if (isPopupBlockedError(err)) {
           setError(
-            'Google sign-in popup was blocked by your browser. Click below to sign in with page redirect.',
+            'Google sign-in popup was blocked or closed before completing. Click below to sign in with page redirect.',
           );
         } else if (code === 'auth/web-storage-unsupported') {
           setError(
             'Third-party cookies or storage access is disabled by your browser settings. Click below to sign in with page redirect.',
           );
+        } else if (isUnauthorizedDomainError(err)) {
+          setError(
+            'This domain is not authorized in Firebase Console. Please add "localhost" (or your current domain) in Authentication > Settings > Authorized domains.',
+          );
         } else if (code === 'auth/network-request-failed') {
           setError('Network error connecting to Google. Please check your connection.');
-        } else if (code === 'auth/unauthorized-domain') {
-          setError(
-            'This domain (localhost) is not authorized in Firebase Console. Please add "localhost" in Firebase Console > Authentication > Settings > Authorized domains.',
-          );
         } else if (
           code === 'auth/configuration-not-found' ||
           code === 'auth/operation-not-allowed'

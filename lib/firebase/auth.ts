@@ -23,7 +23,30 @@ export function isPopupBlockedError(error: unknown): boolean {
   const code = 'code' in error ? String((error as { code?: string }).code ?? '') : '';
   const message = 'message' in error ? String((error as { message?: string }).message ?? '') : '';
 
-  return code === 'auth/popup-blocked' || message.toLowerCase().includes('popup-blocked');
+  return (
+    code === 'auth/popup-blocked' ||
+    code === 'auth/popup-closed-by-user' ||
+    code === 'auth/cancelled-popup-request' ||
+    message.toLowerCase().includes('popup-blocked') ||
+    message.toLowerCase().includes('popup was blocked') ||
+    message.toLowerCase().includes('cross-site')
+  );
+}
+
+export function isUnauthorizedDomainError(error: unknown): boolean {
+  if (!error || typeof error !== 'object') {
+    return false;
+  }
+
+  const code = 'code' in error ? String((error as { code?: string }).code ?? '') : '';
+  const message = 'message' in error ? String((error as { message?: string }).message ?? '') : '';
+
+  return (
+    code === 'auth/unauthorized-domain' ||
+    code === 'auth/invalid-domain' ||
+    message.toLowerCase().includes('unauthorized domain') ||
+    message.toLowerCase().includes('not authorized')
+  );
 }
 
 export function isPopupClosedByUserError(error: unknown): boolean {

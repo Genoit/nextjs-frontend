@@ -387,6 +387,25 @@ describe('Sprint 1 - Frontend Authentication Unit & Flow Tests', () => {
       assert.strictEqual(isPopupBlockedError({ code: 'auth/invalid-email' }), false);
     });
 
+    it('✓ should identify Firebase unauthorized-domain errors for localhost configuration checks', () => {
+      function isUnauthorizedDomainError(err) {
+        if (!err || typeof err !== 'object') return false;
+        const code = err.code || '';
+        const msg = err.message || '';
+        return (
+          code === 'auth/unauthorized-domain' ||
+          code === 'auth/invalid-domain' ||
+          msg.toLowerCase().includes('unauthorized domain') ||
+          msg.toLowerCase().includes('not authorized')
+        );
+      }
+
+      assert.strictEqual(isUnauthorizedDomainError({ code: 'auth/unauthorized-domain' }), true);
+      assert.strictEqual(isUnauthorizedDomainError({ message: 'This domain is not authorized' }), true);
+      assert.strictEqual(isUnauthorizedDomainError({ code: 'auth/popup-blocked' }), false);
+      assert.strictEqual(isUnauthorizedDomainError({ code: 'auth/invalid-email' }), false);
+    });
+
     it('✓ should trigger both Firebase signOut and local storage cleanup on logout', async () => {
       let firebaseSignOutCalled = false;
       const mockLogoutFirebase = async () => {
