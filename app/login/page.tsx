@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { tempting } from '../fonts';
 import { getPostAuthenticationPath, useAuth } from '../../lib/auth';
-import { ApiRequestError } from '../../lib/api';
+import { getAuthErrorMessage } from '../../lib/auth-errors';
 import {
   EyeIcon,
   EyeOffIcon,
@@ -25,6 +25,7 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get('registered') === 'true';
+  const sessionExpired = searchParams.get('expired') === 'true';
 
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -43,45 +44,7 @@ function LoginForm() {
       const result = await loginWithGoogle();
       router.push(getPostAuthenticationPath(result.user));
     } catch (err: unknown) {
-      if (err instanceof ApiRequestError) {
-        if (err.status === 409) {
-          setError(
-            'An account already exists with this email. Please sign in using your existing authentication method.',
-          );
-        } else {
-          setError(err.message || 'Google sign-in failed. Please try again.');
-        }
-      } else if (err && typeof err === 'object' && 'code' in err) {
-        const code = (err as { code: string }).code;
-        if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') {
-          setError('Google sign-in was cancelled.');
-        } else if (code === 'auth/popup-blocked') {
-          setError(
-            'Google sign-in popup was blocked by your browser. Click below to sign in with page redirect.',
-          );
-        } else if (code === 'auth/web-storage-unsupported') {
-          setError(
-            'Third-party cookies or storage access is disabled by your browser settings. Click below to sign in with page redirect.',
-          );
-        } else if (code === 'auth/network-request-failed') {
-          setError('Network error connecting to Google. Please check your connection.');
-        } else if (code === 'auth/unauthorized-domain') {
-          setError(
-            'This domain (localhost) is not authorized in Firebase Console. Please add "localhost" in Firebase Console > Authentication > Settings > Authorized domains.',
-          );
-        } else if (
-          code === 'auth/configuration-not-found' ||
-          code === 'auth/operation-not-allowed'
-        ) {
-          setError(
-            'Google sign-in is not configured correctly in Firebase. Please check the project settings and ensure Google provider is enabled.',
-          );
-        } else {
-          setError('Google sign-in failed. Please try again.');
-        }
-      } else {
-        setError('Google sign-in failed. Please try again later.');
-      }
+      setError(getAuthErrorMessage(err, 'Google sign-in failed. Please try again.'));
     } finally {
       setIsGoogleLoading(false);
     }
@@ -117,15 +80,7 @@ function LoginForm() {
 
       router.push(getPostAuthenticationPath(result.user));
     } catch (err) {
-      if (err instanceof ApiRequestError) {
-        if (err.status === 401) {
-          setError('Invalid email or password.');
-        } else {
-          setError(err.message || 'Login failed. Please try again.');
-        }
-      } else {
-        setError('Network error. Please try again later.');
-      }
+      setError(getAuthErrorMessage(err, 'Login failed. Please try again.'));
     } finally {
       setIsLoading(false);
     }
@@ -149,6 +104,15 @@ function LoginForm() {
           className="rounded-xl bg-emerald-50 p-3.5 text-base text-emerald-700 border border-emerald-200"
         >
           Account created successfully! You can now log in.
+        </div>
+      )}
+
+      {sessionExpired && !justRegistered && (
+        <div
+          role="status"
+          className="rounded-xl bg-amber-50 p-3.5 text-base text-amber-800 border border-amber-200"
+        >
+          Your session has expired. Please sign in again.
         </div>
       )}
 
