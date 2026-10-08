@@ -10,12 +10,12 @@ import {
   OnboardingStoreConnection,
   RegisterPayload,
   User,
-} from './types';
+} from '../types';
 
 export const TOKEN_KEY = 'trended_access_token';
 export const REFRESH_TOKEN_KEY = 'trended_refresh_token';
 
-function getApiBaseUrl(): string {
+export function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
   const trimmed = raw.replace(/\/+$/, '');
   if (trimmed.endsWith('/api/v1')) return trimmed;

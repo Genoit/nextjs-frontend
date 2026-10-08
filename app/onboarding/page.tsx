@@ -4,7 +4,7 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../lib/auth';
-import { api, ApiRequestError } from '../../lib/api';
+import { api, ApiRequestError } from '../../lib/api/core';
 import {
   OnboardingBusinessType,
   OnboardingCategory,

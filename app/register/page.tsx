@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tempting } from '../fonts';
 import { getPostAuthenticationPath, useAuth } from '../../lib/auth';
-import { api } from '../../lib/api';
+import { api } from '../../lib/api/core';
 import { completeGoogleRedirectSignIn } from '../../lib/firebase/auth';
 import { getAuthErrorMessage } from '../../lib/auth-errors';
 import {
