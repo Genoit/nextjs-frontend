@@ -1,6 +1,7 @@
 import { fetchWithAuth, getApiBaseUrl, ApiRequestError } from './core';
 import {
   Product,
+  ProductPreview,
   ProductCreatePayload,
   ProductUpdatePayload,
   ProductListResponse,
@@ -157,14 +158,10 @@ export const productApi = {
   },
 
   /**
-   * Extract product from URL
-   * Placeholder for future extraction feature (US-08)
+   * Extract product preview from URL (US-08)
    */
-  async extractFromUrl(url: string): Promise<Product> {
-    const apiUrl = getProductsUrl();
-    const extractUrl = `${apiUrl}/extract`;
-
-    return fetchWithAuth<Product>(extractUrl, {
+  async extractFromUrl(url: string): Promise<ProductPreview> {
+    return fetchWithAuth<ProductPreview>(`${PRODUCTS_BASE_PATH}/extract`, {
       method: 'POST',
       body: JSON.stringify({ url }),
     });

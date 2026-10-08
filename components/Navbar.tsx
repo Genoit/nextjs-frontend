@@ -12,8 +12,16 @@ export default function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
 
-  // Do not render navbar on auth pages (Figma spec has full-screen layout with integrated logo)
-  if (pathname === '/login' || pathname === '/register' || pathname === '/onboarding') {
+  // Do not render navbar on auth pages or workspace pages (Figma spec has integrated workspace layout with header and sidebar)
+  if (
+    pathname === '/login' ||
+    pathname === '/register' ||
+    pathname === '/onboarding' ||
+    pathname === '/dashboard' ||
+    pathname?.startsWith('/dashboard/') ||
+    pathname === '/product-input' ||
+    pathname?.startsWith('/product-input/')
+  ) {
     return null;
   }
 

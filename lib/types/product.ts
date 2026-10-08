@@ -102,24 +102,51 @@ export interface ProductListResponse {
   total_pages: number;
 }
 
+export interface ProductPreview {
+  title: string;
+  description: string | null;
+  brand: string | null;
+  category: string | null;
+  source_url: string;
+  canonical_url: string | null;
+  source_platform: string;
+  external_id: string | null;
+  price: number | null;
+  compare_at_price: number | null;
+  currency: string | null;
+  availability: string;
+  seller_name: string | null;
+  seller_url: string | null;
+  rating: number | null;
+  reviews_count: number | null;
+  main_image_url: string | null;
+  images: string[];
+  extraction_status: string;
+  extraction_method: string | null;
+  raw_metadata: Record<string, unknown>;
+}
+
 export interface ProductCreatePayload {
   title: string;
   description?: string | null;
   brand?: string | null;
   category?: string | null;
-  source_url: string;
+  source_url?: string | null;
   canonical_url?: string | null;
-  source_platform?: SourcePlatform | null;
+  source_platform?: SourcePlatform | string | null;
   external_id?: string | null;
   price?: number | null;
   compare_at_price?: number | null;
-  currency?: string;
-  availability?: AvailabilityStatus | null;
+  currency?: string | null;
+  availability?: AvailabilityStatus | string | null;
   main_image_url?: string | null;
   seller_name?: string | null;
   seller_url?: string | null;
   rating?: number | null;
   reviews_count?: number | null;
+  extraction_status?: string | null;
+  extraction_method?: string | null;
+  raw_metadata?: Record<string, unknown> | null;
   images?: Omit<ProductImage, 'id' | 'product_id' | 'created_at'>[];
   variants?: Omit<ProductVariant, 'id' | 'product_id' | 'created_at' | 'updated_at'>[];
 }

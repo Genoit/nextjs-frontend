@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { SparkleIcon, TrendedBrandLogo } from '../components/Icons';
+import Navbar from '../components/Navbar';
 
 function AnimatedStat({
   target,
@@ -199,6 +200,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-white text-zinc-900 selection:bg-[#C2410C]/15 selection:text-[#C2410C]">
+      <Navbar />
       {/* ============================================================ */}
       {/* 01 — HERO SECTION                                             */}
       {/* ============================================================ */}

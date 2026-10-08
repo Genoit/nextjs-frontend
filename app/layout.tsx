@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '../lib/auth';
-import Navbar from '../components/Navbar';
 import { inter, playfair, instrumentSerif, caveat } from './fonts';
 
 export const metadata: Metadata = {
@@ -25,7 +24,6 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans">
         <AuthProvider>
-          <Navbar />
           <main className="flex flex-1 flex-col">{children}</main>
         </AuthProvider>
       </body>
