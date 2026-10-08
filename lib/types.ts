@@ -8,8 +8,13 @@ export interface User {
 
 export interface AuthResponse {
   access_token: string;
+  refresh_token: string;
   token_type: string;
   user: User;
+}
+
+export interface RefreshTokenPayload {
+  refresh_token: string;
 }
 
 export interface RegisterPayload {
@@ -25,6 +30,7 @@ export interface LoginPayload {
 }
 
 export interface ApiError {
-  detail?: string | { msg: string }[];
+  detail?: string | { msg: string; loc?: (string | number)[] }[];
   message?: string;
+  code?: string;
 }

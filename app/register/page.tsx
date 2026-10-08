@@ -6,12 +6,9 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { tempting } from '../fonts';
 import { useAuth } from '../../lib/auth';
-import { ApiRequestError, api } from '../../lib/api';
-import {
-  completeGoogleRedirectSignIn,
-  isPopupBlockedError,
-  isUnauthorizedDomainError,
-} from '../../lib/firebase/auth';
+import { api } from '../../lib/api';
+import { completeGoogleRedirectSignIn } from '../../lib/firebase/auth';
+import { getAuthErrorMessage } from '../../lib/auth-errors';
 import {
   CaptionsIcon,
   ChatScriptIcon,
@@ -55,13 +52,18 @@ export default function RegisterPage() {
 
         const data = await api.loginWithGoogle(redirectResult.idToken);
         localStorage.setItem('trended_access_token', data.access_token);
+        if (data.refresh_token) {
+          localStorage.setItem('trended_refresh_token', data.refresh_token);
+        }
         if (!isCancelled) {
           router.push('/dashboard');
         }
       } catch (err) {
         if (!isCancelled) {
           console.error('Google redirect login failed on register page:', err);
-          setError('Google sign-in could not be completed. Please try again.');
+          setError(
+            getAuthErrorMessage(err, 'Google sign-in could not be completed. Please try again.'),
+          );
         }
       } finally {
         if (!isCancelled) {
@@ -85,43 +87,7 @@ export default function RegisterPage() {
       await loginWithGoogle();
       router.push('/dashboard');
     } catch (err: unknown) {
-      if (err instanceof ApiRequestError) {
-        if (err.status === 409) {
-          setError(
-            'An account already exists with this email. Please sign in using your existing authentication method.',
-          );
-        } else {
-          setError(err.message || 'Google sign-in failed. Please try again.');
-        }
-      } else if (err && typeof err === 'object' && 'code' in err) {
-        const code = (err as { code: string }).code;
-        if (isPopupBlockedError(err)) {
-          setError(
-            'Google sign-in popup was blocked or closed before completing. Click below to sign in with page redirect.',
-          );
-        } else if (code === 'auth/web-storage-unsupported') {
-          setError(
-            'Third-party cookies or storage access is disabled by your browser settings. Click below to sign in with page redirect.',
-          );
-        } else if (isUnauthorizedDomainError(err)) {
-          setError(
-            'This domain is not authorized in Firebase Console. Please add "localhost" (or your current domain) in Authentication > Settings > Authorized domains.',
-          );
-        } else if (code === 'auth/network-request-failed') {
-          setError('Network error connecting to Google. Please check your connection.');
-        } else if (
-          code === 'auth/configuration-not-found' ||
-          code === 'auth/operation-not-allowed'
-        ) {
-          setError(
-            'Google sign-in is not configured correctly in Firebase. Please check the project settings and ensure Google provider is enabled.',
-          );
-        } else {
-          setError('Google sign-in failed. Please try again.');
-        }
-      } else {
-        setError('Google sign-in failed. Please try again later.');
-      }
+      setError(getAuthErrorMessage(err, 'Google sign-in failed. Please try again.'));
     } finally {
       setIsGoogleLoading(false);
     }
@@ -206,15 +172,7 @@ export default function RegisterPage() {
 
       router.push('/login?registered=true');
     } catch (err) {
-      if (err instanceof ApiRequestError) {
-        if (err.status === 409) {
-          setError('An account with this email already exists.');
-        } else {
-          setError(err.message || 'Registration failed. Please check your inputs.');
-        }
-      } else {
-        setError('Network error. Please try again later.');
-      }
+      setError(getAuthErrorMessage(err, 'Registration failed. Please check your inputs.'));
     } finally {
       setIsLoading(false);
     }

@@ -2,7 +2,7 @@
 
 import React, { createContext, useContext, useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
-import { api, ApiRequestError } from './api';
+import { api, ApiRequestError, onTokenRefreshed, REFRESH_TOKEN_KEY, TOKEN_KEY } from './api';
 import {
   completeGoogleRedirectSignIn,
   logoutFirebase,
@@ -25,7 +25,6 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-const TOKEN_KEY = 'trended_access_token';
 const GOOGLE_REDIRECT_FALLBACK_KEY = 'trended_google_redirect_fallback';
 
 function shouldFallbackToGoogleRedirect(error: unknown): boolean {
@@ -47,22 +46,46 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [, startTransition] = useTransition();
 
   useEffect(() => {
+    // Listen for transparent token refreshes happening across the app
+    const unsubscribe = onTokenRefreshed((newToken) => {
+      setToken(newToken);
+    });
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
     let isMounted = true;
 
     const initializeAuth = async () => {
       try {
         const storedToken = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
-        if (storedToken) {
-          setToken(storedToken);
+        const storedRefreshToken =
+          typeof window !== 'undefined' ? localStorage.getItem(REFRESH_TOKEN_KEY) : null;
+
+        if (storedToken || storedRefreshToken) {
+          if (storedToken) setToken(storedToken);
           try {
-            const currentUser = await api.getMe(storedToken);
-            if (isMounted) setUser(currentUser);
+            const currentUser = await api.getMe(storedToken || undefined);
+            if (isMounted) {
+              setUser(currentUser);
+              // Ensure token state is in sync with latest refreshed token
+              const activeToken =
+                typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : null;
+              if (activeToken) setToken(activeToken);
+            }
           } catch (err) {
             if (err instanceof ApiRequestError && err.status === 401) {
               localStorage.removeItem(TOKEN_KEY);
+              localStorage.removeItem(REFRESH_TOKEN_KEY);
               if (isMounted) {
                 setToken(null);
                 setUser(null);
+              }
+              const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
+              if (pathname !== '/login' && pathname !== '/register') {
+                startTransition(() => {
+                  router.push('/login?expired=true');
+                });
               }
             }
           }
@@ -73,6 +96,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         if (redirectResult && isMounted) {
           const data = await api.loginWithGoogle(redirectResult.idToken);
           localStorage.setItem(TOKEN_KEY, data.access_token);
+          if (data.refresh_token) {
+            localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
+          }
           setToken(data.access_token);
           setUser(data.user);
           startTransition(() => {
@@ -98,6 +124,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (payload: LoginPayload): Promise<AuthResponse> => {
     const data = await api.login(payload);
     localStorage.setItem(TOKEN_KEY, data.access_token);
+    if (data.refresh_token) {
+      localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
+    }
     setToken(data.access_token);
     setUser(data.user);
     return data;
@@ -108,6 +137,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { idToken } = await signInWithGoogle();
       const data = await api.loginWithGoogle(idToken);
       localStorage.setItem(TOKEN_KEY, data.access_token);
+      if (data.refresh_token) {
+        localStorage.setItem(REFRESH_TOKEN_KEY, data.refresh_token);
+      }
       setToken(data.access_token);
       setUser(data.user);
       return data;
@@ -134,6 +166,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       console.error('Firebase sign out error:', err);
     });
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
     setToken(null);
     setUser(null);
     startTransition(() => {
