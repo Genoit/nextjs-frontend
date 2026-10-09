@@ -19,7 +19,6 @@ import {
   TrendingUp,
   ShoppingBag,
   PlusCircle,
-  Compass,
   Menu,
   X,
   Store,
@@ -39,7 +38,7 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-[#FBFBFC] text-zinc-900 flex font-sans antialiased">
+      <div className="min-h-screen bg-[#fffdfa] text-zinc-900 flex font-sans antialiased">
         {/* ========================================================= */}
         {/* MOBILE SIDEBAR DRAWER */}
         {/* ========================================================= */}
@@ -158,8 +157,8 @@ export default function DashboardPage() {
         {/* ========================================================= */}
         {/* DESKTOP SIDEBAR (EXACT FIGMA SPECIFICATION) */}
         {/* ========================================================= */}
-        <aside className="hidden md:flex w-56 lg:w-60 bg-white border-r border-zinc-200/70 p-5 flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto z-30">
-          <div className="space-y-6">
+        <aside className="hidden md:flex w-[218px] lg:w-[228px] bg-[#fffefa] border-r border-[#eee9e2] p-4 flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto z-30">
+          <div className="space-y-5">
             {/* TrendED Logo */}
             <Link href="/dashboard" className="block px-1 pt-1">
               <Image
@@ -178,10 +177,11 @@ export default function DashboardPage() {
               {/* Dashboard Item (Active Pill) */}
               <Link
                 href="/dashboard"
-                className="flex items-center gap-3.5 px-3 py-2.5 rounded-2xl bg-[#FFF5ED] text-[#BA3807] font-semibold transition"
+                className="flex items-center gap-3 px-3 py-2.5 rounded-[7px] bg-[#fff0e5] text-[#ba3807] font-semibold transition hover:bg-[#ffeadc]"
+                aria-current="page"
               >
                 <Home className="w-4 h-4 text-[#BA3807] fill-[#BA3807]" />
-                <span className="text-zinc-900 font-semibold">Dashboard</span>
+                <span className="font-semibold">Dashboard</span>
               </Link>
 
               {/* Product Discovery */}
@@ -254,7 +254,7 @@ export default function DashboardPage() {
           {/* Bottom Store Card (Figma Exact) */}
           <div className="pt-4 border-t border-zinc-100">
             <span className="block text-[11px] font-medium text-zinc-400 mb-1.5 px-1">Store</span>
-            <div className="flex items-center justify-between p-2.5 rounded-2xl border border-zinc-200/90 bg-white hover:bg-zinc-50 transition cursor-pointer shadow-2xs">
+            <div className="flex items-center justify-between p-2.5 rounded-[8px] border border-[#e7e3de] bg-white hover:bg-[#fffaf6] transition cursor-pointer shadow-[0_2px_8px_rgba(65,47,27,.04)]">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-7 h-7 rounded-lg bg-[#FFF5ED] border border-[#FED7AA]/60 flex items-center justify-center shrink-0">
                   <Store className="w-4 h-4 text-[#BA3807]" />
@@ -276,7 +276,7 @@ export default function DashboardPage() {
         {/* ========================================================= */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Top Header (Seamless with page canvas, matching Figma) */}
-          <header className="px-5 sm:px-8 pt-5 pb-3 flex items-center justify-between gap-4">
+          <header className="px-5 sm:px-6 pt-4 pb-3 flex items-center justify-between gap-4">
             {/* Left: Mobile hamburger & Clean Search Bar */}
             <div className="flex items-center gap-3 flex-1 max-w-xl">
               <button
@@ -295,7 +295,8 @@ export default function DashboardPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search products, creatives, orders..."
-                  className="w-full rounded-2xl border border-zinc-200/90 bg-white py-2 pl-9 pr-12 text-xs text-zinc-900 placeholder-zinc-400 shadow-2xs focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807] transition"
+                  aria-label="Search products, creatives, and orders"
+                  className="w-full rounded-[7px] border border-[#e5e1dc] bg-white py-2 pl-9 pr-12 text-xs text-zinc-900 placeholder-zinc-400 shadow-[0_1px_4px_rgba(65,47,27,.03)] focus:border-[#ba3807] focus:ring-1 focus:ring-[#ba3807] transition"
                 />
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-zinc-400 border border-zinc-200 rounded px-1.5 py-0.5 bg-zinc-50">
                   ⌘ K
@@ -378,7 +379,7 @@ export default function DashboardPage() {
           </header>
 
           {/* Main Content Area */}
-          <div className="flex-1 p-5 sm:p-8 pt-2 sm:pt-3 space-y-6 overflow-y-auto">
+          <div className="flex-1 p-5 sm:p-6 pt-2 sm:pt-3 space-y-5 overflow-y-auto">
             {/* Top Greeting */}
             <div>
               <h1 className="text-2xl sm:text-[28px] font-bold tracking-tight text-zinc-900">
@@ -392,9 +393,9 @@ export default function DashboardPage() {
             {/* ========================================================= */}
             {/* 4 KPI CARDS (WITH SPARKLINE CHARTS) */}
             {/* ========================================================= */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
               {/* 1. Revenue Card */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-2xs flex flex-col justify-between">
+              <div className="rounded-[8px] border border-[#e8e4df] bg-white p-4 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-full bg-[#FFF5ED] text-[#BA3807] flex items-center justify-center font-bold text-xs shrink-0">
@@ -426,7 +427,7 @@ export default function DashboardPage() {
               </div>
 
               {/* 2. Orders Card */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-2xs flex flex-col justify-between">
+              <div className="rounded-[8px] border border-[#e8e4df] bg-white p-4 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-xs shrink-0">
@@ -458,7 +459,7 @@ export default function DashboardPage() {
               </div>
 
               {/* 3. Profit Card */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-2xs flex flex-col justify-between">
+              <div className="rounded-[8px] border border-[#e8e4df] bg-white p-4 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-full bg-orange-50 text-[#BA3807] flex items-center justify-center font-bold text-xs shrink-0">
@@ -490,7 +491,7 @@ export default function DashboardPage() {
               </div>
 
               {/* 4. ROAS Card */}
-              <div className="rounded-2xl border border-zinc-200/80 bg-white p-5 shadow-2xs flex flex-col justify-between">
+              <div className="rounded-[8px] border border-[#e8e4df] bg-white p-4 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-full bg-orange-50 text-[#BA3807] flex items-center justify-center font-bold text-xs shrink-0">
@@ -525,9 +526,9 @@ export default function DashboardPage() {
             {/* ========================================================= */}
             {/* MIDDLE ROW: REVENUE OVERVIEW & TOP PERFORMING PRODUCTS */}
             {/* ========================================================= */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
               {/* Left Column: Revenue Overview Chart (7 Cols) */}
-              <div className="lg:col-span-7 rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-2xs flex flex-col justify-between">
+              <div className="lg:col-span-7 rounded-[8px] border border-[#e8e4df] bg-white p-5 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div className="flex items-center justify-between pb-4 border-b border-zinc-100">
                   <h2 className="text-sm font-bold text-zinc-900">Revenue Overview</h2>
                   <div className="flex items-center gap-1 bg-zinc-100/70 p-1 rounded-xl text-xs">
@@ -656,7 +657,7 @@ export default function DashboardPage() {
               </div>
 
               {/* Right Column: Top Performing Products (5 Cols) */}
-              <div className="lg:col-span-5 rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-2xs flex flex-col justify-between">
+              <div className="lg:col-span-5 rounded-[8px] border border-[#e8e4df] bg-white p-5 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
                     <h2 className="text-sm font-bold text-zinc-900">Top Performing Products</h2>
@@ -837,9 +838,9 @@ export default function DashboardPage() {
             {/* ========================================================= */}
             {/* BOTTOM ROW: CREATIVE PERFORMANCE / AI INSIGHTS / WINNING PRODUCTS */}
             {/* ========================================================= */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
               {/* 1. Creative Performance (5 Cols) */}
-              <div className="lg:col-span-5 rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-2xs">
+              <div className="lg:col-span-5 rounded-[8px] border border-[#e8e4df] bg-white p-5 shadow-[0_2px_8px_rgba(65,47,27,.04)]">
                 <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
                   <h2 className="text-sm font-bold text-zinc-900">Creative Performance</h2>
                   <Link
@@ -965,7 +966,7 @@ export default function DashboardPage() {
               </div>
 
               {/* 2. AI Insights (4 Cols) */}
-              <div className="lg:col-span-4 rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-2xs flex flex-col justify-between">
+              <div className="lg:col-span-4 rounded-[8px] border border-[#e8e4df] bg-white p-5 shadow-[0_2px_8px_rgba(65,47,27,.04)] flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
                     <div className="flex items-center gap-1.5 text-[#BA3807]">
@@ -1043,7 +1044,7 @@ export default function DashboardPage() {
               </div>
 
               {/* 3. Find Winning Products Faster (3 Cols) */}
-              <div className="lg:col-span-3 rounded-2xl border border-[#FCE7D6] bg-[#FFF6EF] p-5 shadow-2xs flex flex-col justify-between relative overflow-hidden">
+              <div className="lg:col-span-3 rounded-[8px] border border-[#f6dbc4] bg-[#fff5ec] p-5 shadow-[0_2px_8px_rgba(89,48,16,.05)] flex flex-col justify-between relative overflow-hidden">
                 <div className="space-y-2 relative z-10">
                   <h3 className="font-serif italic text-base sm:text-lg font-bold text-zinc-900 leading-snug">
                     Find winning products faster
