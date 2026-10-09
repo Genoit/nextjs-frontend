@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -10,12 +10,17 @@ import {
   Bell,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   CloudUpload,
+  ExternalLink,
   FileEdit,
   ImageIcon,
   Link2,
+  Maximize2,
   Plus,
   Sparkles,
+  Star,
   Store,
   Tag,
   X,
@@ -23,6 +28,8 @@ import {
   LogOut,
   RefreshCw,
   AlertCircle,
+  Play,
+  Film,
 } from 'lucide-react';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../lib/auth';
@@ -36,32 +43,59 @@ interface ProductImageItem {
   badge?: 'sparkle' | 'motion' | 'none';
 }
 
-const INITIAL_IMAGES: ProductImageItem[] = [
-  {
-    id: '1',
-    url: '/product-input/blender-1.png',
-    alt: 'Portable Blender with green smoothie',
-    badge: 'none',
-  },
-  {
-    id: '2',
-    url: '/product-input/blender-2.png',
-    alt: 'Portable Blender with fruits',
-    badge: 'none',
-  },
-  {
-    id: '3',
-    url: '/product-input/blender-3.png',
-    alt: 'Portable Blender handheld',
-    badge: 'none',
-  },
-  {
-    id: '4',
-    url: '/product-input/blender-4.png',
-    alt: 'Portable Blender with red smoothie',
-    badge: 'none',
-  },
-];
+interface CustomerReviewItem {
+  author?: string;
+  rating?: number;
+  title?: string;
+  comment?: string;
+  date?: string;
+}
+
+/**
+ * Upgrade thumbnail/downscaled image URLs from Amazon, Shopify, AliExpress, and eBay
+ * into their full-resolution uncompressed master assets.
+ */
+function upgradeImageUrl(rawUrl: string): string {
+  if (!rawUrl || typeof rawUrl !== 'string') return rawUrl;
+  let url = rawUrl.trim();
+
+  // 1. Amazon CDN: strip dynamic crop/thumbnail tokens (e.g. ._AC_SR38,50_.jpg -> .jpg)
+  if (url.toLowerCase().includes('amazon') || url.toLowerCase().includes('media-amazon')) {
+    url = url.replace(/(\._[A-Za-z0-9_,+-]+_\.)(jpe?g|png|webp|gif)/gi, '.$2');
+  }
+
+  // 2. Shopify CDN: strip size suffixes (e.g. _small.jpg, _100x100.jpg -> .jpg)
+  if (url.toLowerCase().includes('cdn.shopify.com')) {
+    url = url.replace(
+      /_(pico|icon|thumb|small|compact|medium|large|grande|\d+x\d+)(\.(?:jpe?g|png|webp))/gi,
+      '$2',
+    );
+    url = url.replace(/([?&])width=\d+/gi, '$1width=2048');
+  }
+
+  // 3. AliExpress CDN: strip thumbnail downscaling
+  if (url.toLowerCase().includes('alicdn.com')) {
+    url = url.replace(/(\.(?:jpe?g|png|webp))_\d+x\d+.*/gi, '$1');
+    url = url.replace(/_\d+x\d+\.(?:jpe?g|png|webp)/gi, '.jpg');
+  }
+
+  // 4. eBay CDN: upgrade s-l\d+ to s-l1600
+  if (url.toLowerCase().includes('ebayimg.com')) {
+    url = url.replace(/s-l\d+\.(jpe?g|png|webp)/gi, 's-l1600.$1');
+  }
+
+  // 5. Etsy CDN: upgrade thumbnail tokens to uncompressed master assets
+  if (url.toLowerCase().includes('etsystatic.com')) {
+    url = url.replace(/\/il_\d+x[A-Za-z0-9]+\./i, '/il_fullxfull.');
+  }
+
+  // 6. Walmart CDN: upgrade image dimension params
+  if (url.toLowerCase().includes('walmartimages.com')) {
+    url = url.replace(/\?odnHeight=\d+&odnWidth=\d+.*/i, '?odnHeight=2000&odnWidth=2000');
+  }
+
+  return url;
+}
 
 const TARGET_AUDIENCES = [
   'Young professionals',
@@ -80,22 +114,15 @@ export default function ProductInputPage() {
   // Active Tab: 'upload' | 'url' | 'store'
   const [activeTab, setActiveTab] = useState<'upload' | 'url' | 'store'>('upload');
 
-  // Form states
-  const [productName, setProductName] = useState('Portable Blender');
-  const [description, setDescription] = useState(
-    'Portable USB rechargeable blender for smoothies and everyday use.\nPerfect for travel, gym, office and home.',
-  );
-  const [benefits, setBenefits] = useState<string[]>([
-    'Portable',
-    'USB rechargeable',
-    'Easy to clean',
-    'BPA free',
-  ]);
+  // Form states (clean initial state, no mock values)
+  const [productName, setProductName] = useState('');
+  const [description, setDescription] = useState('');
+  const [benefits, setBenefits] = useState<string[]>([]);
   const [newBenefitInput, setNewBenefitInput] = useState('');
   const [targetAudience, setTargetAudience] = useState('Young professionals');
 
-  // Images state
-  const [images, setImages] = useState<ProductImageItem[]>(INITIAL_IMAGES);
+  // Images state (empty by default)
+  const [images, setImages] = useState<ProductImageItem[]>([]);
   const [isDragging, setIsDragging] = useState(false);
 
   // URL Import tab state
@@ -106,7 +133,7 @@ export default function ProductInputPage() {
   const [extractedPreview, setExtractedPreview] = useState<ProductPreview | null>(null);
 
   // Price, Currency, Category, Brand states
-  const [price, setPrice] = useState('29.99');
+  const [price, setPrice] = useState('');
   const [currency, setCurrency] = useState('USD');
   const [category, setCategory] = useState('');
   const [brand, setBrand] = useState('');
@@ -132,6 +159,47 @@ export default function ProductInputPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [successToast, setSuccessToast] = useState<string | null>(null);
 
+  // Fullscreen Lightbox modal state
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
+
+  // Extracted Videos & Reviews state
+  const [selectedVideoUrl, setSelectedVideoUrl] = useState<string | null>(null);
+  const [videosExpanded, setVideosExpanded] = useState(true);
+  const [reviewsExpanded, setReviewsExpanded] = useState(false);
+  const [descPreviewExpanded, setDescPreviewExpanded] = useState(false);
+
+  // Lightbox keyboard navigation (Escape, ArrowLeft, ArrowRight)
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setLightboxIndex(null);
+      } else if (e.key === 'ArrowLeft') {
+        setLightboxIndex((prev) =>
+          prev === null ? null : (prev - 1 + images.length) % images.length,
+        );
+      } else if (e.key === 'ArrowRight') {
+        setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % images.length));
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [lightboxIndex, images.length]);
+
+  const handleSetCoverImage = (indexToCover: number) => {
+    if (indexToCover <= 0 || indexToCover >= images.length) return;
+    setImages((prev) => {
+      const copy = [...prev];
+      const [item] = copy.splice(indexToCover, 1);
+      return [item, ...copy];
+    });
+    setLightboxIndex(0);
+    setSuccessToast('Image set as primary cover!');
+    setTimeout(() => setSuccessToast(null), 3000);
+  };
+
   // Benefits tags handling
   const handleRemoveBenefit = (tagToRemove: string) => {
     setBenefits((prev) => prev.filter((b) => b !== tagToRemove));
@@ -156,7 +224,9 @@ export default function ProductInputPage() {
 
   // AI Suggestion apply
   const handleApplyAiSuggestion = () => {
-    const suggestionsToAdd = ['Great for smoothies', 'Perfect for travel'];
+    const suggestionsToAdd = productName
+      ? ['Premium Quality', 'Customer Favorite', 'Fast Delivery']
+      : ['High Quality', 'Key Feature', 'Easy to Use'];
     setBenefits((prev) => {
       const combined = [...prev];
       suggestionsToAdd.forEach((s) => {
@@ -247,9 +317,24 @@ export default function ProductInputPage() {
         }
       }
 
-      // Populate extracted images if available
-      if (preview.images && preview.images.length > 0) {
-        const newImages: ProductImageItem[] = preview.images.map((imgUrl, idx) => ({
+      // Populate extracted images if available with upgraded high resolution
+      const candidateList: string[] = [];
+      if (preview.main_image_url && typeof preview.main_image_url === 'string') {
+        candidateList.push(upgradeImageUrl(preview.main_image_url));
+      }
+      if (preview.images && Array.isArray(preview.images)) {
+        preview.images.forEach((imgUrl) => {
+          if (imgUrl && typeof imgUrl === 'string') {
+            const upgraded = upgradeImageUrl(imgUrl);
+            if (!candidateList.includes(upgraded)) {
+              candidateList.push(upgraded);
+            }
+          }
+        });
+      }
+
+      if (candidateList.length > 0) {
+        const newImages: ProductImageItem[] = candidateList.map((imgUrl, idx) => ({
           id: `ext-${Date.now()}-${idx}`,
           url: imgUrl,
           alt: preview.title || 'Product Image',
@@ -258,7 +343,35 @@ export default function ProductInputPage() {
         setImages(newImages);
       }
 
-      setSuccessToast(`Extracted: ${preview.title.slice(0, 35)}...`);
+      // Populate bullet points as benefits
+      const rawMeta = preview.raw_metadata || {};
+      const bulletPoints = (rawMeta.bullet_points as string[]) || [];
+      if (bulletPoints.length > 0) {
+        setBenefits((prev) => {
+          const combined = [...prev];
+          bulletPoints.slice(0, 5).forEach((b) => {
+            const cleanB = b.length > 50 ? b.slice(0, 47) + '...' : b;
+            if (!combined.includes(cleanB)) {
+              combined.push(cleanB);
+            }
+          });
+          return combined;
+        });
+      }
+
+      // Populate videos if available
+      const extractedVids = (rawMeta.videos as string[]) || [];
+      if (extractedVids.length > 0) {
+        setSelectedVideoUrl(extractedVids[0]);
+        setVideosExpanded(true);
+      }
+
+      const vidCountText = extractedVids.length > 0 ? ` + ${extractedVids.length} videos` : '';
+      const imgCountText =
+        candidateList.length > 0
+          ? ` (${candidateList.length} image${candidateList.length !== 1 ? 's' : ''}${vidCountText})`
+          : '';
+      setSuccessToast(`Extracted: ${(preview.title || 'Product').slice(0, 30)}...${imgCountText}`);
       setTimeout(() => setSuccessToast(null), 4000);
     } catch (err: unknown) {
       const msg =
@@ -650,71 +763,228 @@ export default function ProductInputPage() {
                       </div>
 
                       {/* Thumbnails Gallery */}
-                      <div className="product-thumbnail-grid grid grid-cols-5 gap-2.5 pt-1 w-full max-w-full">
-                        {images.map((img) => (
-                          <div
-                            key={img.id}
-                            className="product-thumbnail-item group relative aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-2xs shrink-0 mx-auto"
-                          >
-                            <Image
-                              src={img.url}
-                              alt={img.alt}
-                              fill
-                              sizes="(max-width: 640px) 18vw, (max-width: 1024px) 12vw, 110px"
-                              className="object-cover group-hover:scale-105 transition-transform duration-200"
-                            />
-                            {/* Action badge on top right */}
-                            {img.badge === 'sparkle' && (
-                              <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/95 backdrop-blur-xs flex items-center justify-center text-[#BA3807] shadow-xs">
-                                <Sparkles className="w-3 h-3 fill-[#BA3807]" />
-                              </div>
-                            )}
-                            {img.badge === 'motion' && (
-                              <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/95 backdrop-blur-xs flex items-center justify-center text-zinc-600 shadow-xs text-[9px] font-bold">
-                                🏃
-                              </div>
-                            )}
-
-                            {/* Remove button on hover */}
-                            <button
-                              type="button"
-                              onClick={(e) => handleRemoveImage(img.id, e)}
-                              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white cursor-pointer"
-                              title="Remove image"
+                      {images.length > 0 && (
+                        <div className="product-thumbnail-grid grid grid-cols-5 gap-2.5 pt-1 w-full max-w-full">
+                          {images.map((img, idx) => (
+                            <div
+                              key={img.id}
+                              onClick={() => setLightboxIndex(idx)}
+                              className="product-thumbnail-item group relative aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-2xs shrink-0 mx-auto cursor-pointer"
+                              title="Click to view full screen"
                             >
-                              <X className="w-4 h-4" />
-                            </button>
-                          </div>
-                        ))}
+                              <Image
+                                src={img.url}
+                                alt={img.alt}
+                                fill
+                                unoptimized
+                                sizes="(max-width: 640px) 18vw, (max-width: 1024px) 12vw, 110px"
+                                className="object-cover group-hover:scale-105 transition-transform duration-200"
+                              />
+                              {idx === 0 && (
+                                <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 text-[9px] font-semibold text-white tracking-wider uppercase z-10">
+                                  Cover
+                                </div>
+                              )}
+                              {/* Action badge on top right */}
+                              {img.badge === 'sparkle' && idx !== 0 && (
+                                <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/95 backdrop-blur-xs flex items-center justify-center text-[#BA3807] shadow-xs z-10">
+                                  <Sparkles className="w-3 h-3 fill-[#BA3807]" />
+                                </div>
+                              )}
+                              {img.badge === 'motion' && (
+                                <div className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-white/95 backdrop-blur-xs flex items-center justify-center text-zinc-600 shadow-xs text-[9px] font-bold z-10">
+                                  🏃
+                                </div>
+                              )}
 
-                        {/* 5th button: Add more images */}
-                        <button
-                          type="button"
-                          onClick={() => fileInputRef.current?.click()}
-                          className="product-thumbnail-item aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 hover:bg-zinc-100 hover:border-zinc-300 flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer mx-auto"
-                        >
-                          <Plus className="w-4 h-4 text-zinc-500 group-hover:text-zinc-800 transition shrink-0" />
-                          <span className="text-[11px] font-medium text-zinc-500 group-hover:text-zinc-800 mt-1 leading-tight text-center">
-                            Add more images
-                          </span>
-                        </button>
-                      </div>
+                              {/* Hover Actions Overlay */}
+                              <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1.5 transition-opacity z-20">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setLightboxIndex(idx);
+                                  }}
+                                  className="w-7 h-7 rounded-lg bg-white/90 hover:bg-white text-zinc-800 flex items-center justify-center hover:scale-110 transition shadow-xs cursor-pointer"
+                                  title="View full screen"
+                                >
+                                  <Maximize2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleRemoveImage(img.id, e);
+                                  }}
+                                  className="w-7 h-7 rounded-lg bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center hover:scale-110 transition shadow-xs cursor-pointer"
+                                  title="Remove image"
+                                >
+                                  <X className="w-3.5 h-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+
+                          {/* Add more images button */}
+                          <button
+                            type="button"
+                            onClick={() => fileInputRef.current?.click()}
+                            className="product-thumbnail-item aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 hover:bg-zinc-100 hover:border-zinc-300 flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer mx-auto"
+                          >
+                            <Plus className="w-4 h-4 text-zinc-500 group-hover:text-zinc-800 transition shrink-0" />
+                            <span className="text-[11px] font-medium text-zinc-500 group-hover:text-zinc-800 mt-1 leading-tight text-center">
+                              Add more
+                            </span>
+                          </button>
+                        </div>
+                      )}
                     </div>
                   )}
 
                   {/* TAB 2: PRODUCT URL */}
                   {activeTab === 'url' && (
                     <div className="mt-5 space-y-4">
+                      {/* Supported Platforms Showcase with High Efficiency Badges */}
+                      <div className="rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-4 space-y-3">
+                        <div className="flex items-center justify-between flex-wrap gap-2">
+                          <div className="flex items-center gap-2 text-zinc-900">
+                            <Sparkles className="w-4 h-4 text-[#BA3807]" />
+                            <span className="text-xs font-bold tracking-tight">
+                              Plateformes prises en charge — Haute efficacité
+                            </span>
+                          </div>
+                          <span className="text-[10px] font-semibold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                            Moteurs Dédiés TrendED
+                          </span>
+                        </div>
+
+                        {/* Grid of supported platforms */}
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                          {/* Amazon */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#FF9900]/15 flex items-center justify-center font-black text-[#D97706] text-xs shrink-0">
+                              a
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">
+                                Amazon
+                              </p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Photos HD, vidéos, avis
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* AliExpress */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#E62E04]/15 flex items-center justify-center font-black text-[#DC2626] text-xs shrink-0">
+                              AE
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">
+                                AliExpress
+                              </p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Galerie 1000px, avis, prix
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Alibaba */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#FF6A00]/15 flex items-center justify-center font-black text-[#EA580C] text-xs shrink-0">
+                              A
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">
+                                Alibaba
+                              </p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Grossistes B2B, HD, specs
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Shopify */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#95BF47]/20 flex items-center justify-center font-black text-[#15803D] text-xs shrink-0">
+                              S
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">
+                                Shopify
+                              </p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Sync direct JSON 2048px
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* eBay */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#E53238]/15 flex items-center justify-center font-black text-[#1D4ED8] text-xs shrink-0">
+                              eb
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">eBay</p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Photos 1600px, specs
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Etsy */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#F1641E]/15 flex items-center justify-center font-black text-[#EA580C] text-xs shrink-0">
+                              Et
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">Etsy</p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Photos artisan, détails
+                              </p>
+                            </div>
+                          </div>
+
+                          {/* Walmart */}
+                          <div className="rounded-xl border border-zinc-200 bg-white p-2.5 flex items-center gap-2.5 shadow-2xs hover:border-[#BA3807]/40 transition">
+                            <div className="w-7 h-7 rounded-lg bg-[#0071DC]/15 flex items-center justify-center font-black text-[#0284C7] text-xs shrink-0">
+                              W
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-xs font-bold text-zinc-900 leading-tight">
+                                Walmart
+                              </p>
+                              <p className="text-[10px] text-zinc-500 truncate">
+                                Médias HD & attributs
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p className="text-[11px] text-zinc-500 leading-relaxed">
+                          <span className="font-semibold text-zinc-700">
+                            Garantie haute fidélité :
+                          </span>{' '}
+                          TrendED est optimisé pour ces plateformes afin d&apos;extraire toutes les
+                          images sans compression, les vidéos, les avis vérifiés et les descriptions
+                          complètes. Les autres sites e-commerce sont analysés via notre scraper
+                          universel intelligent.
+                        </p>
+                      </div>
+
+                      {/* URL Extraction Form */}
                       <form onSubmit={handleExtractFromUrl} className="space-y-3">
                         <label className="block text-xs font-semibold text-zinc-800">
-                          Paste E-commerce Product URL
+                          Collez le lien URL du produit
                         </label>
                         <div className="flex gap-2">
                           <input
                             type="url"
                             value={urlInput}
                             onChange={(e) => setUrlInput(e.target.value)}
-                            placeholder="https://amazon.com/... or https://yourstore.com/products/..."
+                            placeholder="https://www.alibaba.com/... ou https://fr.aliexpress.com/... ou https://amazon.com/..."
                             className="flex-1 rounded-xl border border-zinc-300 bg-white px-3.5 py-2.5 text-xs text-zinc-900 focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807]"
                           />
                           <button
@@ -725,10 +995,10 @@ export default function ProductInputPage() {
                             {isExtracting ? (
                               <>
                                 <RefreshCw className="w-3.5 h-3.5 animate-spin" />
-                                <span>Extracting...</span>
+                                <span>Extraction en cours...</span>
                               </>
                             ) : (
-                              <span>Extract details</span>
+                              <span>Extraire les données</span>
                             )}
                           </button>
                         </div>
@@ -738,25 +1008,358 @@ export default function ProductInputPage() {
                         <div className="rounded-xl bg-red-50 border border-red-200 p-3.5 flex items-start gap-2.5 text-xs text-red-800">
                           <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
                           <div className="flex-1">
-                            <p className="font-semibold text-red-900">Extraction failed</p>
+                            <p className="font-semibold text-red-900">Échec de l&apos;extraction</p>
                             <p className="mt-0.5 text-red-700">{urlError}</p>
                           </div>
                         </div>
                       )}
 
-                      {urlSuccess && (
-                        <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 flex items-center gap-2 text-xs text-emerald-800">
-                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                          <span>
-                            Product data extracted successfully! Details populated in the form.
-                          </span>
+                      {/* EXTRACTED PRODUCT OVERVIEW CARD */}
+                      {urlSuccess && extractedPreview && (
+                        <div className="rounded-2xl border border-zinc-200/90 bg-white p-4 sm:p-5 shadow-2xs space-y-4 animate-in fade-in slide-in-from-top-1">
+                          {/* Platform Header & Badges */}
+                          <div className="flex items-center justify-between flex-wrap gap-2">
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FFF5ED] text-[#BA3807] border border-[#FED7AA]">
+                                <Sparkles className="w-3 h-3 fill-[#BA3807]" />
+                                {(extractedPreview.source_platform || 'E-COMMERCE').toUpperCase()}
+                              </span>
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                <CheckCircle2 className="w-3 h-3 text-emerald-600" />
+                                Données Extraites avec Succès
+                              </span>
+                            </div>
+                            {extractedPreview.source_url && (
+                              <a
+                                href={extractedPreview.source_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-[11px] text-zinc-500 hover:text-zinc-900 inline-flex items-center gap-1"
+                              >
+                                <span>Voir page source</span>
+                                <ExternalLink className="w-3 h-3" />
+                              </a>
+                            )}
+                          </div>
+
+                          {/* Extracted Product Title */}
+                          <div>
+                            <h3 className="text-sm sm:text-base font-bold text-zinc-900 leading-snug">
+                              {extractedPreview.title}
+                            </h3>
+                          </div>
+
+                          {/* Metric badges: Price, Currency, Availability, Rating, Images count */}
+                          <div className="flex flex-wrap items-center gap-2">
+                            {extractedPreview.price !== null &&
+                              extractedPreview.price !== undefined && (
+                                <div className="px-2.5 py-1 rounded-lg bg-zinc-100 border border-zinc-200/80 text-xs font-bold text-zinc-900">
+                                  {extractedPreview.currency || 'USD'}{' '}
+                                  {Number(extractedPreview.price).toLocaleString()}
+                                </div>
+                              )}
+
+                            {extractedPreview.availability && (
+                              <div className="px-2 py-1 rounded-lg bg-emerald-50 border border-emerald-200/80 text-[11px] font-medium text-emerald-800">
+                                ●{' '}
+                                {extractedPreview.availability === 'in_stock'
+                                  ? 'En stock'
+                                  : extractedPreview.availability}
+                              </div>
+                            )}
+
+                            {extractedPreview.rating && (
+                              <div className="px-2 py-1 rounded-lg bg-amber-50 border border-amber-200/80 text-[11px] font-bold text-amber-800 flex items-center gap-1">
+                                <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                                <span>{Number(extractedPreview.rating).toFixed(1)}</span>
+                                {extractedPreview.reviews_count && (
+                                  <span className="font-normal text-amber-700">
+                                    ({extractedPreview.reviews_count.toLocaleString()} avis)
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {images.length > 0 && (
+                              <div className="px-2 py-1 rounded-lg bg-blue-50 border border-blue-200/80 text-[11px] font-medium text-blue-800 flex items-center gap-1">
+                                <ImageIcon className="w-3 h-3 text-blue-600" />
+                                <span>
+                                  {images.length} photo{images.length > 1 ? 's' : ''} HD
+                                </span>
+                              </div>
+                            )}
+                          </div>
+
+                          {/* Extracted Description Box (Expandable) */}
+                          {extractedPreview.description && (
+                            <div className="rounded-xl border border-zinc-200/80 bg-zinc-50/80 p-3.5 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs font-semibold text-zinc-800 flex items-center gap-1.5">
+                                  <FileEdit className="w-3.5 h-3.5 text-[#BA3807]" />
+                                  Description complète extraite
+                                </span>
+                                {extractedPreview.description.length > 250 && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setDescPreviewExpanded(!descPreviewExpanded)}
+                                    className="text-[11px] font-semibold text-[#BA3807] hover:underline cursor-pointer"
+                                  >
+                                    {descPreviewExpanded
+                                      ? 'Réduire'
+                                      : `Afficher tout (${extractedPreview.description.length} car.)`}
+                                  </button>
+                                )}
+                              </div>
+
+                              <div
+                                className={`text-xs text-zinc-700 leading-relaxed whitespace-pre-line ${
+                                  !descPreviewExpanded && extractedPreview.description.length > 250
+                                    ? 'line-clamp-4'
+                                    : ''
+                                }`}
+                              >
+                                {extractedPreview.description}
+                              </div>
+
+                              <p className="text-[10px] text-zinc-400 italic">
+                                ✓ Synchronisée avec le formulaire à droite pour vous permettre de la
+                                modifier librement.
+                              </p>
+                            </div>
+                          )}
+
+                          {/* Extracted Benefits / Highlights Chips */}
+                          {benefits.length > 0 && (
+                            <div className="space-y-1.5">
+                              <span className="text-xs font-semibold text-zinc-800">
+                                Points forts &amp; caractéristiques détectés ({benefits.length})
+                              </span>
+                              <div className="flex flex-wrap gap-1.5">
+                                {benefits.map((b, i) => (
+                                  <span
+                                    key={i}
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] bg-zinc-100 border border-zinc-200 text-zinc-700"
+                                  >
+                                    <Check className="w-3 h-3 text-emerald-600" />
+                                    <span>{b}</span>
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
 
-                      <div className="p-3.5 rounded-xl bg-zinc-50 border border-zinc-200/80 text-xs text-zinc-500 space-y-1">
-                        <p className="font-medium text-zinc-700">Supported Platforms:</p>
-                        <p>• Shopify, Amazon, AliExpress, WooCommerce, Etsy, Walmart</p>
-                      </div>
+                      {/* Extracted Images Preview */}
+                      {images.length > 0 && (
+                        <div className="space-y-2 pt-2 border-t border-zinc-100">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-zinc-800 flex items-center gap-1.5">
+                              <ImageIcon className="w-3.5 h-3.5 text-[#BA3807]" />
+                              Galerie photos HD ({images.length})
+                            </span>
+                            <span className="text-[11px] text-zinc-500">
+                              Première image = couverture · Cliquez pour agrandir
+                            </span>
+                          </div>
+
+                          <div className="product-thumbnail-grid grid grid-cols-5 gap-2.5 pt-1 w-full max-w-full">
+                            {images.map((img, idx) => (
+                              <div
+                                key={img.id}
+                                onClick={() => setLightboxIndex(idx)}
+                                className="product-thumbnail-item group relative aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-2xs shrink-0 mx-auto cursor-pointer"
+                                title="Cliquer pour afficher en plein écran"
+                              >
+                                <Image
+                                  src={img.url}
+                                  alt={img.alt}
+                                  fill
+                                  unoptimized
+                                  sizes="(max-width: 640px) 18vw, (max-width: 1024px) 12vw, 110px"
+                                  className="object-cover group-hover:scale-105 transition-transform duration-200"
+                                />
+                                {idx === 0 && (
+                                  <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 text-[9px] font-semibold text-white tracking-wider uppercase z-10">
+                                    Cover
+                                  </div>
+                                )}
+                                {/* Hover Actions Overlay */}
+                                <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 flex items-center justify-center gap-1.5 transition-opacity z-20">
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setLightboxIndex(idx);
+                                    }}
+                                    className="w-7 h-7 rounded-lg bg-white/90 hover:bg-white text-zinc-800 flex items-center justify-center hover:scale-110 transition shadow-xs cursor-pointer"
+                                    title="Plein écran"
+                                  >
+                                    <Maximize2 className="w-3.5 h-3.5" />
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleRemoveImage(img.id, e);
+                                    }}
+                                    className="w-7 h-7 rounded-lg bg-red-600/90 hover:bg-red-600 text-white flex items-center justify-center hover:scale-110 transition shadow-xs cursor-pointer"
+                                    title="Supprimer"
+                                  >
+                                    <X className="w-3.5 h-3.5" />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          <div className="flex items-center justify-between pt-1">
+                            <p className="text-[11px] text-zinc-400 flex items-center gap-1">
+                              <Maximize2 className="w-3 h-3 text-zinc-400" />
+                              Cliquez sur n&apos;importe quelle photo pour zoomer en haute
+                              résolution ou la choisir comme couverture.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Extracted Product Videos Preview */}
+                      {Array.isArray(extractedPreview?.raw_metadata?.videos) &&
+                        (extractedPreview.raw_metadata.videos as string[]).length > 0 && (
+                          <div className="space-y-2.5 pt-3 border-t border-zinc-100">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs font-semibold text-zinc-800 flex items-center gap-1.5">
+                                <Film className="w-3.5 h-3.5 text-[#BA3807]" />
+                                Vidéos extraites du produit (
+                                {(extractedPreview.raw_metadata.videos as string[]).length})
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setVideosExpanded(!videosExpanded)}
+                                className="text-[11px] text-[#BA3807] font-medium hover:underline cursor-pointer"
+                              >
+                                {videosExpanded ? 'Réduire' : 'Afficher lecteur'}
+                              </button>
+                            </div>
+
+                            {videosExpanded && (
+                              <div className="space-y-2.5 rounded-xl border border-zinc-200/80 bg-zinc-900/5 p-3">
+                                {selectedVideoUrl && (
+                                  <div className="relative aspect-video w-full rounded-lg overflow-hidden bg-black shadow-inner">
+                                    <video
+                                      src={selectedVideoUrl}
+                                      controls
+                                      className="w-full h-full object-contain"
+                                      poster={images[0]?.url}
+                                    />
+                                  </div>
+                                )}
+                                <div className="flex items-center gap-2 overflow-x-auto py-1">
+                                  {(extractedPreview.raw_metadata.videos as string[])
+                                    .slice(0, 8)
+                                    .map((vidUrl, vIdx) => (
+                                      <button
+                                        key={vIdx}
+                                        type="button"
+                                        onClick={() => setSelectedVideoUrl(vidUrl)}
+                                        className={`text-[11px] px-2.5 py-1.5 rounded-lg border font-medium shrink-0 transition flex items-center gap-1.5 cursor-pointer ${
+                                          selectedVideoUrl === vidUrl
+                                            ? 'bg-[#BA3807] text-white border-[#BA3807]'
+                                            : 'bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-50'
+                                        }`}
+                                      >
+                                        <Play className="w-2.5 h-2.5 fill-current" />
+                                        <span>Vidéo {vIdx + 1}</span>
+                                      </button>
+                                    ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                      {/* Customer Reviews & Social Proof */}
+                      {extractedPreview &&
+                        (() => {
+                          const reviews = (
+                            Array.isArray(extractedPreview.raw_metadata?.customer_reviews)
+                              ? extractedPreview.raw_metadata.customer_reviews
+                              : []
+                          ) as CustomerReviewItem[];
+                          const hasReviews = reviews.length > 0;
+                          const hasRating = extractedPreview.rating !== null;
+
+                          if (!hasRating && !hasReviews) return null;
+
+                          return (
+                            <div className="space-y-2.5 pt-3 border-t border-zinc-100">
+                              <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                  <div className="flex items-center text-amber-500">
+                                    <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                                    <span className="text-xs font-bold text-zinc-900 ml-1">
+                                      {extractedPreview.rating
+                                        ? Number(extractedPreview.rating).toFixed(1)
+                                        : '4.8'}
+                                    </span>
+                                  </div>
+                                  {extractedPreview.reviews_count && (
+                                    <span className="text-[11px] text-zinc-500">
+                                      ({extractedPreview.reviews_count.toLocaleString()} avis)
+                                    </span>
+                                  )}
+                                  <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+                                    Avis Acheteurs Vérifiés
+                                  </span>
+                                </div>
+                                {hasReviews && (
+                                  <button
+                                    type="button"
+                                    onClick={() => setReviewsExpanded(!reviewsExpanded)}
+                                    className="text-[11px] text-[#BA3807] font-medium hover:underline cursor-pointer"
+                                  >
+                                    {reviewsExpanded
+                                      ? 'Masquer les avis'
+                                      : `Consulter les avis (${reviews.length})`}
+                                  </button>
+                                )}
+                              </div>
+
+                              {reviewsExpanded && hasReviews && (
+                                <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+                                  {reviews.map((rev, rIdx) => (
+                                    <div
+                                      key={rIdx}
+                                      className="p-2.5 rounded-xl border border-zinc-200/80 bg-zinc-50/70 text-xs space-y-1"
+                                    >
+                                      <div className="flex items-center justify-between">
+                                        <span className="font-semibold text-zinc-800">
+                                          {rev.author || 'Acheteur vérifié'}
+                                        </span>
+                                        <div className="flex items-center text-amber-500 text-[11px]">
+                                          {'★'.repeat(
+                                            Math.min(5, Math.max(1, Math.round(rev.rating || 5))),
+                                          )}
+                                        </div>
+                                      </div>
+                                      {rev.title && (
+                                        <p className="font-medium text-zinc-900">{rev.title}</p>
+                                      )}
+                                      {rev.comment && (
+                                        <p className="text-zinc-600 text-[11px] leading-relaxed line-clamp-3">
+                                          {rev.comment}
+                                        </p>
+                                      )}
+                                      {rev.date && (
+                                        <p className="text-[10px] text-zinc-400">{rev.date}</p>
+                                      )}
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                     </div>
                   )}
 
@@ -842,36 +1445,44 @@ export default function ProductInputPage() {
                     <input
                       id="product-name"
                       type="text"
-                      maxLength={100}
+                      maxLength={500}
                       value={productName}
                       onChange={(e) => setProductName(e.target.value)}
-                      placeholder="e.g. Portable Blender"
+                      placeholder="e.g. Wireless Noise-Cancelling Headphones"
                       className="mt-1.5 block w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 shadow-2xs focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807] transition"
                     />
                     <p className="text-[11px] text-zinc-400 text-right mt-1 font-mono">
-                      {productName.length}/100
+                      {productName.length}/500
                     </p>
                   </div>
 
                   {/* Field 2: Description */}
                   <div>
-                    <label
-                      htmlFor="product-description"
-                      className="block text-xs font-semibold text-zinc-800"
-                    >
-                      Description <span className="text-[#BA3807]">*</span>
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label
+                        htmlFor="product-description"
+                        className="block text-xs font-semibold text-zinc-800"
+                      >
+                        Description <span className="text-[#BA3807]">*</span>
+                      </label>
+                      {extractedPreview?.description && (
+                        <span className="text-[10px] text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full font-medium inline-flex items-center gap-1">
+                          <Check className="w-2.5 h-2.5 text-emerald-600" />
+                          Extraite depuis l&apos;URL
+                        </span>
+                      )}
+                    </div>
                     <textarea
                       id="product-description"
-                      rows={3}
-                      maxLength={500}
+                      rows={6}
+                      maxLength={5000}
                       value={description}
                       onChange={(e) => setDescription(e.target.value)}
                       placeholder="Describe key features, use cases, and benefits..."
-                      className="mt-1.5 block w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 shadow-2xs focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807] transition"
+                      className="mt-1.5 block w-full rounded-xl border border-zinc-200 bg-white px-3.5 py-2.5 text-xs sm:text-sm text-zinc-900 shadow-2xs focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807] transition font-sans"
                     />
                     <p className="text-[11px] text-zinc-400 text-right mt-1 font-mono">
-                      {description.length}/500
+                      {description.length}/5000
                     </p>
                   </div>
 
@@ -994,9 +1605,26 @@ export default function ProductInputPage() {
                             >
                               <option value="USD">USD ($)</option>
                               <option value="EUR">EUR (€)</option>
+                              <option value="XOF">XOF (FCFA)</option>
+                              <option value="XAF">XAF (FCFA)</option>
                               <option value="GBP">GBP (£)</option>
                               <option value="CAD">CAD ($)</option>
                               <option value="AUD">AUD ($)</option>
+                              <option value="JPY">JPY (¥)</option>
+                              <option value="CNY">CNY (¥)</option>
+                              <option value="CHF">CHF</option>
+                              {![
+                                'USD',
+                                'EUR',
+                                'XOF',
+                                'XAF',
+                                'GBP',
+                                'CAD',
+                                'AUD',
+                                'JPY',
+                                'CNY',
+                                'CHF',
+                              ].includes(currency) && <option value={currency}>{currency}</option>}
                             </select>
                             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
                           </div>
@@ -1017,7 +1645,7 @@ export default function ProductInputPage() {
                             type="text"
                             value={brand}
                             onChange={(e) => setBrand(e.target.value)}
-                            placeholder="e.g. BlendJet"
+                            placeholder="e.g. Sony, Nike"
                             className="mt-1 block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 shadow-2xs focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807] transition"
                           />
                         </div>
@@ -1033,7 +1661,7 @@ export default function ProductInputPage() {
                             type="text"
                             value={category}
                             onChange={(e) => setCategory(e.target.value)}
-                            placeholder="e.g. Kitchen"
+                            placeholder="e.g. Electronics, Home"
                             className="mt-1 block w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-xs text-zinc-900 shadow-2xs focus:border-[#BA3807] focus:ring-1 focus:ring-[#BA3807] transition"
                           />
                         </div>
@@ -1048,8 +1676,8 @@ export default function ProductInputPage() {
                       <span className="text-xs font-bold text-zinc-900">AI Suggestion</span>
                     </div>
                     <p className="text-xs text-zinc-600 leading-relaxed">
-                      Add more specific benefits like &ldquo;great for smoothies&rdquo; or
-                      &ldquo;perfect for travel&rdquo; to get better video results.
+                      Add specific selling points like &ldquo;All-day battery life&rdquo; or
+                      &ldquo;Premium noise cancellation&rdquo; to get better video results.
                     </p>
                     <button
                       type="button"
@@ -1241,8 +1869,8 @@ export default function ProductInputPage() {
                 <div>
                   <h5 className="font-semibold text-zinc-900">2. Emotional & concrete benefits</h5>
                   <p className="text-zinc-500 mt-0.5">
-                    Instead of just specs (&ldquo;300W motor&rdquo;), add benefit tags like
-                    &ldquo;smoothies in 20s&rdquo; and &ldquo;fits in gym bag&rdquo;.
+                    Instead of just technical specs, add benefit tags like &ldquo;All-day
+                    comfort&rdquo; and &ldquo;Saves 2 hours daily&rdquo;.
                   </p>
                 </div>
                 <div>
@@ -1262,6 +1890,144 @@ export default function ProductInputPage() {
                   Got it
                 </button>
               </div>
+            </div>
+          </div>
+        )}
+        {/* ========================================================= */}
+        {/* MODAL: FULLSCREEN IMAGE LIGHTBOX */}
+        {/* ========================================================= */}
+        {lightboxIndex !== null && images[lightboxIndex] && (
+          <div
+            className="fixed inset-0 z-50 bg-black/92 backdrop-blur-md flex flex-col justify-between p-4 sm:p-6 animate-in fade-in duration-200 select-none"
+            onClick={() => setLightboxIndex(null)}
+          >
+            {/* Top Bar */}
+            <div
+              className="flex items-center justify-between z-10 w-full max-w-7xl mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3">
+                <span className="px-3 py-1 rounded-full bg-white/10 text-white text-xs font-semibold backdrop-blur-xs">
+                  Image {lightboxIndex + 1} of {images.length}
+                </span>
+                {lightboxIndex === 0 && (
+                  <span className="px-2.5 py-0.5 rounded-md bg-[#BA3807] text-white text-xs font-bold uppercase tracking-wider">
+                    Primary Cover
+                  </span>
+                )}
+                <span className="text-zinc-300 text-xs hidden md:inline truncate max-w-md">
+                  {productName || images[lightboxIndex].alt}
+                </span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                {lightboxIndex !== 0 && (
+                  <button
+                    type="button"
+                    onClick={() => handleSetCoverImage(lightboxIndex)}
+                    className="px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
+                    title="Set as product cover image"
+                  >
+                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
+                    <span>Set as Cover</span>
+                  </button>
+                )}
+                <a
+                  href={images[lightboxIndex].url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+                  title="Open full resolution in new tab"
+                >
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setLightboxIndex(null)}
+                  className="p-2 rounded-xl bg-white/10 hover:bg-white/20 text-white transition cursor-pointer"
+                  title="Close (Esc)"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Main Center Image View */}
+            <div
+              className="relative flex-1 flex items-center justify-center my-4 overflow-hidden w-full max-w-7xl mx-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Prev button */}
+              {images.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLightboxIndex((prev) =>
+                      prev === null ? null : (prev - 1 + images.length) % images.length,
+                    )
+                  }
+                  className="absolute left-2 sm:left-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/85 text-white transition hover:scale-110 shadow-lg cursor-pointer"
+                  aria-label="Previous image"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+              )}
+
+              {/* High-res Image container */}
+              <div className="relative w-full h-full max-h-[72vh] flex items-center justify-center p-2">
+                <Image
+                  src={images[lightboxIndex].url}
+                  alt={images[lightboxIndex].alt || 'Product Image'}
+                  fill
+                  unoptimized
+                  priority
+                  className="object-contain"
+                  sizes="90vw"
+                />
+              </div>
+
+              {/* Next button */}
+              {images.length > 1 && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    setLightboxIndex((prev) => (prev === null ? null : (prev + 1) % images.length))
+                  }
+                  className="absolute right-2 sm:right-4 z-20 p-3 rounded-full bg-black/60 hover:bg-black/85 text-white transition hover:scale-110 shadow-lg cursor-pointer"
+                  aria-label="Next image"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              )}
+            </div>
+
+            {/* Bottom Carousel / Thumbnails Strip */}
+            <div className="z-10 w-full max-w-4xl mx-auto" onClick={(e) => e.stopPropagation()}>
+              {images.length > 1 && (
+                <div className="flex items-center justify-center gap-2 overflow-x-auto py-2 px-4">
+                  {images.map((img, idx) => (
+                    <button
+                      key={img.id}
+                      type="button"
+                      onClick={() => setLightboxIndex(idx)}
+                      className={`relative aspect-square w-14 h-14 rounded-lg overflow-hidden shrink-0 border-2 transition cursor-pointer ${
+                        idx === lightboxIndex
+                          ? 'border-[#BA3807] scale-105 shadow-md ring-2 ring-[#BA3807]/50'
+                          : 'border-white/20 opacity-60 hover:opacity-100 hover:border-white/50'
+                      }`}
+                    >
+                      <Image
+                        src={img.url}
+                        alt={img.alt}
+                        fill
+                        unoptimized
+                        sizes="56px"
+                        className="object-cover"
+                      />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}

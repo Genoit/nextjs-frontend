@@ -19,7 +19,6 @@ import {
   TrendingUp,
   ShoppingBag,
   PlusCircle,
-  Compass,
   Menu,
   X,
   Store,
