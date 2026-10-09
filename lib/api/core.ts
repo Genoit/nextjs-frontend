@@ -17,7 +17,21 @@ export const REFRESH_TOKEN_KEY = 'trended_refresh_token';
 
 export function getApiBaseUrl(): string {
   const raw = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-  const trimmed = raw.replace(/\/+$/, '');
+  let targetUrl = raw;
+
+  if (typeof window !== 'undefined') {
+    const currentHost = window.location.hostname;
+    if (
+      currentHost !== 'localhost' &&
+      currentHost !== '127.0.0.1' &&
+      (raw.includes('localhost') || raw.includes('127.0.0.1'))
+    ) {
+      const protocol = window.location.protocol;
+      targetUrl = `${protocol}//${currentHost}:8000`;
+    }
+  }
+
+  const trimmed = targetUrl.replace(/\/+$/, '');
   if (trimmed.endsWith('/api/v1')) return trimmed;
   if (trimmed.endsWith('/api')) return `${trimmed}/v1`;
   return `${trimmed}/api/v1`;

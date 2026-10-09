@@ -409,6 +409,7 @@ export default function ProductInputPage() {
                     src="/profile1-login.jpg"
                     alt="Sarah Johnson avatar"
                     fill
+                    sizes="32px"
                     className="object-cover"
                   />
                 </div>
@@ -463,11 +464,11 @@ export default function ProductInputPage() {
         {/* ========================================================= */}
         {/* 2. MAIN LAYOUT: SIDEBAR + CONTENT */}
         {/* ========================================================= */}
-        <div className="flex-1 flex flex-col md:flex-row">
+        <div className="flex-1 flex flex-col md:flex-row min-w-0 w-full">
           {/* ------------------------------------------------------- */}
           {/* LEFT SIDEBAR (STEPPER & HELP) */}
           {/* ------------------------------------------------------- */}
-          <aside className="w-full md:w-64 lg:w-72 bg-white/70 backdrop-blur-xs border-r border-zinc-200/80 p-5 sm:p-6 flex flex-col justify-between shrink-0">
+          <aside className="w-full md:w-64 lg:w-72 md:min-h-[calc(100vh-70px)] bg-white/70 backdrop-blur-xs border-b md:border-b-0 md:border-r border-zinc-200/80 p-5 sm:p-6 flex flex-col justify-between shrink-0">
             <div className="space-y-7">
               {/* Back to Dashboard */}
               <Link
@@ -529,7 +530,7 @@ export default function ProductInputPage() {
           {/* ------------------------------------------------------- */}
           {/* MAIN CONTENT AREA */}
           {/* ------------------------------------------------------- */}
-          <main className="flex-1 p-5 sm:p-8 lg:p-10 max-w-7xl mx-auto w-full">
+          <main className="flex-1 min-w-0 p-5 sm:p-8 lg:p-10 max-w-7xl mx-auto w-full">
             {/* Header: Tag + Title + Subtitle */}
             <div className="mb-7">
               <div className="inline-flex items-center gap-1.5 text-[#BA3807] mb-2">
@@ -549,11 +550,11 @@ export default function ProductInputPage() {
             {/* ------------------------------------------------------- */}
             {/* TWO-COLUMN GRID OF CARDS */}
             {/* ------------------------------------------------------- */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start w-full min-w-0">
               {/* ===================================================== */}
               {/* CARD 1: IMPORT PRODUCT */}
               {/* ===================================================== */}
-              <div className="bg-white rounded-2xl border border-zinc-200/90 p-5 sm:p-6 shadow-2xs flex flex-col justify-between">
+              <div className="bg-white rounded-2xl border border-zinc-200/90 p-5 sm:p-6 shadow-2xs flex flex-col justify-between w-full min-w-0 overflow-hidden">
                 <div>
                   {/* Card Header */}
                   <div className="flex items-start gap-3.5">
@@ -649,16 +650,17 @@ export default function ProductInputPage() {
                       </div>
 
                       {/* Thumbnails Gallery */}
-                      <div className="grid grid-cols-5 gap-2.5 pt-1">
+                      <div className="product-thumbnail-grid grid grid-cols-5 gap-2.5 pt-1 w-full max-w-full">
                         {images.map((img) => (
                           <div
                             key={img.id}
-                            className="group relative aspect-square rounded-xl overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-2xs"
+                            className="product-thumbnail-item group relative aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl overflow-hidden border border-zinc-200/80 bg-zinc-50 shadow-2xs shrink-0 mx-auto"
                           >
                             <Image
                               src={img.url}
                               alt={img.alt}
                               fill
+                              sizes="(max-width: 640px) 18vw, (max-width: 1024px) 12vw, 110px"
                               className="object-cover group-hover:scale-105 transition-transform duration-200"
                             />
                             {/* Action badge on top right */}
@@ -677,7 +679,7 @@ export default function ProductInputPage() {
                             <button
                               type="button"
                               onClick={(e) => handleRemoveImage(img.id, e)}
-                              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white"
+                              className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white cursor-pointer"
                               title="Remove image"
                             >
                               <X className="w-4 h-4" />
@@ -689,10 +691,10 @@ export default function ProductInputPage() {
                         <button
                           type="button"
                           onClick={() => fileInputRef.current?.click()}
-                          className="aspect-square rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 hover:bg-zinc-100 hover:border-zinc-300 flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer"
+                          className="product-thumbnail-item aspect-square w-full max-w-[110px] max-h-[110px] rounded-xl border border-dashed border-zinc-200 bg-zinc-50/70 hover:bg-zinc-100 hover:border-zinc-300 flex flex-col items-center justify-center p-2 text-center transition group cursor-pointer mx-auto"
                         >
-                          <Plus className="w-4 h-4 text-zinc-500 group-hover:text-zinc-800 transition" />
-                          <span className="text-[11px] font-medium text-zinc-500 group-hover:text-zinc-800 mt-1 leading-tight">
+                          <Plus className="w-4 h-4 text-zinc-500 group-hover:text-zinc-800 transition shrink-0" />
+                          <span className="text-[11px] font-medium text-zinc-500 group-hover:text-zinc-800 mt-1 leading-tight text-center">
                             Add more images
                           </span>
                         </button>
@@ -813,7 +815,7 @@ export default function ProductInputPage() {
               {/* ===================================================== */}
               {/* CARD 2: PRODUCT INFORMATION */}
               {/* ===================================================== */}
-              <div className="bg-white rounded-2xl border border-zinc-200/90 p-5 sm:p-6 shadow-2xs">
+              <div className="bg-white rounded-2xl border border-zinc-200/90 p-5 sm:p-6 shadow-2xs w-full min-w-0 overflow-hidden">
                 {/* Card Header */}
                 <div className="flex items-start gap-3.5">
                   <div className="w-10 h-10 rounded-xl bg-[#FFF5ED] border border-[#FED7AA]/60 flex items-center justify-center text-[#BA3807] shrink-0">

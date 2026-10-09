@@ -2,6 +2,12 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  allowedDevOrigins: [
+    '10.0.0.123',
+    'localhost',
+    '127.0.0.1',
+    ...(process.env.ALLOWED_DEV_ORIGINS ? process.env.ALLOWED_DEV_ORIGINS.split(',') : []),
+  ],
   transpilePackages: ['firebase'],
   images: {
     dangerouslyAllowSVG: true,

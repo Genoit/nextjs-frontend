@@ -37,3 +37,21 @@ body {
 .font-script {
   font-family: var(--font-caveat), cursive;
 }
+
+/* Defensive CSS rules to prevent thumbnail overflow regardless of Tailwind generation */
+.product-thumbnail-grid {
+  display: grid !important;
+  grid-template-columns: repeat(5, minmax(0, 1fr)) !important;
+  gap: 0.625rem !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.product-thumbnail-item {
+  position: relative !important;
+  aspect-ratio: 1 / 1 !important;
+  width: 100% !important;
+  max-width: 110px !important;
+  max-height: 110px !important;
+  overflow: hidden !important;
+}
