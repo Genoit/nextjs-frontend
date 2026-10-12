@@ -564,7 +564,9 @@ export function ProductDetail({
                     Rating
                   </dt>
                   <dd className="text-2xl font-bold text-zinc-900 mt-1">
-                    {product.rating !== null ? product.rating.toFixed(1) : 'N/A'}
+                    {product.rating !== null && !isNaN(Number(product.rating))
+                      ? Number(product.rating).toFixed(1)
+                      : 'N/A'}
                   </dd>
                 </div>
                 {product.reviews_count !== null && (
