@@ -449,11 +449,11 @@ export default function ProductInputPage() {
       };
 
       const created = await productApi.createProduct(payload);
-      setSuccessToast(`Product "${created.title}" saved successfully!`);
+      setSuccessToast(`Product "${created.title}" saved successfully! Proceeding to UGC setup...`);
 
-      // Navigate to product detail
+      // Navigate to creative pipeline (Step 2: UGC Setup)
       setTimeout(() => {
-        router.push(`/products/${created.id}`);
+        router.push(`/products/${created.id}/creative`);
       }, 1000);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to save product. Please try again.';
