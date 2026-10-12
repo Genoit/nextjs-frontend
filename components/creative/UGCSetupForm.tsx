@@ -42,7 +42,73 @@ const PREDEFINED_AUDIENCES = [
   'Étudiants et jeunes actifs urbains',
 ];
 
+export const CONCEPT_FAMILIES = [
+  {
+    id: 'founder_story',
+    label: 'Histoire Fondateur',
+    desc: 'Genèse, vision & valeurs artisanales',
+    icon: '🎙️',
+  },
+  {
+    id: 'cinematic_storytelling',
+    label: 'Cinématique Premium',
+    desc: 'Élégance, studio & ambiance léchée',
+    icon: '🎬',
+  },
+  {
+    id: 'sensory_focus',
+    label: 'Publicité Sensorielle',
+    desc: 'ASMR, textures & détails tactiles',
+    icon: '✨',
+  },
+  {
+    id: 'product_demo',
+    label: 'Démonstration Produit',
+    desc: 'Efficacité concrète en action directe',
+    icon: '🔍',
+  },
+  {
+    id: 'problem_solution',
+    label: 'Problème / Solution',
+    desc: 'Douleur quotidienne -> remède immédiat',
+    icon: '💡',
+  },
+  {
+    id: 'before_after',
+    label: 'Avant / Après',
+    desc: 'Transformation nette et contraste visuel',
+    icon: '⚡',
+  },
+  {
+    id: 'social_proof',
+    label: 'Preuve Sociale',
+    desc: 'Témoignage authentique & retours clients',
+    icon: '⭐',
+  },
+  {
+    id: 'unboxing',
+    label: 'Expérience Unboxing',
+    desc: 'Déballage immersif & première impression',
+    icon: '📦',
+  },
+  {
+    id: 'comparative_challenge',
+    label: 'Défi Comparatif',
+    desc: 'Face-à-face loyal avec les génériques',
+    icon: '⚔️',
+  },
+  {
+    id: 'myth_busting',
+    label: 'Démystification',
+    desc: 'Idées reçues brisées avec pédagogie',
+    icon: '🛡️',
+  },
+];
+
 export function UGCSetupForm({ productId, initialSetup, onSubmit, isLoading = false }: Props) {
+  const [conceptType, setConceptType] = useState<string>(
+    initialSetup?.concept_type || 'product_demo',
+  );
   const [objective, setObjective] = useState<CampaignObjective>(initialSetup?.objective || 'sales');
   const [targetAudience, setTargetAudience] = useState(
     initialSetup?.target_audience || 'Professionnels et jeunes actifs',
@@ -98,6 +164,7 @@ export function UGCSetupForm({ productId, initialSetup, onSubmit, isLoading = fa
 
     const payload: UGCSetupCreatePayload = {
       product_id: productId,
+      concept_type: conceptType,
       objective,
       target_audience: targetAudience.trim(),
       target_motivation: targetMotivation.trim(),
@@ -233,8 +300,38 @@ export function UGCSetupForm({ productId, initialSetup, onSubmit, isLoading = fa
       <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-6">
         <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-[#BA3807]" />
-          <span>2. Angle créatif & Tonalité persuasive</span>
+          <span>2. Famille de Concept & Angle Publicitaire</span>
         </h4>
+
+        {/* 10 Concept Archetypes Selector */}
+        <div>
+          <label className="block text-xs font-bold text-zinc-700 mb-1">
+            Archétype de Concept Publicitaire (10 Familles)
+          </label>
+          <p className="text-[11px] text-zinc-500 mb-3">
+            Sélectionnez la structure narrative optimale pour convertir votre audience cible.
+          </p>
+          <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5">
+            {CONCEPT_FAMILIES.map((fam) => (
+              <button
+                key={fam.id}
+                type="button"
+                onClick={() => setConceptType(fam.id)}
+                className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
+                  conceptType === fam.id
+                    ? 'border-[#BA3807] bg-[#FFF5ED] ring-2 ring-[#BA3807]/20 shadow-2xs'
+                    : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                }`}
+              >
+                <div>
+                  <span className="text-base">{fam.icon}</span>
+                  <div className="font-bold text-xs text-zinc-900 mt-1">{fam.label}</div>
+                </div>
+                <div className="text-[10px] text-zinc-500 mt-1 line-clamp-2">{fam.desc}</div>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div>
           <div className="flex items-center justify-between mb-2">

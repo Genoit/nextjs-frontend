@@ -50,6 +50,7 @@ export interface UseCreativeReturn {
     storyboardId: string,
   ) => Promise<VideoGenerationJob | null>;
   cancelVideoGeneration: (jobId: string) => Promise<void>;
+  retryVideoGeneration: (jobId: string) => Promise<VideoGenerationJob | null>;
   resetError: () => void;
   setStoryboardDirect: (sb: Storyboard) => void;
 }
@@ -268,6 +269,45 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     [stopPolling],
   );
 
+  const retryVideoGeneration = useCallback(
+    async (jobId: string) => {
+      setIsStartingJob(true);
+      setError(null);
+      stopPolling();
+      try {
+        const job = await creativeApi.retryJob(jobId);
+        setActiveJob(job);
+        if (job.status !== 'completed' && job.status !== 'failed' && job.status !== 'cancelled') {
+          setIsPollingJob(true);
+          pollIntervalRef.current = setInterval(async () => {
+            try {
+              const updated = await creativeApi.getVideoJob(job.id);
+              setActiveJob(updated);
+              if (
+                updated.status === 'completed' ||
+                updated.status === 'failed' ||
+                updated.status === 'cancelled'
+              ) {
+                stopPolling();
+              }
+            } catch {
+              // Ignore polling blips
+            }
+          }, 2000);
+        }
+        return job;
+      } catch (err: unknown) {
+        const msg =
+          err instanceof Error ? err.message : 'Erreur lors de la reprise du rendu vidéo.';
+        setError(msg);
+        return null;
+      } finally {
+        setIsStartingJob(false);
+      }
+    },
+    [stopPolling],
+  );
+
   // Clean up timer on unmount
   useEffect(() => {
     return () => {
@@ -317,6 +357,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     updateStoryboard,
     startVideoGeneration,
     cancelVideoGeneration,
+    retryVideoGeneration,
     resetError,
     setStoryboardDirect: setStoryboard,
   };

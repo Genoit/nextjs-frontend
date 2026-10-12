@@ -10,6 +10,11 @@ import {
   StoryboardUpdatePayload,
   VideoGenerationJob,
   VideoGenerationJobCreatePayload,
+  ModelCapabilitySummary,
+  ComplianceReport,
+  TrainingConsent,
+  AdPerformanceMetric,
+  DatasetManifest,
 } from '../types/creative';
 
 // ============================================
@@ -140,6 +145,96 @@ export const creativeApi = {
   async cancelVideoJob(jobId: string): Promise<VideoGenerationJob> {
     const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/cancel`;
     return fetchWithAuth<VideoGenerationJob>(url, { method: 'POST' });
+  },
+
+  /**
+   * Retry or resume a failed or incomplete video generation job
+   */
+  async retryJob(jobId: string): Promise<VideoGenerationJob> {
+    const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/retry`;
+    return fetchWithAuth<VideoGenerationJob>(url, { method: 'POST' });
+  },
+
+  /**
+   * List available AI video providers and hardware capability summaries
+   */
+  async getProviders(): Promise<ModelCapabilitySummary[]> {
+    const url = `${CREATIVE_BASE_PATH}/providers`;
+    return fetchWithAuth<ModelCapabilitySummary[]>(url, { method: 'GET' });
+  },
+
+  /**
+   * Check advertising legal and platform compliance (TikTok, Meta, Google, etc.)
+   */
+  async checkCompliance(data: {
+    product_id: string;
+    strategy_id?: string;
+    platform?: string;
+    script_text?: string;
+    claims_to_verify?: string[];
+  }): Promise<ComplianceReport> {
+    const url = `${CREATIVE_BASE_PATH}/compliance/check`;
+    return fetchWithAuth<ComplianceReport>(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Record or revoke training consent for future AI models fine-tuning
+   */
+  async recordConsent(data: {
+    consent_type?: string;
+    granted: boolean;
+    consent_scope?: string[];
+    retention_days?: number;
+    ip_hash?: string;
+    notes?: string;
+  }): Promise<TrainingConsent> {
+    const url = `${CREATIVE_BASE_PATH}/consent`;
+    return fetchWithAuth<TrainingConsent>(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
+  },
+
+  /**
+   * Get user training consent history
+   */
+  async getConsentHistory(): Promise<TrainingConsent[]> {
+    const url = `${CREATIVE_BASE_PATH}/consent`;
+    return fetchWithAuth<TrainingConsent[]>(url, { method: 'GET' });
+  },
+
+  /**
+   * Fetch GDPR-compliant training dataset manifest
+   */
+  async getTrainingManifest(minQualityScore?: number): Promise<DatasetManifest> {
+    const query = minQualityScore ? `?min_quality_score=${minQualityScore}` : '';
+    const url = `${CREATIVE_BASE_PATH}/training/manifest${query}`;
+    return fetchWithAuth<DatasetManifest>(url, { method: 'GET' });
+  },
+
+  /**
+   * Record observed commercial performance metrics (impressions, clicks, conversions, spend, sales)
+   */
+  async recordMetrics(data: {
+    job_id: string;
+    platform: string;
+    campaign_id?: string;
+    impressions: number;
+    clicks: number;
+    conversions: number;
+    spend?: number | string;
+    revenue?: number | string;
+    ctr?: number;
+    roas?: number;
+  }): Promise<AdPerformanceMetric> {
+    const url = `${CREATIVE_BASE_PATH}/metrics`;
+    return fetchWithAuth<AdPerformanceMetric>(url, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    });
   },
 
   /**

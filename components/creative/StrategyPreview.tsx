@@ -230,6 +230,53 @@ export function StrategyPreview({
           </p>
         </div>
       </div>
+
+      {/* Visual Bibles & Production Grammar */}
+      <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-4">
+        <h4 className="text-xs font-bold uppercase tracking-wider text-zinc-700 flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-[#BA3807]" />
+          <span>Bibles Visuelles & Direction Artistique (Continuité IA)</span>
+        </h4>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
+            <div className="font-bold text-zinc-900 flex items-center gap-1.5">
+              <span>👤 Bible Personnage</span>
+            </div>
+            <p className="text-zinc-600 leading-relaxed">
+              {(strategy.character_bible as Record<string, string>)?.casting ||
+                'Personnage authentique, naturel et expressif sans surjeu publicitaire.'}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
+            <div className="font-bold text-zinc-900 flex items-center gap-1.5">
+              <span>🏡 Bible Décor & Lumière</span>
+            </div>
+            <p className="text-zinc-600 leading-relaxed">
+              {(strategy.environment_bible as Record<string, string>)?.decor ||
+                'Environnement réel et contemporain, éclairage studio doux et soigné.'}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-zinc-50 border border-zinc-200/80 space-y-2">
+            <div className="font-bold text-zinc-900 flex items-center gap-1.5">
+              <span>📦 Bible Produit</span>
+            </div>
+            <p className="text-zinc-600 leading-relaxed">
+              {(strategy.product_bible as Record<string, string>)?.hero_shot ||
+                'Plans macro nets, respect rigoureux du design, textures et packaging d’origine.'}
+            </p>
+          </div>
+        </div>
+
+        {strategy.creative_rationale && (
+          <div className="pt-2 border-t border-zinc-100">
+            <span className="font-bold text-xs text-zinc-700">Rationale Créative : </span>
+            <span className="text-xs text-zinc-600">{strategy.creative_rationale}</span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

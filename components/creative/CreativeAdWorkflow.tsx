@@ -39,6 +39,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
     updateStoryboard,
     startVideoGeneration,
     cancelVideoGeneration,
+    retryVideoGeneration,
     resetError,
   } = useCreative(productId);
 
@@ -242,7 +243,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             <VideoGenerationTracker
               job={activeJob}
               onCancel={cancelVideoGeneration}
-              onRetry={handleLaunchVideo}
+              onRetry={() => (activeJob ? retryVideoGeneration(activeJob.id) : handleLaunchVideo())}
             />
           )}
         </>

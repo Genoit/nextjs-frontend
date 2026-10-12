@@ -147,6 +147,42 @@ export function VideoGenerationTracker({ job, onCancel, onRetry }: Props) {
           ))}
         </div>
 
+        {/* Per-Scene Render Statuses */}
+        {job.scene_job_statuses && Object.keys(job.scene_job_statuses).length > 0 && (
+          <div className="pt-3 border-t border-zinc-100 space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-bold text-zinc-700">Rendu des scènes & Assemblage EDL :</span>
+              {job.compliance_status && (
+                <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-bold">
+                  ✓ Conformité {job.compliance_status}
+                </span>
+              )}
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {Object.entries(job.scene_job_statuses).map(([sceneKey, statusObj]) => {
+                const sObj = statusObj as Record<string, string>;
+                const isDone = sObj?.status === 'completed';
+                const isRendering = sObj?.status === 'rendering';
+                return (
+                  <div
+                    key={sceneKey}
+                    className={`p-2 rounded-lg border text-xs flex items-center justify-between ${
+                      isDone
+                        ? 'bg-emerald-50 border-emerald-200 text-emerald-850'
+                        : isRendering
+                          ? 'bg-[#FFF5ED] border-[#FED7AA] text-[#BA3807] animate-pulse'
+                          : 'bg-zinc-50 border-zinc-200 text-zinc-500'
+                    }`}
+                  >
+                    <span className="font-bold">{sceneKey.replace('_', ' ')}</span>
+                    <span>{isDone ? '✓ Prêt' : isRendering ? '⏳ Rendu' : 'Attente'}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {job.error_message && (
           <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
