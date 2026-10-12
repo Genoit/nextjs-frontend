@@ -75,7 +75,18 @@ export const productApi = {
   async getProducts(params: ProductListParams = {}): Promise<ProductListResponse> {
     const query = buildProductListQuery(params);
     const url = `${PRODUCTS_BASE_PATH}${query}`;
-    return fetchWithAuth<ProductListResponse>(url, { method: 'GET' });
+    const response = await fetchWithAuth<ProductListResponse & { items?: Product[] }>(url, {
+      method: 'GET',
+    });
+    const rawProducts = response?.products ?? response?.items ?? [];
+    return {
+      ...response,
+      products: Array.isArray(rawProducts) ? rawProducts : [],
+      total: response?.total ?? 0,
+      page: response?.page ?? 1,
+      page_size: response?.page_size ?? 20,
+      total_pages: response?.total_pages ?? 0,
+    };
   },
 
   /**

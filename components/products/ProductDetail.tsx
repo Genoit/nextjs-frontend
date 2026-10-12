@@ -405,15 +405,15 @@ export function ProductDetail({
         {/* Images */}
         <div className="space-y-4">
           <ProductImages
-            images={product.images}
+            images={product.images || []}
             mainImageUrl={product.main_image_url}
-            showGallery={product.images.length > 1}
+            showGallery={(product.images?.length ?? 0) > 1}
           />
 
           {/* Image count */}
-          {product.images.length > 0 && (
+          {(product.images?.length ?? 0) > 0 && (
             <p className="text-center text-sm text-zinc-500">
-              {product.images.length} image{product.images.length > 1 ? 's' : ''}
+              {product.images?.length} image{(product.images?.length ?? 0) > 1 ? 's' : ''}
             </p>
           )}
         </div>
@@ -615,13 +615,13 @@ export function ProductDetail({
           </div>
 
           {/* Variants */}
-          {product.variants.length > 0 && (
+          {(product.variants?.length ?? 0) > 0 && (
             <div className="border-t border-zinc-200 pt-6">
               <h3 className="text-sm font-semibold text-zinc-900 mb-4">
-                Variants ({product.variants.length})
+                Variants ({product.variants?.length})
               </h3>
               <ProductVariants
-                variants={product.variants}
+                variants={product.variants || []}
                 showPrice={true}
                 showAvailability={true}
               />

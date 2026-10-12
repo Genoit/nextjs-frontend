@@ -96,6 +96,7 @@ export interface Product {
 
 export interface ProductListResponse {
   products: Product[];
+  items?: Product[];
   total: number;
   page: number;
   page_size: number;
