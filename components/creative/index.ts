@@ -1,4 +1,4 @@
-export * from './ProductIntelligenceView';
+export * from './ProductSheetView';
 export * from './UGCSetupForm';
 export * from './StrategyPreview';
 export * from './StoryboardEditor';
