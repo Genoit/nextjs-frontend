@@ -1,6 +1,5 @@
 import { fetchWithAuth, getApiBaseUrl } from './core';
 import {
-  ProductIntelligenceReport,
   UGCSetup,
   UGCSetupCreatePayload,
   UGCSetupUpdatePayload,
@@ -24,15 +23,6 @@ import {
 const CREATIVE_BASE_PATH = '/creative';
 
 export const creativeApi = {
-  /**
-   * Fetch Product Intelligence report (confirmed facts, documented benefits,
-   * commercial proofs, missing info, marketing hypotheses)
-   */
-  async getProductIntelligence(productId: string): Promise<ProductIntelligenceReport> {
-    const url = `${CREATIVE_BASE_PATH}/products/${productId}/intelligence`;
-    return fetchWithAuth<ProductIntelligenceReport>(url, { method: 'GET' });
-  },
-
   /**
    * Get UGC Setup configuration for a product
    */

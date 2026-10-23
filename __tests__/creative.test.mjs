@@ -28,7 +28,7 @@ describe('Creative Video Ad Engine & Pipeline', () => {
 
     it('should have all creative UI components', () => {
       const components = [
-        'components/creative/ProductIntelligenceView.tsx',
+        'components/creative/ProductSheetView.tsx',
         'components/creative/UGCSetupForm.tsx',
         'components/creative/StrategyPreview.tsx',
         'components/creative/StoryboardEditor.tsx',
@@ -93,7 +93,6 @@ describe('Creative Video Ad Engine & Pipeline', () => {
 
     it('should provide full CRUD and generation methods matching backend endpoints', () => {
       const methods = [
-        'getProductIntelligence',
         'getUGCSetup',
         'saveUGCSetup',
         'updateUGCSetup',

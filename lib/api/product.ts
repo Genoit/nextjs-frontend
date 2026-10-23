@@ -7,6 +7,7 @@ import {
   ProductListResponse,
   ProductListParams,
 } from '../types/product';
+import { ProductAnalysis } from '../types/product-analysis';
 
 // ============================================
 // Product API Service
@@ -188,6 +189,34 @@ export const productApi = {
       method: 'POST',
       body: JSON.stringify({ url }),
     });
+  },
+
+  /**
+   * Run Product Intelligence on a product. Identical successful runs are reused
+   * server-side (no new paid call) unless force is true.
+   */
+  async analyzeProduct(productId: string, force = false): Promise<ProductAnalysis> {
+    return fetchWithAuth<ProductAnalysis>(`${PRODUCTS_BASE_PATH}/${productId}/analyses`, {
+      method: 'POST',
+      body: JSON.stringify({ force }),
+    });
+  },
+
+  /**
+   * Latest product analysis, or null when the product was never analyzed
+   */
+  async getLatestAnalysis(productId: string): Promise<ProductAnalysis | null> {
+    try {
+      return await fetchWithAuth<ProductAnalysis>(
+        `${PRODUCTS_BASE_PATH}/${productId}/analyses/latest`,
+        { method: 'GET' },
+      );
+    } catch (error) {
+      if (error instanceof ApiRequestError && error.status === 404) {
+        return null;
+      }
+      throw error;
+    }
   },
 };
 

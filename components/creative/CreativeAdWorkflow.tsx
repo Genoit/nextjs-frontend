@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Sparkles, Sliders, Lightbulb, Film, Play, RotateCw, AlertCircle } from 'lucide-react';
 import { useCreative } from '../../hooks/use-creative';
-import { ProductIntelligenceView } from './ProductIntelligenceView';
+import { ProductSheetView } from './ProductSheetView';
 import { UGCSetupForm } from './UGCSetupForm';
 import { StrategyPreview } from './StrategyPreview';
 import { StoryboardEditor } from './StoryboardEditor';
@@ -19,12 +19,10 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   const [userSelectedStep, setUserSelectedStep] = useState<1 | 2 | 3 | 4 | 5 | null>(null);
 
   const {
-    intelligence,
     ugcSetup,
     strategy,
     storyboard,
     activeJob,
-    isLoadingIntelligence,
     isSavingUgcSetup,
     isGeneratingStrategy,
     isValidatingStrategy,
@@ -153,22 +151,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
 
       {/* STEP 1: Product Intelligence */}
       {currentStep === 1 && (
-        <>
-          {isLoadingIntelligence && (
-            <div className="p-12 text-center space-y-3">
-              <RotateCw className="w-8 h-8 text-[#BA3807] animate-spin mx-auto" />
-              <p className="text-sm font-semibold text-zinc-600">
-                Extraction factuelle des caractéristiques du produit en cours...
-              </p>
-            </div>
-          )}
-          {!isLoadingIntelligence && intelligence && (
-            <ProductIntelligenceView
-              report={intelligence}
-              onProceedToSetup={() => setUserSelectedStep(2)}
-            />
-          )}
-        </>
+        <ProductSheetView productId={productId} onProceedToSetup={() => setUserSelectedStep(2)} />
       )}
 
       {/* STEP 2: UGC Setup */}
