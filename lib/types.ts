@@ -4,6 +4,7 @@ export interface User {
   last_name: string;
   email: string;
   onboarding_completed: boolean;
+  is_admin?: boolean;
   auth_provider?: string;
 }
 
