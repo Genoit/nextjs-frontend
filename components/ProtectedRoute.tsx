@@ -4,15 +4,25 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/auth';
 
-export default function ProtectedRoute({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated, isLoading } = useAuth();
+export default function ProtectedRoute({
+  children,
+  requireAdmin = false,
+}: {
+  children: React.ReactNode;
+  requireAdmin?: boolean;
+}) {
+  const { isAuthenticated, isLoading, user } = useAuth();
+  // UX guard only: the backend enforces admin access on /api/v1/admin/*
+  const forbidden = requireAdmin && isAuthenticated && !user?.is_admin;
   const router = useRouter();
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
       router.push('/login');
+    } else if (!isLoading && forbidden) {
+      router.replace('/dashboard');
     }
-  }, [isLoading, isAuthenticated, router]);
+  }, [isLoading, isAuthenticated, forbidden, router]);
 
   if (isLoading) {
     return (
@@ -25,7 +35,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isAuthenticated || forbidden) {
     return null;
   }
 
