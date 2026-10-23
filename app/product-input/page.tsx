@@ -41,7 +41,11 @@ interface ProductImageItem {
   url: string;
   alt: string;
   badge?: 'sparkle' | 'motion' | 'none';
+  uploading?: boolean;
 }
+
+const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_IMAGE_BYTES = 10 * 1024 * 1024;
 
 interface CustomerReviewItem {
   author?: string;
@@ -139,12 +143,8 @@ export default function ProductInputPage() {
   const [brand, setBrand] = useState('');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  // Store Connect tab / modal state
-  const [storeConnected, setStoreConnected] = useState(false);
+  // Store Connect modal state (store sync not implemented yet)
   const [storeModalOpen, setStoreModalOpen] = useState(false);
-
-  // AI Suggestion feedback
-  const [aiApplied, setAiApplied] = useState(false);
 
   // Guide modal state
   const [guideOpen, setGuideOpen] = useState(false);
@@ -222,54 +222,45 @@ export default function ProductInputPage() {
     }
   };
 
-  // AI Suggestion apply
-  const handleApplyAiSuggestion = () => {
-    const suggestionsToAdd = productName
-      ? ['Premium Quality', 'Customer Favorite', 'Fast Delivery']
-      : ['High Quality', 'Key Feature', 'Easy to Use'];
-    setBenefits((prev) => {
-      const combined = [...prev];
-      suggestionsToAdd.forEach((s) => {
-        if (!combined.some((item) => item.toLowerCase() === s.toLowerCase())) {
-          combined.push(s);
-        }
-      });
-      return combined;
+  // Image Upload Handling: show a local preview, then replace it with the stored server URL
+  const uploadFiles = (files: FileList) => {
+    Array.from(files).forEach((file, idx) => {
+      if (!ACCEPTED_IMAGE_TYPES.includes(file.type) || file.size > MAX_IMAGE_BYTES) {
+        setErrorMessage(`${file.name}: only JPEG, PNG or WebP images up to 10 MB are accepted.`);
+        setTimeout(() => setErrorMessage(null), 5000);
+        return;
+      }
+      const id = `${Date.now()}-${idx}`;
+      const previewUrl = URL.createObjectURL(file);
+      setImages((prev) => [
+        ...prev,
+        { id, url: previewUrl, alt: file.name, badge: 'sparkle', uploading: true },
+      ]);
+      productApi
+        .uploadImage(file)
+        .then(({ url }) => {
+          setImages((prev) =>
+            prev.map((img) => (img.id === id ? { ...img, url, uploading: false } : img)),
+          );
+        })
+        .catch((err: unknown) => {
+          setImages((prev) => prev.filter((img) => img.id !== id));
+          setErrorMessage(err instanceof Error ? err.message : `Upload failed: ${file.name}`);
+          setTimeout(() => setErrorMessage(null), 5000);
+        })
+        .finally(() => URL.revokeObjectURL(previewUrl));
     });
-    setAiApplied(true);
-    setTimeout(() => setAiApplied(false), 3000);
   };
 
-  // Image Upload Handling
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files;
-    if (!files || files.length === 0) return;
-
-    const newItems: ProductImageItem[] = Array.from(files).map((file, idx) => ({
-      id: `${Date.now()}-${idx}`,
-      url: URL.createObjectURL(file),
-      alt: file.name,
-      badge: 'sparkle',
-    }));
-
-    setImages((prev) => [...prev, ...newItems]);
+    if (e.target.files && e.target.files.length > 0) uploadFiles(e.target.files);
     e.target.value = '';
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const files = e.dataTransfer.files;
-    if (!files || files.length === 0) return;
-
-    const newItems: ProductImageItem[] = Array.from(files).map((file, idx) => ({
-      id: `${Date.now()}-${idx}`,
-      url: URL.createObjectURL(file),
-      alt: file.name,
-      badge: 'sparkle',
-    }));
-
-    setImages((prev) => [...prev, ...newItems]);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) uploadFiles(e.dataTransfer.files);
   };
 
   const handleRemoveImage = (idToRemove: string, e: React.MouseEvent) => {
@@ -306,15 +297,9 @@ export default function ProductInputPage() {
       }
       if (preview.brand) {
         setBrand(preview.brand);
-        if (!benefits.includes(preview.brand)) {
-          setBenefits((prev) => [...prev, preview.brand!]);
-        }
       }
       if (preview.category) {
         setCategory(preview.category);
-        if (!benefits.includes(preview.category)) {
-          setBenefits((prev) => [...prev, preview.category!]);
-        }
       }
 
       // Populate extracted images if available with upgraded high resolution
@@ -389,6 +374,12 @@ export default function ProductInputPage() {
     const trimmedTitle = productName.trim();
     if (!trimmedTitle) {
       setErrorMessage('Please provide a product name before proceeding.');
+      setTimeout(() => setErrorMessage(null), 4000);
+      return;
+    }
+
+    if (images.some((img) => img.uploading)) {
+      setErrorMessage('Please wait for image uploads to finish.');
       setTimeout(() => setErrorMessage(null), 4000);
       return;
     }
@@ -746,7 +737,7 @@ export default function ProductInputPage() {
                           ref={fileInputRef}
                           type="file"
                           multiple
-                          accept="image/*"
+                          accept="image/jpeg,image/png,image/webp"
                           onChange={handleFileUpload}
                           className="hidden"
                         />
@@ -780,6 +771,15 @@ export default function ProductInputPage() {
                                 sizes="(max-width: 640px) 18vw, (max-width: 1024px) 12vw, 110px"
                                 className="object-cover group-hover:scale-105 transition-transform duration-200"
                               />
+                              {img.uploading && (
+                                <div
+                                  role="status"
+                                  aria-label="Uploading image"
+                                  className="absolute inset-0 bg-white/70 flex items-center justify-center z-30"
+                                >
+                                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-[#C2410C] border-t-transparent" />
+                                </div>
+                              )}
                               {idx === 0 && (
                                 <div className="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-black/75 text-[9px] font-semibold text-white tracking-wider uppercase z-10">
                                   Cover
@@ -1371,19 +1371,18 @@ export default function ProductInputPage() {
                           S
                         </div>
                         <h4 className="text-xs font-semibold text-zinc-900">
-                          {storeConnected ? "Sarah's Shopify Store" : 'Connect your store'}
+                          Store sync — coming soon
                         </h4>
                         <p className="text-[11px] text-zinc-500">
-                          {storeConnected
-                            ? 'Your store is connected with 42 active products synced.'
-                            : 'Sync products automatically from Shopify or WooCommerce.'}
+                          Automatic Shopify / WooCommerce sync is not available yet. Import a
+                          product with its URL or upload it manually.
                         </p>
                         <button
                           type="button"
-                          onClick={() => setStoreConnected(!storeConnected)}
+                          onClick={() => setActiveTab('url')}
                           className="px-4 py-2 rounded-xl bg-white border border-zinc-300 text-xs font-semibold text-zinc-800 hover:bg-zinc-100 transition"
                         >
-                          {storeConnected ? 'Disconnect Store' : 'Connect Shopify'}
+                          Import from URL instead
                         </button>
                       </div>
                     </div>
@@ -1673,26 +1672,12 @@ export default function ProductInputPage() {
                   <div className="rounded-2xl bg-[#FFF8EE] border border-[#FED7AA] p-4.5 space-y-2 mt-5">
                     <div className="flex items-center gap-1.5 text-[#BA3807]">
                       <Sparkles className="w-3.5 h-3.5 fill-[#BA3807]" />
-                      <span className="text-xs font-bold text-zinc-900">AI Suggestion</span>
+                      <span className="text-xs font-bold text-zinc-900">Tip</span>
                     </div>
                     <p className="text-xs text-zinc-600 leading-relaxed">
                       Add specific selling points like &ldquo;All-day battery life&rdquo; or
                       &ldquo;Premium noise cancellation&rdquo; to get better video results.
                     </p>
-                    <button
-                      type="button"
-                      onClick={handleApplyAiSuggestion}
-                      className="px-3.5 py-1.5 rounded-full border border-[#F97316] text-[#BA3807] bg-white text-xs font-semibold hover:bg-orange-50 shadow-2xs transition inline-flex items-center gap-1.5 cursor-pointer mt-1"
-                    >
-                      {aiApplied ? (
-                        <>
-                          <Check className="w-3 h-3 text-emerald-600" />
-                          <span className="text-emerald-700">Applied! ✓</span>
-                        </>
-                      ) : (
-                        <span>Use suggestion</span>
-                      )}
-                    </button>
                   </div>
                 </div>
               </div>
@@ -1794,12 +1779,9 @@ export default function ProductInputPage() {
                 <div className="space-y-2">
                   <button
                     type="button"
-                    onClick={() => {
-                      setStoreConnected(true);
-                      setStoreModalOpen(false);
-                      setSuccessToast('Shopify store connected successfully!');
-                    }}
-                    className="w-full p-3 rounded-xl border border-zinc-200 hover:border-orange-500 hover:bg-orange-50/20 flex items-center justify-between text-left transition"
+                    disabled
+                    aria-disabled="true"
+                    className="w-full p-3 rounded-xl border border-zinc-200 flex items-center justify-between text-left opacity-60 cursor-not-allowed"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">🛍️</span>
@@ -1808,17 +1790,14 @@ export default function ProductInputPage() {
                         <p className="text-[11px] text-zinc-500">Fast 1-click catalog import</p>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold text-[#BA3807]">Connect →</span>
+                    <span className="text-xs font-semibold text-zinc-500">Coming soon</span>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => {
-                      setStoreConnected(true);
-                      setStoreModalOpen(false);
-                      setSuccessToast('WooCommerce store connected successfully!');
-                    }}
-                    className="w-full p-3 rounded-xl border border-zinc-200 hover:border-orange-500 hover:bg-orange-50/20 flex items-center justify-between text-left transition"
+                    disabled
+                    aria-disabled="true"
+                    className="w-full p-3 rounded-xl border border-zinc-200 flex items-center justify-between text-left opacity-60 cursor-not-allowed"
                   >
                     <div className="flex items-center gap-3">
                       <span className="text-lg">📦</span>
@@ -1827,7 +1806,7 @@ export default function ProductInputPage() {
                         <p className="text-[11px] text-zinc-500">Direct API integration</p>
                       </div>
                     </div>
-                    <span className="text-xs font-semibold text-[#BA3807]">Connect →</span>
+                    <span className="text-xs font-semibold text-zinc-500">Coming soon</span>
                   </button>
                 </div>
               </div>

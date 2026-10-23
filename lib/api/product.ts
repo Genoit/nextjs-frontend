@@ -169,6 +169,18 @@ export const productApi = {
   },
 
   /**
+   * Upload a product image (JPEG/PNG/WebP, max 10 MB); returns its stored public URL
+   */
+  async uploadImage(file: File): Promise<{ url: string }> {
+    const body = new FormData();
+    body.append('file', file);
+    return fetchWithAuth<{ url: string }>(`${PRODUCTS_BASE_PATH}/images/upload`, {
+      method: 'POST',
+      body,
+    });
+  },
+
+  /**
    * Extract product preview from URL (US-08)
    */
   async extractFromUrl(url: string): Promise<ProductPreview> {
