@@ -247,7 +247,7 @@ export function ProductList({
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {products.map((product) => (
+        {(products || []).map((product) => (
           <Link
             key={product.id}
             href={`/products/${product.id}`}
@@ -262,7 +262,7 @@ export function ProductList({
             <div className="aspect-square w-full overflow-hidden bg-zinc-50">
               {product.main_image_url ? (
                 <ProductImageSingle
-                  image={product.images.find((img) => img.is_primary) || null}
+                  image={product.images?.find((img) => img.is_primary) || null}
                   mainImageUrl={product.main_image_url}
                   className="h-full w-full"
                   size="lg"
@@ -425,7 +425,7 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
     }
   };
 
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
         <p className="text-sm text-zinc-500">No products to display</p>
@@ -437,7 +437,7 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
     <div
       className={`grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 ${className}`}
     >
-      {products.map((product) => (
+      {(products || []).map((product) => (
         <Link
           key={product.id}
           href={`/products/${product.id}`}
@@ -452,7 +452,7 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
           <div className="aspect-square w-full overflow-hidden bg-zinc-50">
             {product.main_image_url ? (
               <ProductImageSingle
-                image={product.images.find((img) => img.is_primary) || null}
+                image={product.images?.find((img) => img.is_primary) || null}
                 mainImageUrl={product.main_image_url}
                 className="h-full w-full"
                 size="lg"

@@ -346,6 +346,22 @@ export function ProductDetail({
           <div className="flex gap-2">
             <button
               type="button"
+              onClick={() => router.push(`/products/${product.id}/creative`)}
+              className="flex items-center gap-2 rounded-lg bg-[#BA3807] hover:bg-[#9A2D04] px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition"
+            >
+              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                />
+              </svg>
+              Créer une vidéo UGC
+            </button>
+
+            <button
+              type="button"
               onClick={handleEdit}
               className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
             >
@@ -389,15 +405,15 @@ export function ProductDetail({
         {/* Images */}
         <div className="space-y-4">
           <ProductImages
-            images={product.images}
+            images={product.images || []}
             mainImageUrl={product.main_image_url}
-            showGallery={product.images.length > 1}
+            showGallery={(product.images?.length ?? 0) > 1}
           />
 
           {/* Image count */}
-          {product.images.length > 0 && (
+          {(product.images?.length ?? 0) > 0 && (
             <p className="text-center text-sm text-zinc-500">
-              {product.images.length} image{product.images.length > 1 ? 's' : ''}
+              {product.images?.length} image{(product.images?.length ?? 0) > 1 ? 's' : ''}
             </p>
           )}
         </div>
@@ -548,7 +564,9 @@ export function ProductDetail({
                     Rating
                   </dt>
                   <dd className="text-2xl font-bold text-zinc-900 mt-1">
-                    {product.rating !== null ? product.rating.toFixed(1) : 'N/A'}
+                    {product.rating !== null && !isNaN(Number(product.rating))
+                      ? Number(product.rating).toFixed(1)
+                      : 'N/A'}
                   </dd>
                 </div>
                 {product.reviews_count !== null && (
@@ -597,13 +615,13 @@ export function ProductDetail({
           </div>
 
           {/* Variants */}
-          {product.variants.length > 0 && (
+          {(product.variants?.length ?? 0) > 0 && (
             <div className="border-t border-zinc-200 pt-6">
               <h3 className="text-sm font-semibold text-zinc-900 mb-4">
-                Variants ({product.variants.length})
+                Variants ({product.variants?.length})
               </h3>
               <ProductVariants
-                variants={product.variants}
+                variants={product.variants || []}
                 showPrice={true}
                 showAvailability={true}
               />

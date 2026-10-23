@@ -119,12 +119,14 @@ export function useProducts(options: UseProductsOptions = {}): UseProductsReturn
 
         const response = await productApi.getProducts(cleanParams as ProductListParams);
 
-        setProducts(response.products);
-        setTotal(response.total);
-        setTotalPages(response.total_pages);
+        const productList =
+          response?.products ?? (response as unknown as { items?: Product[] })?.items ?? [];
+        setProducts(Array.isArray(productList) ? productList : []);
+        setTotal(response?.total ?? 0);
+        setTotalPages(response?.total_pages ?? 0);
 
         // Update page if it exceeds total pages
-        if (response.total_pages > 0 && page > response.total_pages) {
+        if (response?.total_pages && response.total_pages > 0 && page > response.total_pages) {
           setPageState(response.total_pages);
         }
       } catch (err) {
@@ -200,12 +202,12 @@ export function useProducts(options: UseProductsOptions = {}): UseProductsReturn
   // Helper computed values
   const canGoToNextPage = page < totalPages;
   const canGoToPreviousPage = page > 1;
-  const hasProducts = products.length > 0;
+  const hasProducts = Array.isArray(products) && products.length > 0;
   const isEmpty = !isLoading && hasProducts === false && error === null;
 
   return {
     // State
-    products,
+    products: Array.isArray(products) ? products : [],
     total,
     page,
     pageSize,
