@@ -1,12 +1,13 @@
 import { fetchWithAuth, getApiBaseUrl } from './core';
 import {
-  UGCSetup,
-  UGCSetupCreatePayload,
-  UGCSetupUpdatePayload,
+  CreativeConfig,
+  CreativeConfigCreatePayload,
   CreativeStrategy,
   CreativeStrategyGeneratePayload,
   Storyboard,
   StoryboardUpdatePayload,
+  StoryboardVersionSummary,
+  StrategyCost,
   VideoGenerationJob,
   VideoGenerationJobCreatePayload,
   ModelCapabilitySummary,
@@ -15,6 +16,7 @@ import {
   AdPerformanceMetric,
   DatasetManifest,
 } from '../types/creative';
+import { configOrNull } from '../creative-rules.mjs';
 
 // ============================================
 // Creative Ad Engine API Client
@@ -24,37 +26,26 @@ const CREATIVE_BASE_PATH = '/creative';
 
 export const creativeApi = {
   /**
-   * Get UGC Setup configuration for a product
+   * Get the creative configuration of a product. The API answers 200 `null` when none exists.
    */
-  async getUGCSetup(productId: string): Promise<UGCSetup> {
-    const url = `${CREATIVE_BASE_PATH}/products/${productId}/ugc-setup`;
-    return fetchWithAuth<UGCSetup>(url, { method: 'GET' });
+  async getCreativeConfig(productId: string): Promise<CreativeConfig | null> {
+    const url = `${CREATIVE_BASE_PATH}/products/${productId}/creative-config`;
+    return configOrNull(await fetchWithAuth<CreativeConfig | null>(url, { method: 'GET' }));
   },
 
   /**
-   * Create or update UGC Setup parameters (objective, audience, angle, duration, platform, etc.)
+   * Create or update the creative configuration (objective, audience, duration, platform, etc.)
    */
-  async saveUGCSetup(payload: UGCSetupCreatePayload): Promise<UGCSetup> {
-    const url = `${CREATIVE_BASE_PATH}/ugc-setup`;
-    return fetchWithAuth<UGCSetup>(url, {
+  async saveCreativeConfig(payload: CreativeConfigCreatePayload): Promise<CreativeConfig> {
+    const url = `${CREATIVE_BASE_PATH}/creative-config`;
+    return fetchWithAuth<CreativeConfig>(url, {
       method: 'POST',
       body: JSON.stringify(payload),
     });
   },
 
   /**
-   * Partially update existing UGC Setup
-   */
-  async updateUGCSetup(setupId: string, payload: UGCSetupUpdatePayload): Promise<UGCSetup> {
-    const url = `${CREATIVE_BASE_PATH}/ugc-setup/${setupId}`;
-    return fetchWithAuth<UGCSetup>(url, {
-      method: 'PATCH',
-      body: JSON.stringify(payload),
-    });
-  },
-
-  /**
-   * Generate a persuasive creative strategy via LLM / Deterministic engine
+   * Generate brief + 2-5 angles (LLM or deterministic engine). 409 if no product analysis.
    */
   async generateStrategy(payload: CreativeStrategyGeneratePayload): Promise<CreativeStrategy> {
     const url = `${CREATIVE_BASE_PATH}/strategy/generate`;
@@ -73,31 +64,45 @@ export const creativeApi = {
   },
 
   /**
-   * Mark a creative strategy as approved/validated by user
+   * Choose the angle the storyboard will be generated from
    */
-  async validateStrategy(strategyId: string): Promise<CreativeStrategy> {
-    const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}/validate`;
-    return fetchWithAuth<CreativeStrategy>(url, { method: 'POST' });
+  async chooseAngle(strategyId: string, angleId: string): Promise<CreativeStrategy> {
+    const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}/choose-angle`;
+    return fetchWithAuth<CreativeStrategy>(url, {
+      method: 'POST',
+      body: JSON.stringify({ angle_id: angleId }),
+    });
   },
 
   /**
-   * Generate storyboard scenes from an approved strategy
+   * Generate a storyboard version for the chosen angle (force=true: new version)
    */
-  async generateStoryboard(strategyId: string): Promise<Storyboard> {
+  async generateStoryboard(strategyId: string, force = false): Promise<Storyboard> {
     const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}/storyboard`;
-    return fetchWithAuth<Storyboard>(url, { method: 'POST' });
+    return fetchWithAuth<Storyboard>(url, {
+      method: 'POST',
+      body: JSON.stringify({ force }),
+    });
   },
 
   /**
-   * Get storyboard for a strategy
+   * List storyboard versions of a strategy
    */
-  async getStoryboard(strategyId: string): Promise<Storyboard> {
-    const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}/storyboard`;
+  async listStoryboards(strategyId: string): Promise<StoryboardVersionSummary[]> {
+    const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}/storyboards`;
+    return fetchWithAuth<StoryboardVersionSummary[]>(url, { method: 'GET' });
+  },
+
+  /**
+   * Get one storyboard version (spec + scenes + violations + costs)
+   */
+  async getStoryboard(storyboardId: string): Promise<Storyboard> {
+    const url = `${CREATIVE_BASE_PATH}/storyboard/${storyboardId}`;
     return fetchWithAuth<Storyboard>(url, { method: 'GET' });
   },
 
   /**
-   * Update storyboard (title, status, or edited scene prompts & timings)
+   * Save edits: the API creates a new version (409 if this version is accepted)
    */
   async updateStoryboard(
     storyboardId: string,
@@ -108,6 +113,22 @@ export const creativeApi = {
       method: 'PATCH',
       body: JSON.stringify(payload),
     });
+  },
+
+  /**
+   * Accept a storyboard version (409 if blocking violations or not the latest)
+   */
+  async acceptStoryboard(storyboardId: string): Promise<Storyboard> {
+    const url = `${CREATIVE_BASE_PATH}/storyboard/${storyboardId}/accept`;
+    return fetchWithAuth<Storyboard>(url, { method: 'POST' });
+  },
+
+  /**
+   * Cumulated cost (analysis + strategy + every storyboard version) of a strategy
+   */
+  async getStrategyCost(strategyId: string): Promise<StrategyCost> {
+    const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}/cost`;
+    return fetchWithAuth<StrategyCost>(url, { method: 'GET' });
   },
 
   /**

@@ -440,9 +440,11 @@ export default function ProductInputPage() {
       };
 
       const created = await productApi.createProduct(payload);
-      setSuccessToast(`Product "${created.title}" saved successfully! Proceeding to UGC setup...`);
+      setSuccessToast(
+        `Product "${created.title}" saved successfully! Proceeding to creative configuration...`,
+      );
 
-      // Navigate to creative pipeline (Step 2: UGC Setup)
+      // Navigate to creative pipeline (Step 2: Configuration créative)
       setTimeout(() => {
         router.push(`/products/${created.id}/creative`);
       }, 1000);
@@ -593,12 +595,12 @@ export default function ProductInputPage() {
                   <span className="text-sm font-bold text-[#BA3807]">Product Input</span>
                 </div>
 
-                {/* Step 2: UGC Setup */}
+                {/* Step 2: Configuration créative */}
                 <div className="w-full rounded-2xl px-4 py-3 flex items-center gap-3.5 text-zinc-400 cursor-not-allowed">
                   <div className="w-6 h-6 rounded-full bg-zinc-200 text-zinc-500 text-xs font-semibold flex items-center justify-center shrink-0">
                     2
                   </div>
-                  <span className="text-sm font-medium text-zinc-500">UGC Setup</span>
+                  <span className="text-sm font-medium text-zinc-500">Configuration créative</span>
                 </div>
 
                 {/* Step 3: Generate */}
