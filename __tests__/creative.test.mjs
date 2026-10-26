@@ -166,7 +166,10 @@ describe('Creative Video Ad Engine & Pipeline', () => {
     it('product-input page should navigate to /creative upon product save', () => {
       const inputPath = path.join(process.cwd(), 'app/product-input/page.tsx');
       const content = fs.readFileSync(inputPath, 'utf8');
-      assert.ok(content.includes('/creative'), 'product-input should navigate to /creative');
+      assert.ok(content.includes('nextStepHref'), 'product-input should navigate via nextStepHref');
+      const rulesPath = path.join(process.cwd(), 'lib/product-input-rules.mjs');
+      const rules = fs.readFileSync(rulesPath, 'utf8');
+      assert.ok(rules.includes('/creative'), 'nextStepHref should point to /creative');
     });
 
     it('StrategyPreview should offer a keyboard-usable angle picker and show hypotheses', () => {
