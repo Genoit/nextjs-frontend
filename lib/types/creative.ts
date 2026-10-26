@@ -70,7 +70,8 @@ export interface MusicPreferences {
   volume?: number;
 }
 
-export interface UGCSetup {
+// "Configuration créative" (formerly "UGC Setup"). DB table/columns keep the ugc_setup name.
+export interface CreativeConfig {
   id: string;
   user_id: string;
   product_id: string;
@@ -94,7 +95,7 @@ export interface UGCSetup {
   updated_at: string;
 }
 
-export interface UGCSetupCreatePayload {
+export interface CreativeConfigCreatePayload {
   product_id: string;
   concept_type?: CreativeConceptType | string;
   objective: CampaignObjective;
@@ -114,7 +115,7 @@ export interface UGCSetupCreatePayload {
   custom_brand_guidelines?: string;
 }
 
-export interface UGCSetupUpdatePayload {
+export interface CreativeConfigUpdatePayload {
   concept_type?: CreativeConceptType | string;
   objective?: CampaignObjective;
   target_audience?: string;
@@ -153,7 +154,84 @@ export interface NarrativeStructure {
   cta: string;
 }
 
-export interface CreativeStrategy {
+// ============================================
+// Module 2 — Creative Intelligence
+// Mirrors app/schemas/creative_intelligence.py (backend). Keep both in sync.
+// Decimal costs arrive as JSON strings (Pydantic v2), null when not measured.
+// ============================================
+
+export type PersuasiveRole = 'hook' | 'problem' | 'demo' | 'proof' | 'contrast' | 'cta' | 'other';
+export type ViolationSeverity = 'block' | 'warn';
+export type CreativeGenerationStatus = 'processing' | 'completed' | 'failed';
+
+export interface CreativeBrief {
+  product_facts: string[];
+  marketing_objectives: string[];
+  audience: string;
+  platform: string;
+  target_duration: number;
+  language: string;
+  forbidden_claims: string[];
+  needs_validation: string[];
+}
+
+export interface CreativeAngle {
+  id: string;
+  archetype: string;
+  title: string;
+  promise: string;
+  problem: string;
+  emotion: string;
+  proof_basis: string[];
+  persuasion_principles: string[];
+  risks: string[];
+}
+
+export interface CreativeConcept {
+  angle_id: string;
+  logline: string;
+  script: string;
+}
+
+export interface StoryboardSpec {
+  angle?: CreativeAngle | null;
+  target_duration?: number;
+  promise?: string;
+  problem?: string;
+  concept?: CreativeConcept | null;
+  consistency_checks?: string[];
+  global_constraints?: string[];
+  persuasion_report?: Record<string, unknown> | null;
+}
+
+export interface ComplianceViolation {
+  rule_code: string;
+  severity: ViolationSeverity;
+  shot_order: number | null;
+  text: string;
+  suggestion: string | null;
+}
+
+/** Provenance + cost fields shared by strategy and storyboard responses. */
+export interface CreativeGenerationMeta {
+  is_heuristic: boolean;
+  provider: string;
+  model: string | null;
+  prompt_version: string;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  estimated_cost_usd: string | null;
+  actual_cost_usd: string | null;
+  reused?: boolean;
+  edited_by_user?: boolean;
+}
+
+export interface CreativeStrategy extends CreativeGenerationMeta {
+  brief: CreativeBrief | null;
+  angles: CreativeAngle[];
+  chosen_angle_id: string | null;
+  status?: string;
+  analysis_id?: string | null;
   id: string;
   user_id: string;
   product_id: string;
@@ -186,8 +264,37 @@ export interface CreativeStrategy {
 
 export interface CreativeStrategyGeneratePayload {
   product_id: string;
-  ugc_setup_id?: string;
+  config_id?: string;
   custom_instructions?: string;
+  force?: boolean;
+}
+
+export interface StoryboardVersionSummary {
+  id: string;
+  version: number;
+  parent_id: string | null;
+  generation_status: CreativeGenerationStatus;
+  is_heuristic: boolean;
+  provider: string;
+  model: string | null;
+  accepted: boolean;
+  edited_by_user: boolean;
+  block_count: number;
+  warn_count: number;
+  accepted_at: string | null;
+  estimated_cost_usd: string | null;
+  actual_cost_usd: string | null;
+  created_at: string;
+}
+
+export interface StrategyCost {
+  storyboard_id: string | null;
+  analysis_cost: string | null;
+  strategy_cost: string | null;
+  storyboard_cost: string | null;
+  total_estimated: string | null;
+  total_actual: string | null;
+  is_heuristic: boolean;
 }
 
 export interface StoryboardScene {
@@ -215,6 +322,10 @@ export interface StoryboardScene {
   fallback_alternative?: string | null;
   technical_risks?: Array<Record<string, unknown>> | string[];
   acceptance_criteria?: string[];
+  persuasive_role?: PersuasiveRole | null;
+  transition_out?: string | null;
+  constraints?: string[];
+  reference_urls?: string[];
   is_validated: boolean;
   created_at: string;
   updated_at: string;
@@ -243,10 +354,14 @@ export interface StoryboardSceneCreatePayload {
   fallback_alternative?: string | null;
   technical_risks?: Array<Record<string, unknown>> | string[];
   acceptance_criteria?: string[];
+  persuasive_role?: PersuasiveRole | null;
+  transition_out?: string | null;
+  constraints?: string[];
+  reference_urls?: string[];
   is_validated?: boolean;
 }
 
-export interface Storyboard {
+export interface Storyboard extends CreativeGenerationMeta {
   id: string;
   user_id: string;
   product_id: string;
@@ -256,6 +371,17 @@ export interface Storyboard {
   status: StoryboardStatus;
   schema_version: string;
   scenes: StoryboardScene[];
+  version: number;
+  parent_id: string | null;
+  spec: StoryboardSpec | null;
+  generation_status: CreativeGenerationStatus;
+  persuasion_rules_version: string;
+  violations: ComplianceViolation[];
+  accepted: boolean;
+  accepted_at: string | null;
+  is_latest: boolean;
+  edited_by_user: boolean;
+  error?: string | null;
   created_at: string;
   updated_at: string;
 }

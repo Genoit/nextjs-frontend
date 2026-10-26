@@ -2,6 +2,16 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
+import {
+  COST_NOT_MEASURED,
+  HEURISTIC_LABEL,
+  acceptBlockReason,
+  configOrNull,
+  formatCost,
+  formatCostTotal,
+  heuristicLabel,
+  sceneToPayload,
+} from '../lib/creative-rules.mjs';
 
 describe('Creative Video Ad Engine & Pipeline', () => {
   describe('File Structure & Modular Architecture', () => {
@@ -29,7 +39,8 @@ describe('Creative Video Ad Engine & Pipeline', () => {
     it('should have all creative UI components', () => {
       const components = [
         'components/creative/ProductSheetView.tsx',
-        'components/creative/UGCSetupForm.tsx',
+        'components/creative/CreativeConfigForm.tsx',
+        'components/creative/CreativeStatus.tsx',
         'components/creative/StrategyPreview.tsx',
         'components/creative/StoryboardEditor.tsx',
         'components/creative/VideoGenerationTracker.tsx',
@@ -56,8 +67,13 @@ describe('Creative Video Ad Engine & Pipeline', () => {
     it('should declare all core contracts required by specification', () => {
       const requiredInterfaces = [
         'ProductIntelligenceReport',
-        'UGCSetup',
-        'UGCSetupCreatePayload',
+        'CreativeConfig',
+        'CreativeConfigCreatePayload',
+        'CreativeAngle',
+        'CreativeBrief',
+        'ComplianceViolation',
+        'StoryboardVersionSummary',
+        'StrategyCost',
         'CreativeStrategy',
         'CreativeStrategyGeneratePayload',
         'Storyboard',
@@ -79,11 +95,15 @@ describe('Creative Video Ad Engine & Pipeline', () => {
       assert.ok(content.includes('15 | 30 | 45 | 60'));
     });
 
-    it('should declare ethical and validation attributes on CreativeStrategy', () => {
-      assert.ok(content.includes('is_barrier_hypothesis: boolean'));
-      assert.ok(content.includes('persuasion_techniques: PersuasionTechnique[]'));
-      assert.ok(content.includes('proof_elements: ProofElement[]'));
-      assert.ok(content.includes('narrative_structure: NarrativeStructure'));
+    it('should declare honesty and versioning fields of module 2', () => {
+      assert.ok(content.includes('is_heuristic: boolean'));
+      assert.ok(content.includes('estimated_cost_usd: string | null'));
+      assert.ok(content.includes('actual_cost_usd: string | null'));
+      assert.ok(content.includes('angles: CreativeAngle[]'));
+      assert.ok(content.includes('violations: ComplianceViolation[]'));
+      assert.ok(content.includes('severity: ViolationSeverity'));
+      assert.ok(content.includes('accepted_at: string | null'));
+      assert.ok(content.includes('parent_id: string | null'));
     });
   });
 
@@ -93,15 +113,17 @@ describe('Creative Video Ad Engine & Pipeline', () => {
 
     it('should provide full CRUD and generation methods matching backend endpoints', () => {
       const methods = [
-        'getUGCSetup',
-        'saveUGCSetup',
-        'updateUGCSetup',
+        'getCreativeConfig',
+        'saveCreativeConfig',
         'generateStrategy',
         'getStrategy',
-        'validateStrategy',
+        'chooseAngle',
         'generateStoryboard',
+        'listStoryboards',
         'getStoryboard',
         'updateStoryboard',
+        'acceptStoryboard',
+        'getStrategyCost',
         'generateVideo',
         'getVideoJob',
         'cancelVideoJob',
@@ -111,6 +133,19 @@ describe('Creative Video Ad Engine & Pipeline', () => {
       methods.forEach((m) => {
         assert.ok(content.includes(m), `creativeApi must contain ${m}`);
       });
+    });
+
+    it('should call the renamed creative-config routes, not ugc-setup', () => {
+      assert.ok(content.includes('/products/${productId}/creative-config'));
+      assert.ok(content.includes('`${CREATIVE_BASE_PATH}/creative-config`'));
+      assert.ok(!content.includes('ugc-setup'), 'deprecated ugc-setup routes must not be used');
+    });
+
+    it('should call the module 2 storyboard routes', () => {
+      assert.ok(content.includes('/strategy/${strategyId}/choose-angle'));
+      assert.ok(content.includes('/strategy/${strategyId}/storyboards'));
+      assert.ok(content.includes('/storyboard/${storyboardId}/accept'));
+      assert.ok(content.includes('/strategy/${strategyId}/cost'));
     });
 
     it('should construct correct asset download URL', () => {
@@ -134,11 +169,25 @@ describe('Creative Video Ad Engine & Pipeline', () => {
       assert.ok(content.includes('/creative'), 'product-input should navigate to /creative');
     });
 
-    it('StrategyPreview should prohibit fake testimonials and emphasize verified claims', () => {
+    it('StrategyPreview should offer a keyboard-usable angle picker and show hypotheses', () => {
       const strategyPath = path.join(process.cwd(), 'components/creative/StrategyPreview.tsx');
       const content = fs.readFileSync(strategyPath, 'utf8');
       assert.ok(content.includes('Zéro faux avis'), 'Must clearly state zero fake reviews');
-      assert.ok(content.includes('is_barrier_hypothesis'), 'Must distinguish hypotheses');
+      assert.ok(content.includes('type="radio"'), 'Angles must be a native radio group');
+      assert.ok(content.includes('<fieldset'), 'Radio group must be a labelled fieldset');
+      assert.ok(content.includes('needs_validation'), 'Must distinguish hypotheses');
+      assert.ok(content.includes('HeuristicBadge'), 'Must flag deterministic output');
+    });
+
+    it('no user-facing "UGC Setup" label remains', () => {
+      for (const file of [
+        'components/creative/CreativeAdWorkflow.tsx',
+        'components/creative/CreativeConfigForm.tsx',
+        'app/product-input/page.tsx',
+      ]) {
+        const content = fs.readFileSync(path.join(process.cwd(), file), 'utf8');
+        assert.ok(!/UGC Setup/i.test(content), `${file} still says "UGC Setup"`);
+      }
     });
 
     it('StoryboardEditor should verify scene duration sum against target duration', () => {
@@ -146,6 +195,156 @@ describe('Creative Video Ad Engine & Pipeline', () => {
       const content = fs.readFileSync(editorPath, 'utf8');
       assert.ok(content.includes('totalDuration'), 'Must compute total scene duration');
       assert.ok(content.includes('target_duration'), 'Must compare with target duration');
+    });
+  });
+
+  describe('Creative Intelligence display rules', () => {
+    it('maps a missing creative config (200 null) to null', () => {
+      assert.strictEqual(configOrNull(null), null);
+      assert.strictEqual(configOrNull(undefined), null);
+      const config = { id: 'cfg-1', product_id: 'p-1' };
+      assert.strictEqual(configOrNull(config), config);
+    });
+
+    it('labels heuristic output as a simulation, never as AI (fails closed)', () => {
+      assert.strictEqual(HEURISTIC_LABEL, 'Simulation — pas une génération IA');
+      assert.strictEqual(heuristicLabel({ is_heuristic: true }), HEURISTIC_LABEL);
+      assert.strictEqual(heuristicLabel({ is_heuristic: false }), null);
+      assert.strictEqual(heuristicLabel({}), HEURISTIC_LABEL);
+      assert.strictEqual(heuristicLabel({ is_heuristic: undefined }), HEURISTIC_LABEL);
+      assert.strictEqual(heuristicLabel(null), null);
+    });
+
+    it('formats costs without pretending a null or 0 was measured', () => {
+      assert.strictEqual(COST_NOT_MEASURED, 'non mesuré');
+      assert.strictEqual(formatCost(null), 'non mesuré');
+      assert.strictEqual(formatCost(undefined, true), 'non mesuré');
+      assert.strictEqual(formatCost('not-a-number'), 'non mesuré');
+      assert.strictEqual(formatCost('0'), 'non mesuré');
+      assert.strictEqual(formatCost('0.000000', true), '0 $ (simulation)');
+      assert.strictEqual(formatCost('0.0123'), '0.0123 $');
+    });
+
+    it('marks a real cost total as partial when a component was not measured', () => {
+      const full = {
+        is_heuristic: false,
+        analysis_cost: '0.0010',
+        strategy_cost: '0.0020',
+        storyboard_cost: '0.0030',
+      };
+      assert.strictEqual(formatCostTotal('0.0060', full), '0.0060 $');
+      const partial = { ...full, analysis_cost: null };
+      assert.match(formatCostTotal('0.0050', partial), /^partiel/);
+      assert.strictEqual(formatCostTotal(null, partial), 'non mesuré');
+      const sim = {
+        is_heuristic: true,
+        analysis_cost: '0',
+        strategy_cost: '0',
+        storyboard_cost: '0',
+      };
+      assert.strictEqual(formatCostTotal('0', sim), '0 $ (simulation)');
+    });
+
+    it('keeps every backend scene field in the PATCH payload', () => {
+      const scene = {
+        id: 'sc-1',
+        storyboard_id: 'sb-1',
+        created_at: 'x',
+        updated_at: 'y',
+        scene_order: 1,
+        duration_seconds: '5.0',
+        narrative_function: 'hook',
+        visual_type: 'product',
+        visual_description: 'Plan produit',
+        video_prompt: 'Product on table',
+        camera_movement: 'static',
+        character_ref_id: 'char-1',
+        environment_ref_id: 'env-1',
+        product_presence: 'subtle',
+        keyframe_url: 'https://k',
+        product_image_url: 'https://p',
+        feasibility_status: 'risky',
+        feasibility_score: '80.00',
+        feasibility_notes: 'note',
+        fallback_alternative: 'alt',
+        technical_risks: ['blur'],
+        acceptance_criteria: ['sharp'],
+        is_validated: false,
+        voiceover_text: null,
+        persuasive_role: 'hook',
+        constraints: [' keep logo ', '', 'no text'],
+        reference_urls: [],
+      };
+      const payload = sceneToPayload(scene);
+      for (const key of [
+        'character_ref_id',
+        'environment_ref_id',
+        'product_presence',
+        'keyframe_url',
+        'product_image_url',
+        'feasibility_status',
+        'feasibility_score',
+        'feasibility_notes',
+        'fallback_alternative',
+        'technical_risks',
+        'acceptance_criteria',
+        'is_validated',
+      ]) {
+        assert.deepStrictEqual(payload[key], scene[key], `${key} must be kept`);
+      }
+      assert.strictEqual(payload.duration_seconds, 5);
+      assert.deepStrictEqual(payload.constraints, ['keep logo', 'no text']);
+      for (const key of ['id', 'storyboard_id', 'created_at', 'updated_at', 'voiceover_text']) {
+        assert.ok(!(key in payload), `${key} must not be sent`);
+      }
+    });
+
+    describe('accept-disabled rule', () => {
+      const base = {
+        version: 3,
+        is_latest: true,
+        accepted: false,
+        generation_status: 'completed',
+        violations: [],
+      };
+
+      it('allows accepting the latest clean version', () => {
+        assert.strictEqual(acceptBlockReason(base), null);
+      });
+
+      it('allows warnings', () => {
+        const sb = { ...base, violations: [{ severity: 'warn' }] };
+        assert.strictEqual(acceptBlockReason(sb), null);
+      });
+
+      it('blocks on any block violation', () => {
+        const sb = { ...base, violations: [{ severity: 'warn' }, { severity: 'block' }] };
+        assert.match(acceptBlockReason(sb), /bloquantes/);
+      });
+
+      it('blocks a version the backend says is not the latest', () => {
+        assert.match(acceptBlockReason({ ...base, is_latest: false }), /dernière version/);
+      });
+
+      it('fails closed when is_latest is missing', () => {
+        const noFlag = { ...base };
+        delete noFlag.is_latest;
+        assert.match(acceptBlockReason(noFlag), /dernière version/);
+      });
+
+      it('blocks with unsaved edits or a request in flight', () => {
+        assert.match(acceptBlockReason(base, { dirty: true }), /modifications/);
+        assert.match(acceptBlockReason(base, { busy: true }), /en cours/);
+      });
+
+      it('blocks an already accepted or unfinished version', () => {
+        assert.match(acceptBlockReason({ ...base, accepted: true }), /déjà acceptée/);
+        assert.match(
+          acceptBlockReason({ ...base, generation_status: 'processing' }),
+          /pas terminée/,
+        );
+        assert.ok(acceptBlockReason(null));
+      });
     });
   });
 });
