@@ -1,8 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Sparkles, Sliders, Lightbulb, Film, Play, RotateCw, AlertCircle } from 'lucide-react';
+import {
+  Sparkles,
+  Sliders,
+  Lightbulb,
+  Film,
+  Images,
+  Play,
+  RotateCw,
+  AlertCircle,
+} from 'lucide-react';
 import { useCreative } from '../../hooks/use-creative';
+import { useAssets } from '../../hooks/use-assets';
+import { AssetBoard } from '../assets/AssetBoard';
 import { ProductSheetView } from './ProductSheetView';
 import { CreativeConfigForm } from './CreativeConfigForm';
 import { StrategyPreview } from './StrategyPreview';
@@ -18,11 +29,13 @@ const ANALYSIS_MISSING = "Lancez d'abord l'analyse produit";
 
 interface Props {
   productId: string;
-  initialStep?: 1 | 2 | 3 | 4 | 5;
+  initialStep?: Step;
 }
 
+type Step = 1 | 2 | 3 | 4 | 5 | 6;
+
 export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
-  const [userSelectedStep, setUserSelectedStep] = useState<1 | 2 | 3 | 4 | 5 | null>(null);
+  const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(null);
 
   const {
     creativeConfig,
@@ -52,9 +65,41 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   } = useCreative(productId);
 
   // Derive current step automatically from loaded/completed resources if user hasn't manually selected a step
-  const currentStep: 1 | 2 | 3 | 4 | 5 =
+  const currentStep: Step =
     userSelectedStep ??
-    (activeJob ? 5 : storyboard ? 4 : strategy ? 3 : creativeConfig ? 2 : initialStep);
+    (activeJob
+      ? 6
+      : storyboard?.accepted
+        ? 5
+        : storyboard
+          ? 4
+          : strategy
+            ? 3
+            : creativeConfig
+              ? 2
+              : initialStep);
+
+  // Visuals belong to one accepted storyboard; a new (non-accepted) version falls back to the gate.
+  const assets = useAssets(storyboard?.accepted ? storyboard.id : null);
+  const bannerError = error ?? assets.error;
+
+  // Same gate as the storyboard step (backend: sum(duration_s) == target ± 0.5), plus any
+  // asset operation in flight.
+  const launchDisabledReason = (() => {
+    if (!storyboard) return null;
+    const total = storyboard.scenes.reduce((acc, sc) => acc + Number(sc.duration_seconds || 0), 0);
+    const target = storyboard.spec?.target_duration ?? storyboard.target_duration;
+    if (Math.abs(total - target) > 0.5) {
+      return 'La durée totale des plans ne correspond pas à la durée cible : ajustez le storyboard.';
+    }
+    if (assets.isLoading) return 'Chargement des visuels…';
+    if (assets.isPreparing || assets.busyPlanId) return 'Une opération est en cours.';
+    return null;
+  })();
+  const dismissError = () => {
+    resetError();
+    assets.resetError();
+  };
 
   const handleConfigSubmit = async (payload: CreativeConfigCreatePayload) => {
     const saved = await saveCreativeConfig(payload);
@@ -87,7 +132,10 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
     if (!storyboard) return;
     const job = await startVideoGeneration(productId, storyboard.id);
     if (job) {
-      setUserSelectedStep(5);
+      setUserSelectedStep(6);
+    } else {
+      // e.g. 409 "Préparation des visuels en cours": refresh what the board shows.
+      void assets.reload();
     }
   };
 
@@ -95,13 +143,14 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
     <div className="space-y-8">
       {/* Step Navigation Header */}
       <div className="bg-white rounded-2xl border border-zinc-200/80 p-4 shadow-2xs">
-        <div className="flex items-center justify-between overflow-x-auto gap-2">
+        <div className="relative flex items-center justify-between overflow-x-auto gap-2">
           {[
             { num: 1, label: 'Intelligence', icon: Sparkles },
             { num: 2, label: 'Configuration créative', icon: Sliders },
             { num: 3, label: 'Stratégie', icon: Lightbulb },
             { num: 4, label: 'Storyboard', icon: Film },
-            { num: 5, label: 'Génération', icon: Play },
+            { num: 5, label: 'Visuels produit', icon: Images },
+            { num: 6, label: 'Génération', icon: Play },
           ].map((s) => {
             const Icon = s.icon;
             const isActive = currentStep === s.num;
@@ -111,7 +160,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
               <button
                 key={s.num}
                 type="button"
-                onClick={() => setUserSelectedStep(s.num as 1 | 2 | 3 | 4 | 5)}
+                onClick={() => setUserSelectedStep(s.num as Step)}
                 aria-current={isActive ? 'step' : undefined}
                 className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
                   isActive
@@ -142,17 +191,17 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
       </div>
 
       {/* Global Error Banner (409 = precondition such as a missing product analysis) */}
-      {error && (
+      {bannerError && (
         <div
           role="alert"
           className="p-4 rounded-xl bg-red-50 border border-red-200 flex flex-wrap items-center justify-between gap-3 text-xs text-red-700"
         >
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" aria-hidden />
-            <span>{error}</span>
+            <span>{bannerError}</span>
           </div>
           <div className="flex items-center gap-3">
-            {errorStatus === 409 && currentStep !== 1 && error.startsWith(ANALYSIS_MISSING) && (
+            {errorStatus === 409 && currentStep !== 1 && error?.startsWith(ANALYSIS_MISSING) && (
               <button
                 type="button"
                 onClick={() => {
@@ -166,7 +215,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             )}
             <button
               type="button"
-              onClick={resetError}
+              onClick={dismissError}
               className="text-red-500 hover:text-red-800 font-bold"
             >
               Fermer
@@ -232,7 +281,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
               cost={cost}
               onSave={handleSaveStoryboard}
               onAccept={async () => {
-                await acceptStoryboard(storyboard.id);
+                if (await acceptStoryboard(storyboard.id)) setUserSelectedStep(5);
               }}
               onSelectVersion={async (id) => {
                 await loadStoryboard(id);
@@ -242,11 +291,10 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                   await handleGenerateStoryboard(strategy.chosen_angle_id, true);
                 }
               }}
-              onLaunchVideo={handleLaunchVideo}
+              onPrepareAssets={() => setUserSelectedStep(5)}
               isUpdating={isUpdatingStoryboard}
               isAccepting={isAcceptingStoryboard}
               isGenerating={isGeneratingStoryboard}
-              isLaunching={isStartingJob}
             />
           ) : isGeneratingStoryboard ? (
             <div className="p-12 text-center space-y-3" role="status">
@@ -263,8 +311,43 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
         </>
       )}
 
-      {/* STEP 5: Video Generation Job Tracker */}
-      {currentStep === 5 && (
+      {/* STEP 5: Product visuals (asset pipeline) */}
+      {currentStep === 5 &&
+        (storyboard?.accepted ? (
+          <AssetBoard
+            storyboard={storyboard}
+            board={assets.board}
+            launchDisabledReason={launchDisabledReason}
+            isLoading={assets.isLoading}
+            loadError={assets.loadError}
+            isPreparing={assets.isPreparing}
+            isLaunching={isStartingJob}
+            busyPlanId={assets.busyPlanId}
+            liveMessage={assets.liveMessage}
+            productId={productId}
+            onPrepare={() => void assets.prepare()}
+            onReload={() => void assets.reload()}
+            onOverride={assets.setSourceMode}
+            onRetry={assets.retry}
+            onLaunchVideo={() => void handleLaunchVideo()}
+          />
+        ) : (
+          <div className="space-y-3 p-12 text-center">
+            <p className="text-sm text-ink-muted">
+              Acceptez une version du storyboard pour préparer les visuels produit.
+            </p>
+            <button
+              type="button"
+              onClick={() => setUserSelectedStep(4)}
+              className="inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-trend-orange hover:text-trend-orange-strong focus-visible:outline-2 focus-visible:outline-trend-orange"
+            >
+              Retour au storyboard
+            </button>
+          </div>
+        ))}
+
+      {/* STEP 6: Video Generation Job Tracker */}
+      {currentStep === 6 && (
         <>
           {isStartingJob && (
             <div className="p-12 text-center space-y-3">
@@ -278,8 +361,13 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             <VideoGenerationTracker
               job={activeJob}
               onCancel={cancelVideoGeneration}
-              onRetry={() => (activeJob ? retryVideoGeneration(activeJob.id) : handleLaunchVideo())}
+              onRetry={() => retryVideoGeneration(activeJob.id)}
             />
+          )}
+          {!isStartingJob && !activeJob && (
+            <p className="p-12 text-center text-sm text-zinc-500">
+              Aucune génération en cours : lancez la vidéo depuis l&apos;étape Visuels produit.
+            </p>
           )}
         </>
       )}

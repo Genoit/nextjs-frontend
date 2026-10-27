@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { CheckCircle2, Clock, History, Play, RotateCw, Save } from 'lucide-react';
+import { CheckCircle2, Clock, History, Images, RotateCw, Save } from 'lucide-react';
 import {
   PersuasiveRole,
   Storyboard,
@@ -11,6 +11,7 @@ import {
   StrategyCost,
 } from '../../lib/types/creative';
 import {
+  ROLE_LABELS,
   acceptBlockReason,
   formatCost,
   formatCostTotal,
@@ -26,22 +27,12 @@ interface Props {
   onAccept: () => Promise<void>;
   onSelectVersion: (storyboardId: string) => Promise<void>;
   onRegenerate: () => Promise<void>;
-  onLaunchVideo: () => Promise<void>;
+  /** Go to step 5 (product visuals). */
+  onPrepareAssets: () => void;
   isUpdating?: boolean;
   isAccepting?: boolean;
   isGenerating?: boolean;
-  isLaunching?: boolean;
 }
-
-const ROLE_LABELS: Record<PersuasiveRole, string> = {
-  hook: 'Accroche',
-  problem: 'Problème',
-  demo: 'Démonstration',
-  proof: 'Preuve',
-  contrast: 'Contraste',
-  cta: "Appel à l'action",
-  other: 'Autre',
-};
 
 const inputClass =
   'w-full px-3 py-2 rounded-xl border border-zinc-200 text-xs text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#BA3807] disabled:bg-zinc-50';
@@ -54,11 +45,10 @@ export function StoryboardEditor({
   onAccept,
   onSelectVersion,
   onRegenerate,
-  onLaunchVideo,
+  onPrepareAssets,
   isUpdating = false,
   isAccepting = false,
   isGenerating = false,
-  isLaunching = false,
 }: Props) {
   const [editedScenes, setEditedScenes] = useState<StoryboardScene[]>(storyboard.scenes);
   const [title, setTitle] = useState(storyboard.title);
@@ -333,6 +323,11 @@ export function StoryboardEditor({
                       'Storyboards (toutes versions)',
                       formatCost(cost.storyboard_cost, cost.is_heuristic),
                     ],
+                    ...(cost.asset_cost !== undefined
+                      ? ([
+                          ['Visuels produit', formatCost(cost.asset_cost, cost.is_heuristic)],
+                        ] as const)
+                      : []),
                     ['Total estimé', formatCostTotal(cost.total_estimated, cost)],
                     ['Total réel', formatCostTotal(cost.total_actual, cost)],
                   ] as const
@@ -348,13 +343,13 @@ export function StoryboardEditor({
 
           <button
             type="button"
-            onClick={onLaunchVideo}
-            disabled={isLaunching || !storyboard.accepted || !isDurationMatching}
+            onClick={onPrepareAssets}
+            disabled={!storyboard.accepted || !isDurationMatching}
             aria-describedby="launch-hint"
             className="w-full px-5 py-2.5 rounded-xl bg-[#BA3807] hover:bg-[#9A2D04] disabled:opacity-50 text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-2"
           >
-            <Play className="w-4 h-4 fill-white" aria-hidden />
-            <span>{isLaunching ? 'Lancement…' : 'Générer la vidéo MP4'}</span>
+            <Images className="w-4 h-4" aria-hidden />
+            <span>Préparer les visuels produit</span>
           </button>
           <p id="launch-hint" className="text-[11px] text-zinc-500">
             Disponible une fois une version acceptée.

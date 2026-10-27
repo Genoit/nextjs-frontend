@@ -146,11 +146,12 @@ export async function refreshSession(): Promise<AuthResponse> {
   return refreshPromise;
 }
 
-export async function fetchWithAuth<T>(
+/** Authenticated request (token refresh + one retry); the caller reads the body. */
+export async function fetchResponseWithAuth(
   endpoint: string,
   init: RequestInit = {},
   explicitToken?: string,
-): Promise<T> {
+): Promise<Response> {
   const baseUrl = getApiBaseUrl();
   const url = endpoint.startsWith('http')
     ? endpoint
@@ -187,7 +188,22 @@ export async function fetchWithAuth<T>(
     }
   }
 
-  return handleResponse<T>(response);
+  return response;
+}
+
+export async function fetchWithAuth<T>(
+  endpoint: string,
+  init: RequestInit = {},
+  explicitToken?: string,
+): Promise<T> {
+  return handleResponse<T>(await fetchResponseWithAuth(endpoint, init, explicitToken));
+}
+
+/** Binary body (e.g. a protected image) as a Blob; errors are raised like fetchWithAuth. */
+export async function fetchBlobWithAuth(endpoint: string): Promise<Blob> {
+  const response = await fetchResponseWithAuth(endpoint, { method: 'GET' });
+  if (!response.ok) await handleResponse(response);
+  return response.blob();
 }
 
 async function authenticatedRequest<T>(

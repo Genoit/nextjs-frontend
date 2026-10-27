@@ -422,18 +422,44 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
       setActiveJob(null);
       setErrorState(null);
       if (!initialProductId) return;
+      const epoch = epochRef.current;
+      const stale = () => isCancelled || epoch !== epochRef.current;
       try {
         const data = await creativeApi.getCreativeConfig(initialProductId);
         if (!isCancelled) setCreativeConfig(data);
       } catch (err: unknown) {
         if (!isCancelled) fail(err, 'Impossible de charger la configuration créative.');
       }
+      if (stale()) return;
+      // Restore the work after a reload: latest strategy, then its accepted (else latest)
+      // storyboard version through loadStoryboard, then versions + cost. Never blocks the page.
+      try {
+        const latest = await creativeApi.getLatestStrategy(initialProductId);
+        if (stale() || !latest) return;
+        setStrategy(latest);
+        const versions = await creativeApi.listStoryboards(latest.id);
+        if (stale() || versions.length === 0) return;
+        const pick =
+          versions.find((v) => v.accepted) ??
+          versions.reduce((a, b) => (b.version > a.version ? b : a));
+        const sb = await loadStoryboard(pick.id);
+        if (stale()) return;
+        if (!sb) throw new Error('storyboard');
+        await refreshStoryboardContext(latest.id, epoch);
+      } catch {
+        if (stale()) return;
+        setStrategy(null);
+        setStoryboard(null);
+        setStoryboardVersions([]);
+        setCost(null);
+        setErrorState({ message: 'Impossible de restaurer la stratégie.', status: null });
+      }
     };
     void load();
     return () => {
       isCancelled = true;
     };
-  }, [initialProductId, fail, stopPolling]);
+  }, [initialProductId, fail, stopPolling, loadStoryboard, refreshStoryboardContext]);
 
   return {
     creativeConfig,

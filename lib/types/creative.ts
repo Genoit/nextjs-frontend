@@ -292,6 +292,8 @@ export interface StrategyCost {
   analysis_cost: string | null;
   strategy_cost: string | null;
   storyboard_cost: string | null;
+  /** Asset pipeline jobs of the accepted storyboard (module 3); absent on older backends. */
+  asset_cost?: string | null;
   total_estimated: string | null;
   total_actual: string | null;
   is_heuristic: boolean;

@@ -1,7 +1,13 @@
 import { BookOpen } from 'lucide-react';
 
 /** The real ad flow. Only step 1 lives on this screen; later steps need a saved product. */
-export const FLOW_STEPS = ['Produit', 'Analyse produit', 'Configuration créative', 'Storyboard'];
+export const FLOW_STEPS = [
+  'Produit',
+  'Analyse produit',
+  'Configuration créative',
+  'Storyboard',
+  'Visuels produit',
+];
 
 export function StepRail({ onOpenGuide }: { onOpenGuide: () => void }) {
   return (

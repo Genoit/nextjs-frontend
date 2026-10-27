@@ -64,6 +64,14 @@ export const creativeApi = {
   },
 
   /**
+   * Latest strategy of a product, or null when none exists (the API answers 200 `null`).
+   */
+  async getLatestStrategy(productId: string): Promise<CreativeStrategy | null> {
+    const url = `${CREATIVE_BASE_PATH}/products/${productId}/strategy`;
+    return configOrNull(await fetchWithAuth<CreativeStrategy | null>(url, { method: 'GET' }));
+  },
+
+  /**
    * Choose the angle the storyboard will be generated from
    */
   async chooseAngle(strategyId: string, angleId: string): Promise<CreativeStrategy> {
