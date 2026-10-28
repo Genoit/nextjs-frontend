@@ -11,8 +11,10 @@ import {
   StoryboardUpdatePayload,
   StoryboardVersionSummary,
   StrategyCost,
+  QualityTier,
   VideoGenerationJob,
 } from '../lib/types/creative';
+import { isTerminalJob, shotTransitionMessage } from '../lib/render-rules.mjs';
 
 export interface UseCreativeReturn {
   // State
@@ -22,6 +24,8 @@ export interface UseCreativeReturn {
   storyboardVersions: StoryboardVersionSummary[];
   cost: StrategyCost | null;
   activeJob: VideoGenerationJob | null;
+  /** Polite live-region text for shot status changes ("Plan 2 : Terminé."). */
+  jobLiveMessage: string;
 
   // Loading & Error flags
   isSavingConfig: boolean;
@@ -56,9 +60,12 @@ export interface UseCreativeReturn {
   startVideoGeneration: (
     productId: string,
     storyboardId: string,
+    qualityTier?: QualityTier,
   ) => Promise<VideoGenerationJob | null>;
   cancelVideoGeneration: (jobId: string) => Promise<void>;
   retryVideoGeneration: (jobId: string) => Promise<VideoGenerationJob | null>;
+  /** Confirmed re-render of a shot that may already have been billed. */
+  rerenderShot: (jobId: string, shotId: string) => Promise<boolean>;
   resetError: () => void;
 }
 
@@ -82,6 +89,9 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
   );
 
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  // Last job shown: the poll diffs against it for the live announcement.
+  const jobRef = useRef<VideoGenerationJob | null>(null);
+  const [jobLiveMessage, setJobLiveMessage] = useState('');
 
   const resetError = useCallback(() => setErrorState(null), []);
   const fail = useCallback((err: unknown, fallback: string) => {
@@ -295,18 +305,84 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     [fail, refreshStoryboardContext],
   );
 
-  // Polling helper
+  // Polling helper. pollSeq is bumped on every stop/restart: an in-flight poll that resolves
+  // afterwards (e.g. after a cancel, retry or rerender) is dropped instead of overwriting.
+  const pollSeqRef = useRef(0);
   const stopPolling = useCallback(() => {
+    pollSeqRef.current += 1;
     if (pollIntervalRef.current) {
-      clearInterval(pollIntervalRef.current);
+      clearTimeout(pollIntervalRef.current);
       pollIntervalRef.current = null;
     }
     setIsPollingJob(false);
   }, []);
 
+  // The live region is cleared first so a message identical to the previous one is re-announced.
+  const announce = useCallback((message: string) => {
+    setJobLiveMessage('');
+    setTimeout(() => setJobLiveMessage(message), 100);
+  }, []);
+
+  const showJob = useCallback(
+    (next: VideoGenerationJob) => {
+      const prev = jobRef.current;
+      const message = prev && prev.id === next.id ? shotTransitionMessage(prev, next) : '';
+      jobRef.current = next;
+      setActiveJob(next);
+      if (message) announce(message);
+    },
+    [announce],
+  );
+
   // 5. Video Generation Job
+  // Shows a job and polls it (chained 2 s timeouts, never overlapping) until it settles.
+  // settlePolls: extra polls after a terminal state (cancel: costs still reconciling).
+  const trackJob = useCallback(
+    (job: VideoGenerationJob, settlePolls = 0) => {
+      stopPolling();
+      const seq = pollSeqRef.current;
+      if (jobRef.current?.id !== job.id) setJobLiveMessage('');
+      showJob(job);
+      let extra = settlePolls;
+      let refetchedForShots = false;
+      // true = keep polling. A terminal job without shots is fetched once more before
+      // settling: the per-shot data (mock flags) may land just after the status.
+      const keepPolling = (j: VideoGenerationJob) => {
+        if (!isTerminalJob(j.status)) return true;
+        if (!j.shots?.length && !refetchedForShots) {
+          refetchedForShots = true;
+          return true;
+        }
+        if (extra > 0) {
+          extra -= 1;
+          return true;
+        }
+        return false;
+      };
+      if (!keepPolling(job)) return;
+      setIsPollingJob(true);
+      const tick = async () => {
+        let again = true;
+        try {
+          const updated = await creativeApi.getVideoJob(job.id);
+          if (seq !== pollSeqRef.current) return;
+          showJob(updated);
+          again = keepPolling(updated);
+        } catch {
+          // Keep polling on intermittent network failure
+        }
+        if (seq !== pollSeqRef.current) return;
+        if (again) pollIntervalRef.current = setTimeout(tick, 2000);
+        else stopPolling();
+      };
+      pollIntervalRef.current = setTimeout(tick, 2000);
+    },
+    [showJob, stopPolling],
+  );
+
   const startVideoGeneration = useCallback(
-    async (productId: string, storyboardId: string) => {
+    async (productId: string, storyboardId: string, qualityTier: QualityTier = 'standard') => {
+      const epoch = epochRef.current;
       setIsStartingJob(true);
       setErrorState(null);
       stopPolling();
@@ -315,87 +391,82 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
         const job = await creativeApi.generateVideo({
           product_id: productId,
           storyboard_id: storyboardId,
+          quality_tier: qualityTier,
         });
-        setActiveJob(job);
-
-        // Start polling if not already finished
-        if (job.status !== 'completed' && job.status !== 'failed' && job.status !== 'cancelled') {
-          setIsPollingJob(true);
-          pollIntervalRef.current = setInterval(async () => {
-            try {
-              const updated = await creativeApi.getVideoJob(job.id);
-              setActiveJob(updated);
-              if (
-                updated.status === 'completed' ||
-                updated.status === 'failed' ||
-                updated.status === 'cancelled'
-              ) {
-                stopPolling();
-              }
-            } catch {
-              // Keep polling on intermittent network failure
-            }
-          }, 2000);
-        }
+        if (epoch !== epochRef.current) return null;
+        trackJob(job);
         return job;
       } catch (err: unknown) {
-        fail(err, 'Erreur lors du lancement de la génération vidéo.');
+        if (epoch === epochRef.current) {
+          fail(err, 'Erreur lors du lancement de la génération vidéo.');
+        }
         return null;
       } finally {
         setIsStartingJob(false);
       }
     },
-    [fail, stopPolling],
+    [fail, stopPolling, trackJob],
   );
 
   const cancelVideoGeneration = useCallback(
     async (jobId: string) => {
+      const epoch = epochRef.current;
       try {
         const job = await creativeApi.cancelVideoJob(jobId);
-        setActiveJob(job);
-        stopPolling();
+        if (epoch !== epochRef.current) return;
+        // In-flight attempts are still polled server-side for their cost: follow them a bit.
+        trackJob(job, 2);
       } catch (err: unknown) {
-        fail(err, "Erreur lors de l'annulation de la vidéo.");
+        if (epoch === epochRef.current) fail(err, "Erreur lors de l'annulation de la vidéo.");
       }
     },
-    [fail, stopPolling],
+    [fail, trackJob],
   );
 
   const retryVideoGeneration = useCallback(
     async (jobId: string) => {
+      const epoch = epochRef.current;
       setIsStartingJob(true);
       setErrorState(null);
       stopPolling();
       try {
         const job = await creativeApi.retryJob(jobId);
-        setActiveJob(job);
-        if (job.status !== 'completed' && job.status !== 'failed' && job.status !== 'cancelled') {
-          setIsPollingJob(true);
-          pollIntervalRef.current = setInterval(async () => {
-            try {
-              const updated = await creativeApi.getVideoJob(job.id);
-              setActiveJob(updated);
-              if (
-                updated.status === 'completed' ||
-                updated.status === 'failed' ||
-                updated.status === 'cancelled'
-              ) {
-                stopPolling();
-              }
-            } catch {
-              // Ignore polling blips
-            }
-          }, 2000);
-        }
+        if (epoch !== epochRef.current) return null;
+        trackJob(job);
         return job;
       } catch (err: unknown) {
-        fail(err, 'Erreur lors de la reprise du rendu vidéo.');
+        if (epoch === epochRef.current) fail(err, 'Erreur lors de la reprise du rendu vidéo.');
         return null;
       } finally {
         setIsStartingJob(false);
       }
     },
-    [fail, stopPolling],
+    [fail, stopPolling, trackJob],
+  );
+
+  const rerenderShot = useCallback(
+    async (jobId: string, shotId: string) => {
+      const epoch = epochRef.current;
+      setErrorState(null);
+      try {
+        await creativeApi.rerenderShot(jobId, shotId, { confirm_cost: true });
+      } catch (err: unknown) {
+        if (epoch === epochRef.current) fail(err, 'Erreur lors de la relance du plan.');
+        return false;
+      }
+      // The paid rerender is accepted: never report failure from here on (no second click).
+      if (epoch !== epochRef.current) return true;
+      const current = jobRef.current;
+      try {
+        const job = await creativeApi.getVideoJob(jobId);
+        if (epoch === epochRef.current) trackJob(job);
+      } catch {
+        // Poll at least once more so the new attempt shows up.
+        if (epoch === epochRef.current && current?.id === jobId) trackJob(current, 1);
+      }
+      return true;
+    },
+    [fail, trackJob],
   );
 
   // Clean up timer on unmount
@@ -420,6 +491,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
       setStoryboardVersions([]);
       setCost(null);
       setActiveJob(null);
+      jobRef.current = null;
       setErrorState(null);
       if (!initialProductId) return;
       const epoch = epochRef.current;
@@ -468,6 +540,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     storyboardVersions,
     cost,
     activeJob,
+    jobLiveMessage,
     isSavingConfig,
     isGeneratingStrategy,
     isGeneratingStoryboard,
@@ -487,6 +560,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     startVideoGeneration,
     cancelVideoGeneration,
     retryVideoGeneration,
+    rerenderShot,
     resetError,
   };
 }

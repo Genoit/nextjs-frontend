@@ -30,8 +30,13 @@ export const assetsApi = {
     });
   },
 
+  /** Endpoint of an owner-only media asset (image or clip). */
+  mediaPath(assetId: string): string {
+    return `${CREATIVE_BASE_PATH}/media-assets/${assetId}`;
+  },
+
   /** Owner-only image bytes: needs the Bearer token, so it cannot be an <img src> URL. */
   async getMediaBlob(assetId: string): Promise<Blob> {
-    return fetchBlobWithAuth(`${CREATIVE_BASE_PATH}/media-assets/${assetId}`);
+    return fetchBlobWithAuth(this.mediaPath(assetId));
   },
 };

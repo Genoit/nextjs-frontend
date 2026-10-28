@@ -6,7 +6,14 @@ export type NarrativeFunction =
 export type SceneVisualType = 'human' | 'product' | 'hybrid';
 export type StoryboardStatus = 'draft' | 'validated' | 'generating' | 'completed' | 'failed';
 export type JobStatus =
-  'pending' | 'processing' | 'rendering' | 'assembling' | 'completed' | 'failed' | 'cancelled';
+  | 'pending'
+  | 'processing'
+  | 'rendering'
+  | 'assembling'
+  | 'completed'
+  | 'failed'
+  | 'blocked'
+  | 'cancelled';
 export type AssetType = 'final_video' | 'scene_clip' | 'audio_voiceover' | 'thumbnail';
 
 export type CreativeConceptType =
@@ -294,6 +301,8 @@ export interface StrategyCost {
   storyboard_cost: string | null;
   /** Asset pipeline jobs of the accepted storyboard (module 3); absent on older backends. */
   asset_cost?: string | null;
+  /** Every render attempt of the accepted storyboard (module 4); absent on older backends. */
+  video_cost?: string | null;
   total_estimated: string | null;
   total_actual: string | null;
   is_heuristic: boolean;
@@ -404,11 +413,90 @@ export interface StoryboardUpdatePayload {
   scenes?: StoryboardSceneCreatePayload[];
 }
 
+export type QualityTier = 'draft' | 'standard' | 'premium';
+
 export interface VideoGenerationJobCreatePayload {
   product_id: string;
   storyboard_id: string;
+  /** Pins an engine; the API answers 409 when it is not eligible. */
   provider_name?: string;
+  quality_tier?: QualityTier;
+  /** USD, > 0 and <= 100; backend default when omitted. */
+  budget_usd?: string | number;
   idempotency_key?: string;
+}
+
+export type ShotRenderStatus =
+  | 'pending'
+  | 'routing'
+  | 'rendering'
+  | 'completed'
+  | 'failed'
+  | 'blocked'
+  | 'needs_action'
+  | 'cancelled';
+
+export interface RouteCandidate {
+  provider: string;
+  model: string;
+  display_name?: string | null;
+  eligible: boolean;
+  /** Router reason code (blueprint §3) when not eligible. */
+  rejected_reason?: string | null;
+  score?: number | null;
+  success_rate?: number | string | null;
+  sample_size?: number | null;
+  est_cost_usd?: string | null;
+}
+
+export interface ShotRouting {
+  reason_code: string;
+  /** French one-line explanation. */
+  summary: string;
+  candidates: RouteCandidate[];
+}
+
+export interface RenderAttempt {
+  id: string;
+  attempt_no: number;
+  provider: string;
+  model: string;
+  status: string;
+  error_kind?: string | null;
+  /** French. */
+  error_text?: string | null;
+  estimated_cost_usd?: string | null;
+  actual_cost_usd?: string | null;
+  cost_reconciled?: boolean;
+  possibly_billed?: boolean;
+  submitted_at?: string | null;
+  completed_at?: string | null;
+  latency_ms?: number | null;
+}
+
+/** ShotRenderResponse (module 4 model router). */
+export interface ShotRender {
+  shot_id: string;
+  scene_id: string;
+  scene_order: number;
+  persuasive_role?: string | null;
+  shot_class?: string | null;
+  status: ShotRenderStatus;
+  provider?: string | null;
+  model?: string | null;
+  display_name?: string | null;
+  /** Missing counts as a simulation (fail closed). */
+  is_mock?: boolean;
+  resolution?: string | null;
+  duration_shot_s?: number | string | null;
+  duration_billed_s?: number | string | null;
+  routing?: ShotRouting | null;
+  attempts: RenderAttempt[];
+  estimated_cost_usd?: string | null;
+  actual_cost_usd?: string | null;
+  clip_asset_id?: string | null;
+  clip_url?: string | null;
+  action?: 'confirm_rerender' | 'pick_engine' | null;
 }
 
 export interface GeneratedAsset {
@@ -460,8 +548,14 @@ export interface VideoGenerationJob {
   current_step?: string | null;
   error_message?: string | null;
   retry_count: number;
-  estimated_cost?: number | null;
-  actual_cost?: number | null;
+  estimated_cost?: number | string | null;
+  actual_cost?: number | string | null;
+  quality_tier?: QualityTier;
+  budget_usd?: string | null;
+  budget_remaining_usd?: string | null;
+  cost_is_heuristic?: boolean;
+  /** Per-shot renders (module 4); absent on jobs created before the model router. */
+  shots?: ShotRender[];
   started_at?: string | null;
   completed_at?: string | null;
   created_at: string;

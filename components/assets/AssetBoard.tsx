@@ -28,6 +28,8 @@ interface Props {
   onOverride: (planId: string, mode: SourceMode) => Promise<boolean>;
   onRetry: (planId: string) => Promise<void>;
   onLaunchVideo: () => void;
+  /** Extra controls next to the launch button (e.g. the video quality tier). */
+  launchOptions?: React.ReactNode;
 }
 
 /** Step 5: which product image each shot uses, and whether it can be trusted. */
@@ -47,6 +49,7 @@ export function AssetBoard({
   onOverride,
   onRetry,
   onLaunchVideo,
+  launchOptions,
 }: Props) {
   const scenes = [...storyboard.scenes].sort((a, b) => a.scene_order - b.scene_order);
   const noProduct = scenes.every((s) => !s.reference_urls?.length);
@@ -94,6 +97,7 @@ export function AssetBoard({
         )}
         {showLaunch && (
           <div className="flex w-full flex-col gap-1.5 sm:w-auto sm:items-end">
+            {launchOptions}
             <button
               type="button"
               onClick={onLaunchVideo}

@@ -328,6 +328,9 @@ export function StoryboardEditor({
                           ['Visuels produit', formatCost(cost.asset_cost, cost.is_heuristic)],
                         ] as const)
                       : []),
+                    ...(cost.video_cost !== undefined
+                      ? ([['Vidéo', formatCost(cost.video_cost, cost.is_heuristic)]] as const)
+                      : []),
                     ['Total estimé', formatCostTotal(cost.total_estimated, cost)],
                     ['Total réel', formatCostTotal(cost.total_actual, cost)],
                   ] as const

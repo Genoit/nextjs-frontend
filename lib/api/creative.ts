@@ -175,6 +175,19 @@ export const creativeApi = {
   },
 
   /**
+   * Re-render one shot whose previous attempt may already have been billed (409 without
+   * confirm_cost, 409 over budget).
+   */
+  async rerenderShot(
+    jobId: string,
+    shotId: string,
+    body: { confirm_cost: true; provider_name?: string },
+  ): Promise<unknown> {
+    const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/shots/${shotId}/rerender`;
+    return fetchWithAuth<unknown>(url, { method: 'POST', body: JSON.stringify(body) });
+  },
+
+  /**
    * List available AI video providers and hardware capability summaries
    */
   async getProviders(): Promise<ModelCapabilitySummary[]> {
@@ -260,6 +273,11 @@ export const creativeApi = {
    * Get direct download URL for a generated video asset (MP4)
    */
   getAssetDownloadUrl(assetId: string): string {
-    return `${getApiBaseUrl()}${CREATIVE_BASE_PATH}/assets/${assetId}/download`;
+    return `${getApiBaseUrl()}${this.assetDownloadPath(assetId)}`;
+  },
+
+  /** Endpoint of a generated asset (MP4), for fetchBlobWithAuth: it needs the Bearer token. */
+  assetDownloadPath(assetId: string): string {
+    return `${CREATIVE_BASE_PATH}/assets/${assetId}/download`;
   },
 };
