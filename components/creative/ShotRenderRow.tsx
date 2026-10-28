@@ -7,19 +7,24 @@ import {
   Check,
   CircleSlash,
   Clock,
+  Eye,
   Hand,
   HelpCircle,
   Loader2,
   RotateCw,
   X,
 } from 'lucide-react';
-import { RenderAttempt, ShotRender } from '../../lib/types/creative';
+import { QualityCheck, RenderAttempt, ShotQuality, ShotRender } from '../../lib/types/creative';
 import { formatCost } from '../../lib/creative-rules.mjs';
 import {
   durationText,
   isMock,
+  CHECK_STATUS_LABELS,
+  checkLabel,
   isPossiblyBilled,
+  measuredText,
   possiblyBilledText,
+  qualityView,
   routeReasonText,
   shotAction,
   shotStatusView,
@@ -39,6 +44,8 @@ const PILL: Record<string, { className: string; Icon: typeof Check }> = {
   pending: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: Clock },
   routing: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: Loader2 },
   rendering: { className: 'border-line bg-cream text-ink', Icon: Loader2 },
+  checking: { className: 'border-line bg-cream text-ink', Icon: Loader2 },
+  quality_review: { className: 'border-amber-300 bg-amber-100 text-amber-900', Icon: Eye },
   completed: { className: 'border-emerald-200 bg-emerald-50 text-emerald-800', Icon: Check },
   failed: { className: 'border-red-200 bg-red-50 text-red-800', Icon: AlertTriangle },
   blocked: { className: 'border-red-200 bg-red-50 text-red-800', Icon: Ban },
@@ -61,7 +68,7 @@ const ATTEMPT_STATUS: Record<string, string> = {
 
 function ShotPill({ statusKey, label }: { statusKey: string; label: string }) {
   const { className, Icon } = PILL[statusKey] ?? PILL.unknown;
-  const spinning = statusKey === 'routing' || statusKey === 'rendering';
+  const spinning = statusKey === 'routing' || statusKey === 'rendering' || statusKey === 'checking';
   return (
     <span
       className={`inline-flex min-h-7 items-center gap-1.5 rounded-full border px-2.5 text-xs font-semibold ${className}`}
@@ -228,19 +235,102 @@ function AttemptItem({ attempt, simulated }: { attempt: RenderAttempt; simulated
   );
 }
 
+const CHECK_TONE: Record<string, string> = {
+  fail: 'text-red-800',
+  warn: 'text-amber-900',
+  unavailable: 'text-amber-900',
+};
+
+function CheckItem({ check }: { check: QualityCheck }) {
+  const measured = measuredText(check);
+  const statusLabel = (CHECK_STATUS_LABELS as Record<string, string>)[check.status] ?? check.status;
+  return (
+    <li className="space-y-0.5">
+      <p className="font-semibold text-ink">
+        {checkLabel(check.name)} ·{' '}
+        <span className={CHECK_TONE[check.status] ?? 'text-ink-muted'}>{statusLabel}</span>
+        {check.blocking && check.status === 'fail' && (
+          <span className="font-normal text-ink-muted"> (bloquant)</span>
+        )}
+      </p>
+      {check.detail && <p className="text-ink">{check.detail}</p>}
+      {measured && <p className="text-ink-muted tabular-nums">{measured}</p>}
+    </li>
+  );
+}
+
+/** Per-check quality report of the shot's result attempt (module 5). */
+function QualityPanel({ quality }: { quality: ShotQuality }) {
+  const view = qualityView(quality);
+  if (!view) return null;
+  const tone =
+    view.decision === 'accept'
+      ? 'border-emerald-200 bg-emerald-50'
+      : view.decision === 'regenerate'
+        ? 'border-red-200 bg-red-50'
+        : 'border-amber-300 bg-amber-50';
+  return (
+    <section
+      aria-label="Contrôle qualité"
+      className={`space-y-2 rounded-lg border p-3 text-sm ${tone}`}
+    >
+      <p className="flex flex-wrap items-center gap-2">
+        <span className="font-semibold text-ink">Contrôle qualité : {view.decisionLabel}</span>
+        {view.simulated && (
+          <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+            Rendu simulé
+          </span>
+        )}
+      </p>
+      {view.overridden && <p className="text-ink">Accepté manuellement malgré les contrôles.</p>}
+      {view.issues.length > 0 && (
+        <ul className="space-y-2">
+          {view.issues.map((c) => (
+            <CheckItem key={`${c.layer}-${c.name}`} check={c} />
+          ))}
+        </ul>
+      )}
+      {view.others.length > 0 && (
+        <details>
+          <summary className={summaryClass}>
+            {view.passedCount} contrôle{view.passedCount > 1 ? 's' : ''} réussi
+            {view.passedCount > 1 ? 's' : ''}
+            {view.others.length > view.passedCount &&
+              ` · ${view.others.length - view.passedCount} ignoré${view.others.length - view.passedCount > 1 ? 's' : ''}`}
+          </summary>
+          <ul className="space-y-2 pt-1">
+            {view.others.map((c) => (
+              <CheckItem key={`${c.layer}-${c.name}`} check={c} />
+            ))}
+          </ul>
+        </details>
+      )}
+      {view.uncalibrated && (
+        <p className="text-xs text-ink-muted">
+          Seuils non calibrés : ces contrôles peuvent se tromper.
+        </p>
+      )}
+    </section>
+  );
+}
+
+type ConfirmKind = 'rerender' | 'accept';
+
 interface Props {
   shot: ShotRender;
   jobStatus: string;
   onRerender: (shotId: string) => Promise<boolean>;
+  /** Accept a quality_review shot despite its checks. */
+  onAccept: (shotId: string) => Promise<boolean>;
   onRetryJob?: () => void;
 }
 
-export function ShotRenderRow({ shot, jobStatus, onRerender, onRetryJob }: Props) {
-  const [confirming, setConfirming] = useState(false);
+export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJob }: Props) {
+  const [confirming, setConfirming] = useState<ConfirmKind | null>(null);
   const [busy, setBusy] = useState(false);
   const [clipOpen, setClipOpen] = useState(false);
   const cancelRef = useRef<HTMLButtonElement>(null);
-  const triggerRef = useRef<HTMLButtonElement>(null);
+  const triggerRefs = useRef<Partial<Record<ConfirmKind, HTMLButtonElement | null>>>({});
 
   const title = shotTitle(shot);
   const status = shotStatusView(shot);
@@ -249,30 +339,58 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onRetryJob }: Props
   const action = shotAction(shot, jobStatus);
   const duration = durationText(shot);
   const confirmId = `rerender-${shot.shot_id}`;
+  const review = shot.status === 'quality_review';
 
   // Focus follows the inline confirmation in and back out.
-  const wasConfirming = useRef(false);
-  const rerendered = useRef(false);
+  const wasConfirming = useRef<ConfirmKind | null>(null);
+  const done = useRef(false);
   const headingRef = useRef<HTMLHeadingElement>(null);
   useEffect(() => {
     if (confirming) cancelRef.current?.focus();
     else if (wasConfirming.current) {
-      // After a confirmed rerender the confirm block is gone: land on the row heading.
-      (rerendered.current ? headingRef.current : triggerRef.current)?.focus();
-      rerendered.current = false;
+      // After a confirmed action the confirm block is gone: land on the row heading.
+      (done.current ? headingRef.current : triggerRefs.current[wasConfirming.current])?.focus();
+      done.current = false;
     }
     wasConfirming.current = confirming;
   }, [confirming]);
 
-  const rerender = async () => {
+  const confirm = async (kind: ConfirmKind) => {
     setBusy(true);
-    const ok = await onRerender(shot.shot_id);
+    const ok = await (kind === 'accept' ? onAccept : onRerender)(shot.shot_id);
     setBusy(false);
     if (ok) {
-      rerendered.current = true;
-      setConfirming(false);
+      done.current = true;
+      setConfirming(null);
     }
   };
+
+  const cancelButton = (
+    <button
+      ref={cancelRef}
+      type="button"
+      onClick={() => setConfirming(null)}
+      disabled={busy}
+      className={secondaryClass}
+    >
+      Annuler
+    </button>
+  );
+  const rerenderButton = (
+    <button
+      type="button"
+      onClick={() => void confirm('rerender')}
+      disabled={busy}
+      aria-busy={busy}
+      className={primaryClass}
+    >
+      <RotateCw
+        className={`size-4 ${busy ? 'animate-spin motion-reduce:animate-none' : ''}`}
+        aria-hidden
+      />
+      Relancer
+    </button>
+  );
 
   const attempts = shot.attempts ?? [];
   const rejected = (shot.routing?.candidates ?? []).filter((c) => !c.eligible);
@@ -334,39 +452,84 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onRetryJob }: Props
                 même ?
               </p>
               <div className="flex flex-wrap gap-2">
-                <button
-                  type="button"
-                  onClick={() => void rerender()}
-                  disabled={busy}
-                  aria-busy={busy}
-                  className={primaryClass}
-                >
-                  <RotateCw
-                    className={`size-4 ${busy ? 'animate-spin motion-reduce:animate-none' : ''}`}
-                    aria-hidden
-                  />
-                  Relancer
-                </button>
-                <button
-                  ref={cancelRef}
-                  type="button"
-                  onClick={() => setConfirming(false)}
-                  disabled={busy}
-                  className={secondaryClass}
-                >
-                  Annuler
-                </button>
+                {rerenderButton}
+                {cancelButton}
               </div>
             </div>
           ) : (
             <button
-              ref={triggerRef}
+              ref={(el) => {
+                triggerRefs.current.rerender = el;
+              }}
               type="button"
-              onClick={() => setConfirming(true)}
+              onClick={() => setConfirming('rerender')}
               className={secondaryClass}
             >
               Relancer ce plan…
             </button>
+          )}
+        </div>
+      )}
+
+      {shot.quality && <QualityPanel quality={shot.quality} />}
+
+      {review && (
+        <div className="space-y-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          <p className="flex items-start gap-1.5">
+            <Eye className="mt-0.5 size-4 shrink-0" aria-hidden />
+            Ce plan n&apos;a pas passé le contrôle qualité : il n&apos;est pas utilisé tant que vous
+            ne l&apos;acceptez pas ou ne le relancez pas.
+          </p>
+          {confirming ? (
+            <div role="group" aria-labelledby={confirmId} className="space-y-2">
+              <p id={confirmId} className="font-semibold">
+                {confirming === 'accept'
+                  ? 'Le clip sera utilisé tel quel dans la vidéo malgré le contrôle qualité. Accepter quand même ?'
+                  : 'Un nouveau rendu de ce plan sera lancé et facturé. Relancer ?'}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {confirming === 'accept' ? (
+                  <button
+                    type="button"
+                    onClick={() => void confirm('accept')}
+                    disabled={busy}
+                    aria-busy={busy}
+                    className={primaryClass}
+                  >
+                    <Check className="size-4" aria-hidden />
+                    Accepter
+                  </button>
+                ) : (
+                  rerenderButton
+                )}
+                {cancelButton}
+              </div>
+            </div>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              <button
+                ref={(el) => {
+                  triggerRefs.current.accept = el;
+                }}
+                type="button"
+                onClick={() => setConfirming('accept')}
+                className={secondaryClass}
+              >
+                <Check className="size-4" aria-hidden />
+                Accepter quand même…
+              </button>
+              <button
+                ref={(el) => {
+                  triggerRefs.current.rerender = el;
+                }}
+                type="button"
+                onClick={() => setConfirming('rerender')}
+                className={secondaryClass}
+              >
+                <RotateCw className="size-4" aria-hidden />
+                Relancer un rendu…
+              </button>
+            </div>
           )}
         </div>
       )}
@@ -394,7 +557,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onRetryJob }: Props
         </div>
       )}
 
-      {shot.status === 'completed' && shot.clip_asset_id && (
+      {(shot.status === 'completed' || review) && shot.clip_asset_id && (
         <details onToggle={(e) => setClipOpen(e.currentTarget.open)}>
           <summary className={summaryClass}>Aperçu du clip</summary>
           <div className="pt-1">

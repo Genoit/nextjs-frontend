@@ -3,11 +3,14 @@ import assert from 'node:assert';
 import {
   ROUTE_REASONS,
   budgetView,
+  checkLabel,
   durationText,
   isMock,
   isPossiblyBilled,
   isTerminalJob,
+  measuredText,
   possiblyBilledText,
+  qualityView,
   routeReasonText,
   shotAction,
   shotStatusView,
@@ -40,6 +43,8 @@ describe('shotStatusView', () => {
       blocked: 'Bloqué',
       needs_action: 'Action requise',
       cancelled: 'Annulé',
+      checking: 'Contrôle qualité…',
+      quality_review: 'À vérifier',
     };
     for (const [status, label] of Object.entries(expected)) {
       assert.deepStrictEqual(shotStatusView({ status }), { key: status, label });
@@ -218,5 +223,89 @@ describe('shotTransitionMessage', () => {
       'Plan 1 : Choix du moteur.',
     );
     assert.strictEqual(shotTransitionMessage({}, { shots: [shot()] }), 'Plan 1 : En attente.');
+  });
+});
+
+describe('quality (module 5)', () => {
+  const check = (over = {}) => ({
+    name: 'duration',
+    layer: 'A',
+    status: 'pass',
+    value: 5.04,
+    threshold: 0.5,
+    detail: 'ok',
+    blocking: true,
+    ...over,
+  });
+  const quality = (over = {}) => ({
+    decision: 'regenerate',
+    reasons: [],
+    checks: [],
+    is_mock: false,
+    embedder_is_mock: false,
+    thresholds_version: 'uncalibrated-2026-10-28',
+    overridden_by_user: false,
+    created_at: '2026-10-28T00:00:00Z',
+    cost_usd: null,
+    ...over,
+  });
+
+  it('lists fail, warn, unavailable and unknown statuses; only counts pass and skipped', () => {
+    const v = qualityView(
+      quality({
+        checks: [
+          check({ name: 'a', status: 'pass' }),
+          check({ name: 'b', status: 'fail' }),
+          check({ name: 'c', status: 'warn' }),
+          check({ name: 'd', status: 'unavailable' }),
+          check({ name: 'e', status: 'skipped' }),
+          check({ name: 'f', status: 'weird' }),
+        ],
+      }),
+    );
+    assert.deepStrictEqual(
+      v.issues.map((c) => c.name),
+      ['b', 'c', 'd', 'f'],
+    );
+    assert.deepStrictEqual(
+      v.others.map((c) => c.name),
+      ['a', 'e'],
+    );
+    assert.strictEqual(v.passedCount, 1);
+  });
+  it('flags mock renders and uncalibrated thresholds from the API fields only', () => {
+    const v = qualityView(quality());
+    assert.strictEqual(v.simulated, false);
+    assert.strictEqual(v.uncalibrated, true);
+    const w = qualityView(quality({ is_mock: true, thresholds_version: 'v1' }));
+    assert.strictEqual(w.simulated, true);
+    assert.strictEqual(w.uncalibrated, false);
+  });
+  it('never shows an unknown decision as accepted; null quality gives no panel', () => {
+    assert.strictEqual(qualityView(quality({ decision: 'accept' })).decisionLabel, 'Plan accepté');
+    assert.strictEqual(qualityView(quality({ decision: 'toString' })).decision, 'unknown');
+    assert.strictEqual(qualityView(null), null);
+  });
+  it('measured vs threshold, French decimals, missing parts left out', () => {
+    assert.strictEqual(
+      measuredText({ value: 0.4234, threshold: 0.55 }),
+      'mesuré 0,42 / seuil 0,55',
+    );
+    assert.strictEqual(
+      measuredText({ value: '720x1280', threshold: '1080x1920' }),
+      'mesuré 720x1280 / seuil 1080x1920',
+    );
+    assert.strictEqual(measuredText({ value: null, threshold: 20 }), 'seuil 20');
+    assert.strictEqual(measuredText({ value: null, threshold: null }), '');
+  });
+  it('check labels in French, unknown names as-is', () => {
+    assert.strictEqual(checkLabel('product_similarity'), 'Ressemblance au produit');
+    assert.strictEqual(checkLabel('quality_disabled'), 'quality_disabled');
+    assert.strictEqual(checkLabel('toString'), 'toString');
+  });
+  it('announces the new statuses', () => {
+    const prev = { shots: [shot({ status: 'rendering' })] };
+    const next = { shots: [shot({ status: 'quality_review' })] };
+    assert.strictEqual(shotTransitionMessage(prev, next), 'Plan 1 : À vérifier.');
   });
 });

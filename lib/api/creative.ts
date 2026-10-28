@@ -188,6 +188,18 @@ export const creativeApi = {
   },
 
   /**
+   * Accept a quality_review shot despite its failed checks (409 unless the shot is in
+   * quality_review). The override is recorded as a human label for threshold calibration.
+   */
+  async acceptShot(jobId: string, shotId: string): Promise<VideoGenerationJob> {
+    const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/shots/${shotId}/accept`;
+    return fetchWithAuth<VideoGenerationJob>(url, {
+      method: 'POST',
+      body: JSON.stringify({ confirm: true }),
+    });
+  },
+
+  /**
    * List available AI video providers and hardware capability summaries
    */
   async getProviders(): Promise<ModelCapabilitySummary[]> {

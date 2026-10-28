@@ -66,6 +66,8 @@ export interface UseCreativeReturn {
   retryVideoGeneration: (jobId: string) => Promise<VideoGenerationJob | null>;
   /** Confirmed re-render of a shot that may already have been billed. */
   rerenderShot: (jobId: string, shotId: string) => Promise<boolean>;
+  /** Confirmed acceptance of a quality_review shot despite its failed checks. */
+  acceptShot: (jobId: string, shotId: string) => Promise<boolean>;
   resetError: () => void;
 }
 
@@ -469,6 +471,23 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     [fail, trackJob],
   );
 
+  const acceptShot = useCallback(
+    async (jobId: string, shotId: string) => {
+      const epoch = epochRef.current;
+      setErrorState(null);
+      try {
+        const job = await creativeApi.acceptShot(jobId, shotId);
+        // The job is reopened (blocked -> rendering): follow it again.
+        if (epoch === epochRef.current) trackJob(job);
+        return true;
+      } catch (err: unknown) {
+        if (epoch === epochRef.current) fail(err, "Erreur lors de l'acceptation du plan.");
+        return false;
+      }
+    },
+    [fail, trackJob],
+  );
+
   // Clean up timer on unmount
   useEffect(() => {
     return () => {
@@ -561,6 +580,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     cancelVideoGeneration,
     retryVideoGeneration,
     rerenderShot,
+    acceptShot,
     resetError,
   };
 }

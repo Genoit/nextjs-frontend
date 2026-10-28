@@ -25,11 +25,19 @@ interface Props {
   onCancel?: (jobId: string) => Promise<void>;
   onRetry?: () => void;
   onRerender: (jobId: string, shotId: string) => Promise<boolean>;
+  onAccept: (jobId: string, shotId: string) => Promise<boolean>;
   /** Polite announcement of shot status changes. */
   liveMessage: string;
 }
 
-export function VideoGenerationTracker({ job, onCancel, onRetry, onRerender, liveMessage }: Props) {
+export function VideoGenerationTracker({
+  job,
+  onCancel,
+  onRetry,
+  onRerender,
+  onAccept,
+  liveMessage,
+}: Props) {
   const isCompleted = job.status === 'completed';
   // A blocked job (no eligible engine for a shot) is a failure the user can retry.
   const isFailed = job.status === 'failed' || job.status === 'blocked';
@@ -240,6 +248,7 @@ export function VideoGenerationTracker({ job, onCancel, onRetry, onRerender, liv
                   shot={shot}
                   jobStatus={job.status}
                   onRerender={(shotId) => onRerender(job.id, shotId)}
+                  onAccept={(shotId) => onAccept(job.id, shotId)}
                   onRetryJob={onRetry}
                 />
               ))}
