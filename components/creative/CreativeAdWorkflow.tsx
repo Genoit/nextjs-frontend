@@ -65,6 +65,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
     cancelVideoGeneration,
     retryVideoGeneration,
     rerenderShot,
+    acceptShot,
     jobLiveMessage,
     resetError,
   } = useCreative(productId);
@@ -388,6 +389,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
               onCancel={cancelVideoGeneration}
               onRetry={() => retryVideoGeneration(activeJob.id)}
               onRerender={rerenderShot}
+              onAccept={acceptShot}
               liveMessage={jobLiveMessage}
             />
           )}

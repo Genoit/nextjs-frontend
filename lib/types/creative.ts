@@ -434,7 +434,36 @@ export type ShotRenderStatus =
   | 'failed'
   | 'blocked'
   | 'needs_action'
-  | 'cancelled';
+  | 'cancelled'
+  | 'checking'
+  | 'quality_review';
+
+/** One quality check (module 5): a row of data, never an opaque score. */
+export interface QualityCheck {
+  name: string;
+  layer: 'A' | 'B' | 'C';
+  status: 'pass' | 'fail' | 'warn' | 'skipped' | 'unavailable';
+  value: number | string | null;
+  threshold: number | string | null;
+  /** French, user-facing. */
+  detail: string;
+  blocking: boolean;
+}
+
+/** ShotQualityResponse: the check of the shot's result attempt. */
+export interface ShotQuality {
+  decision: 'accept' | 'regenerate' | 'needs_review';
+  /** French. */
+  reasons: string[];
+  checks: QualityCheck[];
+  is_mock: boolean;
+  embedder_is_mock: boolean | null;
+  /** "uncalibrated-…" until thresholds are calibrated on hand-labelled clips. */
+  thresholds_version: string;
+  overridden_by_user: boolean;
+  created_at: string;
+  cost_usd: string | null;
+}
 
 export interface RouteCandidate {
   provider: string;
@@ -497,6 +526,8 @@ export interface ShotRender {
   clip_asset_id?: string | null;
   clip_url?: string | null;
   action?: 'confirm_rerender' | 'pick_engine' | null;
+  /** Module 5 quality check; null until checked (and on older jobs). */
+  quality?: ShotQuality | null;
 }
 
 export interface GeneratedAsset {
