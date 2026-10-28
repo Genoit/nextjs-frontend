@@ -21,8 +21,10 @@ import { StoryboardEditor } from './StoryboardEditor';
 import { VideoGenerationTracker } from './VideoGenerationTracker';
 import {
   CreativeConfigCreatePayload,
+  QualityTier,
   StoryboardSceneCreatePayload,
 } from '../../lib/types/creative';
+import { QUALITY_TIERS } from '../../lib/render-rules.mjs';
 
 // Prefix of the backend 409 detail when no product analysis exists yet.
 const ANALYSIS_MISSING = "Lancez d'abord l'analyse produit";
@@ -36,6 +38,7 @@ type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
 export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(null);
+  const [qualityTier, setQualityTier] = useState<QualityTier>('standard');
 
   const {
     creativeConfig,
@@ -61,6 +64,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
     startVideoGeneration,
     cancelVideoGeneration,
     retryVideoGeneration,
+    rerenderShot,
+    jobLiveMessage,
     resetError,
   } = useCreative(productId);
 
@@ -130,7 +135,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
 
   const handleLaunchVideo = async () => {
     if (!storyboard) return;
-    const job = await startVideoGeneration(productId, storyboard.id);
+    const job = await startVideoGeneration(productId, storyboard.id, qualityTier);
     if (job) {
       setUserSelectedStep(6);
     } else {
@@ -330,6 +335,26 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             onOverride={assets.setSourceMode}
             onRetry={assets.retry}
             onLaunchVideo={() => void handleLaunchVideo()}
+            launchOptions={
+              <div className="flex items-center gap-2">
+                <label htmlFor="quality-tier" className="text-sm font-semibold text-ink">
+                  Qualité
+                </label>
+                <select
+                  id="quality-tier"
+                  value={qualityTier}
+                  onChange={(e) => setQualityTier(e.target.value as QualityTier)}
+                  disabled={isStartingJob}
+                  className="min-h-11 rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                >
+                  {QUALITY_TIERS.map((t) => (
+                    <option key={t.value} value={t.value}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            }
           />
         ) : (
           <div className="space-y-3 p-12 text-center">
@@ -362,6 +387,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
               job={activeJob}
               onCancel={cancelVideoGeneration}
               onRetry={() => retryVideoGeneration(activeJob.id)}
+              onRerender={rerenderShot}
+              liveMessage={jobLiveMessage}
             />
           )}
           {!isStartingJob && !activeJob && (

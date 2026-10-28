@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { assetsApi } from '../lib/api/assets';
+import { fetchBlobWithAuth } from '../lib/api/core';
 import { AssetBoard, SourceMode } from '../lib/types/assets';
 import { isInFlight, transitionMessage } from '../lib/asset-rules.mjs';
 
@@ -196,27 +197,31 @@ export function useAssets(storyboardId: string | null): UseAssetsReturn {
  * Revoked when the id changes or the component unmounts.
  */
 export function useMediaUrl(assetId: string | null): { url: string | null; failed: boolean } {
+  return useAuthedBlobUrl(assetId ? assetsApi.mediaPath(assetId) : null);
+}
+
+/** Object URL of any owner-only endpoint (revoked on change/unmount); null endpoint = nothing. */
+export function useAuthedBlobUrl(endpoint: string | null): { url: string | null; failed: boolean } {
   const [state, setState] = useState<{ id: string; url: string | null; failed: boolean } | null>(
     null,
   );
   useEffect(() => {
-    if (!assetId) return;
+    if (!endpoint) return;
     let cancelled = false;
     let url: string | null = null;
-    assetsApi
-      .getMediaBlob(assetId)
+    fetchBlobWithAuth(endpoint)
       .then((blob) => {
         if (cancelled) return;
         url = URL.createObjectURL(blob);
-        setState({ id: assetId, url, failed: false });
+        setState({ id: endpoint, url, failed: false });
       })
       .catch(() => {
-        if (!cancelled) setState({ id: assetId, url: null, failed: true });
+        if (!cancelled) setState({ id: endpoint, url: null, failed: true });
       });
     return () => {
       cancelled = true;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [assetId]);
-  return state && state.id === assetId ? state : { url: null, failed: false };
+  }, [endpoint]);
+  return state && state.id === endpoint ? state : { url: null, failed: false };
 }
