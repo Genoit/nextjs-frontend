@@ -68,6 +68,8 @@ export interface UseCreativeReturn {
   rerenderShot: (jobId: string, shotId: string) => Promise<boolean>;
   /** Confirmed acceptance of a quality_review shot despite its failed checks. */
   acceptShot: (jobId: string, shotId: string) => Promise<boolean>;
+  /** Show (and poll if needed) a past job picked from the history. */
+  openVideoJob: (job: VideoGenerationJob) => void;
   resetError: () => void;
 }
 
@@ -581,6 +583,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     retryVideoGeneration,
     rerenderShot,
     acceptShot,
+    openVideoJob: trackJob,
     resetError,
   };
 }

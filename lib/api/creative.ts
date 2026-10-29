@@ -15,6 +15,9 @@ import {
   TrainingConsent,
   AdPerformanceMetric,
   DatasetManifest,
+  ExportAspectRatio,
+  MusicTrack,
+  VideoExport,
 } from '../types/creative';
 import { configOrNull } from '../creative-rules.mjs';
 
@@ -197,6 +200,50 @@ export const creativeApi = {
       method: 'POST',
       body: JSON.stringify({ confirm: true }),
     });
+  },
+
+  /** Past video jobs of a product, newest first (history). */
+  async listVideoJobs(productId: string): Promise<VideoGenerationJob[]> {
+    const url = `${CREATIVE_BASE_PATH}/video/jobs?product_id=${encodeURIComponent(productId)}`;
+    return fetchWithAuth<VideoGenerationJob[]>(url, { method: 'GET' });
+  },
+
+  /** Every format of a completed job's final video (the primary export included). */
+  async listExports(jobId: string): Promise<VideoExport[]> {
+    const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/exports`;
+    return fetchWithAuth<VideoExport[]>(url, { method: 'GET' });
+  },
+
+  /** Build another format on demand (202; idempotent per ratio, EDL version and track). */
+  async createExport(
+    jobId: string,
+    body: { aspect_ratio: ExportAspectRatio; track_id?: string },
+  ): Promise<VideoExport> {
+    const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/exports`;
+    return fetchWithAuth<VideoExport>(url, { method: 'POST', body: JSON.stringify(body) });
+  },
+
+  /** Royalty-free library + the user's own uploads. */
+  async listMusicTracks(): Promise<MusicTrack[]> {
+    return fetchWithAuth<MusicTrack[]>(`${CREATIVE_BASE_PATH}/music/tracks`, { method: 'GET' });
+  },
+
+  /** Upload a track (mp3/wav/m4a); the user must confirm holding the rights. */
+  async uploadMusicTrack(file: File, title: string, moods: string[]): Promise<MusicTrack> {
+    const form = new FormData();
+    form.append('file', file);
+    form.append('title', title);
+    form.append('mood', moods.join(','));
+    form.append('rights_confirmed', 'true');
+    return fetchWithAuth<MusicTrack>(`${CREATIVE_BASE_PATH}/music/tracks`, {
+      method: 'POST',
+      body: form,
+    });
+  },
+
+  async deleteMusicTrack(trackId: string): Promise<void> {
+    const url = `${CREATIVE_BASE_PATH}/music/tracks/${trackId}`;
+    await fetchWithAuth<void>(url, { method: 'DELETE' });
   },
 
   /**

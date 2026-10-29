@@ -19,6 +19,7 @@ import { CreativeConfigForm } from './CreativeConfigForm';
 import { StrategyPreview } from './StrategyPreview';
 import { StoryboardEditor } from './StoryboardEditor';
 import { VideoGenerationTracker } from './VideoGenerationTracker';
+import { VideoHistory } from './VideoHistory';
 import {
   CreativeConfigCreatePayload,
   QualityTier,
@@ -66,6 +67,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
     retryVideoGeneration,
     rerenderShot,
     acceptShot,
+    openVideoJob,
     jobLiveMessage,
     resetError,
   } = useCreative(productId);
@@ -398,6 +400,12 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
               Aucune génération en cours : lancez la vidéo depuis l&apos;étape Visuels produit.
             </p>
           )}
+          <VideoHistory
+            productId={productId}
+            refreshKey={`${activeJob?.id ?? ''}:${activeJob?.status ?? ''}`}
+            activeJobId={activeJob?.id ?? null}
+            onOpen={openVideoJob}
+          />
         </>
       )}
     </div>

@@ -593,6 +593,67 @@ export interface VideoGenerationJob {
   updated_at: string;
   assets: GeneratedAsset[];
   quality_report?: QualityReport | null;
+  /** Module 6 final QA; null until assembled (absent on older backends). */
+  finishing_report?: FinishingReport | null;
+  thumbnail_url?: string | null;
+  /** Every format of the final video, the primary one included. */
+  exports?: VideoExport[];
+}
+
+// ============================================
+// Video finishing (module 6)
+// ============================================
+
+export type FinishingCheckStatus = 'pass' | 'fail' | 'warn' | 'skipped' | 'unavailable';
+
+export interface FinishingCheck {
+  name: string;
+  status: FinishingCheckStatus;
+  value: number | string | null;
+  threshold: number | string | null;
+  detail: string;
+  blocking: boolean;
+}
+
+export interface FinishingReport {
+  checks: FinishingCheck[];
+  passed: boolean;
+  voiceover: {
+    engine: string | null;
+    is_mock: boolean;
+    status: 'real' | 'mock' | 'unavailable' | 'uncertain' | 'none';
+  };
+  music: { track_id: string; title: string; licence: string } | null;
+  cost_usd: string | null;
+  created_at: string;
+}
+
+export type ExportAspectRatio = '9:16' | '1:1' | '16:9' | '4:5';
+
+export interface VideoExport {
+  id: string;
+  job_id: string;
+  aspect_ratio: ExportAspectRatio;
+  status: 'pending' | 'rendering' | 'completed' | 'failed';
+  asset_id: string | null;
+  download_url: string | null;
+  thumbnail_url: string | null;
+  track_id: string | null;
+  cost_usd: string | null;
+  error: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface MusicTrack {
+  id: string;
+  title: string;
+  mood: string[];
+  duration_s: number | null;
+  licence: string;
+  source: string | null;
+  is_library: boolean;
+  created_at: string;
 }
 
 export interface ModelCapabilitySummary {

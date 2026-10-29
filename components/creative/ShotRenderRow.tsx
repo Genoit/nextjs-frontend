@@ -241,13 +241,20 @@ const CHECK_TONE: Record<string, string> = {
   unavailable: 'text-amber-900',
 };
 
-function CheckItem({ check }: { check: QualityCheck }) {
+/** One check line (module 5 shots, module 6 final report); `label` overrides the name. */
+export function CheckItem({
+  check,
+  label,
+}: {
+  check: Omit<QualityCheck, 'layer'>;
+  label?: string;
+}) {
   const measured = measuredText(check);
   const statusLabel = (CHECK_STATUS_LABELS as Record<string, string>)[check.status] ?? check.status;
   return (
     <li className="space-y-0.5">
       <p className="font-semibold text-ink">
-        {checkLabel(check.name)} ·{' '}
+        {label ?? checkLabel(check.name)} ·{' '}
         <span className={CHECK_TONE[check.status] ?? 'text-ink-muted'}>{statusLabel}</span>
         {check.blocking && check.status === 'fail' && (
           <span className="font-normal text-ink-muted"> (bloquant)</span>

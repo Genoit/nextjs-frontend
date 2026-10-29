@@ -2,9 +2,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { assetsApi } from '../lib/api/assets';
-import { fetchBlobWithAuth } from '../lib/api/core';
+import { fetchBlobWithAuth, getApiBaseUrl } from '../lib/api/core';
 import { AssetBoard, SourceMode } from '../lib/types/assets';
 import { isInFlight, transitionMessage } from '../lib/asset-rules.mjs';
+import { mediaSource } from '../lib/finishing-rules.mjs';
 
 const POLL_MS = 2000;
 const MAX_POLL_FAILURES = 3;
@@ -224,4 +225,17 @@ export function useAuthedBlobUrl(endpoint: string | null): { url: string | null;
     };
   }, [endpoint]);
   return state && state.id === endpoint ? state : { url: null, failed: false };
+}
+
+/**
+ * Displayable URL of a media URL given by the API (thumbnail): API paths are fetched with the
+ * Bearer token, foreign (presigned) URLs are used directly.
+ */
+export function useApiMediaUrl(apiUrl: string | null | undefined): {
+  url: string | null;
+  failed: boolean;
+} {
+  const src = mediaSource(apiUrl, getApiBaseUrl());
+  const authed = useAuthedBlobUrl(src?.kind === 'authed' ? src.endpoint : null);
+  return src?.kind === 'direct' ? { url: src.url, failed: false } : authed;
 }

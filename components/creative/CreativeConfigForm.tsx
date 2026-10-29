@@ -1,6 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
+import { MusicPicker } from './MusicPicker';
+import {
+  MUSIC_AUTO,
+  MUSIC_NONE,
+  musicChoiceOf,
+  musicPreferences,
+} from '../../lib/finishing-rules.mjs';
 import {
   Sparkles,
   Sliders,
@@ -145,8 +152,12 @@ export function CreativeConfigForm({
   const [voiceGender, setVoiceGender] = useState(
     (initialConfig?.voice_preferences?.gender as string) || 'female',
   );
+  const storedMood = initialConfig?.music_preferences?.mood as string | undefined;
   const [musicMood, setMusicMood] = useState(
-    (initialConfig?.music_preferences?.mood as string) || 'upbeat',
+    storedMood && storedMood !== MUSIC_NONE ? storedMood : 'upbeat',
+  );
+  const [musicChoice, setMusicChoice] = useState(() =>
+    musicChoiceOf(initialConfig?.music_preferences),
   );
   const [userConstraints, setUserConstraints] = useState(initialConfig?.user_constraints || '');
 
@@ -187,9 +198,7 @@ export function CreativeConfigForm({
         tone: voiceTone,
         gender: voiceGender,
       },
-      music_preferences: {
-        mood: musicMood,
-      },
+      music_preferences: musicPreferences(musicChoice, musicMood),
       user_constraints: userConstraints.trim() || undefined,
     };
 
@@ -609,6 +618,8 @@ export function CreativeConfigForm({
               id="cfg-musicMood"
               value={musicMood}
               onChange={(e) => setMusicMood(e.target.value)}
+              disabled={musicChoice === MUSIC_NONE}
+              aria-describedby="cfg-musicMood-hint"
               className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
             >
               <option value="upbeat">Rythmée & Énergique (Trendy TikTok)</option>
@@ -616,7 +627,16 @@ export function CreativeConfigForm({
               <option value="corporate">Inspirante & Moderne (Tech)</option>
               <option value="dramatic">Impactante & Cinématique</option>
             </select>
+            <p id="cfg-musicMood-hint" className="mt-1 text-xs text-zinc-500">
+              {musicChoice === MUSIC_AUTO
+                ? 'Choisit le morceau de la bibliothèque.'
+                : musicChoice === MUSIC_NONE
+                  ? 'Sans musique : ambiance ignorée.'
+                  : 'Morceau choisi ci-dessous.'}
+            </p>
           </div>
+
+          <MusicPicker value={musicChoice} onChange={setMusicChoice} />
         </div>
 
         <div>
