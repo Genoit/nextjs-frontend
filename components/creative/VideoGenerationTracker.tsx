@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {
-  Film,
   Download,
   AlertCircle,
   Clock,
@@ -18,6 +17,8 @@ import { creativeApi } from '../../lib/api/creative';
 import { formatCost } from '../../lib/creative-rules.mjs';
 import { budgetView, isMock, shotsOf, tierLabel } from '../../lib/render-rules.mjs';
 import { ShotRenderRow } from './ShotRenderRow';
+import { FinalVideoPanel } from './FinalVideoPanel';
+import { RATIO_DIMENSIONS } from '../../lib/finishing-rules.mjs';
 import { useAuthedBlobUrl } from '../../hooks/use-assets';
 
 interface Props {
@@ -58,6 +59,9 @@ export function VideoGenerationTracker({
     isCompleted && finalAsset ? creativeApi.assetDownloadPath(finalAsset.id) : null,
   );
   const notRealLabel = simulated ? 'Simulation' : 'Non vérifié';
+  const primaryDims = finalAsset?.aspect_ratio
+    ? (RATIO_DIMENSIONS as Record<string, string>)[finalAsset.aspect_ratio]
+    : undefined;
 
   return (
     <div className="space-y-6 max-w-4xl">
@@ -123,7 +127,10 @@ export function VideoGenerationTracker({
                   className="min-h-11 px-5 py-2.5 rounded-xl bg-[#BA3807] hover:bg-[#9A2D04] text-white text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
                 >
                   <Download className="w-4 h-4" aria-hidden />
-                  <span>Télécharger le MP4 (1080x1920){notReal ? ` · ${notRealLabel}` : ''}</span>
+                  <span>
+                    Télécharger le MP4{primaryDims ? ` (${primaryDims})` : ''}
+                    {notReal ? ` · ${notRealLabel}` : ''}
+                  </span>
                 </a>
               ) : (
                 <span className="text-xs text-zinc-500" role="status">
@@ -270,44 +277,19 @@ export function VideoGenerationTracker({
         )}
       </div>
 
-      {/* Video Player Preview if Complete */}
+      {/* Final video: poster, formats on demand, finishing report (module 6) */}
       {isCompleted && finalAsset && (
-        <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between">
-            <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-              <Film className="w-4 h-4 text-[#BA3807]" aria-hidden />
-              <span>Aperçu de la vidéo générée</span>
-              {notReal && (
-                <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
-                  {notRealLabel}
-                </span>
-              )}
-            </h4>
-            <span className="text-xs text-zinc-500">Format 9:16 (1080×1920) · MP4 H.264 / AAC</span>
-          </div>
-
-          <div className="flex justify-center bg-black/90 rounded-2xl p-4 overflow-hidden">
-            {finalVideo.url ? (
-              <video
-                controls
-                playsInline
-                className="max-h-[500px] rounded-xl shadow-lg aspect-[9/16]"
-                src={finalVideo.url}
-                aria-label={`Vidéo finale${notReal ? ` (${notRealLabel.toLowerCase()})` : ''}`}
-              >
-                Votre navigateur ne prend pas en charge la lecture vidéo.
-              </video>
-            ) : (
-              <p className="py-12 text-sm text-white" role="status">
-                {finalVideo.failed ? 'Vidéo indisponible.' : 'Chargement de la vidéo…'}
-              </p>
-            )}
-          </div>
-        </div>
+        <FinalVideoPanel
+          job={job}
+          finalAsset={finalAsset}
+          videoUrl={finalVideo.url}
+          videoFailed={finalVideo.failed}
+          notRealLabel={notReal ? notRealLabel : null}
+        />
       )}
 
-      {/* Quality Control Report Card */}
-      {job.quality_report && (
+      {/* Legacy QA card (pre-module 6); the finishing report replaces it and has no score. */}
+      {job.quality_report && !job.finishing_report && (
         <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-4">
           <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
             <div className="flex items-center gap-2">

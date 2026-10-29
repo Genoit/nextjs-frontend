@@ -101,6 +101,8 @@ async function handleResponse<T>(response: Response): Promise<T> {
     throw new ApiRequestError(errorMessage, response.status, errorData, errorCode);
   }
 
+  // 204 No Content (e.g. DELETE) has no body to parse.
+  if (response.status === 204) return undefined as T;
   return response.json() as Promise<T>;
 }
 
