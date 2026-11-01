@@ -75,10 +75,10 @@ const NOT_A_STORE = new Set(['null', 'unknown', 'generic', 'manual', 'custom', '
 const PIPELINE = ['Product sheet', 'Strategy', 'Storyboard', 'Shots', 'Final cut'];
 
 const BADGE_TONE: Record<string, string> = {
-  idle: 'text-studio-muted',
-  active: 'text-trend-orange-glow',
-  ready: 'text-green-400',
-  failed: 'text-red-400',
+  idle: 'text-zinc-200',
+  active: 'text-orange-300',
+  ready: 'text-green-300',
+  failed: 'text-red-300',
 };
 
 function priceText(p: Product) {
@@ -126,7 +126,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
         <Link
           href="/dashboard"
           onClick={onNavigate}
-          className="flex h-16 items-center gap-2.5 px-5 focus-visible:outline-2 focus-visible:outline-trend-orange-glow"
+          className="flex h-16 items-center gap-2.5 px-5 focus-visible:outline-2 focus-visible:outline-trend-orange"
         >
           <Image src="/symbol.png" alt="" width={26} height={26} className="object-contain" />
           <span className="text-[17px] font-semibold tracking-tight text-studio-text">TrendED</span>
@@ -140,7 +140,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
                 href={href}
                 onClick={onNavigate}
                 aria-current={active ? 'page' : undefined}
-                className={`flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-trend-orange-glow ${
+                className={`flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-trend-orange ${
                   active
                     ? 'bg-studio-raised text-studio-text'
                     : 'text-studio-muted hover:bg-studio-surface hover:text-studio-text'
@@ -173,7 +173,7 @@ function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
             onNavigate?.();
             logout();
           }}
-          className="mt-1 flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm text-studio-muted transition-colors hover:bg-studio-surface hover:text-studio-text focus-visible:outline-2 focus-visible:outline-trend-orange-glow"
+          className="mt-1 flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm text-studio-muted transition-colors hover:bg-studio-surface hover:text-studio-text focus-visible:outline-2 focus-visible:outline-trend-orange"
         >
           <LogOut className="h-4 w-4" strokeWidth={1.75} aria-hidden />
           Sign out
@@ -191,7 +191,7 @@ function Composer() {
     router.push(createHref(link));
   };
   return (
-    <section aria-labelledby="studio-title" className="rounded-2xl bg-studio-surface p-5 sm:p-7">
+    <section aria-labelledby="studio-title" className="rounded-2xl bg-cream p-5 sm:p-7">
       <h1
         id="studio-title"
         className="font-editorial text-[34px] leading-[1.05] tracking-[-0.01em] text-balance text-studio-text sm:text-[46px]"
@@ -221,12 +221,12 @@ function Composer() {
             value={link}
             onChange={(e) => setLink(e.target.value)}
             placeholder="https://store.com/products/your-product"
-            className="h-14 w-full rounded-xl bg-studio-raised pl-12 pr-4 text-base text-studio-text caret-trend-orange-glow outline-none ring-1 ring-transparent transition placeholder:text-studio-meta focus:ring-trend-orange-glow"
+            className="h-14 w-full rounded-xl bg-white pl-12 pr-4 text-base text-studio-text caret-trend-orange outline-none ring-1 ring-[#f3e3c3] transition placeholder:text-studio-meta focus:ring-trend-orange"
           />
         </div>
         <button
           type="submit"
-          className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-trend-orange px-6 text-[15px] font-semibold text-white transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange-glow active:scale-[0.98]"
+          className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-trend-orange px-6 text-[15px] font-semibold text-white transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
         >
           Create ad
           <ArrowRight className="h-4 w-4" aria-hidden />
@@ -307,7 +307,7 @@ function ProductCard({ entry }: { entry: Entry }) {
     <li>
       <Link
         href={`/products/${product.id}`}
-        className="group block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trend-orange-glow"
+        className="group block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trend-orange"
       >
         <div className="relative">
           <Thumb product={product} className="aspect-[4/5] w-full rounded-xl" />
@@ -317,7 +317,7 @@ function ProductCard({ entry }: { entry: Entry }) {
             {badge.label}
           </span>
         </div>
-        <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-medium text-studio-text group-hover:text-white">
+        <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-medium text-studio-text group-hover:underline underline-offset-2">
           {product.title}
         </p>
         {meta && <p className="mt-0.5 truncate text-xs text-studio-meta capitalize">{meta}</p>}
@@ -343,7 +343,7 @@ function Generating({ entries }: { entries: Entry[] }) {
             <li key={job.id}>
               <Link
                 href={`/products/${product.id}/creative`}
-                className="flex items-center gap-3 rounded-xl bg-studio-raised p-2.5 transition-colors hover:bg-studio-rule focus-visible:outline-2 focus-visible:outline-trend-orange-glow"
+                className="flex items-center gap-3 rounded-xl bg-studio-raised p-2.5 transition-colors hover:bg-studio-rule focus-visible:outline-2 focus-visible:outline-trend-orange"
               >
                 <Thumb product={product} className="h-11 w-11 shrink-0 rounded-lg" />
                 <div className="min-w-0 flex-1">
@@ -357,7 +357,7 @@ function Generating({ entries }: { entries: Entry[] }) {
                     aria-label={`${product.title} progress`}
                   >
                     <div
-                      className="h-full rounded-full bg-trend-orange-glow"
+                      className="h-full rounded-full bg-trend-orange"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -422,7 +422,7 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
           <button
             type="button"
             onClick={retry}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-studio-text px-4 text-sm font-medium text-studio-ground transition hover:bg-white active:scale-[0.98]"
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-studio-text px-4 text-sm font-medium text-studio-ground transition hover:bg-black active:scale-[0.98]"
           >
             <RefreshCw className="h-4 w-4" aria-hidden />
             Try again
@@ -546,7 +546,7 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/products"
-              className="ml-auto hidden h-9 shrink-0 items-center rounded-full bg-studio-text px-4 text-sm font-medium text-studio-ground transition hover:bg-white active:scale-[0.98] sm:inline-flex"
+              className="ml-auto hidden h-9 shrink-0 items-center rounded-full bg-studio-text px-4 text-sm font-medium text-studio-ground transition hover:bg-black active:scale-[0.98] sm:inline-flex"
             >
               My products
             </Link>
