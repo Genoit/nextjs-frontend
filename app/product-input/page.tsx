@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -23,6 +23,16 @@ export default function ProductInputPage() {
   const [guideOpen, setGuideOpen] = useState(false);
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const closeGuide = useCallback(() => setGuideOpen(false), []);
+
+  // The dashboard composer sends `?url=`: open the link import with it prefilled.
+  const { setMode, setUrl } = draft;
+  useEffect(() => {
+    const pasted = new URLSearchParams(window.location.search).get('url');
+    if (!pasted) return;
+    setMode('url');
+    setUrl(pasted);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- read the query once on arrival
+  }, []);
 
   const handleContinue = async () => {
     const { errors } = draft.check;

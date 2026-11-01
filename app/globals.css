@@ -26,6 +26,16 @@
   --color-success: #16a34a;
   --color-danger: #dc2626;
   --color-info: #2563eb;
+
+  /* Studio (dark app screens): elevation by lightness alone, no shadows on cards. */
+  --color-studio-ground: #0a0a0a;
+  --color-studio-surface: #141414;
+  --color-studio-raised: #1f1f1f;
+  --color-studio-rule: #262626;
+  --color-studio-text: #f5f5f4;
+  --color-studio-muted: #b4b4b4;
+  --color-studio-meta: #949494;
+  --color-trend-orange-glow: #fb923c; /* brand orange readable as text/data on dark */
 }
 
 @keyframes rise-in {
