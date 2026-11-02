@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
-import { AppShell } from '../../../components/AppShell';
 import ProtectedRoute from '../../../components/ProtectedRoute';
 import { billingApi, type BillingSummary } from '../../../lib/api/billing';
 import { creditsText, isSubscribed, PLAN_LABEL } from '../../../lib/billing-rules.mjs';
@@ -43,12 +42,12 @@ export default function BillingSuccessPage() {
 
   return (
     <ProtectedRoute>
-      <AppShell active="/billing" topbar={<p className="text-sm font-medium">Billing</p>}>
+      <>
         <main className="mx-auto w-full max-w-lg px-4 py-16 text-center sm:px-6">
           {done ? (
             <>
               <CheckCircle2 className="mx-auto h-12 w-12 text-success" aria-hidden />
-              <h1 className="mt-5 font-editorial text-[36px] leading-tight text-studio-text">
+              <h1 className="mt-5 font-editorial text-[32px] leading-tight text-studio-text">
                 You&apos;re on {PLAN_LABEL[summary.plan]}
               </h1>
               <p className="mt-3 text-[15px] text-studio-muted">
@@ -85,7 +84,7 @@ export default function BillingSuccessPage() {
             </p>
           )}
         </main>
-      </AppShell>
+      </>
     </ProtectedRoute>
   );
 }

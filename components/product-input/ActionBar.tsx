@@ -21,8 +21,8 @@ export function ActionBar({ draft, onContinue }: { draft: ProductDraft; onContin
   else message = 'Sheet complete, ready for the analysis.';
 
   return (
-    <div className="sticky bottom-0 z-30 border-t border-studio-rule bg-studio-ground/95 px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur sm:px-6">
-      <div className="mx-auto flex max-w-[820px] flex-col gap-3 md:flex-row md:items-center md:justify-between">
+    <div className="sticky bottom-0 z-30 border-t border-studio-rule bg-studio-ground px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6">
+      <div className="mx-auto flex max-w-[1100px] flex-col gap-3 md:flex-row md:items-center md:justify-between">
         <div className="min-w-0 space-y-1">
           <p
             id="continue-status"

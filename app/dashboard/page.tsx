@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import type { FormEvent } from 'react';
+import type { FormEvent, ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -9,6 +9,7 @@ import { ArrowRight, ImagePlus, Link2, Package, PenLine, RefreshCw, Search } fro
 import { AppShell } from '../../components/AppShell';
 import { StatusBadge, type StatusTone } from '../../components/StatusBadge';
 import ProtectedRoute from '../../components/ProtectedRoute';
+import { useAuth } from '../../lib/auth';
 import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
 import type { Product } from '../../lib/types/product';
@@ -18,6 +19,7 @@ import { createHref, jobBadge, latestJob } from '../../lib/dashboard-rules.mjs';
 // shortcut: jobs are fetched per product (N+1) for the 12 most recent products; add a
 // user-wide jobs endpoint when the dashboard needs more than one page.
 const RECENT_LIMIT = 12;
+const ROWS_SHOWN = 6;
 
 type Entry = { product: Product; jobs: VideoGenerationJob[] | null };
 type Load =
@@ -48,7 +50,14 @@ async function loadStudio(): Promise<Load> {
 
 const NOT_A_STORE = new Set(['null', 'unknown', 'generic', 'manual', 'custom', 'other']);
 
-const PIPELINE = ['Product sheet', 'Strategy', 'Storyboard', 'Shots', 'Final cut'];
+// What TrendED does after a link is pasted, in the order the flow runs it.
+const FLOW = [
+  { step: 'Product sheet', what: 'Facts kept apart from guesses' },
+  { step: 'Strategy', what: 'Audience, angle and hook' },
+  { step: 'Storyboard', what: 'Scenes timed to a 15 or 30 s ad' },
+  { step: 'Shots', what: 'Each shot generated, then checked' },
+  { step: 'Final cut', what: 'Music, voice, subtitles and export' },
+];
 
 function priceText(p: Product) {
   if (p.price === null || p.price === undefined) return null;
@@ -62,66 +71,70 @@ function priceText(p: Product) {
   }
 }
 
-function Thumb({ product, className }: { product: Product; className: string }) {
+function greeting(hour: number) {
+  if (hour < 5 || hour >= 18) return 'Good evening';
+  return hour < 12 ? 'Good morning' : 'Good afternoon';
+}
+
+function Thumb({ product }: { product: Product }) {
   const [broken, setBroken] = useState(false);
   const src = product.images?.find((i) => i.is_primary)?.url || product.main_image_url;
   return (
-    <div className={`relative overflow-hidden bg-studio-raised ${className}`}>
+    <div className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-studio-raised">
       {src && !broken ? (
         <Image
           src={src}
-          alt={product.title}
+          alt=""
           fill
           unoptimized
-          sizes="(min-width: 1280px) 25vw, (min-width: 768px) 33vw, 50vw"
-          className="object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03] motion-reduce:transition-none"
+          sizes="40px"
+          className="object-cover"
           onError={() => setBroken(true)}
         />
       ) : (
         <div className="flex h-full w-full items-center justify-center text-studio-meta">
-          <Package className="h-7 w-7" strokeWidth={1.5} aria-hidden />
+          <Package className="h-4 w-4" strokeWidth={1.5} aria-hidden />
         </div>
       )}
     </div>
   );
 }
 
-// Illustrates how every ad is cut; not a generated result, so it carries no product data.
-const AD_BEATS = [
-  { beat: 'Hook', time: '0–2 s', tone: 'bg-trend-orange' },
-  { beat: 'Problem', time: '2–5 s', tone: 'bg-stage-text/30' },
-  { beat: 'Product', time: '5–10 s', tone: 'bg-trend-gold' },
-  { beat: 'Proof', time: '10–13 s', tone: 'bg-stage-text/30' },
-  { beat: 'Call to action', time: '13–15 s', tone: 'bg-trend-orange' },
-];
-
-function AdAnatomy() {
+function Panel({
+  id,
+  title,
+  count,
+  action,
+  className = '',
+  children,
+}: {
+  id: string;
+  title: string;
+  count?: number;
+  action?: ReactNode;
+  className?: string;
+  children: ReactNode;
+}) {
   return (
-    <figure className="hidden lg:block" aria-labelledby="anatomy-caption">
-      <div className="mx-auto flex aspect-[9/16] w-[220px] flex-col justify-between rounded-[28px] bg-stage p-4 text-stage-text shadow-[0_24px_60px_-24px_rgba(28,25,23,0.55)]">
-        <div className="flex items-center justify-between text-[11px] text-stage-text/70">
-          <span className="font-semibold tracking-wide text-stage-text">9:16</span>
-          <span>15 s</span>
-        </div>
-        <ol className="space-y-2">
-          {AD_BEATS.map(({ beat, time, tone }) => (
-            <li key={beat} className="flex items-center gap-2.5">
-              <span aria-hidden className={`h-8 w-1 shrink-0 rounded-full ${tone}`} />
-              <span className="min-w-0 flex-1">
-                <span className="block text-[13px] font-medium leading-tight">{beat}</span>
-                <span className="block text-[11px] tabular-nums text-stage-text/60">{time}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
-        <p className="text-[11px] leading-snug text-stage-text/60">TikTok · Reels · Shorts</p>
+    <section aria-labelledby={id} className={`rounded-2xl bg-studio-surface p-5 ${className}`}>
+      <div className="flex min-h-7 items-center justify-between gap-3">
+        <h2 id={id} className="flex items-center gap-2 text-sm font-semibold text-studio-text">
+          {title}
+          {count !== undefined && (
+            <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-studio-muted">
+              {count}
+            </span>
+          )}
+        </h2>
+        {action}
       </div>
-      <figcaption id="anatomy-caption" className="mt-3 text-center text-xs text-studio-meta">
-        How every ad is cut
-      </figcaption>
-    </figure>
+      <div className="mt-4">{children}</div>
+    </section>
   );
 }
+
+const rowClass =
+  'flex min-h-[63px] items-center gap-3 rounded-xl border border-studio-rule bg-white px-3 py-2.5 transition-colors hover:border-[#d1d5db] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
 
 function Composer() {
   const router = useRouter();
@@ -132,29 +145,27 @@ function Composer() {
   };
   return (
     <section
-      aria-labelledby="studio-title"
-      className="grid items-center gap-8 overflow-hidden rounded-3xl bg-cream p-5 sm:p-8 lg:grid-cols-[1fr_240px] lg:gap-12 lg:p-10"
+      aria-labelledby="composer-title"
+      className="flex flex-col justify-between gap-6 rounded-2xl bg-cream p-5 sm:p-6 lg:col-span-8"
     >
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-trend-orange-strong">Studio</p>
-        <h1
-          id="studio-title"
-          className="mt-2 font-editorial text-[38px] leading-[1.02] tracking-[-0.01em] text-balance text-studio-text sm:text-[52px]"
-        >
-          Turn a product into a video ad
-        </h1>
-        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-studio-muted sm:text-base">
-          Paste the product page. TrendED reads it, separates facts from guesses, and builds the ad
-          shot by shot.
+      <div>
+        <h2 id="composer-title" className="text-base font-semibold text-studio-text">
+          New ad from a product page
+        </h2>
+        <p className="mt-1 max-w-xl text-sm leading-5 text-ink-soft">
+          Paste the link. TrendED reads the page, keeps facts apart from guesses and plans the ad
+          shot by shot. You check the sheet before anything is rendered.
         </p>
+      </div>
 
-        <form onSubmit={submit} className="mt-7 flex flex-col gap-3 sm:flex-row">
+      <div>
+        <form onSubmit={submit} className="flex flex-col gap-2 sm:flex-row">
           <label htmlFor="product-link" className="sr-only">
-            Product link
+            Product page link
           </label>
           <div className="relative flex-1">
             <Link2
-              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-studio-meta"
+              className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-studio-meta"
               strokeWidth={1.75}
               aria-hidden
             />
@@ -166,62 +177,61 @@ function Composer() {
               value={link}
               onChange={(e) => setLink(e.target.value)}
               placeholder="https://store.com/products/your-product"
-              className="h-14 w-full rounded-xl bg-white pl-12 pr-4 text-base text-studio-text caret-trend-orange shadow-sm outline-none ring-1 ring-line transition placeholder:text-studio-meta focus:ring-2 focus:ring-trend-orange"
+              className="h-12 w-full rounded-[10px] border border-[#e7dcc6] bg-white pr-4 pl-10 text-[15px] text-studio-text caret-trend-orange outline-none transition-colors placeholder:text-studio-meta focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25"
             />
           </div>
           <button
             type="submit"
-            className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-trend-orange px-7 text-[15px] font-semibold text-white shadow-sm transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
+            className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-6 text-[15px] font-semibold text-white transition-[background-color,transform] hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98] motion-reduce:transition-none"
           >
             Create ad
             <ArrowRight className="h-4 w-4" aria-hidden />
           </button>
         </form>
 
-        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+        <p className="mt-2 flex flex-wrap items-center gap-x-5 text-sm text-ink-soft">
+          <span>No link?</span>
           <Link
             href="/product-input"
-            className="inline-flex min-h-11 items-center gap-1.5 text-studio-muted underline-offset-4 transition-colors hover:text-studio-text hover:underline"
+            className="inline-flex min-h-11 items-center gap-1.5 font-medium text-studio-text underline-offset-4 hover:underline"
           >
             <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-            No link? Start from photos
+            Start from photos
           </Link>
           <Link
             href="/product-input?mode=manual"
-            className="inline-flex min-h-11 items-center gap-1.5 text-studio-muted underline-offset-4 transition-colors hover:text-studio-text hover:underline"
+            className="inline-flex min-h-11 items-center gap-1.5 font-medium text-studio-text underline-offset-4 hover:underline"
           >
             <PenLine className="h-4 w-4" strokeWidth={1.75} aria-hidden />
             Type it in
           </Link>
-        </div>
-
-        <ol
-          className="mt-5 flex flex-wrap gap-2 border-t border-trend-gold/25 pt-5"
-          aria-label="What happens next"
-        >
-          {PIPELINE.map((step, i) => (
-            <li
-              key={step}
-              className="inline-flex items-center gap-2 rounded-full bg-white/70 py-1 pl-1 pr-3 text-sm text-studio-muted"
-            >
-              <span
-                aria-hidden
-                className="flex size-6 items-center justify-center rounded-full bg-white text-xs font-semibold tabular-nums text-trend-orange-strong"
-              >
-                {i + 1}
-              </span>
-              {step}
-            </li>
-          ))}
-        </ol>
+        </p>
       </div>
-
-      <AdAnatomy />
     </section>
   );
 }
 
-function ProductCard({ entry }: { entry: Entry }) {
+function Flow() {
+  return (
+    <Panel id="flow-title" title="What happens next" className="lg:col-span-4">
+      <ol aria-label="Steps of every ad">
+        {FLOW.map(({ step, what }, i) => (
+          <li
+            key={step}
+            className={`flex items-baseline justify-between gap-3 py-2 ${i ? 'border-t border-studio-rule' : 'pt-0'}`}
+          >
+            <span className="shrink-0 text-sm font-medium whitespace-nowrap text-studio-text">
+              {step}
+            </span>
+            <span className="text-right text-[13px] leading-5 text-studio-muted">{what}</span>
+          </li>
+        ))}
+      </ol>
+    </Panel>
+  );
+}
+
+function ProductRow({ entry }: { entry: Entry }) {
   const { product, jobs } = entry;
   const badge =
     jobs === null ? { tone: 'idle', label: 'Status unavailable' } : jobBadge(latestJob(jobs));
@@ -232,73 +242,23 @@ function ProductCard({ entry }: { entry: Entry }) {
   const meta = [platform, priceText(product)].filter(Boolean).join(' · ');
   return (
     <li>
-      <Link
-        href={`/products/${product.id}`}
-        className="group block rounded-xl focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-trend-orange"
-      >
-        <div className="relative">
-          <Thumb product={product} className="aspect-[4/5] w-full rounded-xl" />
-          <StatusBadge
-            tone={badge.tone as StatusTone}
-            label={badge.label}
-            className="absolute bottom-2.5 left-2.5 shadow-sm"
-          />
+      <Link href={`/products/${product.id}`} className={`group ${rowClass}`}>
+        <Thumb product={product} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-medium text-studio-text group-hover:underline underline-offset-2">
+            {product.title}
+          </p>
+          <p className="truncate text-xs text-studio-muted capitalize tabular-nums">
+            {meta || '—'}
+          </p>
         </div>
-        <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-medium text-studio-text group-hover:underline underline-offset-2">
-          {product.title}
-        </p>
-        {meta && <p className="mt-0.5 truncate text-xs text-studio-meta capitalize">{meta}</p>}
+        <StatusBadge tone={badge.tone as StatusTone} label={badge.label} className="shrink-0" />
       </Link>
     </li>
   );
 }
 
-function Generating({ entries }: { entries: Entry[] }) {
-  const running = entries.flatMap(({ product, jobs }) =>
-    (jobs ?? []).filter((j) => jobBadge(j).tone === 'active').map((job) => ({ product, job })),
-  );
-  if (running.length === 0) return null;
-  return (
-    <section aria-labelledby="generating-title" className="rounded-2xl bg-studio-surface p-5">
-      <h2 id="generating-title" className="text-sm font-semibold text-studio-text">
-        Generating now <span className="ml-1 font-normal text-studio-meta">{running.length}</span>
-      </h2>
-      <ul className="mt-3 space-y-2">
-        {running.map(({ product, job }) => {
-          const pct = Math.max(0, Math.min(100, Math.round(job.progress_percentage ?? 0)));
-          return (
-            <li key={job.id}>
-              <Link
-                href={`/products/${product.id}/creative`}
-                className="flex items-center gap-3 rounded-xl bg-studio-raised p-2.5 transition-colors hover:bg-studio-rule focus-visible:outline-2 focus-visible:outline-trend-orange"
-              >
-                <Thumb product={product} className="h-11 w-11 shrink-0 rounded-lg" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm text-studio-text">{product.title}</p>
-                  <div
-                    className="mt-1.5 h-1 overflow-hidden rounded-full bg-studio-rule"
-                    role="progressbar"
-                    aria-valuenow={pct}
-                    aria-valuemin={0}
-                    aria-valuemax={100}
-                    aria-label={`${product.title} progress`}
-                  >
-                    <div className="h-full rounded-full bg-warning" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-                <span className="shrink-0 text-right text-xs text-studio-muted tabular-nums">
-                  {job.current_step ? `${pct}% · ${job.current_step}` : `${pct}%`}
-                </span>
-              </Link>
-            </li>
-          );
-        })}
-      </ul>
-    </section>
-  );
-}
-
-function Gallery({ load, query, retry }: { load: Load; query: string; retry: () => void }) {
+function RecentProducts({ load, query, retry }: { load: Load; query: string; retry: () => void }) {
   const shown = useMemo(() => {
     if (load.state !== 'ready') return [];
     const q = query.trim().toLowerCase();
@@ -306,39 +266,33 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
   }, [load, query]);
 
   return (
-    <section aria-labelledby="recent-title">
-      <div className="flex items-baseline justify-between">
-        <h2 id="recent-title" className="text-sm font-semibold text-studio-text">
-          Recent products
-          {load.state === 'ready' && (
-            <span className="ml-1.5 font-normal text-studio-meta">{load.entries.length}</span>
-          )}
-        </h2>
+    <Panel
+      id="recent-title"
+      title="Recent products"
+      count={load.state === 'ready' ? shown.length : undefined}
+      className="lg:col-span-8"
+      action={
         <Link
           href="/products"
-          className="text-sm text-studio-muted underline-offset-4 transition-colors hover:text-studio-text hover:underline"
+          className="inline-flex min-h-9 items-center text-sm text-studio-muted underline-offset-4 hover:text-studio-text hover:underline"
         >
           View all
         </Link>
-      </div>
-
+      }
+    >
       {load.state === 'loading' && (
-        <ul
-          className="mt-4 grid grid-cols-2 gap-4 md:grid-cols-3 xl:grid-cols-4"
-          aria-busy="true"
-          aria-label="Loading products"
-        >
-          {Array.from({ length: 4 }, (_, i) => (
-            <li key={i}>
-              <div className="aspect-[4/5] rounded-xl bg-studio-surface motion-safe:animate-pulse" />
-              <div className="mt-2.5 h-4 w-3/4 rounded bg-studio-surface motion-safe:animate-pulse" />
+        <ul className="space-y-2" aria-busy="true" aria-label="Loading products">
+          {Array.from({ length: 3 }, (_, i) => (
+            <li key={i} className={rowClass}>
+              <div className="size-10 rounded-lg bg-studio-raised" />
+              <div className="h-4 w-1/2 rounded bg-studio-raised" />
             </li>
           ))}
         </ul>
       )}
 
       {load.state === 'error' && (
-        <div className="mt-4 flex flex-col items-start gap-3 rounded-2xl bg-studio-surface p-5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-start gap-3 rounded-xl border border-studio-rule bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-studio-text">
             Your products could not be loaded.{' '}
             <span className="text-studio-muted">{load.message}</span>
@@ -346,7 +300,7 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
           <button
             type="button"
             onClick={retry}
-            className="inline-flex h-9 items-center gap-2 rounded-full bg-studio-text px-4 text-sm font-medium text-studio-ground transition hover:bg-black active:scale-[0.98]"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d1d5db] bg-white px-3 text-sm font-medium text-studio-text hover:border-studio-text"
           >
             <RefreshCw className="h-4 w-4" aria-hidden />
             Try again
@@ -355,34 +309,97 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
       )}
 
       {load.state === 'ready' && load.entries.length === 0 && (
-        <div className="mt-4 rounded-2xl border border-dashed border-studio-rule px-5 py-10 text-center">
-          <p className="text-[15px] font-medium text-studio-text">No products yet</p>
-          <p className="mt-1 text-sm text-studio-muted">
-            Paste a product link above and your first ad starts here.
-          </p>
-        </div>
+        <p className="rounded-xl border border-dashed border-[#d1d5db] px-4 py-3 text-sm text-studio-muted">
+          No products yet. Paste a product link above: your first ad starts here.
+        </p>
       )}
 
       {load.state === 'ready' && load.entries.length > 0 && shown.length === 0 && (
-        <p className="mt-4 rounded-2xl bg-studio-surface px-5 py-6 text-sm text-studio-muted">
+        <p className="rounded-xl border border-dashed border-[#d1d5db] px-4 py-3 text-sm text-studio-muted">
           No recent product matches &ldquo;{query}&rdquo;.
         </p>
       )}
 
       {shown.length > 0 && (
-        <ul className="mt-4 grid grid-cols-2 gap-x-4 gap-y-6 md:grid-cols-3 xl:grid-cols-4">
-          {shown.map((entry) => (
-            <ProductCard key={entry.product.id} entry={entry} />
+        <ul className="space-y-2">
+          {shown.slice(0, ROWS_SHOWN).map((entry) => (
+            <ProductRow key={entry.product.id} entry={entry} />
           ))}
         </ul>
       )}
-    </section>
+    </Panel>
+  );
+}
+
+function Generating({ load }: { load: Load }) {
+  const running =
+    load.state === 'ready'
+      ? load.entries.flatMap(({ product, jobs }) =>
+          (jobs ?? [])
+            .filter((j) => jobBadge(j).tone === 'active')
+            .map((job) => ({ product, job })),
+        )
+      : [];
+  return (
+    <Panel
+      id="generating-title"
+      title="Rendering now"
+      count={load.state === 'ready' ? running.length : undefined}
+      className="lg:col-span-4"
+    >
+      {running.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-[#d1d5db] px-4 py-3 text-sm text-studio-muted">
+          {load.state === 'loading'
+            ? 'Checking your renders…'
+            : 'Nothing is rendering. Ads you start show their progress here.'}
+        </p>
+      ) : (
+        <ul className="space-y-2">
+          {running.map(({ product, job }) => {
+            const pct = Math.max(0, Math.min(100, Math.round(job.progress_percentage ?? 0)));
+            return (
+              <li key={job.id}>
+                <Link href={`/products/${product.id}/creative`} className={rowClass}>
+                  <Thumb product={product} />
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                      <p className="truncate text-sm text-studio-text">{product.title}</p>
+                      <span className="shrink-0 text-xs tabular-nums text-studio-muted">
+                        {pct}%
+                      </span>
+                    </div>
+                    <div
+                      className="mt-1.5 h-1 overflow-hidden rounded-full bg-studio-raised"
+                      role="progressbar"
+                      aria-valuenow={pct}
+                      aria-valuemin={0}
+                      aria-valuemax={100}
+                      aria-label={`${product.title} progress`}
+                    >
+                      <div
+                        className="h-full rounded-full bg-warning"
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    {job.current_step && (
+                      <p className="mt-1 truncate text-xs text-studio-muted">{job.current_step}</p>
+                    )}
+                  </div>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </Panel>
   );
 }
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const [load, setLoad] = useState<Load>({ state: 'loading' });
   const [query, setQuery] = useState('');
+  const [now] = useState(() => new Date());
 
   useEffect(() => {
     let cancelled = false;
@@ -399,42 +416,47 @@ export default function DashboardPage() {
     loadStudio().then(setLoad);
   };
 
+  const name = user?.first_name?.trim();
+  const title = name ? `${greeting(now.getHours())}, ${name}` : 'Studio';
+
   const topbar = (
-    <>
-      <div className="relative w-full max-w-md">
-        <label htmlFor="studio-search" className="sr-only">
-          Search recent products
-        </label>
-        <Search
-          className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-studio-meta"
-          aria-hidden
-        />
-        <input
-          id="studio-search"
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search recent products"
-          className="h-10 w-full rounded-lg bg-studio-surface pr-3 pl-9 text-sm text-studio-text outline-none ring-1 ring-studio-rule transition placeholder:text-studio-meta focus:ring-trend-orange"
-        />
-      </div>
-      <Link
-        href="/products"
-        className="ml-auto hidden h-10 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-studio-muted transition hover:bg-studio-surface hover:text-studio-text sm:inline-flex"
-      >
-        <Package className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-        My products
-      </Link>
-    </>
+    <div className="relative w-full max-w-md">
+      <label htmlFor="studio-search" className="sr-only">
+        Search recent products
+      </label>
+      <Search
+        className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-studio-meta"
+        aria-hidden
+      />
+      <input
+        id="studio-search"
+        type="search"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        placeholder="Search recent products"
+        className="h-10 w-full rounded-lg border border-studio-rule bg-white pr-3 pl-9 text-sm text-studio-text outline-none transition-colors placeholder:text-studio-meta focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25"
+      />
+    </div>
   );
 
   return (
     <ProtectedRoute>
       <AppShell active="/dashboard" topbar={topbar}>
-        <main className="mx-auto w-full max-w-[1200px] space-y-10 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-          <Composer />
-          {load.state === 'ready' && <Generating entries={load.entries} />}
-          <Gallery load={load} query={query} retry={retry} />
+        <main className="mx-auto w-full max-w-[1100px] px-4 pt-8 pb-16 sm:px-6 lg:pt-12">
+          <h1 className="font-editorial text-[28px] leading-[1.1] text-studio-text sm:text-[32px]">
+            {title}
+          </h1>
+          <p className="mt-1 text-sm text-studio-muted" suppressHydrationWarning>
+            {now.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+          </p>
+
+          {/* 12 columns; both rows split 8 + 4 so every inner edge meets the one above it. */}
+          <div className="mt-8 grid grid-cols-1 gap-4 lg:grid-cols-12">
+            <Composer />
+            <Flow />
+            <RecentProducts load={load} query={query} retry={retry} />
+            <Generating load={load} />
+          </div>
         </main>
       </AppShell>
     </ProtectedRoute>

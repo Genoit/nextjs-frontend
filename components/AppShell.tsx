@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Clapperboard, LogOut, Menu, Package, Plus, Sparkles, X, Zap } from 'lucide-react';
+import { ArrowRight, Clapperboard, LogOut, Menu, Package, Plus, X, Zap } from 'lucide-react';
 import { useAuth } from '../lib/auth';
 import { billingApi, type BillingSummary } from '../lib/api/billing';
 import { creditsText, isSubscribed, PLAN_LABEL } from '../lib/billing-rules.mjs';
@@ -39,7 +39,7 @@ function CreditsBadge({ summary }: { summary: BillingSummary | null }) {
           {PLAN_LABEL[summary.plan]}
         </span>
       ) : (
-        <span className="rounded-full bg-trend-orange px-2.5 py-1 text-xs font-semibold text-white">
+        <span className="rounded-full bg-cream px-2.5 py-1 text-xs font-semibold text-trend-orange-strong">
           Upgrade
         </span>
       )}
@@ -79,10 +79,10 @@ function PlanCard({
           <Link
             href="/billing"
             onClick={onNavigate}
-            className="mt-2.5 flex h-9 items-center justify-center gap-1.5 rounded-lg bg-trend-orange text-sm font-semibold text-white transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+            className="mt-1 inline-flex min-h-9 items-center gap-1.5 text-sm font-semibold text-trend-orange-strong underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-trend-orange"
           >
-            <Sparkles className="h-4 w-4" aria-hidden />
-            Upgrade
+            See plans
+            <ArrowRight className="h-3.5 w-3.5" aria-hidden />
           </Link>
         </>
       )}
@@ -236,7 +236,7 @@ export function AppShell({
       )}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-studio-rule bg-studio-ground/95 px-4 backdrop-blur sm:px-6 lg:px-8">
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-studio-rule bg-studio-ground px-4 sm:px-6 lg:px-8">
           <button
             type="button"
             onClick={() => setMenuOpen(true)}

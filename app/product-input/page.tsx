@@ -55,12 +55,12 @@ export default function ProductInputPage() {
     <>
       <nav aria-label="Breadcrumb" className="min-w-0 text-sm">
         <ol className="flex items-center gap-1.5 text-studio-muted">
-          <li>
+          <li className="hidden sm:block">
             <Link href="/dashboard" className="hover:text-studio-text hover:underline">
               Studio
             </Link>
           </li>
-          <li aria-hidden>
+          <li aria-hidden className="hidden sm:block">
             <ChevronRight className="h-3.5 w-3.5" />
           </li>
           <li aria-current="page" className="truncate font-medium text-studio-text">
@@ -75,7 +75,7 @@ export default function ProductInputPage() {
       >
         <BookOpen className="h-4 w-4" strokeWidth={1.75} aria-hidden />
         <span className="hidden sm:inline">Tips for a good sheet</span>
-        <span className="sm:hidden">Tips</span>
+        <span className="sr-only sm:hidden">Tips for a good sheet</span>
       </button>
     </>
   );
@@ -84,25 +84,28 @@ export default function ProductInputPage() {
     <ProtectedRoute>
       <AppShell active="/product-input" topbar={topbar}>
         <main className="flex flex-1 flex-col">
-          <div className="mx-auto w-full max-w-[820px] flex-1 px-4 pb-12 pt-6 sm:px-6 lg:pt-8">
-            <Stepper current={0} />
-            <h1 className="mt-6 font-editorial text-[34px] leading-[1.05] tracking-[-0.01em] text-studio-text sm:text-[44px]">
-              Add a product
-            </h1>
-            <p className="mt-2 max-w-xl text-[15px] leading-relaxed text-studio-muted">
-              Import it from its page or fill in the sheet. You review everything before the
-              analysis starts.
-            </p>
+          <div className="mx-auto w-full max-w-[1100px] flex-1 px-4 pt-8 pb-12 sm:px-6 lg:pt-12">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="min-w-0">
+                <h1 className="font-editorial text-[28px] leading-[1.1] text-studio-text sm:text-[32px]">
+                  Add a product
+                </h1>
+                <p className="mt-1 max-w-xl text-sm leading-5 text-studio-muted">
+                  Import it or fill in the sheet. You review everything before the analysis starts.
+                </p>
+              </div>
+              <Stepper current={0} />
+            </div>
 
-            <div className="mt-8 space-y-6">
-              <div className="rounded-2xl border border-studio-rule p-5 sm:p-6">
+            <div className="mt-8 divide-y divide-studio-rule border-t border-studio-rule">
+              <div className="py-8">
                 <ImportPanel
                   draft={draft}
                   onOpenImage={setLightbox}
                   onStartManual={() => focusField('product-title')}
                 />
               </div>
-              <div className="rounded-2xl border border-studio-rule p-5 sm:p-6">
+              <div className="py-8">
                 <ProductInfoForm draft={draft} />
               </div>
             </div>

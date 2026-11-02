@@ -9,17 +9,17 @@ export const FLOW_STEPS = [
   'Product visuals',
 ];
 
-/** Horizontal progress for the ad flow; on phones it folds to "Step 1 of 5". */
+/** The ad flow as a quiet trail: done steps checked, the current one marked; phones fold it to one line. */
 export function Stepper({ current = 0 }: { current?: number }) {
   return (
     <nav aria-label="Ad creation steps">
       <p className="text-sm text-studio-muted sm:hidden">
         <span className="font-medium text-studio-text">
-          Step {current + 1} of {FLOW_STEPS.length} · {FLOW_STEPS[current]}
+          {FLOW_STEPS[current]}, {current + 1} of {FLOW_STEPS.length}
         </span>
-        {current + 1 < FLOW_STEPS.length && <span> · next: {FLOW_STEPS[current + 1]}</span>}
+        {current + 1 < FLOW_STEPS.length && <span> · then {FLOW_STEPS[current + 1]}</span>}
       </p>
-      <ol className="hidden items-center gap-2 sm:flex">
+      <ol className="hidden items-center gap-3 text-sm whitespace-nowrap sm:flex">
         {FLOW_STEPS.map((label, i) => {
           const done = i < current;
           const now = i === current;
@@ -27,24 +27,14 @@ export function Stepper({ current = 0 }: { current?: number }) {
             <li
               key={label}
               aria-current={now ? 'step' : undefined}
-              className="flex min-w-0 items-center gap-2"
+              className="flex items-center gap-3"
             >
-              {i > 0 && <span aria-hidden className="h-px w-6 shrink-0 bg-studio-rule lg:w-10" />}
+              {i > 0 && <span aria-hidden className="h-px w-4 bg-[#d1d5db]" />}
               <span
-                aria-hidden
-                className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular-nums ${
-                  now
-                    ? 'bg-trend-orange text-white'
-                    : done
-                      ? 'bg-cream text-trend-orange-strong'
-                      : 'border border-studio-rule text-studio-meta'
-                }`}
+                className={`inline-flex items-center gap-1.5 ${now ? 'font-medium text-studio-text' : 'text-studio-muted'}`}
               >
-                {done ? <Check className="size-3.5" /> : i + 1}
-              </span>
-              <span
-                className={`truncate text-sm ${now ? 'font-medium text-studio-text' : 'text-studio-muted'}`}
-              >
+                {now && <span aria-hidden className="size-1.5 rounded-full bg-trend-orange" />}
+                {done && <Check className="size-3.5 text-success" aria-hidden />}
                 {label}
                 {now && <span className="sr-only"> (current step)</span>}
               </span>
