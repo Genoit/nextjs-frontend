@@ -5,17 +5,7 @@ import type { FormEvent } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import {
-  ArrowRight,
-  ImagePlus,
-  Link2,
-  ListChecks,
-  Package,
-  PenLine,
-  RefreshCw,
-  Search,
-  Sparkles,
-} from 'lucide-react';
+import { ArrowRight, ImagePlus, Link2, Package, PenLine, RefreshCw, Search } from 'lucide-react';
 import { AppShell } from '../../components/AppShell';
 import { StatusBadge, type StatusTone } from '../../components/StatusBadge';
 import ProtectedRoute from '../../components/ProtectedRoute';
@@ -23,13 +13,7 @@ import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
 import type { Product } from '../../lib/types/product';
 import type { VideoGenerationJob } from '../../lib/types/creative';
-import {
-  createHref,
-  formatUsd,
-  jobBadge,
-  latestJob,
-  studioStats,
-} from '../../lib/dashboard-rules.mjs';
+import { createHref, jobBadge, latestJob } from '../../lib/dashboard-rules.mjs';
 
 // shortcut: jobs are fetched per product (N+1) for the 12 most recent products; add a
 // user-wide jobs endpoint when the dashboard needs more than one page.
@@ -65,24 +49,6 @@ async function loadStudio(): Promise<Load> {
 const NOT_A_STORE = new Set(['null', 'unknown', 'generic', 'manual', 'custom', 'other']);
 
 const PIPELINE = ['Product sheet', 'Strategy', 'Storyboard', 'Shots', 'Final cut'];
-
-const FIRST_STEPS = [
-  {
-    title: 'Paste the product link',
-    body: 'TrendED reads the page and keeps facts apart from guesses.',
-    icon: Link2,
-  },
-  {
-    title: 'Pick the angle',
-    body: 'Choose the hook and the audience, then review the storyboard.',
-    icon: ListChecks,
-  },
-  {
-    title: 'Get the 9:16 video',
-    body: 'Shots are rendered, checked, and cut for TikTok, Reels and Shorts.',
-    icon: Sparkles,
-  },
-];
 
 function priceText(p: Product) {
   if (p.price === null || p.price === undefined) return null;
@@ -255,43 +221,6 @@ function Composer() {
   );
 }
 
-function Stats({ entries }: { entries: Entry[] }) {
-  const s = studioStats(entries.map((e) => ({ jobs: e.jobs ?? [] })));
-  const cells = [
-    {
-      label: 'Products',
-      value: String(s.products),
-      note: s.products === RECENT_LIMIT ? 'Most recent shown' : 'In your library',
-    },
-    {
-      label: 'Generating',
-      value: String(s.inProgress),
-      note: s.inProgress ? 'Rendering now' : 'Nothing running',
-    },
-    { label: 'Ready videos', value: String(s.ready), note: 'Completed jobs' },
-    {
-      label: 'Spend',
-      value: formatUsd(s.spend),
-      note: s.unmeasured
-        ? `${s.unmeasured} job${s.unmeasured > 1 ? 's' : ''} not measured yet`
-        : 'Actual provider cost',
-    },
-  ];
-  return (
-    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-2xl bg-studio-rule lg:grid-cols-4">
-      {cells.map((c) => (
-        <div key={c.label} className="bg-studio-surface px-5 py-4">
-          <dt className="text-sm text-studio-muted">{c.label}</dt>
-          <dd className="mt-1 text-[26px] leading-tight font-normal text-studio-text tabular-nums">
-            {c.value}
-          </dd>
-          <dd className="mt-0.5 text-xs text-studio-meta">{c.note}</dd>
-        </div>
-      ))}
-    </dl>
-  );
-}
-
 function ProductCard({ entry }: { entry: Entry }) {
   const { product, jobs } = entry;
   const badge =
@@ -426,28 +355,11 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
       )}
 
       {load.state === 'ready' && load.entries.length === 0 && (
-        <div className="mt-4 rounded-2xl border border-dashed border-studio-rule p-5 sm:p-6">
+        <div className="mt-4 rounded-2xl border border-dashed border-studio-rule px-5 py-10 text-center">
           <p className="text-[15px] font-medium text-studio-text">No products yet</p>
-          <p className="mt-1 text-sm text-studio-muted">Your first ad takes three steps.</p>
-          <ol className="mt-5 grid gap-3 md:grid-cols-3">
-            {FIRST_STEPS.map(({ title, body, icon: Icon }, i) => (
-              <li key={title} className="rounded-xl bg-studio-surface p-4">
-                <div className="flex items-center gap-2">
-                  <span
-                    aria-hidden
-                    className="flex size-7 items-center justify-center rounded-full bg-cream text-trend-orange-strong"
-                  >
-                    <Icon className="h-4 w-4" strokeWidth={1.75} />
-                  </span>
-                  <span className="text-xs font-medium tabular-nums text-studio-meta">
-                    Step {i + 1}
-                  </span>
-                </div>
-                <p className="mt-3 text-sm font-medium text-studio-text">{title}</p>
-                <p className="mt-1 text-sm leading-relaxed text-studio-muted">{body}</p>
-              </li>
-            ))}
-          </ol>
+          <p className="mt-1 text-sm text-studio-muted">
+            Paste a product link above and your first ad starts here.
+          </p>
         </div>
       )}
 
@@ -521,7 +433,6 @@ export default function DashboardPage() {
       <AppShell active="/dashboard" topbar={topbar}>
         <main className="mx-auto w-full max-w-[1200px] space-y-10 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
           <Composer />
-          {load.state === 'ready' && load.entries.length > 0 && <Stats entries={load.entries} />}
           {load.state === 'ready' && <Generating entries={load.entries} />}
           <Gallery load={load} query={query} retry={retry} />
         </main>

@@ -82,6 +82,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
         if (typeof d.detail === 'string') {
           errorMessage = d.detail;
+        } else if (d.detail && typeof d.detail === 'object' && !Array.isArray(d.detail)) {
+          // Structured detail, e.g. 402 { code: 'NOT_ENOUGH_CREDITS', message }.
+          const sd = d.detail as { code?: unknown; message?: unknown };
+          if (typeof sd.message === 'string') errorMessage = sd.message;
+          if (typeof sd.code === 'string') errorCode = sd.code;
         } else if (Array.isArray(d.detail)) {
           errorMessage = d.detail
             .map((item) =>

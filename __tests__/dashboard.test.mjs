@@ -1,12 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import {
-  createHref,
-  formatUsd,
-  jobBadge,
-  latestJob,
-  studioStats,
-} from '../lib/dashboard-rules.mjs';
+import { createHref, jobBadge, latestJob } from '../lib/dashboard-rules.mjs';
 
 describe('latestJob', () => {
   it('returns null without jobs', () => {
@@ -47,28 +41,6 @@ describe('jobBadge', () => {
   });
 });
 
-describe('studioStats', () => {
-  it('adds up the rows and keeps unmeasured costs apart', () => {
-    const stats = studioStats([
-      {
-        jobs: [
-          { status: 'completed', actual_cost: '1.20' },
-          { status: 'rendering', actual_cost: null },
-        ],
-      },
-      { jobs: [] },
-      { jobs: [{ status: 'failed', actual_cost: 0.35 }] },
-    ]);
-    assert.deepStrictEqual(stats, {
-      products: 3,
-      inProgress: 1,
-      ready: 1,
-      spend: 1.55,
-      unmeasured: 1,
-    });
-  });
-});
-
 describe('createHref', () => {
   it('prefills the pasted link', () => {
     assert.strictEqual(
@@ -78,11 +50,5 @@ describe('createHref', () => {
   });
   it('falls back to plain product input', () => {
     assert.strictEqual(createHref('  '), '/product-input');
-  });
-});
-
-describe('formatUsd', () => {
-  it('formats two decimals', () => {
-    assert.strictEqual(formatUsd(1.5), '$1.50');
   });
 });
