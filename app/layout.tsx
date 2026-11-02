@@ -20,7 +20,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${inter.className} ${playfair.variable} ${instrumentSerif.variable} ${caveat.variable}`}
+      className={`h-full antialiased ${inter.className} ${inter.variable} ${playfair.variable} ${instrumentSerif.variable} ${caveat.variable}`}
     >
       <body className="min-h-full flex flex-col bg-white text-ink font-sans">
         <AuthProvider>
