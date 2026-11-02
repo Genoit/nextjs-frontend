@@ -19,6 +19,7 @@ import {
   Search,
   X,
 } from 'lucide-react';
+import { StatusBadge, type StatusTone } from '../../components/StatusBadge';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../lib/auth';
 import { productApi } from '../../lib/api/product';
@@ -73,13 +74,6 @@ const NAV = [
 const NOT_A_STORE = new Set(['null', 'unknown', 'generic', 'manual', 'custom', 'other']);
 
 const PIPELINE = ['Product sheet', 'Strategy', 'Storyboard', 'Shots', 'Final cut'];
-
-const BADGE_TONE: Record<string, string> = {
-  idle: 'text-zinc-200',
-  active: 'text-orange-300',
-  ready: 'text-green-300',
-  failed: 'text-red-300',
-};
 
 function priceText(p: Product) {
   if (p.price === null || p.price === undefined) return null;
@@ -311,11 +305,11 @@ function ProductCard({ entry }: { entry: Entry }) {
       >
         <div className="relative">
           <Thumb product={product} className="aspect-[4/5] w-full rounded-xl" />
-          <span
-            className={`absolute bottom-2.5 left-2.5 rounded-full bg-black/75 px-2.5 py-1 text-xs font-medium ${BADGE_TONE[badge.tone]}`}
-          >
-            {badge.label}
-          </span>
+          <StatusBadge
+            tone={badge.tone as StatusTone}
+            label={badge.label}
+            className="absolute bottom-2.5 left-2.5 shadow-sm"
+          />
         </div>
         <p className="mt-2.5 line-clamp-2 text-sm leading-snug font-medium text-studio-text group-hover:underline underline-offset-2">
           {product.title}
@@ -356,10 +350,7 @@ function Generating({ entries }: { entries: Entry[] }) {
                     aria-valuemax={100}
                     aria-label={`${product.title} progress`}
                   >
-                    <div
-                      className="h-full rounded-full bg-trend-orange"
-                      style={{ width: `${pct}%` }}
-                    />
+                    <div className="h-full rounded-full bg-warning" style={{ width: `${pct}%` }} />
                   </div>
                 </div>
                 <span className="shrink-0 text-right text-xs text-studio-muted tabular-nums">

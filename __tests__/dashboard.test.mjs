@@ -34,10 +34,10 @@ describe('jobBadge', () => {
   });
   it('flags a completed job with simulated shots', () => {
     const job = { status: 'completed', shots: [{ is_mock: false }, { is_mock: true }] };
-    assert.strictEqual(jobBadge(job).label, 'Ready · simulation');
+    assert.deepStrictEqual(jobBadge(job), { tone: 'simulated', label: 'Simulated' });
   });
   it('treats a shot without is_mock as a simulation (fail closed)', () => {
-    assert.strictEqual(jobBadge({ status: 'completed', shots: [{}] }).label, 'Ready · simulation');
+    assert.strictEqual(jobBadge({ status: 'completed', shots: [{}] }).tone, 'simulated');
   });
   it('never reads an unknown status as ready', () => {
     assert.strictEqual(jobBadge({ status: 'weird' }).tone, 'idle');
