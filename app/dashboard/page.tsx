@@ -9,6 +9,7 @@ import {
   ArrowRight,
   ChevronRight,
   Clapperboard,
+  Film,
   ImagePlus,
   Link2,
   LogOut,
@@ -67,6 +68,7 @@ async function loadStudio(): Promise<Load> {
 const NAV = [
   { href: '/dashboard', label: 'Studio', icon: Clapperboard },
   { href: '/products', label: 'Products', icon: Package },
+  { href: '/ads', label: 'Your ads', icon: Film },
   { href: '/product-input', label: 'New ad', icon: Plus },
 ];
 

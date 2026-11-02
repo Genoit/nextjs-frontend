@@ -13,6 +13,8 @@ import { StepLine, StepRail } from '../../components/product-input/StepRail';
 import { UserMenu } from '../../components/product-input/UserMenu';
 import { useProductDraft } from '../../components/product-input/use-product-draft';
 import { nextStepHref } from '../../lib/product-input-rules.mjs';
+import { autopilotApi } from '../../lib/api/autopilot';
+import { newRunKey } from '../../lib/autopilot-rules.mjs';
 
 const focusField = (id: string) => document.getElementById(id)?.focus();
 
@@ -38,7 +40,13 @@ export default function ProductInputPage() {
     const { errors } = draft.check;
     const id = await draft.submit();
     if (id) {
-      router.push(nextStepHref(id));
+      // Autopilot is the default: one gesture to finished ads. The 6 steps stay as advanced mode.
+      try {
+        const run = await autopilotApi.create(id, newRunKey(id));
+        router.push(`/ads/${encodeURIComponent(run.id)}`);
+      } catch {
+        router.push(nextStepHref(id));
+      }
       return;
     }
     // Blocked: errors are now shown under each field; take the merchant to the first one.
