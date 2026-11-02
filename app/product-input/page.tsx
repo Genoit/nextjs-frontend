@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -25,6 +25,8 @@ export default function ProductInputPage() {
   const [guideOpen, setGuideOpen] = useState(false);
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const closeGuide = useCallback(() => setGuideOpen(false), []);
+  // One key per product for this page: a retry or double click reuses the same run.
+  const runKeys = useRef(new Map<string, string>());
 
   // The dashboard composer sends `?url=`: open the link import with it prefilled.
   const { setMode, setUrl } = draft;
@@ -42,7 +44,9 @@ export default function ProductInputPage() {
     if (id) {
       // Autopilot is the default: one gesture to finished ads. The 6 steps stay as advanced mode.
       try {
-        const run = await autopilotApi.create(id, newRunKey(id));
+        const key = runKeys.current.get(id) ?? newRunKey(id);
+        runKeys.current.set(id, key);
+        const run = await autopilotApi.create(id, key);
         router.push(`/ads/${encodeURIComponent(run.id)}`);
       } catch {
         router.push(nextStepHref(id));
