@@ -26,6 +26,15 @@
   --color-success: #16a34a;
   --color-danger: #dc2626;
   --color-info: #2563eb;
+
+  /* Studio (app screens) on the charter's light ground: elevation by tone steps, no shadows on cards. */
+  --color-studio-ground: #ffffff;
+  --color-studio-surface: #fafaf9;
+  --color-studio-raised: #f4f4f5;
+  --color-studio-rule: #e5e7eb;
+  --color-studio-text: #171717;
+  --color-studio-muted: #4b5563;
+  --color-studio-meta: #6b7280;
 }
 
 @keyframes rise-in {
