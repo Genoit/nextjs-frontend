@@ -98,7 +98,7 @@ export function ProductVariants({
 
   return (
     <div className={`space-y-4 ${className}`}>
-      <h3 className="text-sm font-semibold text-zinc-900">Variants ({variants.length})</h3>
+      <h3 className="text-sm font-semibold text-ink">Variants ({variants.length})</h3>
 
       <div className="space-y-3">
         {variantGroups.map(([groupKey, groupVariants]) => {
@@ -114,8 +114,8 @@ export function ProductVariants({
                 onClick={() => handleSelect(variant)}
                 className={`w-full rounded-lg border-2 p-4 text-left transition-all ${
                   isSelected
-                    ? 'border-[#C2410C] bg-[#C2410C]/5'
-                    : 'border-zinc-200 hover:border-zinc-300'
+                    ? 'border-trend-orange bg-trend-orange/5'
+                    : 'border-line hover:border-line'
                 }`}
               >
                 <div className="flex items-start justify-between gap-4">
@@ -123,20 +123,20 @@ export function ProductVariants({
                     <div className="flex items-center gap-2">
                       <span
                         className={`inline-flex h-4 w-4 rounded-full border-2 ${
-                          isSelected ? 'border-[#C2410C] bg-[#C2410C]' : 'border-zinc-300'
+                          isSelected ? 'border-trend-orange bg-trend-orange' : 'border-line'
                         }`}
                       />
-                      <span className="font-medium text-zinc-900">{groupKey}</span>
+                      <span className="font-medium text-ink">{groupKey}</span>
                     </div>
 
                     {/* Show SKU if available */}
                     {variant.sku && (
-                      <p className="mt-1 text-xs text-zinc-500">SKU: {variant.sku}</p>
+                      <p className="mt-1 text-xs text-ink-muted">SKU: {variant.sku}</p>
                     )}
 
                     {/* Show attributes */}
                     {variant.external_id && (
-                      <p className="mt-1 text-xs text-zinc-500">
+                      <p className="mt-1 text-xs text-ink-muted">
                         External ID: {variant.external_id}
                       </p>
                     )}
@@ -146,11 +146,11 @@ export function ProductVariants({
                     {showPrice && (
                       <div className="flex items-center gap-2">
                         {variant.compare_at_price !== null && variant.compare_at_price > 0 && (
-                          <span className="text-xs text-zinc-500 line-through">
+                          <span className="text-xs text-ink-muted line-through">
                             {formatCurrency(variant.compare_at_price, variant.currency)}
                           </span>
                         )}
-                        <span className="font-semibold text-zinc-900">
+                        <span className="font-semibold text-ink">
                           {formatCurrency(variant.price, variant.currency)}
                         </span>
                       </div>
@@ -160,10 +160,10 @@ export function ProductVariants({
                       <span
                         className={`text-xs px-2 py-1 rounded-full ${
                           variant.availability === 'in_stock'
-                            ? 'bg-emerald-100 text-emerald-700'
+                            ? 'bg-success-soft text-success'
                             : variant.availability === 'out_of_stock'
-                              ? 'bg-red-100 text-red-700'
-                              : 'bg-zinc-100 text-zinc-700'
+                              ? 'bg-danger-soft text-danger'
+                              : 'bg-studio-raised text-ink-soft'
                         }`}
                       >
                         {getAvailabilityText(variant.availability)}
@@ -178,7 +178,7 @@ export function ProductVariants({
           // For multiple variants in same group (rare, but possible)
           return (
             <div key={groupKey} className="space-y-2">
-              <p className="text-xs font-medium text-zinc-600">{groupKey}</p>
+              <p className="text-xs font-medium text-ink-soft">{groupKey}</p>
               <div className="space-y-2">
                 {groupVariants.map((variant) => {
                   const isSelected = selectedVariantId === variant.id;
@@ -190,24 +190,24 @@ export function ProductVariants({
                       onClick={() => handleSelect(variant)}
                       className={`w-full rounded-lg border-2 p-3 text-left transition-all ${
                         isSelected
-                          ? 'border-[#C2410C] bg-[#C2410C]/5'
-                          : 'border-zinc-200 hover:border-zinc-300'
+                          ? 'border-trend-orange bg-trend-orange/5'
+                          : 'border-line hover:border-line'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-3">
                         <div className="flex items-center gap-2">
                           <span
                             className={`inline-flex h-3 w-3 rounded-full border-2 ${
-                              isSelected ? 'border-[#C2410C] bg-[#C2410C]' : 'border-zinc-300'
+                              isSelected ? 'border-trend-orange bg-trend-orange' : 'border-line'
                             }`}
                           />
                           {variant.sku && (
-                            <span className="text-sm text-zinc-600">{variant.sku}</span>
+                            <span className="text-sm text-ink-soft">{variant.sku}</span>
                           )}
                         </div>
 
                         {showPrice && (
-                          <span className="font-medium text-zinc-900">
+                          <span className="font-medium text-ink">
                             {formatCurrency(variant.price, variant.currency)}
                           </span>
                         )}
@@ -266,17 +266,17 @@ export function ProductVariantSimple({
   };
 
   return (
-    <div className={`rounded-lg border border-zinc-200 p-3 ${className}`}>
+    <div className={`rounded-lg border border-line p-3 ${className}`}>
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="font-medium text-zinc-900">{variant.title}</span>
-          {variant.sku && <span className="text-xs text-zinc-500">SKU: {variant.sku}</span>}
+          <span className="font-medium text-ink">{variant.title}</span>
+          {variant.sku && <span className="text-xs text-ink-muted">SKU: {variant.sku}</span>}
         </div>
 
         {Object.entries(variant.attributes || {}).length > 0 && (
           <div className="flex flex-wrap gap-2">
             {Object.entries(variant.attributes || {}).map(([key, value]) => (
-              <span key={key} className="text-xs bg-zinc-100 px-2 py-1 rounded">
+              <span key={key} className="text-xs bg-studio-raised px-2 py-1 rounded">
                 {key}: {value}
               </span>
             ))}
@@ -286,12 +286,12 @@ export function ProductVariantSimple({
         <div className="flex items-center justify-between pt-1">
           <div>
             {showPrice && (
-              <span className="font-semibold text-zinc-900">
+              <span className="font-semibold text-ink">
                 {formatCurrency(variant.price, variant.currency)}
               </span>
             )}
             {showPrice && variant.compare_at_price !== null && variant.compare_at_price > 0 && (
-              <span className="ml-2 text-xs text-zinc-500 line-through">
+              <span className="ml-2 text-xs text-ink-muted line-through">
                 {formatCurrency(variant.compare_at_price, variant.currency)}
               </span>
             )}
@@ -301,8 +301,8 @@ export function ProductVariantSimple({
             <span
               className={`text-xs px-2 py-1 rounded-full ${
                 variant.availability === 'in_stock'
-                  ? 'bg-emerald-100 text-emerald-700'
-                  : 'bg-zinc-100 text-zinc-700'
+                  ? 'bg-success-soft text-success'
+                  : 'bg-studio-raised text-ink-soft'
               }`}
             >
               {getAvailabilityText(variant.availability)}

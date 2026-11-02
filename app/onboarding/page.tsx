@@ -527,7 +527,7 @@ function Brand({ className = '' }: { className?: string }) {
           />
         </svg>
         <span className="-translate-y-px text-[39px] font-extrabold leading-none tracking-[-.055em] text-[#0b0b0b]">
-          Trend<span className="text-[#d94808]">ED</span>
+          Trend<span className="text-trend-orange">ED</span>
         </span>
       </div>
       <p className="ml-[4px] mt-1 text-[12px] font-medium leading-none text-[#303030]">
@@ -540,7 +540,7 @@ function Brand({ className = '' }: { className?: string }) {
 function SelectionDot({ selected, compact = false }: { selected: boolean; compact?: boolean }) {
   return (
     <span
-      className={`flex items-center justify-center rounded-full border ${compact ? 'h-4 w-4' : 'h-[18px] w-[18px]'} ${selected ? 'border-[#f1a400] bg-[#f1a400]' : 'border-[#d7d7d7] bg-white'}`}
+      className={`flex items-center justify-center rounded-full border ${compact ? 'h-4 w-4' : 'h-[18px] w-[18px]'} ${selected ? 'border-trend-gold bg-trend-gold' : 'border-[#d7d7d7] bg-white'}`}
       aria-hidden="true"
     >
       {selected && (
@@ -585,7 +585,7 @@ function SecurityShield({
 function ManualSetupClock() {
   return (
     <svg
-      className="h-4 w-4 text-[#c99f38]"
+      className="h-4 w-4 text-trend-gold"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -607,7 +607,7 @@ function StepTracker({ active }: { active: number }) {
       {[1, 2, 3, 4].map((item, index) => (
         <li key={item} className="flex items-center">
           <span
-            className={`flex h-[27px] w-[27px] items-center justify-center rounded-full border text-[13px] font-medium ${item === active ? 'border-[#dd530f] bg-[#dd530f] text-white shadow-[0_2px_5px_rgba(215,77,12,.28)]' : 'border-[#d0d0d0] bg-white text-[#555]'}`}
+            className={`flex h-[27px] w-[27px] items-center justify-center rounded-full border text-[13px] font-medium ${item === active ? 'border-trend-orange bg-trend-orange text-white shadow-[0_2px_5px_rgba(215,77,12,.28)]' : 'border-[#d0d0d0] bg-white text-[#555]'}`}
           >
             {item}
           </span>
@@ -638,7 +638,7 @@ function FooterButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808] disabled:cursor-not-allowed disabled:opacity-60 ${primary ? `${compact ? 'min-w-[170px]' : wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-[#d94808] text-white shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : compact ? 'min-w-[115px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]' : 'min-w-[184px] border border-[#dedede] bg-white text-[#3d3d3d] hover:bg-[#fafafa]'}`}
+      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:opacity-60 ${primary ? `${compact ? 'min-w-[170px]' : wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-trend-orange text-white shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : compact ? 'min-w-[115px] border border-line bg-white text-ink-soft hover:bg-studio-surface' : 'min-w-[184px] border border-line bg-white text-ink-soft hover:bg-studio-surface'}`}
     >
       {children}
     </button>
@@ -651,7 +651,7 @@ function DashboardDecoration() {
       className="pointer-events-none absolute right-[-18px] top-0 hidden h-[145px] w-[330px] origin-top-right scale-[1.35] lg:block"
       aria-hidden="true"
     >
-      <div className="absolute inset-x-0 top-0 h-[121px] rounded-[54px] bg-[#fff8ed]" />
+      <div className="absolute inset-x-0 top-0 h-[121px] rounded-[54px] bg-cream" />
       <svg
         className="absolute right-[-1px] top-0 h-[42px] w-[67px]"
         viewBox="0 0 67 42"
@@ -668,7 +668,7 @@ function DashboardDecoration() {
           <circle key={`third-${cx}`} cx={cx} cy="29" r="1.15" fill="#dfbd58" opacity=".72" />
         ))}
       </svg>
-      <div className="absolute left-0 top-[8px] h-[104px] w-[156px] rounded-[5px] border border-[#f4f0e8] bg-white px-3 py-3 shadow-[0_6px_16px_rgba(94,68,37,.07)]">
+      <div className="absolute left-0 top-[8px] h-[104px] w-[156px] rounded-[5px] border border-cream bg-white px-3 py-3 shadow-[0_6px_16px_rgba(94,68,37,.07)]">
         <p className="text-[7px] font-medium text-[#6a6a6a]">Total Revenue</p>
         <p className="mt-0.5 text-[12px] font-bold leading-none text-[#363636]">
           $24,680 <span className="ml-0.5 text-[7px] font-medium text-[#64996d]">▲ 18.6%</span>
@@ -684,12 +684,12 @@ function DashboardDecoration() {
           />
         </svg>
       </div>
-      <div className="absolute left-[151px] top-[29px] h-[116px] w-[157px] rotate-[2deg] rounded-[6px] border border-[#f4f0e8] bg-white px-4 py-4 shadow-[0_7px_18px_rgba(94,68,37,.08)]">
+      <div className="absolute left-[151px] top-[29px] h-[116px] w-[157px] rotate-[2deg] rounded-[6px] border border-cream bg-white px-4 py-4 shadow-[0_7px_18px_rgba(94,68,37,.08)]">
         <div className="flex items-center gap-3">
           <span className="h-10 w-10 shrink-0 rounded-full border-[8px] border-[#d98715] border-r-[#faedce]" />
           <div>
             <p className="text-[7px] font-semibold leading-none text-[#505050]">Products</p>
-            <p className="mt-1 text-[6px] text-[#9b9b9b]">Top sellers</p>
+            <p className="mt-1 text-[6px] text-ink-muted">Top sellers</p>
           </div>
         </div>
         <div className="mt-3 flex items-end justify-between">
@@ -751,7 +751,7 @@ function BusinessIllustration() {
 
 function WelcomeAside() {
   return (
-    <aside className="hidden w-[365px] shrink-0 overflow-hidden border-r border-[#f0ede7] bg-[#fffdf8] px-[51px] py-[66px] lg:block">
+    <aside className="hidden w-[365px] shrink-0 overflow-hidden border-r border-[#f0ede7] bg-cream px-[51px] py-[66px] lg:block">
       <Brand />
       <div className="mt-[69px] max-w-[243px]">
         <h2 className="font-editorial text-[31px] leading-[1.16] text-[#16120f]">
@@ -851,7 +851,7 @@ function IntroArt() {
 
 function GoalsAside() {
   return (
-    <aside className="hidden w-[323px] shrink-0 bg-[#fff8ed] px-[54px] py-[66px] lg:block">
+    <aside className="hidden w-[323px] shrink-0 bg-cream px-[54px] py-[66px] lg:block">
       <Brand />
       <div className="mt-[139px]">
         <IntroArt />
@@ -916,7 +916,7 @@ function ConnectionSidebar({ active }: { active: number }) {
     ['Your goals', 'Help us personalize your experience'],
   ];
   return (
-    <aside className="hidden border-r border-[#e8e8e8] bg-[#fffefd] px-7 pb-[49px] pt-[42px] lg:flex lg:w-[285px] lg:shrink-0 lg:flex-col">
+    <aside className="hidden border-r border-[#e8e8e8] bg-cream px-7 pb-[49px] pt-[42px] lg:flex lg:w-[285px] lg:shrink-0 lg:flex-col">
       <Brand />
       <ol className="ml-1.5 mt-[68px] space-y-9" aria-label="Onboarding progress">
         {items.map(([title, description], index) => {
@@ -926,7 +926,7 @@ function ConnectionSidebar({ active }: { active: number }) {
           return (
             <li key={title} className="flex items-start gap-2.5">
               <span
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-medium ${current ? 'border-[#eab308] bg-[#fffdf8] text-[#b7791f]' : completed ? 'border-[#9b9b9b] text-[#595959]' : 'border-[#d3d3d3] text-[#999999]'}`}
+                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-medium ${current ? 'border-trend-gold bg-cream text-[#b7791f]' : completed ? 'border-ink-muted text-[#595959]' : 'border-[#d3d3d3] text-[#999999]'}`}
               >
                 {completed ? <Check className="h-4 w-4" /> : number}
               </span>
@@ -992,7 +992,7 @@ function OptionGroup<T extends string>({
               type="button"
               key={option}
               onClick={() => onChange(option)}
-              className={`flex h-[54px] min-w-0 items-center rounded-[6px] border text-left transition ${compact ? 'gap-1.5 px-2 text-[12px]' : 'gap-3 px-3 text-[14px]'} ${selected ? 'border-[#cf9a70] bg-[#fffcf8] shadow-[inset_0_0_0_1px_#f5e3d7]' : 'border-[#e4e4e4] bg-white hover:border-[#cf9a70]'}`}
+              className={`flex h-[54px] min-w-0 items-center rounded-[6px] border text-left transition ${compact ? 'gap-1.5 px-2 text-[12px]' : 'gap-3 px-3 text-[14px]'} ${selected ? 'border-[#cf9a70] bg-[#fffcf8] shadow-[inset_0_0_0_1px_#f5e3d7]' : 'border-line bg-white hover:border-[#cf9a70]'}`}
             >
               {assetIcons ? (
                 <span className="shrink-0 text-[#c58452]">
@@ -1132,12 +1132,12 @@ export default function OnboardingPage() {
   };
 
   if (isAuthLoading || isProgressLoading) {
-    return <div className="min-h-screen bg-[#fffefd]" aria-busy="true" />;
+    return <div className="min-h-screen bg-cream" aria-busy="true" />;
   }
 
   if (step === 1)
     return (
-      <div className="min-h-[100dvh] overflow-hidden bg-[#fffefd] text-[#121212]">
+      <div className="min-h-[100dvh] overflow-hidden bg-cream text-[#121212]">
         <div className="relative mx-auto min-h-[100dvh] max-w-[1440px] px-8 pb-10 pt-[57px] lg:px-[84px]">
           <Brand />
           <DashboardDecoration />
@@ -1147,11 +1147,11 @@ export default function OnboardingPage() {
             <h1 className="mt-4 text-center text-[34px] font-bold leading-[1.14] sm:text-[41px]">
               Let&apos;s build your
               <br />
-              <em className="font-editorial font-normal text-[#c75219]">
+              <em className="font-editorial font-normal text-trend-orange">
                 e-commerce growth system.
               </em>
             </h1>
-            <p className="mt-4 text-center text-[16px] text-[#6d6d6d]">
+            <p className="mt-4 text-center text-[16px] text-ink-muted">
               Tell us a little about your business so TrendED can personalize your experience.
             </p>
             <h2 className="mt-7 text-center text-[20px] font-bold">What best describes you?</h2>
@@ -1168,7 +1168,7 @@ export default function OnboardingPage() {
                     type="button"
                     key={id}
                     onClick={() => setProfile(id as OnboardingProfile)}
-                    className={`relative flex h-[188px] flex-col items-center justify-center rounded-[7px] border text-center transition ${selected ? 'border-[#d5b15c] bg-[#fffaf0] shadow-[inset_0_0_0_1px_#f1e3bb]' : 'border-[#e7e7e7] bg-white hover:border-[#d5b15c]'}`}
+                    className={`relative flex h-[188px] flex-col items-center justify-center rounded-[7px] border text-center transition ${selected ? 'border-trend-gold bg-cream shadow-[inset_0_0_0_1px_#f1e3bb]' : 'border-[#e7e7e7] bg-white hover:border-trend-gold'}`}
                   >
                     <span
                       className={`mb-4 flex h-[67px] w-[67px] items-center justify-center rounded-full ${selected ? 'bg-[#fff4d9] text-[#e0a400]' : 'bg-[#fff3ef] text-[#c76a3a]'}`}
@@ -1178,7 +1178,7 @@ export default function OnboardingPage() {
                       />
                     </span>
                     <span className="text-[17px] font-bold leading-5">{title as string}</span>
-                    <span className="mt-1 text-[16px] leading-5 text-[#6d6d6d]">
+                    <span className="mt-1 text-[16px] leading-5 text-ink-muted">
                       {description as string}
                     </span>
                     {selected && (
@@ -1192,7 +1192,7 @@ export default function OnboardingPage() {
             </div>
           </section>
           {saveError && (
-            <p className="mx-auto mt-5 w-full max-w-[1028px] text-sm text-[#b42318]" role="alert">
+            <p className="mx-auto mt-5 w-full max-w-[1028px] text-sm text-danger" role="alert">
               {saveError}
             </p>
           )}
@@ -1208,13 +1208,13 @@ export default function OnboardingPage() {
 
   if (step === 2)
     return (
-      <div className="min-h-[100dvh] bg-[#fffdf9] text-[#161616]">
+      <div className="min-h-[100dvh] bg-cream/40 text-[#161616]">
         <div className="flex min-h-[100dvh] flex-col lg:flex-row">
           <WelcomeAside />
           <main className="flex flex-1 items-center justify-center px-5 py-8 lg:items-start lg:justify-start lg:py-6 lg:pl-0 lg:pr-0">
             <section className="flex min-h-[720px] w-full max-w-[956px] flex-col rounded-[8px] border border-[#f0ece7] bg-white shadow-[0_7px_20px_rgba(65,48,24,.04)] lg:max-w-none lg:rounded-r-none">
               <div className="px-7 pt-[46px] sm:px-10 lg:px-[54px]">
-                <span className="flex h-[55px] w-[55px] items-center justify-center rounded-full bg-[#fff5ed] text-[#d77c46]">
+                <span className="flex h-[55px] w-[55px] items-center justify-center rounded-full bg-cream text-[#d77c46]">
                   <SvgAssetIcon
                     src="/logos/onboarding/fluent--clipboard-text-edit-32-regular.svg"
                     className="h-7 w-7"
@@ -1223,7 +1223,7 @@ export default function OnboardingPage() {
                 <h1 className="mt-4 text-[34px] font-bold leading-none sm:text-[39px]">
                   Tell us about your business.
                 </h1>
-                <p className="mt-4 text-[16px] text-[#686868]">
+                <p className="mt-4 text-[16px] text-ink-muted">
                   This helps TrendED surface more relevant products, insights and recommendations.
                 </p>
                 <div className="mt-8 space-y-6">
@@ -1273,9 +1273,9 @@ export default function OnboardingPage() {
                   />
                   <div>
                     <p className="mb-3 text-[15px] font-semibold">Target market</p>
-                    <label className="flex h-[52px] w-full items-center justify-between rounded-[5px] border border-[#e4e4e4] px-4 text-[15px] text-[#6b6b6b]">
+                    <label className="flex h-[52px] w-full items-center justify-between rounded-[5px] border border-line px-4 text-[15px] text-ink-muted">
                       <span className="flex items-center gap-3">
-                        <span className="text-[#6b6b6b]">
+                        <span className="text-ink-muted">
                           <SvgAssetIcon
                             src="/logos/onboarding/fluent-mdl2--globe.svg"
                             className="h-5 w-5"
@@ -1314,17 +1314,17 @@ export default function OnboardingPage() {
                 </div>
               </div>
               {saveError && (
-                <p className="px-7 pt-4 text-sm text-[#b42318] sm:px-10 lg:px-[54px]" role="alert">
+                <p className="px-7 pt-4 text-sm text-danger sm:px-10 lg:px-[54px]" role="alert">
                   {saveError}
                 </p>
               )}
               <footer className="mt-auto flex items-center justify-between border-t border-[#f3f2ef] px-7 py-5 sm:px-10 lg:px-[54px]">
                 <FooterButton onClick={back}>Back</FooterButton>
                 <div className="hidden items-center gap-4 lg:flex">
-                  <span className="h-3 w-3 rounded-full bg-[#efefef]" />
+                  <span className="h-3 w-3 rounded-full bg-line" />
                   <span className="h-3 w-3 rounded-full bg-[#e36920]" />
-                  <span className="h-3 w-3 rounded-full bg-[#ededed]" />
-                  <span className="h-3 w-3 rounded-full bg-[#ededed]" />
+                  <span className="h-3 w-3 rounded-full bg-line" />
+                  <span className="h-3 w-3 rounded-full bg-line" />
                 </div>
                 <FooterButton primary onClick={next} disabled={isSaving}>
                   {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-5 w-5" />
@@ -1338,7 +1338,7 @@ export default function OnboardingPage() {
 
   if (step === 3)
     return (
-      <div className="min-h-[100dvh] bg-[#fffefd] text-[#171717]">
+      <div className="min-h-[100dvh] bg-cream text-ink">
         <div className="flex min-h-[100dvh]">
           <ConnectionSidebar active={3} />
           <main className="flex min-w-0 flex-1 flex-col px-6 py-7 sm:px-10 lg:pl-[61px] lg:pr-[48px]">
@@ -1368,7 +1368,7 @@ export default function OnboardingPage() {
                 3 of 4
               </div>
               <h1 className="font-editorial text-[42px] leading-[1.12] sm:text-[56px]">
-                Connect <em className="font-normal text-[#c2410c]">your store.</em>
+                Connect <em className="font-normal text-trend-orange">your store.</em>
               </h1>
               <p className="mt-3 text-[16px] text-[#5c5c5c]">
                 Bring your products and sales data into TrendED.
@@ -1380,7 +1380,7 @@ export default function OnboardingPage() {
                   return (
                     <article
                       key={option.id}
-                      className={`flex h-[304px] flex-col rounded-[8px] border bg-white px-[22px] pb-[23px] pt-5 ${selected ? 'border-[#c2410c] ring-1 ring-[#c2410c]' : 'border-[#ddd]'}`}
+                      className={`flex h-[304px] flex-col rounded-[8px] border bg-white px-[22px] pb-[23px] pt-5 ${selected ? 'border-trend-orange ring-1 ring-trend-orange' : 'border-[#ddd]'}`}
                     >
                       <ConnectionMark id={option.id} />
                       <h2 className="mt-[17px] text-[19px] font-bold">{option.name}</h2>
@@ -1391,7 +1391,7 @@ export default function OnboardingPage() {
                         className={`mt-[23px] inline-flex w-fit items-center gap-1.5 rounded-sm px-1.5 py-0.5 text-[12px] font-medium ${manual ? 'bg-[#fff9e9] text-[#b98822]' : 'bg-[#f1faef] text-[#42814a]'}`}
                       >
                         <span
-                          className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] text-white ${manual ? 'text-[#c99f38]' : 'bg-[#55a153]'}`}
+                          className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] text-white ${manual ? 'text-trend-gold' : 'bg-[#55a153]'}`}
                         >
                           {manual ? <ManualSetupClock /> : <Check className="h-3 w-3" />}
                         </span>
@@ -1406,7 +1406,7 @@ export default function OnboardingPage() {
                       <button
                         type="button"
                         onClick={() => setConnection(option.id)}
-                        className="mt-auto h-10 w-full rounded-[4px] bg-[#c2410c] px-3 text-sm font-semibold text-white transition hover:bg-[#a83a0a]"
+                        className="mt-auto h-10 w-full rounded-[4px] bg-trend-orange px-3 text-sm font-semibold text-white transition hover:bg-[#a83a0a]"
                       >
                         {selected ? 'Selected' : option.buttonLabel}
                       </button>
@@ -1414,9 +1414,9 @@ export default function OnboardingPage() {
                   );
                 })}
               </div>
-              <div className="relative mt-[21px] min-h-[76px] overflow-hidden rounded-[5px] border border-[#fff0c6] bg-[#fffaf0] px-6 py-3.5">
+              <div className="relative mt-[21px] min-h-[76px] overflow-hidden rounded-[5px] border border-[#fff0c6] bg-cream px-6 py-3.5">
                 <div className="flex items-start gap-[18px]">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1c8] text-[#eab308]">
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#fff1c8] text-trend-gold">
                     <SecurityShield className="h-[18px] w-[18px]" />
                   </span>
                   <div>
@@ -1436,11 +1436,11 @@ export default function OnboardingPage() {
                 </span>
               </div>
               {saveError && (
-                <p className="mt-3 text-sm text-[#b42318]" role="alert">
+                <p className="mt-3 text-sm text-danger" role="alert">
                   {saveError}
                 </p>
               )}
-              <div className="mt-[10px] flex items-center justify-between border-t border-[#efefef] pt-[25px]">
+              <div className="mt-[10px] flex items-center justify-between border-t border-line pt-[25px]">
                 <FooterButton compact onClick={back}>
                   <ArrowLeft className="h-4 w-4" /> Back
                 </FooterButton>
@@ -1455,7 +1455,7 @@ export default function OnboardingPage() {
     );
 
   return (
-    <div className="min-h-[100dvh] bg-[#fffefd] text-[#131313]">
+    <div className="min-h-[100dvh] bg-cream text-[#131313]">
       <div className="flex min-h-[100dvh]">
         <GoalsAside />
         <main className="flex min-w-0 flex-1 flex-col px-6 py-8 sm:px-12 lg:pl-[71px] lg:pr-[70px]">
@@ -1473,7 +1473,7 @@ export default function OnboardingPage() {
           </header>
           <section className="flex w-full max-w-[902px] flex-1 flex-col justify-center pb-7 lg:translate-y-[-12px]">
             <h1 className="font-editorial text-[51px] leading-[1.05] sm:text-[59px]">
-              What do you want to <em className="font-normal text-[#c75219]">achieve?</em>
+              What do you want to <em className="font-normal text-trend-orange">achieve?</em>
             </h1>
             <p className="mt-4 text-[16px] text-[#626262]">
               Choose your main goals so TrendED can prioritize what matters.
@@ -1496,7 +1496,7 @@ export default function OnboardingPage() {
                       <SvgAssetIcon src={goal.assetIcon} className="h-7 w-7" />
                     </span>
                     <h2 className="mt-4 text-[17px] font-bold">{goal.title}</h2>
-                    <p className="mt-2 max-w-[200px] text-[14px] leading-5 text-[#686868]">
+                    <p className="mt-2 max-w-[200px] text-[14px] leading-5 text-ink-muted">
                       {goal.description}
                     </p>
                     {selected && (
@@ -1509,7 +1509,7 @@ export default function OnboardingPage() {
               })}
             </div>
             {saveError && (
-              <p className="mt-4 text-sm text-[#b42318]" role="alert">
+              <p className="mt-4 text-sm text-danger" role="alert">
                 {saveError}
               </p>
             )}
@@ -1520,7 +1520,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={back}
                     title="Back to previous step"
-                    className="flex items-center gap-1 rounded-[4px] px-1 py-1 text-[13px] font-medium text-[#51483d] transition hover:bg-[#fff2df] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#d94808]"
+                    className="flex items-center gap-1 rounded-[4px] px-1 py-1 text-[13px] font-medium text-[#51483d] transition hover:bg-[#fff2df] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
                   >
                     <ArrowLeft className="h-4 w-4" />
                     Back
@@ -1528,9 +1528,9 @@ export default function OnboardingPage() {
                   <span className="text-[13px] font-semibold text-[#7a633c]">4 of 4</span>
                 </div>
                 <div className="mt-2 flex gap-1.5">
-                  <span className="h-[7px] w-[103px] rounded-full bg-[#d94808]" />
-                  <span className="h-[7px] w-[103px] rounded-full bg-[#d94808]" />
-                  <span className="h-[7px] w-[103px] rounded-full bg-[#d94808]" />
+                  <span className="h-[7px] w-[103px] rounded-full bg-trend-orange" />
+                  <span className="h-[7px] w-[103px] rounded-full bg-trend-orange" />
+                  <span className="h-[7px] w-[103px] rounded-full bg-trend-orange" />
                 </div>
               </div>
               <FooterButton primary wide onClick={next} disabled={isSaving}>

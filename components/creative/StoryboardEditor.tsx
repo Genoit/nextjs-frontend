@@ -35,7 +35,7 @@ interface Props {
 }
 
 const inputClass =
-  'w-full px-3 py-2 rounded-xl border border-zinc-200 text-xs text-zinc-800 focus:outline-none focus:ring-1 focus:ring-[#BA3807] disabled:bg-zinc-50';
+  'w-full px-3 py-2 rounded-xl border border-line text-xs text-ink focus:outline-none focus:ring-1 focus:ring-trend-orange disabled:bg-studio-surface';
 
 export function StoryboardEditor({
   storyboard,
@@ -81,15 +81,15 @@ export function StoryboardEditor({
 
   return (
     <div className="space-y-6 max-w-5xl">
-      <div className="rounded-2xl bg-white border border-zinc-200/80 p-6 shadow-2xs space-y-4">
+      <div className="rounded-2xl bg-white border border-line/80 p-6 shadow-2xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
           <div className="space-y-2 min-w-0">
             <div className="flex flex-wrap items-center gap-2" role="status">
-              <span className="px-2.5 py-1 rounded-full bg-[#BA3807] text-white text-xs font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-full bg-trend-orange text-white text-xs font-bold uppercase tracking-wider">
                 Storyboard v{storyboard.version}
               </span>
               {storyboard.accepted && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success-soft text-success text-xs font-bold">
                   <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
                   Version acceptée
                 </span>
@@ -98,8 +98,8 @@ export function StoryboardEditor({
               <span
                 className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold ${
                   isDurationMatching
-                    ? 'bg-emerald-100 text-emerald-800'
-                    : 'bg-amber-100 text-amber-800'
+                    ? 'bg-success-soft text-success'
+                    : 'bg-warning-soft text-warning'
                 }`}
               >
                 <Clock className="w-3.5 h-3.5" aria-hidden />
@@ -118,11 +118,11 @@ export function StoryboardEditor({
               value={title}
               disabled={readOnly}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full text-xl font-bold text-zinc-900 border-b border-transparent hover:border-zinc-300 focus:border-[#BA3807] focus:outline-none px-1 py-0.5 disabled:bg-transparent"
+              className="w-full text-xl font-bold text-ink border-b border-transparent hover:border-line focus:border-trend-orange focus:outline-none px-1 py-0.5 disabled:bg-transparent"
             />
             <GenerationMeta meta={storyboard} />
             {readOnly && (
-              <p className="text-xs text-zinc-500">
+              <p className="text-xs text-ink-muted">
                 {storyboard.accepted
                   ? 'Version acceptée : non modifiable. Toute modification passe par une nouvelle génération.'
                   : 'Version antérieure : lecture seule. Seule la dernière version est modifiable.'}
@@ -136,7 +136,7 @@ export function StoryboardEditor({
               onClick={onRegenerate}
               disabled={busy}
               aria-busy={isGenerating}
-              className="px-4 py-2.5 rounded-xl border border-zinc-300 hover:bg-zinc-50 text-zinc-700 text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
+              className="px-4 py-2.5 rounded-xl border border-line hover:bg-studio-surface text-ink-soft text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
             >
               <RotateCw className={`w-4 h-4 ${isGenerating ? 'animate-spin' : ''}`} aria-hidden />
               <span>{isGenerating ? 'Génération…' : 'Régénérer (nouvelle version)'}</span>
@@ -146,7 +146,7 @@ export function StoryboardEditor({
                 type="button"
                 onClick={resetEdits}
                 disabled={busy}
-                className="px-4 py-2.5 rounded-xl border border-zinc-300 hover:bg-zinc-50 text-zinc-700 text-xs font-bold transition disabled:opacity-60"
+                className="px-4 py-2.5 rounded-xl border border-line hover:bg-studio-surface text-ink-soft text-xs font-bold transition disabled:opacity-60"
               >
                 Annuler les modifications
               </button>
@@ -156,9 +156,9 @@ export function StoryboardEditor({
               onClick={() => onSave(editedScenes.map(sceneToPayload), title)}
               disabled={busy || readOnly || !dirty}
               aria-busy={isUpdating}
-              className="px-4 py-2.5 rounded-xl border border-zinc-300 hover:bg-zinc-50 text-zinc-700 text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
+              className="px-4 py-2.5 rounded-xl border border-line hover:bg-studio-surface text-ink-soft text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
             >
-              <Save className="w-4 h-4 text-zinc-500" aria-hidden />
+              <Save className="w-4 h-4 text-ink-muted" aria-hidden />
               <span>{isUpdating ? 'Sauvegarde…' : 'Enregistrer (nouvelle version)'}</span>
             </button>
             <div className="flex flex-col items-end gap-1">
@@ -168,13 +168,13 @@ export function StoryboardEditor({
                 disabled={acceptReason !== null}
                 aria-busy={isAccepting}
                 aria-describedby={acceptReason ? 'accept-reason' : undefined}
-                className="px-4 py-2.5 rounded-xl bg-emerald-700 hover:bg-emerald-800 disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-success hover:bg-success disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4" aria-hidden />
                 <span>{isAccepting ? 'Acceptation…' : 'Accepter cette version'}</span>
               </button>
               {acceptReason && (
-                <p id="accept-reason" className="text-[11px] text-zinc-500 max-w-56 text-right">
+                <p id="accept-reason" className="text-[11px] text-ink-muted max-w-56 text-right">
                   {acceptReason}
                 </p>
               )}
@@ -190,37 +190,37 @@ export function StoryboardEditor({
           {spec && (spec.promise || spec.concept) && (
             <section
               aria-labelledby="concept-title"
-              className="rounded-2xl bg-white border border-zinc-200/80 p-5 shadow-2xs space-y-2 text-xs"
+              className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-2 text-xs"
             >
-              <h4 id="concept-title" className="text-sm font-bold text-zinc-900">
+              <h4 id="concept-title" className="text-sm font-bold text-ink">
                 Concept
               </h4>
               {spec.angle?.title && (
                 <p>
-                  <span className="font-semibold text-zinc-500">Angle : </span>
+                  <span className="font-semibold text-ink-muted">Angle : </span>
                   {spec.angle.title}
                 </p>
               )}
               {spec.promise && (
                 <p>
-                  <span className="font-semibold text-zinc-500">Promesse : </span>
+                  <span className="font-semibold text-ink-muted">Promesse : </span>
                   {spec.promise}
                 </p>
               )}
               {spec.problem && (
                 <p>
-                  <span className="font-semibold text-zinc-500">Problème : </span>
+                  <span className="font-semibold text-ink-muted">Problème : </span>
                   {spec.problem}
                 </p>
               )}
               {spec.concept?.logline && (
                 <p>
-                  <span className="font-semibold text-zinc-500">Logline : </span>
+                  <span className="font-semibold text-ink-muted">Logline : </span>
                   {spec.concept.logline}
                 </p>
               )}
               {spec.concept?.script && (
-                <p className="whitespace-pre-line text-zinc-700 bg-zinc-50 rounded-xl p-3">
+                <p className="whitespace-pre-line text-ink-soft bg-studio-surface rounded-xl p-3">
                   {spec.concept.script}
                 </p>
               )}
@@ -231,22 +231,19 @@ export function StoryboardEditor({
         <aside className="space-y-6">
           <section
             aria-labelledby="versions-title"
-            className="rounded-2xl bg-white border border-zinc-200/80 p-5 shadow-2xs space-y-3"
+            className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-3"
           >
-            <h4
-              id="versions-title"
-              className="text-sm font-bold text-zinc-900 flex items-center gap-2"
-            >
-              <History className="w-4 h-4 text-zinc-500" aria-hidden />
+            <h4 id="versions-title" className="text-sm font-bold text-ink flex items-center gap-2">
+              <History className="w-4 h-4 text-ink-muted" aria-hidden />
               Versions
             </h4>
             {dirty && (
-              <p id="versions-dirty" className="text-[11px] text-amber-800">
+              <p id="versions-dirty" className="text-[11px] text-warning">
                 Enregistrez ou annulez vos modifications pour changer de version.
               </p>
             )}
             {versions.length === 0 ? (
-              <p className="text-xs text-zinc-500">Historique indisponible.</p>
+              <p className="text-xs text-ink-muted">Historique indisponible.</p>
             ) : (
               <ul className="space-y-1.5">
                 {[...versions]
@@ -263,38 +260,38 @@ export function StoryboardEditor({
                           aria-current={current ? 'true' : undefined}
                           className={`w-full flex flex-wrap items-center gap-2 px-3 py-2 rounded-xl border text-left text-xs transition ${
                             current
-                              ? 'border-[#BA3807] bg-[#FFF5ED]'
-                              : 'border-zinc-200 hover:border-zinc-300'
+                              ? 'border-trend-orange bg-cream'
+                              : 'border-line hover:border-line'
                           }`}
                         >
-                          <span className="font-bold text-zinc-900">v{v.version}</span>
+                          <span className="font-bold text-ink">v{v.version}</span>
                           {v.version === latestVersion && (
-                            <span className="text-[10px] text-zinc-500">dernière</span>
+                            <span className="text-[10px] text-ink-muted">dernière</span>
                           )}
                           {v.edited_by_user && (
-                            <span className="text-[10px] text-zinc-500">modifiée par vous</span>
+                            <span className="text-[10px] text-ink-muted">modifiée par vous</span>
                           )}
                           {v.block_count > 0 && (
-                            <span className="text-[10px] font-bold text-red-700">
+                            <span className="text-[10px] font-bold text-danger">
                               {v.block_count} bloquant{v.block_count > 1 ? 's' : ''}
                             </span>
                           )}
                           {v.warn_count > 0 && (
-                            <span className="text-[10px] text-amber-800">
+                            <span className="text-[10px] text-warning">
                               {v.warn_count} avertissement{v.warn_count > 1 ? 's' : ''}
                             </span>
                           )}
                           {v.accepted && (
-                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-800">
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-success">
                               <CheckCircle2 className="w-3 h-3" aria-hidden />
                               acceptée
                             </span>
                           )}
                           {v.is_heuristic && (
-                            <span className="text-[10px] text-amber-800">simulation</span>
+                            <span className="text-[10px] text-warning">simulation</span>
                           )}
                           {current && <span className="sr-only">(affichée)</span>}
-                          <span className="ml-auto text-[10px] text-zinc-400">
+                          <span className="ml-auto text-[10px] text-ink-muted">
                             {new Date(v.created_at).toLocaleString('fr-FR')}
                           </span>
                         </button>
@@ -308,9 +305,9 @@ export function StoryboardEditor({
           {cost && (
             <section
               aria-labelledby="cost-title"
-              className="rounded-2xl bg-white border border-zinc-200/80 p-5 shadow-2xs space-y-2 text-xs"
+              className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-2 text-xs"
             >
-              <h4 id="cost-title" className="text-sm font-bold text-zinc-900">
+              <h4 id="cost-title" className="text-sm font-bold text-ink">
                 Coût cumulé
               </h4>
               <HeuristicBadge entity={cost} />
@@ -336,8 +333,8 @@ export function StoryboardEditor({
                   ] as const
                 ).map(([label, text]) => (
                   <div key={label} className="flex justify-between gap-3">
-                    <dt className="text-zinc-500">{label}</dt>
-                    <dd className="font-semibold text-zinc-800 text-right">{text}</dd>
+                    <dt className="text-ink-muted">{label}</dt>
+                    <dd className="font-semibold text-ink text-right">{text}</dd>
                   </div>
                 ))}
               </dl>
@@ -349,12 +346,12 @@ export function StoryboardEditor({
             onClick={onPrepareAssets}
             disabled={!storyboard.accepted || !isDurationMatching}
             aria-describedby="launch-hint"
-            className="w-full px-5 py-2.5 rounded-xl bg-[#BA3807] hover:bg-[#9A2D04] disabled:opacity-50 text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-2"
+            className="w-full px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-2"
           >
             <Images className="w-4 h-4" aria-hidden />
             <span>Préparer les visuels produit</span>
           </button>
-          <p id="launch-hint" className="text-[11px] text-zinc-500">
+          <p id="launch-hint" className="text-[11px] text-ink-muted">
             Disponible une fois une version acceptée.
           </p>
         </aside>
@@ -366,13 +363,13 @@ export function StoryboardEditor({
           return (
             <li
               key={scene.id || idx}
-              className="rounded-2xl bg-white border border-zinc-200/80 p-5 shadow-2xs space-y-4"
+              className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-4"
             >
               <fieldset disabled={readOnly} className="space-y-4">
                 <legend className="sr-only">Plan #{scene.scene_order}</legend>
-                <div className="flex flex-wrap items-end gap-4 border-b border-zinc-100 pb-3">
+                <div className="flex flex-wrap items-end gap-4 border-b border-line pb-3">
                   <span
-                    className="w-7 h-7 rounded-lg bg-[#FFF5ED] text-[#BA3807] font-bold text-xs flex items-center justify-center"
+                    className="w-7 h-7 rounded-lg bg-cream text-trend-orange font-bold text-xs flex items-center justify-center"
                     aria-hidden
                   >
                     #{scene.scene_order}
@@ -380,7 +377,7 @@ export function StoryboardEditor({
                   <div>
                     <label
                       htmlFor={`${p}-role`}
-                      className="block text-xs font-bold text-zinc-700 mb-1"
+                      className="block text-xs font-bold text-ink-soft mb-1"
                     >
                       Rôle persuasif
                     </label>
@@ -402,7 +399,7 @@ export function StoryboardEditor({
                   <div>
                     <label
                       htmlFor={`${p}-duration`}
-                      className="block text-xs font-bold text-zinc-700 mb-1"
+                      className="block text-xs font-bold text-ink-soft mb-1"
                     >
                       Durée (s)
                     </label>
@@ -432,7 +429,7 @@ export function StoryboardEditor({
                     <div key={field} className={field === 'video_prompt' ? 'md:col-span-2' : ''}>
                       <label
                         htmlFor={`${p}-${field}`}
-                        className="block text-xs font-bold text-zinc-700 mb-1"
+                        className="block text-xs font-bold text-ink-soft mb-1"
                       >
                         {label}
                       </label>
@@ -455,7 +452,7 @@ export function StoryboardEditor({
                     <div key={field}>
                       <label
                         htmlFor={`${p}-${field}`}
-                        className="block text-xs font-bold text-zinc-700 mb-1"
+                        className="block text-xs font-bold text-ink-soft mb-1"
                       >
                         {label}
                       </label>
@@ -471,7 +468,7 @@ export function StoryboardEditor({
                   <div>
                     <label
                       htmlFor={`${p}-constraints`}
-                      className="block text-xs font-bold text-zinc-700 mb-1"
+                      className="block text-xs font-bold text-ink-soft mb-1"
                     >
                       Contraintes (une par ligne)
                     </label>

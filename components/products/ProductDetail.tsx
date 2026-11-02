@@ -181,7 +181,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -196,8 +196,8 @@ export function ProductDetail({
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#C2410C] border-t-transparent" />
-          <p className="mt-4 text-sm text-zinc-500">Loading product...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-trend-orange border-t-transparent" />
+          <p className="mt-4 text-sm text-ink-muted">Loading product...</p>
         </div>
       </div>
     );
@@ -211,7 +211,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -226,9 +226,9 @@ export function ProductDetail({
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-soft">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-6 w-6 text-danger"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -241,20 +241,20 @@ export function ProductDetail({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-red-800">Error loading product</h3>
-          <p className="mt-2 text-sm text-red-600">{error || deleteError}</p>
+          <h3 className="mt-4 text-lg font-semibold text-danger">Error loading product</h3>
+          <p className="mt-2 text-sm text-danger">{error || deleteError}</p>
           <div className="mt-4 flex gap-3">
             <button
               type="button"
               onClick={() => refresh()}
-              className="rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200 transition"
+              className="rounded-lg bg-danger-soft px-4 py-2 text-sm font-medium text-danger hover:bg-red-200 transition"
             >
               Try again
             </button>
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+              className="rounded-lg border border-line bg-white px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               Back to Products
             </button>
@@ -272,7 +272,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -287,9 +287,9 @@ export function ProductDetail({
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-studio-raised">
             <svg
-              className="h-6 w-6 text-zinc-600"
+              className="h-6 w-6 text-ink-soft"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -308,14 +308,14 @@ export function ProductDetail({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-zinc-900">Product not found</h3>
-          <p className="mt-2 text-sm text-zinc-500">
+          <h3 className="mt-4 text-lg font-semibold text-ink">Product not found</h3>
+          <p className="mt-2 text-sm text-ink-muted">
             The product you&apos;re looking for doesn&apos;t exist or has been deleted.
           </p>
           <button
             type="button"
             onClick={handleBack}
-            className="mt-4 rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-200 transition"
+            className="mt-4 rounded-lg bg-studio-raised px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-rule transition"
           >
             Back to Products
           </button>
@@ -332,7 +332,7 @@ export function ProductDetail({
         <button
           type="button"
           onClick={handleBack}
-          className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+          className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -347,7 +347,7 @@ export function ProductDetail({
             <button
               type="button"
               onClick={() => router.push(`/products/${product.id}/creative`)}
-              className="flex items-center gap-2 rounded-lg bg-[#BA3807] hover:bg-[#9A2D04] px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition"
+              className="flex items-center gap-2 rounded-lg bg-trend-orange hover:bg-trend-orange-strong px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -363,7 +363,7 @@ export function ProductDetail({
             <button
               type="button"
               onClick={handleEdit}
-              className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+              className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -380,7 +380,7 @@ export function ProductDetail({
               type="button"
               onClick={handleDelete}
               disabled={isDeleting}
-              className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 rounded-lg border border-danger/30 bg-danger-soft px-3 py-2 text-sm font-medium text-danger hover:bg-danger-soft transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isDeleting ? (
                 <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
@@ -412,7 +412,7 @@ export function ProductDetail({
 
           {/* Image count */}
           {(product.images?.length ?? 0) > 0 && (
-            <p className="text-center text-sm text-zinc-500">
+            <p className="text-center text-sm text-ink-muted">
               {product.images?.length} image{(product.images?.length ?? 0) > 1 ? 's' : ''}
             </p>
           )}
@@ -422,15 +422,15 @@ export function ProductDetail({
         <div className="space-y-6">
           {/* Title and price */}
           <div className="space-y-3">
-            <h1 className="text-2xl font-bold text-zinc-900">{product.title}</h1>
+            <h1 className="text-2xl font-bold text-ink">{product.title}</h1>
 
             <div className="flex items-center gap-4">
               <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-zinc-900">
+                <span className="text-3xl font-bold text-ink">
                   {formatCurrency(product.price, product.currency)}
                 </span>
                 {product.compare_at_price !== null && product.compare_at_price > 0 && (
-                  <span className="text-xl text-zinc-500 line-through">
+                  <span className="text-xl text-ink-muted line-through">
                     {formatCurrency(product.compare_at_price, product.currency)}
                   </span>
                 )}
@@ -439,10 +439,10 @@ export function ProductDetail({
               <span
                 className={`px-3 py-1 rounded-full text-xs font-medium ${
                   product.availability === 'in_stock'
-                    ? 'bg-emerald-100 text-emerald-700'
+                    ? 'bg-success-soft text-success'
                     : product.availability === 'out_of_stock'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-zinc-100 text-zinc-700'
+                      ? 'bg-danger-soft text-danger'
+                      : 'bg-studio-raised text-ink-soft'
                 }`}
               >
                 {getAvailabilityText(product.availability)}
@@ -452,8 +452,8 @@ export function ProductDetail({
 
           {/* Description */}
           {product.description && (
-            <div className="prose max-w-none text-zinc-600">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-2">Description</h3>
+            <div className="prose max-w-none text-ink-soft">
+              <h3 className="text-sm font-semibold text-ink mb-2">Description</h3>
               <p className="text-sm leading-relaxed">{product.description}</p>
             </div>
           )}
@@ -462,55 +462,53 @@ export function ProductDetail({
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <dl className="space-y-3">
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   Brand
                 </dt>
-                <dd className="text-sm text-zinc-900">{product.brand || 'N/A'}</dd>
+                <dd className="text-sm text-ink">{product.brand || 'N/A'}</dd>
               </div>
 
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   Category
                 </dt>
-                <dd className="text-sm text-zinc-900">{product.category || 'N/A'}</dd>
+                <dd className="text-sm text-ink">{product.category || 'N/A'}</dd>
               </div>
 
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   Platform
                 </dt>
-                <dd className="text-sm text-zinc-900">
-                  {getPlatformText(product.source_platform)}
-                </dd>
+                <dd className="text-sm text-ink">{getPlatformText(product.source_platform)}</dd>
               </div>
 
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   Currency
                 </dt>
-                <dd className="text-sm text-zinc-900">{product.currency || 'N/A'}</dd>
+                <dd className="text-sm text-ink">{product.currency || 'N/A'}</dd>
               </div>
 
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   External ID
                 </dt>
-                <dd className="text-sm font-mono text-zinc-700 truncate">
+                <dd className="text-sm font-mono text-ink-soft truncate">
                   {product.external_id || 'N/A'}
                 </dd>
               </div>
 
               {product.canonical_url && (
                 <div className="sm:col-span-2">
-                  <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                  <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                     Canonical URL
                   </dt>
-                  <dd className="text-sm text-zinc-700 break-all">
+                  <dd className="text-sm text-ink-soft break-all">
                     <a
                       href={product.canonical_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="hover:text-[#C2410C] transition"
+                      className="hover:text-trend-orange transition"
                     >
                       {product.canonical_url}
                     </a>
@@ -522,28 +520,28 @@ export function ProductDetail({
 
           {/* Seller information */}
           {(product.seller_name || product.seller_url) && (
-            <div className="border-t border-zinc-200 pt-6">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">Seller Information</h3>
+            <div className="border-t border-line pt-6">
+              <h3 className="text-sm font-semibold text-ink mb-4">Seller Information</h3>
               <div className="space-y-2">
                 {product.seller_name && (
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                    <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                       Seller Name
                     </dt>
-                    <dd className="text-sm text-zinc-900">{product.seller_name}</dd>
+                    <dd className="text-sm text-ink">{product.seller_name}</dd>
                   </div>
                 )}
                 {product.seller_url && (
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                    <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                       Seller URL
                     </dt>
-                    <dd className="text-sm text-zinc-700">
+                    <dd className="text-sm text-ink-soft">
                       <a
                         href={product.seller_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-[#C2410C] transition"
+                        className="hover:text-trend-orange transition"
                       >
                         {product.seller_url}
                       </a>
@@ -556,14 +554,14 @@ export function ProductDetail({
 
           {/* Rating and reviews */}
           {(product.rating !== null || product.reviews_count !== null) && (
-            <div className="border-t border-zinc-200 pt-6">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">Customer Reviews</h3>
+            <div className="border-t border-line pt-6">
+              <h3 className="text-sm font-semibold text-ink mb-4">Customer Reviews</h3>
               <div className="flex items-center gap-6">
                 <div>
-                  <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                  <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                     Rating
                   </dt>
-                  <dd className="text-2xl font-bold text-zinc-900 mt-1">
+                  <dd className="text-2xl font-bold text-ink mt-1">
                     {product.rating !== null && !isNaN(Number(product.rating))
                       ? Number(product.rating).toFixed(1)
                       : 'N/A'}
@@ -571,12 +569,10 @@ export function ProductDetail({
                 </div>
                 {product.reviews_count !== null && (
                   <div>
-                    <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                    <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                       Reviews
                     </dt>
-                    <dd className="text-2xl font-bold text-zinc-900 mt-1">
-                      {product.reviews_count}
-                    </dd>
+                    <dd className="text-2xl font-bold text-ink mt-1">{product.reviews_count}</dd>
                   </div>
                 )}
               </div>
@@ -584,31 +580,31 @@ export function ProductDetail({
           )}
 
           {/* Extraction information */}
-          <div className="border-t border-zinc-200 pt-6">
-            <h3 className="text-sm font-semibold text-zinc-900 mb-4">Extraction Information</h3>
+          <div className="border-t border-line pt-6">
+            <h3 className="text-sm font-semibold text-ink mb-4">Extraction Information</h3>
             <div className="space-y-2">
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   Status
                 </dt>
-                <dd className="text-sm text-zinc-900">
+                <dd className="text-sm text-ink">
                   {getExtractionStatusText(product.extraction_status)}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                   Method
                 </dt>
-                <dd className="text-sm text-zinc-900">
+                <dd className="text-sm text-ink">
                   {getExtractionMethodText(product.extraction_method)}
                 </dd>
               </div>
               {product.extracted_at && (
                 <div>
-                  <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+                  <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
                     Extracted At
                   </dt>
-                  <dd className="text-sm text-zinc-900">{formatDate(product.extracted_at)}</dd>
+                  <dd className="text-sm text-ink">{formatDate(product.extracted_at)}</dd>
                 </div>
               )}
             </div>
@@ -616,8 +612,8 @@ export function ProductDetail({
 
           {/* Variants */}
           {(product.variants?.length ?? 0) > 0 && (
-            <div className="border-t border-zinc-200 pt-6">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">
+            <div className="border-t border-line pt-6">
+              <h3 className="text-sm font-semibold text-ink mb-4">
                 Variants ({product.variants?.length})
               </h3>
               <ProductVariants
@@ -631,22 +627,22 @@ export function ProductDetail({
       </div>
 
       {/* Metadata */}
-      <div className="border-t border-zinc-200 pt-6">
-        <h3 className="text-sm font-semibold text-zinc-900 mb-4">Metadata</h3>
+      <div className="border-t border-line pt-6">
+        <h3 className="text-sm font-semibold text-ink mb-4">Metadata</h3>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">Created</dt>
-            <dd className="text-sm text-zinc-900">{formatDate(product.created_at)}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">Created</dt>
+            <dd className="text-sm text-ink">{formatDate(product.created_at)}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">Updated</dt>
-            <dd className="text-sm text-zinc-900">{formatDate(product.updated_at)}</dd>
+            <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">Updated</dt>
+            <dd className="text-sm text-ink">{formatDate(product.updated_at)}</dd>
           </div>
           <div>
-            <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
+            <dt className="text-xs font-medium uppercase tracking-wider text-ink-muted">
               Product ID
             </dt>
-            <dd className="text-sm font-mono text-zinc-700">{product.id}</dd>
+            <dd className="text-sm font-mono text-ink-soft">{product.id}</dd>
           </div>
         </div>
       </div>

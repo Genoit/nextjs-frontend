@@ -208,42 +208,42 @@ export function CreativeConfigForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
       {/* Header card */}
-      <div className="rounded-2xl bg-white border border-zinc-200/80 p-6 shadow-2xs space-y-2">
+      <div className="rounded-2xl bg-white border border-line/80 p-6 shadow-2xs space-y-2">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-[#BA3807]">
+          <div className="flex items-center gap-2 text-trend-orange">
             <Sliders className="w-5 h-5" />
             <span className="text-xs font-bold uppercase tracking-wider">
               Configuration créative
             </span>
           </div>
-          <span className="text-xs text-zinc-400">Étape 2 / 5</span>
+          <span className="text-xs text-ink-muted">Étape 2 / 5</span>
         </div>
-        <h3 className="text-lg font-bold text-zinc-900">
+        <h3 className="text-lg font-bold text-ink">
           Configuration créative et contraintes de génération
         </h3>
-        <p className="text-xs text-zinc-500">
+        <p className="text-xs text-ink-muted">
           Définissez la stratégie de contenu. Toutes les données sont enregistrées pour pouvoir
           modifier la campagne ultérieurement.
         </p>
       </div>
 
       {formError && (
-        <div className="p-4 rounded-xl bg-red-50 border border-red-200 flex items-center gap-3 text-xs text-red-700">
+        <div className="p-4 rounded-xl bg-danger-soft border border-danger/30 flex items-center gap-3 text-xs text-danger">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{formError}</span>
         </div>
       )}
 
       {/* Section 1: Objectif & Audience */}
-      <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-6">
-        <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-          <Target className="w-4 h-4 text-[#BA3807]" />
+      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+          <Target className="w-4 h-4 text-trend-orange" />
           <span>1. Objectif de campagne & Audience cible</span>
         </h4>
 
         {/* Objective selection */}
         <div>
-          <p id="cfg-objective-label" className="block text-xs font-bold text-zinc-700 mb-2">
+          <p id="cfg-objective-label" className="block text-xs font-bold text-ink-soft mb-2">
             Objectif commercial
           </p>
           <div
@@ -264,12 +264,12 @@ export function CreativeConfigForm({
                 aria-pressed={objective === item.id}
                 className={`p-3.5 rounded-xl border text-left transition ${
                   objective === item.id
-                    ? 'border-[#BA3807] bg-[#FFF5ED] ring-1 ring-[#BA3807]'
-                    : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                    ? 'border-trend-orange bg-cream ring-1 ring-trend-orange'
+                    : 'border-line hover:border-line bg-white'
                 }`}
               >
-                <div className="font-bold text-xs text-zinc-900">{item.label}</div>
-                <div className="text-[11px] text-zinc-500 mt-0.5">{item.desc}</div>
+                <div className="font-bold text-xs text-ink">{item.label}</div>
+                <div className="text-[11px] text-ink-muted mt-0.5">{item.desc}</div>
               </button>
             ))}
           </div>
@@ -278,17 +278,17 @@ export function CreativeConfigForm({
         {/* Audience */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="cfg-targetAudience" className="text-xs font-bold text-zinc-700">
+            <label htmlFor="cfg-targetAudience" className="text-xs font-bold text-ink-soft">
               Audience cible
             </label>
-            <span className="text-[11px] text-zinc-400">Cliquez pour suggérer</span>
+            <span className="text-[11px] text-ink-muted">Cliquez pour suggérer</span>
           </div>
           <input
             id="cfg-targetAudience"
             type="text"
             value={targetAudience}
             onChange={(e) => setTargetAudience(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#BA3807]/20 focus:border-[#BA3807] text-sm text-zinc-900"
+            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
             placeholder="Ex : Télétravailleurs cherchant du confort sonore"
             required
           />
@@ -298,7 +298,7 @@ export function CreativeConfigForm({
                 key={idx}
                 type="button"
                 onClick={() => setTargetAudience(aud)}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition"
+                className="text-[11px] px-2.5 py-1 rounded-lg bg-studio-raised hover:bg-studio-rule text-ink-soft transition"
               >
                 + {aud}
               </button>
@@ -310,7 +310,7 @@ export function CreativeConfigForm({
         <div>
           <label
             htmlFor="cfg-targetMotivation"
-            className="block text-xs font-bold text-zinc-700 mb-2"
+            className="block text-xs font-bold text-ink-soft mb-2"
           >
             Motivation ou besoin visé
           </label>
@@ -319,7 +319,7 @@ export function CreativeConfigForm({
             type="text"
             value={targetMotivation}
             onChange={(e) => setTargetMotivation(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#BA3807]/20 focus:border-[#BA3807] text-sm text-zinc-900"
+            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
             placeholder="Ex : Supprimer les bruits de fond pour se concentrer sans fatigue"
             required
           />
@@ -327,18 +327,18 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 2: Angle créatif & Émotion */}
-      <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-6">
-        <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-[#BA3807]" />
+      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-trend-orange" />
           <span>2. Famille de Concept & Angle Publicitaire</span>
         </h4>
 
         {/* 10 Concept Archetypes Selector */}
         <div>
-          <p id="cfg-concept-label" className="block text-xs font-bold text-zinc-700 mb-1">
+          <p id="cfg-concept-label" className="block text-xs font-bold text-ink-soft mb-1">
             Archétype de Concept Publicitaire (10 Familles)
           </p>
-          <p className="text-[11px] text-zinc-500 mb-3">
+          <p className="text-[11px] text-ink-muted mb-3">
             Sélectionnez la structure narrative optimale pour convertir votre audience cible.
           </p>
           <div
@@ -354,15 +354,15 @@ export function CreativeConfigForm({
                 aria-pressed={conceptType === fam.id}
                 className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
                   conceptType === fam.id
-                    ? 'border-[#BA3807] bg-[#FFF5ED] ring-2 ring-[#BA3807]/20 shadow-2xs'
-                    : 'border-zinc-200 hover:border-zinc-300 bg-white'
+                    ? 'border-trend-orange bg-cream ring-2 ring-trend-orange/20 shadow-2xs'
+                    : 'border-line hover:border-line bg-white'
                 }`}
               >
                 <div>
                   <span className="text-base">{fam.icon}</span>
-                  <div className="font-bold text-xs text-zinc-900 mt-1">{fam.label}</div>
+                  <div className="font-bold text-xs text-ink mt-1">{fam.label}</div>
                 </div>
-                <div className="text-[10px] text-zinc-500 mt-1 line-clamp-2">{fam.desc}</div>
+                <div className="text-[10px] text-ink-muted mt-1 line-clamp-2">{fam.desc}</div>
               </button>
             ))}
           </div>
@@ -370,7 +370,7 @@ export function CreativeConfigForm({
 
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label htmlFor="cfg-creativeAngle" className="text-xs font-bold text-zinc-700">
+            <label htmlFor="cfg-creativeAngle" className="text-xs font-bold text-ink-soft">
               Angle créatif recommandé
             </label>
             <button
@@ -382,7 +382,7 @@ export function CreativeConfigForm({
                   ];
                 setCreativeAngle(next);
               }}
-              className="text-xs text-[#BA3807] hover:underline font-semibold flex items-center gap-1"
+              className="text-xs text-trend-orange hover:underline font-semibold flex items-center gap-1"
             >
               <Sparkles className="w-3 h-3" />
               Suggérer un autre angle
@@ -393,7 +393,7 @@ export function CreativeConfigForm({
             type="text"
             value={creativeAngle}
             onChange={(e) => setCreativeAngle(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#BA3807]/20 focus:border-[#BA3807] text-sm text-zinc-900"
+            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
             required
           />
           <div className="flex flex-wrap gap-1.5 mt-2">
@@ -404,8 +404,8 @@ export function CreativeConfigForm({
                 onClick={() => setCreativeAngle(ang)}
                 className={`text-[11px] px-2.5 py-1 rounded-lg transition ${
                   creativeAngle === ang
-                    ? 'bg-[#BA3807] text-white font-medium'
-                    : 'bg-zinc-100 hover:bg-zinc-200 text-zinc-700'
+                    ? 'bg-trend-orange text-white font-medium'
+                    : 'bg-studio-raised hover:bg-studio-rule text-ink-soft'
                 }`}
               >
                 {ang}
@@ -418,7 +418,7 @@ export function CreativeConfigForm({
           <div>
             <label
               htmlFor="cfg-primaryEmotion"
-              className="block text-xs font-bold text-zinc-700 mb-2"
+              className="block text-xs font-bold text-ink-soft mb-2"
             >
               Émotion principale
             </label>
@@ -426,7 +426,7 @@ export function CreativeConfigForm({
               id="cfg-primaryEmotion"
               value={primaryEmotion}
               onChange={(e) => setPrimaryEmotion(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="confiance">Confiance & Réassurance</option>
               <option value="enthousiasme">Enthousiasme & Excitation</option>
@@ -437,14 +437,14 @@ export function CreativeConfigForm({
           </div>
 
           <div>
-            <label htmlFor="cfg-videoStyle" className="block text-xs font-bold text-zinc-700 mb-2">
+            <label htmlFor="cfg-videoStyle" className="block text-xs font-bold text-ink-soft mb-2">
               Style de vidéo
             </label>
             <select
               id="cfg-videoStyle"
               value={videoStyle}
               onChange={(e) => setVideoStyle(e.target.value as VideoStyle)}
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="hybrid">Hybride (Créateur UGC + Focus Produit)</option>
               <option value="ugc_natural">100% UGC Naturel (Format selfie casual)</option>
@@ -455,9 +455,9 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 3: Format, Durée & Plateforme */}
-      <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-6">
-        <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-          <Smartphone className="w-4 h-4 text-[#BA3807]" />
+      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+          <Smartphone className="w-4 h-4 text-trend-orange" />
           <span>3. Format, Durée & Diffusion</span>
         </h4>
 
@@ -466,9 +466,9 @@ export function CreativeConfigForm({
           <div>
             <p
               id="cfg-duration-label"
-              className="block text-xs font-bold text-zinc-700 mb-2 flex items-center gap-1.5"
+              className="block text-xs font-bold text-ink-soft mb-2 flex items-center gap-1.5"
             >
-              <Clock className="w-3.5 h-3.5 text-zinc-500" aria-hidden />
+              <Clock className="w-3.5 h-3.5 text-ink-muted" aria-hidden />
               <span>Durée cible</span>
             </p>
             <div
@@ -484,8 +484,8 @@ export function CreativeConfigForm({
                   aria-pressed={targetDuration === sec}
                   className={`py-2 rounded-xl text-xs font-bold border transition ${
                     targetDuration === sec
-                      ? 'border-[#BA3807] bg-[#FFF5ED] text-[#BA3807]'
-                      : 'border-zinc-200 text-zinc-600 hover:border-zinc-300'
+                      ? 'border-trend-orange bg-cream text-trend-orange'
+                      : 'border-line text-ink-soft hover:border-line'
                   }`}
                 >
                   {sec}s
@@ -496,14 +496,14 @@ export function CreativeConfigForm({
 
           {/* Platform */}
           <div>
-            <label htmlFor="cfg-platform" className="block text-xs font-bold text-zinc-700 mb-2">
+            <label htmlFor="cfg-platform" className="block text-xs font-bold text-ink-soft mb-2">
               Plateforme principale
             </label>
             <select
               id="cfg-platform"
               value={platform}
               onChange={(e) => setPlatform(e.target.value as TargetPlatform)}
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="tiktok">TikTok Ads</option>
               <option value="instagram_reels">Instagram Reels</option>
@@ -516,16 +516,16 @@ export function CreativeConfigForm({
           <div>
             <label
               htmlFor="cfg-aspectRatio"
-              className="block text-xs font-bold text-zinc-700 mb-2 flex items-center gap-1.5"
+              className="block text-xs font-bold text-ink-soft mb-2 flex items-center gap-1.5"
             >
-              <Tv className="w-3.5 h-3.5 text-zinc-500" />
+              <Tv className="w-3.5 h-3.5 text-ink-muted" />
               <span>Format d&apos;image</span>
             </label>
             <select
               id="cfg-aspectRatio"
               value={aspectRatio}
               onChange={(e) => setAspectRatio(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="9:16">9:16 (Vertical TikTok/Reels)</option>
               <option value="1:1">1:1 (Carré Feed)</option>
@@ -539,7 +539,7 @@ export function CreativeConfigForm({
           <div className="sm:col-span-2">
             <label
               htmlFor="cfg-callToAction"
-              className="block text-xs font-bold text-zinc-700 mb-2"
+              className="block text-xs font-bold text-ink-soft mb-2"
             >
               Appel à l&apos;action (CTA)
             </label>
@@ -548,21 +548,21 @@ export function CreativeConfigForm({
               type="text"
               value={callToAction}
               onChange={(e) => setCallToAction(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#BA3807]/20 focus:border-[#BA3807] text-sm text-zinc-900"
+              className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
               placeholder="Ex : Commandez aujourd'hui avec 20% de remise"
               required
             />
           </div>
 
           <div>
-            <label htmlFor="cfg-language" className="block text-xs font-bold text-zinc-700 mb-2">
+            <label htmlFor="cfg-language" className="block text-xs font-bold text-ink-soft mb-2">
               Langue audio/sous-titres
             </label>
             <select
               id="cfg-language"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="fr">Français (FR)</option>
               <option value="en">English (US)</option>
@@ -574,22 +574,22 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 4: Voix, Ambiance & Contraintes */}
-      <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-6">
-        <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-          <Volume2 className="w-4 h-4 text-[#BA3807]" />
+      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+          <Volume2 className="w-4 h-4 text-trend-orange" />
           <span>4. Voix-off, Ambiance sonore & Contraintes spécifiques</span>
         </h4>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
-            <label htmlFor="cfg-voiceGender" className="block text-xs font-bold text-zinc-700 mb-2">
+            <label htmlFor="cfg-voiceGender" className="block text-xs font-bold text-ink-soft mb-2">
               Type de voix
             </label>
             <select
               id="cfg-voiceGender"
               value={voiceGender}
               onChange={(e) => setVoiceGender(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="female">Voix Féminine</option>
               <option value="male">Voix Masculine</option>
@@ -597,7 +597,7 @@ export function CreativeConfigForm({
           </div>
 
           <div>
-            <label htmlFor="cfg-voiceTone" className="block text-xs font-bold text-zinc-700 mb-2">
+            <label htmlFor="cfg-voiceTone" className="block text-xs font-bold text-ink-soft mb-2">
               Tonalité de la voix
             </label>
             <input
@@ -605,13 +605,13 @@ export function CreativeConfigForm({
               type="text"
               value={voiceTone}
               onChange={(e) => setVoiceTone(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-4 py-2.5 rounded-xl border border-line text-sm text-ink focus:outline-none focus:border-trend-orange"
               placeholder="Ex : chaleureux, complice, énergique"
             />
           </div>
 
           <div>
-            <label htmlFor="cfg-musicMood" className="block text-xs font-bold text-zinc-700 mb-2">
+            <label htmlFor="cfg-musicMood" className="block text-xs font-bold text-ink-soft mb-2">
               Ambiance musicale
             </label>
             <select
@@ -620,14 +620,14 @@ export function CreativeConfigForm({
               onChange={(e) => setMusicMood(e.target.value)}
               disabled={musicChoice === MUSIC_NONE}
               aria-describedby="cfg-musicMood-hint"
-              className="w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
             >
               <option value="upbeat">Rythmée & Énergique (Trendy TikTok)</option>
               <option value="calm">Calme & Apaisante (Acoustique / Lo-Fi)</option>
               <option value="corporate">Inspirante & Moderne (Tech)</option>
               <option value="dramatic">Impactante & Cinématique</option>
             </select>
-            <p id="cfg-musicMood-hint" className="mt-1 text-xs text-zinc-500">
+            <p id="cfg-musicMood-hint" className="mt-1 text-xs text-ink-muted">
               {musicChoice === MUSIC_AUTO
                 ? 'Choisit le morceau de la bibliothèque.'
                 : musicChoice === MUSIC_NONE
@@ -642,7 +642,7 @@ export function CreativeConfigForm({
         <div>
           <label
             htmlFor="cfg-userConstraints"
-            className="block text-xs font-bold text-zinc-700 mb-2"
+            className="block text-xs font-bold text-ink-soft mb-2"
           >
             Directives ou contraintes supplémentaires (Optionnel)
           </label>
@@ -651,7 +651,7 @@ export function CreativeConfigForm({
             value={userConstraints}
             onChange={(e) => setUserConstraints(e.target.value)}
             rows={3}
-            className="w-full px-4 py-2.5 rounded-xl border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-[#BA3807]/20 focus:border-[#BA3807] text-sm text-zinc-900"
+            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
             placeholder="Ex : Mettre l'accent sur l'autonomie de la batterie. Ne pas mentionner de comparaison directe avec une marque concurrente."
           />
         </div>
@@ -662,7 +662,7 @@ export function CreativeConfigForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 rounded-xl bg-[#BA3807] hover:bg-[#9A2D04] disabled:opacity-50 text-white text-sm font-bold shadow-xs transition flex items-center gap-2"
+          className="px-6 py-3 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-white text-sm font-bold shadow-xs transition flex items-center gap-2"
         >
           {isLoading ? (
             <span>Sauvegarde en cours...</span>

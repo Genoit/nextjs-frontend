@@ -26,7 +26,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-zinc-100 bg-white/95 backdrop-blur-md transition-all">
+    <header className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur-md transition-all">
       <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="hover:opacity-95 transition">
@@ -34,7 +34,7 @@ export default function Navbar() {
         </Link>
 
         {/* Center Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8 text-[20px] lg:text-[18px] font-medium text-zinc-700">
+        <nav className="hidden md:flex items-center gap-8 text-[20px] lg:text-[18px] font-medium text-ink-soft">
           {/* Product Dropdown */}
           <div
             className="relative"
@@ -43,12 +43,12 @@ export default function Navbar() {
           >
             <button
               type="button"
-              className="flex items-center gap-1.5 hover:text-zinc-900 transition py-2"
+              className="flex items-center gap-1.5 hover:text-ink transition py-2"
             >
               <span>Product</span>
               <svg
-                className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${
-                  activeDropdown === 'product' ? 'rotate-180 text-zinc-800' : ''
+                className={`h-3.5 w-3.5 text-ink-muted transition-transform duration-200 ${
+                  activeDropdown === 'product' ? 'rotate-180 text-ink' : ''
                 }`}
                 fill="none"
                 viewBox="0 0 24 24"
@@ -60,26 +60,26 @@ export default function Navbar() {
             </button>
 
             {activeDropdown === 'product' && (
-              <div className="absolute top-full -left-4 w-72 rounded-2xl bg-white p-3 shadow-xl border border-zinc-100 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full -left-4 w-72 rounded-2xl bg-white p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
                   href="#ugc-generator"
-                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-orange-50/50 transition"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-cream/50 transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <div className="h-8 w-8 rounded-lg bg-orange-100/80 text-[#C2410C] flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-cream/80 text-trend-orange flex items-center justify-center shrink-0">
                     <SparkleIcon className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-zinc-900">AI UGC Generator</p>
-                    <p className="text-xs text-zinc-500">Create videos without booking creators</p>
+                    <p className="text-sm font-semibold text-ink">AI UGC Generator</p>
+                    <p className="text-xs text-ink-muted">Create videos without booking creators</p>
                   </div>
                 </Link>
                 <Link
                   href="#how-it-works"
-                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-orange-50/50 transition"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-cream/50 transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <div className="h-8 w-8 rounded-lg bg-orange-100/80 text-[#C2410C] flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-cream/80 text-trend-orange flex items-center justify-center shrink-0">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
@@ -90,16 +90,16 @@ export default function Navbar() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-zinc-900">How It Works</p>
-                    <p className="text-xs text-zinc-500">3 simple steps: product to UGC</p>
+                    <p className="text-sm font-semibold text-ink">How It Works</p>
+                    <p className="text-xs text-ink-muted">3 simple steps: product to UGC</p>
                   </div>
                 </Link>
                 <Link
                   href="#product-to-video"
-                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-orange-50/50 transition"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-cream/50 transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <div className="h-8 w-8 rounded-lg bg-orange-100/80 text-[#C2410C] flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-cream/80 text-trend-orange flex items-center justify-center shrink-0">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
@@ -110,16 +110,16 @@ export default function Navbar() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-zinc-900">Product → Video</p>
-                    <p className="text-xs text-zinc-500">1 product into infinite viral concepts</p>
+                    <p className="text-sm font-semibold text-ink">Product → Video</p>
+                    <p className="text-xs text-ink-muted">1 product into infinite viral concepts</p>
                   </div>
                 </Link>
                 <Link
                   href="#creative-library"
-                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-orange-50/50 transition"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-cream/50 transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <div className="h-8 w-8 rounded-lg bg-orange-100/80 text-[#C2410C] flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-cream/80 text-trend-orange flex items-center justify-center shrink-0">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
@@ -130,16 +130,16 @@ export default function Navbar() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-zinc-900">Creative Library</p>
-                    <p className="text-xs text-zinc-500">Manage, preview & analyze winning ads</p>
+                    <p className="text-sm font-semibold text-ink">Creative Library</p>
+                    <p className="text-xs text-ink-muted">Manage, preview & analyze winning ads</p>
                   </div>
                 </Link>
                 <Link
                   href="#ai-intelligence"
-                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-orange-50/50 transition"
+                  className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-cream/50 transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <div className="h-8 w-8 rounded-lg bg-orange-100/80 text-[#C2410C] flex items-center justify-center shrink-0">
+                  <div className="h-8 w-8 rounded-lg bg-cream/80 text-trend-orange flex items-center justify-center shrink-0">
                     <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
                         strokeLinecap="round"
@@ -150,8 +150,8 @@ export default function Navbar() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-zinc-900">AI Intelligence</p>
-                    <p className="text-xs text-zinc-500">Hook score & retention optimization</p>
+                    <p className="text-sm font-semibold text-ink">AI Intelligence</p>
+                    <p className="text-xs text-ink-muted">Hook score & retention optimization</p>
                   </div>
                 </Link>
               </div>
@@ -166,12 +166,12 @@ export default function Navbar() {
           >
             <button
               type="button"
-              className="flex items-center gap-1.5 hover:text-zinc-900 transition py-2"
+              className="flex items-center gap-1.5 hover:text-ink transition py-2"
             >
               <span>Solutions</span>
               <svg
-                className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${
-                  activeDropdown === 'solutions' ? 'rotate-180 text-zinc-800' : ''
+                className={`h-3.5 w-3.5 text-ink-muted transition-transform duration-200 ${
+                  activeDropdown === 'solutions' ? 'rotate-180 text-ink' : ''
                 }`}
                 fill="none"
                 viewBox="0 0 24 24"
@@ -183,30 +183,30 @@ export default function Navbar() {
             </button>
 
             {activeDropdown === 'solutions' && (
-              <div className="absolute top-full -left-4 w-64 rounded-2xl bg-white p-3 shadow-xl border border-zinc-100 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full -left-4 w-64 rounded-2xl bg-white p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
                   href="#workflow"
-                  className="block rounded-xl p-2.5 hover:bg-zinc-50 transition"
+                  className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <p className="text-sm font-semibold text-zinc-900">Dropshipping Acceleration</p>
-                  <p className="text-xs text-zinc-500">Test 10x faster with AI validation</p>
+                  <p className="text-sm font-semibold text-ink">Dropshipping Acceleration</p>
+                  <p className="text-xs text-ink-muted">Test 10x faster with AI validation</p>
                 </Link>
                 <Link
                   href="#workflow"
-                  className="block rounded-xl p-2.5 hover:bg-zinc-50 transition"
+                  className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <p className="text-sm font-semibold text-zinc-900">E-commerce Brands</p>
-                  <p className="text-xs text-zinc-500">Scale ROAS and reduce creative costs</p>
+                  <p className="text-sm font-semibold text-ink">E-commerce Brands</p>
+                  <p className="text-xs text-ink-muted">Scale ROAS and reduce creative costs</p>
                 </Link>
                 <Link
                   href="#workflow"
-                  className="block rounded-xl p-2.5 hover:bg-zinc-50 transition"
+                  className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <p className="text-sm font-semibold text-zinc-900">TikTok & Meta Growth</p>
-                  <p className="text-xs text-zinc-500">Organic & paid scroll-stopping creatives</p>
+                  <p className="text-sm font-semibold text-ink">TikTok & Meta Growth</p>
+                  <p className="text-xs text-ink-muted">Organic & paid scroll-stopping creatives</p>
                 </Link>
               </div>
             )}
@@ -220,12 +220,12 @@ export default function Navbar() {
           >
             <button
               type="button"
-              className="flex items-center gap-1.5 hover:text-zinc-900 transition py-2"
+              className="flex items-center gap-1.5 hover:text-ink transition py-2"
             >
               <span>Resources</span>
               <svg
-                className={`h-3.5 w-3.5 text-zinc-400 transition-transform duration-200 ${
-                  activeDropdown === 'resources' ? 'rotate-180 text-zinc-800' : ''
+                className={`h-3.5 w-3.5 text-ink-muted transition-transform duration-200 ${
+                  activeDropdown === 'resources' ? 'rotate-180 text-ink' : ''
                 }`}
                 fill="none"
                 viewBox="0 0 24 24"
@@ -237,29 +237,29 @@ export default function Navbar() {
             </button>
 
             {activeDropdown === 'resources' && (
-              <div className="absolute top-full -left-4 w-60 rounded-2xl bg-white p-3 shadow-xl border border-zinc-100 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full -left-4 w-60 rounded-2xl bg-white p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
                   href="#workflow"
-                  className="block rounded-xl p-2.5 hover:bg-zinc-50 transition"
+                  className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <p className="text-sm font-semibold text-zinc-900">Workflow Guide</p>
-                  <p className="text-xs text-zinc-500">How to scale in 6 proven steps</p>
+                  <p className="text-sm font-semibold text-ink">Workflow Guide</p>
+                  <p className="text-xs text-ink-muted">How to scale in 6 proven steps</p>
                 </Link>
                 <Link
                   href="#pricing"
-                  className="block rounded-xl p-2.5 hover:bg-zinc-50 transition"
+                  className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
                   onClick={() => setActiveDropdown(null)}
                 >
-                  <p className="text-sm font-semibold text-zinc-900">Free Trial FAQ</p>
-                  <p className="text-xs text-zinc-500">Details on 7-day risk-free plan</p>
+                  <p className="text-sm font-semibold text-ink">Free Trial FAQ</p>
+                  <p className="text-xs text-ink-muted">Details on 7-day risk-free plan</p>
                 </Link>
               </div>
             )}
           </div>
 
           {/* Pricing Link */}
-          <Link href="#pricing" className="hover:text-zinc-900 transition py-2">
+          <Link href="#pricing" className="hover:text-ink transition py-2">
             Pricing
           </Link>
         </nav>
@@ -267,22 +267,22 @@ export default function Navbar() {
         {/* Right CTA / Auth Controls */}
         <div className="hidden md:flex items-center gap-5">
           {isLoading ? (
-            <div className="h-9 w-24 animate-pulse rounded-xl bg-zinc-100" />
+            <div className="h-9 w-24 animate-pulse rounded-xl bg-studio-raised" />
           ) : isAuthenticated ? (
             <div className="flex items-center gap-4">
               <Link
                 href="/dashboard"
-                className="text-[17px] font-semibold text-zinc-800 hover:text-zinc-900 transition"
+                className="text-[17px] font-semibold text-ink hover:text-ink transition"
               >
                 Dashboard
               </Link>
-              <span className="text-[11px] bg-orange-50 text-[#E0492A] border border-orange-200/60 font-medium px-2.5 py-1 rounded-full">
+              <span className="text-[11px] bg-cream text-trend-orange border border-trend-orange/20 font-medium px-2.5 py-1 rounded-full">
                 {user?.first_name}
               </span>
               <button
                 type="button"
                 onClick={logout}
-                className="rounded-xl border border-zinc-200 bg-white px-3.5 py-1.5 text-[13px] font-medium text-zinc-600 hover:bg-zinc-50 transition"
+                className="rounded-xl border border-line bg-white px-3.5 py-1.5 text-[13px] font-medium text-ink-soft hover:bg-studio-surface transition"
               >
                 Log out
               </button>
@@ -291,13 +291,13 @@ export default function Navbar() {
             <div className="flex items-center gap-5">
               <Link
                 href="/login"
-                className="text-[17px] font-medium text-zinc-700 hover:text-zinc-900 transition"
+                className="text-[17px] font-medium text-ink-soft hover:text-ink transition"
               >
                 Login
               </Link>
               <Link
                 href="/register"
-                className="rounded-xl bg-[#C2410C] px-5 py-2.5 text-[17px] font-semibold text-white shadow-sm hover:bg-[#9A3412] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C2410C] transition"
+                className="rounded-xl bg-trend-orange px-5 py-2.5 text-[17px] font-semibold text-white shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition"
               >
                 Start creating
               </Link>
@@ -310,7 +310,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="p-2 rounded-xl text-zinc-600 hover:text-zinc-900 hover:bg-zinc-100 focus:outline-none"
+            className="p-2 rounded-xl text-ink-soft hover:text-ink hover:bg-studio-raised focus:outline-none"
             aria-label="Toggle menu"
           >
             {mobileMenuOpen ? (
@@ -338,52 +338,52 @@ export default function Navbar() {
 
       {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-zinc-100 bg-white px-4 py-6 space-y-4 shadow-lg">
-          <nav className="flex flex-col space-y-3 font-medium text-zinc-700">
+        <div className="md:hidden border-t border-line bg-white px-4 py-6 space-y-4 shadow-lg">
+          <nav className="flex flex-col space-y-3 font-medium text-ink-soft">
             <Link
               href="#ugc-generator"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-zinc-50"
+              className="px-3 py-2 rounded-lg hover:bg-studio-surface"
             >
               AI UGC Generator
             </Link>
             <Link
               href="#how-it-works"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-zinc-50"
+              className="px-3 py-2 rounded-lg hover:bg-studio-surface"
             >
               How It Works
             </Link>
             <Link
               href="#product-to-video"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-zinc-50"
+              className="px-3 py-2 rounded-lg hover:bg-studio-surface"
             >
               Product to Video
             </Link>
             <Link
               href="#creative-library"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-zinc-50"
+              className="px-3 py-2 rounded-lg hover:bg-studio-surface"
             >
               Creative Library
             </Link>
             <Link
               href="#pricing"
               onClick={() => setMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg hover:bg-zinc-50"
+              className="px-3 py-2 rounded-lg hover:bg-studio-surface"
             >
               Pricing
             </Link>
           </nav>
 
-          <div className="pt-4 border-t border-zinc-100 flex flex-col gap-2.5">
+          <div className="pt-4 border-t border-line flex flex-col gap-2.5">
             {isAuthenticated ? (
               <>
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center rounded-xl bg-[#C2410C] px-4 py-2.5 text-sm font-semibold text-white"
+                  className="w-full text-center rounded-xl bg-trend-orange px-4 py-2.5 text-sm font-semibold text-white"
                 >
                   Go to Dashboard ({user?.first_name})
                 </Link>
@@ -393,7 +393,7 @@ export default function Navbar() {
                     setMobileMenuOpen(false);
                     logout();
                   }}
-                  className="w-full text-center rounded-xl border border-zinc-200 py-2.5 text-sm font-medium text-zinc-700"
+                  className="w-full text-center rounded-xl border border-line py-2.5 text-sm font-medium text-ink-soft"
                 >
                   Log out
                 </button>
@@ -403,14 +403,14 @@ export default function Navbar() {
                 <Link
                   href="/login"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center rounded-xl border border-zinc-200 py-2.5 text-sm font-medium text-zinc-700"
+                  className="w-full text-center rounded-xl border border-line py-2.5 text-sm font-medium text-ink-soft"
                 >
                   Login
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center rounded-xl bg-[#C2410C] px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+                  className="w-full text-center rounded-xl bg-trend-orange px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
                 >
                   Start creating
                 </Link>

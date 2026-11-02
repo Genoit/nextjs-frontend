@@ -21,12 +21,12 @@ const STATUS: Record<string, string> = {
 function Thumb({ url }: { url: string | null }) {
   const media = useApiMediaUrl(url);
   return (
-    <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-zinc-100">
+    <div className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-studio-raised">
       {media.url ? (
         // eslint-disable-next-line @next/next/no-img-element -- object/presigned URL, not optimisable
         <img src={media.url} alt="" className="size-full object-cover" />
       ) : (
-        <Film className="size-5 text-zinc-400" aria-hidden />
+        <Film className="size-5 text-ink-muted" aria-hidden />
       )}
     </div>
   );
@@ -68,13 +68,13 @@ export function VideoHistory({ productId, refreshKey, activeJobId, onOpen }: Pro
   return (
     <section
       aria-labelledby="history-title"
-      className="max-w-4xl space-y-3 rounded-2xl border border-zinc-200/80 bg-white p-6 shadow-2xs"
+      className="max-w-4xl space-y-3 rounded-2xl border border-line/80 bg-white p-6 shadow-2xs"
     >
-      <h4 id="history-title" className="flex items-center gap-2 text-sm font-bold text-zinc-900">
-        <History className="size-4 text-[#BA3807]" aria-hidden />
+      <h4 id="history-title" className="flex items-center gap-2 text-sm font-bold text-ink">
+        <History className="size-4 text-trend-orange" aria-hidden />
         Historique des vidéos
       </h4>
-      {error && <p className="text-sm text-red-800">Historique indisponible.</p>}
+      {error && <p className="text-sm text-danger">Historique indisponible.</p>}
       {!jobs && !error && (
         <p className="text-sm text-ink-muted" role="status">
           Chargement de l&apos;historique…
@@ -104,7 +104,7 @@ export function VideoHistory({ productId, refreshKey, activeJobId, onOpen }: Pro
                       v.formats.map((f) => (
                         <li
                           key={f}
-                          className="rounded-full border border-line bg-zinc-50 px-2 py-0.5 text-xs font-semibold text-ink tabular-nums"
+                          className="rounded-full border border-line bg-studio-surface px-2 py-0.5 text-xs font-semibold text-ink tabular-nums"
                         >
                           {f}
                         </li>
@@ -124,7 +124,7 @@ export function VideoHistory({ productId, refreshKey, activeJobId, onOpen }: Pro
                     type="button"
                     onClick={() => onOpen(job)}
                     aria-label={`Ouvrir la vidéo du ${date}`}
-                    className={`inline-flex min-h-11 items-center rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-zinc-50 ${focusRing}`}
+                    className={`inline-flex min-h-11 items-center rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-studio-surface ${focusRing}`}
                   >
                     Ouvrir
                   </button>

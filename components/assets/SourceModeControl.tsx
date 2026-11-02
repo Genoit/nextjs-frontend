@@ -83,7 +83,7 @@ export function SourceModeControl({
               key={opt.value}
               className={`flex min-h-11 cursor-pointer items-center gap-2.5 px-3 text-sm has-[:focus-visible]:outline-2 has-[:focus-visible]:-outline-offset-2 has-[:focus-visible]:outline-trend-orange has-[[aria-disabled=true]]:cursor-not-allowed has-[[aria-disabled=true]]:text-ink-muted ${
                 i > 0 ? 'border-t border-line' : ''
-              } ${opt.value === value ? 'bg-cream font-semibold text-ink' : 'text-ink hover:bg-zinc-50'}`}
+              } ${opt.value === value ? 'bg-cream font-semibold text-ink' : 'text-ink hover:bg-studio-surface'}`}
             >
               <input
                 ref={opt.value === 'request_processing' ? processingRadioRef : undefined}
@@ -146,7 +146,7 @@ export function SourceModeControl({
         </div>
       )}
 
-      <p aria-live="polite" className="min-h-4 text-xs text-emerald-800">
+      <p aria-live="polite" className="min-h-4 text-xs text-success">
         {saved && !confirming ? 'Enregistré' : ''}
       </p>
     </div>

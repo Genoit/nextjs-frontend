@@ -338,9 +338,9 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
   if (submitSuccess) {
     return (
       <div className="flex flex-col items-center justify-center py-12">
-        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-emerald-100">
+        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-success-soft">
           <svg
-            className="h-6 w-6 text-emerald-600"
+            className="h-6 w-6 text-success"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -348,10 +348,10 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <h3 className="mt-4 text-lg font-semibold text-zinc-900">
+        <h3 className="mt-4 text-lg font-semibold text-ink">
           {isEditMode ? 'Product updated successfully!' : 'Product created successfully!'}
         </h3>
-        <p className="mt-2 text-sm text-zinc-600">Redirecting you to the product page...</p>
+        <p className="mt-2 text-sm text-ink-soft">Redirecting you to the product page...</p>
       </div>
     );
   }
@@ -360,10 +360,10 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Error display */}
       {(hasErrors || submitError || createError || updateError) && (
-        <div className="rounded-lg bg-red-50 border border-red-200 p-4">
+        <div className="rounded-lg bg-danger-soft border border-danger/30 p-4">
           <div className="flex items-start gap-3">
             <svg
-              className="h-5 w-5 text-red-500 flex-shrink-0"
+              className="h-5 w-5 text-danger flex-shrink-0"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -376,8 +376,8 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
               />
             </svg>
             <div>
-              <h4 className="text-sm font-semibold text-red-800">There were some issues</h4>
-              <p className="mt-1 text-sm text-red-700">
+              <h4 className="text-sm font-semibold text-danger">There were some issues</h4>
+              <p className="mt-1 text-sm text-danger">
                 {submitError ||
                   createError ||
                   updateError ||
@@ -392,8 +392,8 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {/* Title */}
         <div className="sm:col-span-2">
-          <label htmlFor="title" className="block text-sm font-medium text-zinc-700">
-            Product Name <span className="text-red-500">*</span>
+          <label htmlFor="title" className="block text-sm font-medium text-ink-soft">
+            Product Name <span className="text-danger">*</span>
           </label>
           <input
             type="text"
@@ -404,14 +404,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             placeholder="Enter product name"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.title
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.title ? 'title-error' : undefined}
           />
           {formErrors.title && (
-            <p id="title-error" className="mt-1 text-xs text-red-600">
+            <p id="title-error" className="mt-1 text-xs text-danger">
               {formErrors.title}
             </p>
           )}
@@ -419,7 +419,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Description */}
         <div className="sm:col-span-2">
-          <label htmlFor="description" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="description" className="block text-sm font-medium text-ink-soft">
             Description
           </label>
           <textarea
@@ -429,14 +429,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             onChange={handleChange}
             placeholder="Enter product description"
             rows={3}
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
 
         {/* Brand and Category */}
         <div>
-          <label htmlFor="brand" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="brand" className="block text-sm font-medium text-ink-soft">
             Brand
           </label>
           <input
@@ -446,13 +446,13 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.brand}
             onChange={handleChange}
             placeholder="Brand name"
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
 
         <div>
-          <label htmlFor="category" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="category" className="block text-sm font-medium text-ink-soft">
             Category
           </label>
           <input
@@ -462,15 +462,15 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.category}
             onChange={handleChange}
             placeholder="Product category"
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
 
         {/* Source URL */}
         <div className="sm:col-span-2">
-          <label htmlFor="sourceUrl" className="block text-sm font-medium text-zinc-700">
-            Source URL <span className="text-red-500">*</span>
+          <label htmlFor="sourceUrl" className="block text-sm font-medium text-ink-soft">
+            Source URL <span className="text-danger">*</span>
           </label>
           <input
             type="url"
@@ -481,14 +481,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             placeholder="https://example.com/product"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.sourceUrl
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.sourceUrl ? 'sourceUrl-error' : undefined}
           />
           {formErrors.sourceUrl && (
-            <p id="sourceUrl-error" className="mt-1 text-xs text-red-600">
+            <p id="sourceUrl-error" className="mt-1 text-xs text-danger">
               {formErrors.sourceUrl}
             </p>
           )}
@@ -496,7 +496,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Canonical URL */}
         <div className="sm:col-span-2">
-          <label htmlFor="canonicalUrl" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="canonicalUrl" className="block text-sm font-medium text-ink-soft">
             Canonical URL
           </label>
           <input
@@ -508,14 +508,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             placeholder="https://example.com/canonical-product"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.canonicalUrl
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.canonicalUrl ? 'canonicalUrl-error' : undefined}
           />
           {formErrors.canonicalUrl && (
-            <p id="canonicalUrl-error" className="mt-1 text-xs text-red-600">
+            <p id="canonicalUrl-error" className="mt-1 text-xs text-danger">
               {formErrors.canonicalUrl}
             </p>
           )}
@@ -523,7 +523,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Source Platform */}
         <div>
-          <label htmlFor="sourcePlatform" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="sourcePlatform" className="block text-sm font-medium text-ink-soft">
             Source Platform
           </label>
           <select
@@ -531,7 +531,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             name="sourcePlatform"
             value={formData.sourcePlatform}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           >
             {SOURCE_PLATFORMS.map((option) => (
@@ -544,7 +544,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* External ID */}
         <div>
-          <label htmlFor="externalId" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="externalId" className="block text-sm font-medium text-ink-soft">
             External ID
           </label>
           <input
@@ -554,19 +554,19 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.externalId}
             onChange={handleChange}
             placeholder="External ID from source"
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
 
         {/* Price and Compare At Price */}
         <div>
-          <label htmlFor="price" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="price" className="block text-sm font-medium text-ink-soft">
             Price
           </label>
           <div className="relative rounded-lg shadow-sm">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <span className="text-sm text-zinc-500">{formData.currency}</span>
+              <span className="text-sm text-ink-muted">{formData.currency}</span>
             </div>
             <input
               type="number"
@@ -579,27 +579,27 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
               min="0"
               className={`block w-full rounded-lg border bg-white px-3 py-2 pl-8 text-sm shadow-sm transition ${
                 formErrors.price
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                  ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                  : 'border-line focus:border-trend-orange focus:ring-trend-orange'
               }`}
               disabled={isLoading}
               aria-describedby={formErrors.price ? 'price-error' : undefined}
             />
           </div>
           {formErrors.price && (
-            <p id="price-error" className="mt-1 text-xs text-red-600">
+            <p id="price-error" className="mt-1 text-xs text-danger">
               {formErrors.price}
             </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="compareAtPrice" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="compareAtPrice" className="block text-sm font-medium text-ink-soft">
             Compare At Price
           </label>
           <div className="relative rounded-lg shadow-sm">
             <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-              <span className="text-sm text-zinc-500">{formData.currency}</span>
+              <span className="text-sm text-ink-muted">{formData.currency}</span>
             </div>
             <input
               type="number"
@@ -612,15 +612,15 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
               min="0"
               className={`block w-full rounded-lg border bg-white px-3 py-2 pl-8 text-sm shadow-sm transition ${
                 formErrors.compareAtPrice
-                  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                  : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                  ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                  : 'border-line focus:border-trend-orange focus:ring-trend-orange'
               }`}
               disabled={isLoading}
               aria-describedby={formErrors.compareAtPrice ? 'compareAtPrice-error' : undefined}
             />
           </div>
           {formErrors.compareAtPrice && (
-            <p id="compareAtPrice-error" className="mt-1 text-xs text-red-600">
+            <p id="compareAtPrice-error" className="mt-1 text-xs text-danger">
               {formErrors.compareAtPrice}
             </p>
           )}
@@ -628,7 +628,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Currency */}
         <div>
-          <label htmlFor="currency" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="currency" className="block text-sm font-medium text-ink-soft">
             Currency
           </label>
           <select
@@ -636,7 +636,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             name="currency"
             value={formData.currency}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           >
             {CURRENCY_OPTIONS.map((option) => (
@@ -649,7 +649,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Availability */}
         <div>
-          <label htmlFor="availability" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="availability" className="block text-sm font-medium text-ink-soft">
             Availability
           </label>
           <select
@@ -657,7 +657,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             name="availability"
             value={formData.availability}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           >
             {AVAILABILITY_OPTIONS.map((option) => (
@@ -670,7 +670,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Main Image URL */}
         <div className="sm:col-span-2">
-          <label htmlFor="mainImageUrl" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="mainImageUrl" className="block text-sm font-medium text-ink-soft">
             Main Image URL
           </label>
           <input
@@ -682,14 +682,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             placeholder="https://example.com/image.jpg"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.mainImageUrl
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.mainImageUrl ? 'mainImageUrl-error' : undefined}
           />
           {formErrors.mainImageUrl && (
-            <p id="mainImageUrl-error" className="mt-1 text-xs text-red-600">
+            <p id="mainImageUrl-error" className="mt-1 text-xs text-danger">
               {formErrors.mainImageUrl}
             </p>
           )}
@@ -697,7 +697,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Seller Information */}
         <div>
-          <label htmlFor="sellerName" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="sellerName" className="block text-sm font-medium text-ink-soft">
             Seller Name
           </label>
           <input
@@ -707,13 +707,13 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.sellerName}
             onChange={handleChange}
             placeholder="Seller name"
-            className="mt-1 block w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm shadow-sm transition focus:border-[#C2410C] focus:ring-[#C2410C]"
+            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
 
         <div>
-          <label htmlFor="sellerUrl" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="sellerUrl" className="block text-sm font-medium text-ink-soft">
             Seller URL
           </label>
           <input
@@ -725,14 +725,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             placeholder="https://example.com/seller"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.sellerUrl
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.sellerUrl ? 'sellerUrl-error' : undefined}
           />
           {formErrors.sellerUrl && (
-            <p id="sellerUrl-error" className="mt-1 text-xs text-red-600">
+            <p id="sellerUrl-error" className="mt-1 text-xs text-danger">
               {formErrors.sellerUrl}
             </p>
           )}
@@ -740,7 +740,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         {/* Rating and Reviews Count */}
         <div>
-          <label htmlFor="rating" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="rating" className="block text-sm font-medium text-ink-soft">
             Rating (0-5)
           </label>
           <input
@@ -755,21 +755,21 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             max="5"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.rating
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.rating ? 'rating-error' : undefined}
           />
           {formErrors.rating && (
-            <p id="rating-error" className="mt-1 text-xs text-red-600">
+            <p id="rating-error" className="mt-1 text-xs text-danger">
               {formErrors.rating}
             </p>
           )}
         </div>
 
         <div>
-          <label htmlFor="reviewsCount" className="block text-sm font-medium text-zinc-700">
+          <label htmlFor="reviewsCount" className="block text-sm font-medium text-ink-soft">
             Reviews Count
           </label>
           <input
@@ -782,14 +782,14 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             min="0"
             className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
               formErrors.reviewsCount
-                ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
-                : 'border-zinc-300 focus:border-[#C2410C] focus:ring-[#C2410C]'
+                ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
+                : 'border-line focus:border-trend-orange focus:ring-trend-orange'
             }`}
             disabled={isLoading}
             aria-describedby={formErrors.reviewsCount ? 'reviewsCount-error' : undefined}
           />
           {formErrors.reviewsCount && (
-            <p id="reviewsCount-error" className="mt-1 text-xs text-red-600">
+            <p id="reviewsCount-error" className="mt-1 text-xs text-danger">
               {formErrors.reviewsCount}
             </p>
           )}
@@ -801,7 +801,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-zinc-200 bg-white px-6 py-2 text-sm font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 transition"
+          className="rounded-lg border border-line bg-white px-6 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-studio-surface transition"
           disabled={isLoading}
         >
           Cancel
@@ -809,7 +809,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         <button
           type="submit"
-          className="rounded-lg bg-[#C2410C] px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#9A3412] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#C2410C] transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-trend-orange px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? (

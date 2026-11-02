@@ -120,7 +120,7 @@ export function AssetBoard({
 
       {/* B. Simulation notice */}
       {board?.is_heuristic && (
-        <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        <div className="flex gap-3 rounded-xl border border-warning/30 bg-warning-soft p-4 text-sm text-warning">
           <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden />
           <div className="space-y-1">
             <p className="font-semibold">Traitement simulé</p>
@@ -164,7 +164,7 @@ export function AssetBoard({
           <button
             type="button"
             onClick={onReload}
-            className={`min-h-11 rounded-lg border border-line px-4 font-semibold hover:bg-zinc-50 ${focusRing}`}
+            className={`min-h-11 rounded-lg border border-line px-4 font-semibold hover:bg-studio-surface ${focusRing}`}
           >
             Réessayer
           </button>
@@ -178,9 +178,9 @@ export function AssetBoard({
               aria-hidden
               className="flex items-center gap-4 rounded-xl border border-line p-5"
             >
-              <div className="h-4 w-20 rounded bg-zinc-100" />
-              <div className="size-22 rounded-lg bg-zinc-100" />
-              <div className="h-4 flex-1 rounded bg-zinc-100" />
+              <div className="h-4 w-20 rounded bg-studio-raised" />
+              <div className="size-22 rounded-lg bg-studio-raised" />
+              <div className="h-4 flex-1 rounded bg-studio-raised" />
             </div>
           ))}
         </div>
