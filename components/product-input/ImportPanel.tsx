@@ -9,8 +9,8 @@ import { ProductDraft } from './use-product-draft';
 
 const MODES: { id: ImportMode; label: string; short: string; icon: typeof Upload }[] = [
   { id: 'upload', label: 'Photos', short: 'Photos', icon: ImagePlus },
-  { id: 'url', label: 'Lien produit', short: 'Lien', icon: Link2 },
-  { id: 'manual', label: 'Saisie manuelle', short: 'À la main', icon: PenLine },
+  { id: 'url', label: 'Product link', short: 'Link', icon: Link2 },
+  { id: 'manual', label: 'Type it in', short: 'Manual', icon: PenLine },
 ];
 
 export const inputClass =
@@ -49,17 +49,17 @@ export function ImportPanel({
   return (
     <section aria-labelledby="import-title" className="space-y-5">
       <div>
-        <h2 id="import-title" className="text-xl font-bold text-ink">
-          Point de départ
+        <h2 id="import-title" className="text-lg font-semibold text-ink">
+          <span className="mr-2 text-trend-orange-strong tabular-nums">1</span>Start from
         </h2>
         <p className="mt-1 text-[15px] text-ink-muted">
-          Choisissez comment commencer. Tout reste modifiable dans la fiche.
+          Pick how to begin. Everything stays editable in the sheet.
         </p>
       </div>
 
       <div
         role="tablist"
-        aria-label="Mode d'import"
+        aria-label="Import mode"
         className="grid grid-cols-3 gap-1 rounded-xl bg-cream p-1"
       >
         {MODES.map((m, i) => {
@@ -137,13 +137,11 @@ export function ImportPanel({
           >
             <Upload className="size-6 text-trend-orange" aria-hidden />
             <span className="text-[15px] font-semibold text-ink">
-              {dragging ? 'Déposez pour ajouter' : 'Choisir des photos'}
+              {dragging ? 'Drop to add' : 'Choose photos'}
             </span>
-            <span className="text-sm text-ink-muted">
-              ou glissez-les ici depuis votre ordinateur
-            </span>
+            <span className="text-sm text-ink-muted">or drag them here from your computer</span>
             <span id="upload-rules" className="text-sm text-ink-muted">
-              JPEG, PNG ou WebP · 10 Mo maximum par photo
+              JPEG, PNG or WebP · 10 MB max per photo
             </span>
           </button>
         )}
@@ -159,7 +157,7 @@ export function ImportPanel({
               className="space-y-2"
             >
               <label htmlFor="product-url" className="block text-sm font-semibold text-ink">
-                Lien de la page produit
+                Product page link
               </label>
               <div className="flex flex-col gap-2 sm:flex-row">
                 <input
@@ -169,7 +167,7 @@ export function ImportPanel({
                   autoComplete="off"
                   value={draft.url}
                   onChange={(e) => draft.setUrl(e.target.value)}
-                  placeholder="https://www.amazon.fr/…"
+                  placeholder="https://www.amazon.com/…"
                   aria-invalid={!!draft.urlError}
                   aria-describedby={draft.urlError ? 'url-error url-hint' : 'url-hint'}
                   className={inputClass}
@@ -185,10 +183,10 @@ export function ImportPanel({
                         className="size-4 animate-spin motion-reduce:animate-none"
                         aria-hidden
                       />
-                      Import…
+                      Importing…
                     </>
                   ) : (
-                    'Importer'
+                    'Import'
                   )}
                 </button>
               </div>
@@ -198,8 +196,8 @@ export function ImportPanel({
                 </p>
               )}
               <p id="url-hint" className="text-sm text-ink-muted">
-                Amazon, AliExpress, Alibaba, Shopify, eBay, Etsy et Walmart sont lus en détail. Les
-                autres boutiques passent par un lecteur générique, parfois avec moins d&apos;infos.
+                Amazon, AliExpress, Alibaba, Shopify, eBay, Etsy and Walmart are read in detail.
+                Other stores go through a generic reader, sometimes with less detail.
               </p>
             </form>
 
@@ -210,7 +208,7 @@ export function ImportPanel({
                     className="size-4 animate-spin text-trend-orange motion-reduce:animate-none"
                     aria-hidden
                   />
-                  Lecture de la page… cela peut prendre quelques secondes.
+                  Reading the page… this can take a few seconds.
                 </p>
               )}
               {extract.state === 'error' && (
@@ -220,7 +218,7 @@ export function ImportPanel({
                 >
                   <AlertCircle className="mt-0.5 size-4 shrink-0 text-danger" aria-hidden />
                   <div className="space-y-2">
-                    <p className="font-semibold text-ink">Import impossible</p>
+                    <p className="font-semibold text-ink">Import failed</p>
                     <p className="text-ink">{extract.error}</p>
                     <div className="flex flex-wrap gap-2">
                       <button
@@ -228,7 +226,7 @@ export function ImportPanel({
                         onClick={() => void draft.runExtract()}
                         className={secondaryButton}
                       >
-                        Réessayer
+                        Try again
                       </button>
                       <button
                         type="button"
@@ -238,7 +236,7 @@ export function ImportPanel({
                         }}
                         className={secondaryButton}
                       >
-                        Remplir à la main
+                        Fill it in by hand
                       </button>
                     </div>
                   </div>
@@ -261,11 +259,11 @@ export function ImportPanel({
         {mode === 'manual' && (
           <div className="space-y-3 rounded-xl bg-cream p-4 text-[15px] text-ink">
             <p>
-              Remplissez la fiche produit. Le nom et une courte description suffisent pour continuer
-              ; des photos donnent une meilleure publicité.
+              Fill in the product sheet. A name and a short description are enough to continue;
+              photos make a better ad.
             </p>
             <button type="button" onClick={onStartManual} className={secondaryButton}>
-              Commencer par le nom
+              Start with the name
             </button>
           </div>
         )}
@@ -293,7 +291,7 @@ export function ImportPanel({
 
       <p className="flex items-center gap-2 text-sm text-ink-muted">
         <Store className="size-4 shrink-0" aria-hidden />
-        Import depuis votre boutique Shopify ou WooCommerce : bientôt disponible.
+        Import from your Shopify or WooCommerce store: coming soon.
       </p>
     </section>
   );

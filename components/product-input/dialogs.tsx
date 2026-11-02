@@ -48,7 +48,7 @@ export function Lightbox({
   return (
     <dialog
       ref={ref}
-      aria-label="Photos du produit"
+      aria-label="Product photos"
       onKeyDown={(e) => {
         if (e.key === 'ArrowLeft') go(-1);
         if (e.key === 'ArrowRight') go(1);
@@ -60,8 +60,8 @@ export function Lightbox({
         <div className="mx-auto flex h-full max-w-6xl flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-sm tabular-nums" aria-live="polite">
-              Photo {index + 1} sur {n}
-              {index === 0 && ' · couverture'}
+              Photo {index + 1} of {n}
+              {index === 0 && ' · cover'}
             </p>
             <div className="flex items-center gap-1">
               {index !== 0 && (
@@ -71,7 +71,7 @@ export function Lightbox({
                   className="inline-flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold hover:bg-white/15 focus-visible:outline-2 focus-visible:outline-white"
                 >
                   <Star className="size-4 text-trend-gold" aria-hidden />
-                  Utiliser en couverture
+                  Use as cover
                 </button>
               )}
               <a
@@ -79,7 +79,7 @@ export function Lightbox({
                 target="_blank"
                 rel="noopener noreferrer"
                 className={iconButton}
-                aria-label="Ouvrir l'original dans un nouvel onglet"
+                aria-label="Open the original in a new tab"
               >
                 <ExternalLink className="size-5" aria-hidden />
               </a>
@@ -87,7 +87,7 @@ export function Lightbox({
                 type="button"
                 onClick={onClose}
                 className={iconButton}
-                aria-label="Fermer"
+                aria-label="Close"
                 autoFocus
               >
                 <X className="size-5" aria-hidden />
@@ -110,7 +110,7 @@ export function Lightbox({
                   type="button"
                   onClick={() => go(-1)}
                   className={`${iconButton} absolute left-0 top-1/2 -translate-y-1/2 bg-ink/60`}
-                  aria-label="Photo précédente"
+                  aria-label="Previous photo"
                 >
                   <ChevronLeft className="size-6" aria-hidden />
                 </button>
@@ -118,7 +118,7 @@ export function Lightbox({
                   type="button"
                   onClick={() => go(1)}
                   className={`${iconButton} absolute right-0 top-1/2 -translate-y-1/2 bg-ink/60`}
-                  aria-label="Photo suivante"
+                  aria-label="Next photo"
                 >
                   <ChevronRight className="size-6" aria-hidden />
                 </button>
@@ -133,7 +133,7 @@ export function Lightbox({
                   key={t.id}
                   type="button"
                   onClick={() => onIndex(i)}
-                  aria-label={`Afficher la photo ${i + 1}`}
+                  aria-label={`Show photo ${i + 1}`}
                   aria-current={i === index ? 'true' : undefined}
                   className={`relative size-14 shrink-0 overflow-hidden rounded-md outline-offset-2 focus-visible:outline-2 focus-visible:outline-white ${
                     i === index ? 'ring-2 ring-trend-orange' : 'opacity-60 hover:opacity-100'
@@ -168,28 +168,25 @@ export function GuideDialog({ open, onClose }: { open: boolean; onClose: () => v
     >
       <div className="p-6">
         <h2 id="guide-title" className="text-xl font-bold">
-          Préparer une bonne fiche produit
+          Writing a good product sheet
         </h2>
         <ul className="mt-4 space-y-4 text-[15px] leading-relaxed">
           <li>
-            <p className="font-semibold">Des photos nettes</p>
+            <p className="font-semibold">Sharp photos</p>
             <p className="text-ink-muted">
-              Le produit seul sur fond simple, puis en situation. La première photo sert de
-              couverture.
+              The product alone on a plain background, then in use. The first photo is the cover.
             </p>
           </li>
           <li>
-            <p className="font-semibold">Une description factuelle</p>
+            <p className="font-semibold">A factual description</p>
             <p className="text-ink-muted">
-              Matière, taille, usage, ce qui est inclus. L&apos;analyse sépare les faits vérifiés
-              des hypothèses marketing : plus la description est précise, plus elle a de faits.
+              Material, size, use, what is included. The analysis separates verified facts from
+              marketing guesses: the more precise the description, the more facts it has.
             </p>
           </li>
           <li>
-            <p className="font-semibold">Des points forts concrets</p>
-            <p className="text-ink-muted">
-              « Se recharge en 2 h » plutôt que « Excellente qualité ».
-            </p>
+            <p className="font-semibold">Concrete benefits</p>
+            <p className="text-ink-muted">“Charges in 2 h” rather than “Excellent quality”.</p>
           </li>
         </ul>
         <div className="mt-6 flex justify-end">
@@ -199,7 +196,7 @@ export function GuideDialog({ open, onClose }: { open: boolean; onClose: () => v
             autoFocus
             className="inline-flex min-h-11 items-center rounded-lg bg-trend-orange px-5 text-sm font-semibold text-white hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
           >
-            Compris
+            Got it
           </button>
         </div>
       </div>

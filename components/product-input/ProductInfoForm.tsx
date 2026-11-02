@@ -10,7 +10,7 @@ import { ProductDraft } from './use-product-draft';
 function ImportedTag({ id }: { id: string }) {
   return (
     <span id={id} className="rounded bg-info/10 px-1.5 py-0.5 text-xs font-semibold text-info">
-      Importé · à relire
+      Imported · review
     </span>
   );
 }
@@ -19,7 +19,7 @@ function Counter({ value, max, id }: { value: number; max: number; id?: string }
   return (
     <span
       id={id}
-      className={`text-xs tabular-nums ${value > max ? 'text-danger' : 'text-ink-muted'}`}
+      className={`shrink-0 whitespace-nowrap text-xs tabular-nums ${value > max ? 'text-danger' : 'text-ink-muted'}`}
     >
       {value} / {max}
     </span>
@@ -39,7 +39,7 @@ function Field({
 }: {
   id: string;
   label: string;
-  /** true: obligatoire, false: facultatif, omitted: no mention (inside an optional group). */
+  /** true: required, false: optional, omitted: no mention (inside an optional group). */
   required?: boolean;
   importedMark?: boolean;
   hint?: string;
@@ -54,7 +54,7 @@ function Field({
           {label}{' '}
           {required !== undefined && (
             <span className="font-normal text-ink-muted">
-              {required ? '(obligatoire)' : '(facultatif)'}
+              {required ? '(required)' : '(optional)'}
             </span>
           )}
         </label>
@@ -84,7 +84,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
   const hasImportedDetail = is('price') || is('brand') || is('category') || is('currency');
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [autoOpened, setAutoOpened] = useState(false);
-  // Open "Prix et détails" once when an import fills it, so imported values are seen.
+  // Open "Price and details" once when an import fills it, so imported values are seen.
   if (hasImportedDetail && !autoOpened) {
     setAutoOpened(true);
     setDetailsOpen(true);
@@ -114,23 +114,22 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
   return (
     <section aria-labelledby="sheet-title" className="space-y-5">
       <div>
-        <h2 id="sheet-title" className="text-xl font-bold text-ink">
-          Fiche produit
+        <h2 id="sheet-title" className="text-lg font-semibold text-ink">
+          <span className="mr-2 text-trend-orange-strong tabular-nums">2</span>Product sheet
         </h2>
         <p className="mt-1 text-[15px] text-ink-muted">
-          C&apos;est ce que l&apos;analyse lira.
-          {imported.size > 0 &&
-            ' Les champs marqués « Importé » viennent de la page source : relisez-les.'}
+          This is what the analysis reads.
+          {imported.size > 0 && ' Fields marked “Imported” come from the source page: review them.'}
         </p>
       </div>
 
       <Field
         id="product-title"
-        label="Nom du produit"
+        label="Product name"
         required
         importedMark={is('title')}
         error={titleErr}
-        hint="Le nom tel que vos clients le cherchent."
+        hint="The name your customers search for."
         counter={<Counter value={fields.title.length} max={LIMITS.title} />}
       >
         <input
@@ -140,7 +139,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
           maxLength={LIMITS.title}
           onChange={(e) => setField('title', e.target.value)}
           onBlur={() => touch('title')}
-          placeholder="Ex. : Mixeur portable rechargeable"
+          placeholder="e.g. Rechargeable portable blender"
           required
           aria-invalid={!!titleErr}
           aria-describedby={describe('product-title', is('title'))}
@@ -154,7 +153,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
         required
         importedMark={is('description')}
         error={descErr}
-        hint={`Au moins ${LIMITS.descriptionMin} caractères : matière, usage, ce qui le distingue.`}
+        hint={`At least ${LIMITS.descriptionMin} characters: material, use, what sets it apart.`}
         counter={<Counter value={fields.description.length} max={LIMITS.description} />}
       >
         <textarea
@@ -164,7 +163,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
           maxLength={LIMITS.description}
           onChange={(e) => setField('description', e.target.value)}
           onBlur={() => touch('description')}
-          placeholder="Ex. : Mixeur USB de 380 ml pour smoothies, se recharge en 2 h, lame inox amovible."
+          placeholder="e.g. 380 ml USB blender for smoothies, charges in 2 h, removable steel blade."
           required
           aria-invalid={!!descErr}
           aria-describedby={describe('product-description', is('description'))}
@@ -174,14 +173,14 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
 
       <Field
         id="product-benefits"
-        label="Points forts"
+        label="Key benefits"
         required={false}
         importedMark={is('benefits')}
-        hint="Appuyez sur Entrée pour ajouter. Concret : « Se recharge en 2 h »."
+        hint="Press Enter to add. Be concrete: “Charges in 2 h”."
         counter={<Counter value={benefits.length} max={LIMITS.benefits} />}
       >
         {benefits.length > 0 && (
-          <ul className="flex flex-wrap gap-1.5" aria-label="Points forts ajoutés">
+          <ul className="flex flex-wrap gap-1.5" aria-label="Added benefits">
             {benefits.map((b) => (
               <li
                 key={b}
@@ -191,7 +190,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
                 <button
                   type="button"
                   onClick={() => changeBenefits(benefits.filter((x) => x !== b))}
-                  aria-label={`Retirer « ${b} »`}
+                  aria-label={`Remove “${b}”`}
                   className="flex size-7 shrink-0 items-center justify-center rounded-md text-ink-muted hover:bg-white hover:text-ink focus-visible:outline-2 focus-visible:outline-trend-orange"
                 >
                   <X className="size-3.5" aria-hidden />
@@ -216,7 +215,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
                 changeBenefits(benefits.slice(0, -1));
               }
             }}
-            placeholder={benefits.length >= LIMITS.benefits ? 'Maximum atteint' : 'Ex. : Sans BPA'}
+            placeholder={benefits.length >= LIMITS.benefits ? 'Limit reached' : 'e.g. BPA-free'}
             aria-describedby={describe('product-benefits', is('benefits'))}
             className={inputClass}
           />
@@ -227,16 +226,16 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
             className={`${secondaryButton} shrink-0 disabled:cursor-not-allowed disabled:text-ink-muted disabled:hover:border-line`}
           >
             <Plus className="size-4" aria-hidden />
-            <span>Ajouter</span>
+            <span>Add</span>
           </button>
         </div>
       </Field>
 
       <Field
         id="product-audience"
-        label="Audience visée"
+        label="Target audience"
         required={false}
-        hint="Indicatif : vous la préciserez dans la configuration créative."
+        hint="A first guess: you refine it in the creative setup."
       >
         <div className="relative">
           <select
@@ -246,7 +245,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
             aria-describedby="product-audience-msg"
             className={`${inputClass} appearance-none pr-10`}
           >
-            <option value="">Choisir une audience</option>
+            <option value="">Choose an audience</option>
             {AUDIENCES.map((a) => (
               <option key={a} value={a}>
                 {a}
@@ -267,7 +266,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
       >
         <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 rounded-xl px-4 text-sm font-semibold text-ink focus-visible:outline-2 focus-visible:outline-trend-orange [&::-webkit-details-marker]:hidden">
           <span>
-            Prix et détails <span className="font-normal text-ink-muted">(facultatif)</span>
+            Price and details <span className="font-normal text-ink-muted">(optional)</span>
             {summary && !detailsOpen && (
               <span className="ml-2 font-normal tabular-nums text-ink-muted">{summary}</span>
             )}
@@ -278,7 +277,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
           />
         </summary>
         <div className="grid grid-cols-1 gap-4 px-4 pb-4 sm:grid-cols-2">
-          <Field id="product-price" label="Prix" importedMark={is('price')} error={priceErr}>
+          <Field id="product-price" label="Price" importedMark={is('price')} error={priceErr}>
             <input
               id="product-price"
               type="text"
@@ -292,7 +291,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
               className={`${inputClass} tabular-nums`}
             />
           </Field>
-          <Field id="product-currency" label="Devise" importedMark={is('currency')}>
+          <Field id="product-currency" label="Currency" importedMark={is('currency')}>
             <div className="relative">
               <select
                 id="product-currency"
@@ -316,7 +315,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
               />
             </div>
           </Field>
-          <Field id="product-brand" label="Marque" importedMark={is('brand')}>
+          <Field id="product-brand" label="Brand" importedMark={is('brand')}>
             <input
               id="product-brand"
               aria-describedby={is('brand') ? 'product-brand-imported' : undefined}
@@ -324,11 +323,11 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
               value={fields.brand}
               maxLength={LIMITS.brand}
               onChange={(e) => setField('brand', e.target.value)}
-              placeholder="Ex. : Blendy"
+              placeholder="e.g. Blendy"
               className={inputClass}
             />
           </Field>
-          <Field id="product-category" label="Catégorie" importedMark={is('category')}>
+          <Field id="product-category" label="Category" importedMark={is('category')}>
             <input
               id="product-category"
               aria-describedby={is('category') ? 'product-category-imported' : undefined}
@@ -336,7 +335,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
               value={fields.category}
               maxLength={LIMITS.category}
               onChange={(e) => setField('category', e.target.value)}
-              placeholder="Ex. : Cuisine"
+              placeholder="e.g. Kitchen"
               className={inputClass}
             />
           </Field>

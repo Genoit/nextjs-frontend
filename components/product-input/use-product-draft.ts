@@ -98,10 +98,7 @@ export function useProductDraft() {
         })
         .catch((e: unknown) => {
           setImages((prev) => prev.filter((img) => img.id !== id));
-          setUploadErrors((prev) => [
-            ...prev,
-            messageOf(e, `${file.name} : échec du téléversement.`),
-          ]);
+          setUploadErrors((prev) => [...prev, messageOf(e, `${file.name}: upload failed.`)]);
         })
         .finally(() => {
           URL.revokeObjectURL(previewUrl);
@@ -124,7 +121,7 @@ export function useProductDraft() {
   const runExtract = async () => {
     const target = url.trim();
     if (!isValidEcommerceUrl(target)) {
-      setUrlError('Collez un lien complet qui commence par https://');
+      setUrlError('Paste a full link that starts with https://');
       return;
     }
     setUrlError(null);
@@ -163,13 +160,13 @@ export function useProductDraft() {
         ...urls.map((u, i) => ({
           id: `imp-${Date.now()}-${i}`,
           url: u,
-          alt: p.title || 'Photo du produit',
+          alt: p.title || 'Product photo',
           origin: 'import' as const,
         })),
       ]);
       setExtract({ state: 'done' });
     } catch (e: unknown) {
-      setExtract({ state: 'error', error: messageOf(e, 'Impossible de lire cette page produit.') });
+      setExtract({ state: 'error', error: messageOf(e, 'This product page could not be read.') });
     }
   };
 
@@ -234,7 +231,7 @@ export function useProductDraft() {
       setSave({ state: 'done' });
       return created.id;
     } catch (e: unknown) {
-      setSave({ state: 'error', error: messageOf(e, "L'enregistrement a échoué. Réessayez.") });
+      setSave({ state: 'error', error: messageOf(e, 'Saving failed. Try again.') });
       return null;
     }
   };

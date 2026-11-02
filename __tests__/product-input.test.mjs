@@ -3,7 +3,7 @@ import assert from 'node:assert';
 import {
   MAX_IMAGE_BYTES,
   bulletsToBenefits,
-  frenchList,
+  listText,
   imageFileError,
   nextStepHref,
   previewImageUrls,
@@ -36,17 +36,17 @@ describe('product input rules', () => {
     );
     assert.ok(r.errors.title && r.errors.description && r.errors.price);
     assert.deepStrictEqual(r.blocking, [
-      'le nom',
-      'la description',
-      'un prix valide',
-      'la fin du téléversement des photos',
+      'the name',
+      'the description',
+      'a valid price',
+      'photo uploads to finish',
     ]);
   });
 
   it('only recommends photos, benefits and audience', () => {
     const r = validateDraft(draft({ imageCount: 0, benefitCount: 0, audience: '' }));
     assert.deepStrictEqual(r.blocking, []);
-    assert.deepStrictEqual(r.recommended, ['une photo', 'des points forts', "l'audience"]);
+    assert.deepStrictEqual(r.recommended, ['a photo', 'key benefits', 'the audience']);
   });
 
   it('rejects wrong type and oversize images', () => {
@@ -76,9 +76,9 @@ describe('product input rules', () => {
     assert.deepStrictEqual(bulletsToBenefits(null), []);
   });
 
-  it('formats French lists and the next-step link', () => {
-    assert.strictEqual(frenchList(['a', 'b', 'c']), 'a, b et c');
-    assert.strictEqual(frenchList(['a']), 'a');
+  it('formats lists and the next-step link', () => {
+    assert.strictEqual(listText(['a', 'b', 'c']), 'a, b and c');
+    assert.strictEqual(listText(['a']), 'a');
     assert.strictEqual(nextStepHref('p 1'), '/products/p%201/creative');
   });
 });

@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { ExternalLink, Play, Star } from 'lucide-react';
 import { ProductPreview } from '../../lib/types/product';
-import { frenchList } from '../../lib/product-input-rules.mjs';
+import { listText } from '../../lib/product-input-rules.mjs';
 import { CustomerReviewItem } from './types';
 
 const linkButton =
@@ -17,9 +17,9 @@ const PLATFORM_NAMES: Record<string, string> = {
   ebay: 'eBay',
   etsy: 'Etsy',
   walmart: 'Walmart',
-  generic: 'la page',
-  unknown: 'la page',
-  other: 'la page',
+  generic: 'the page',
+  unknown: 'the page',
+  other: 'the page',
 };
 
 export function ExtractionPreview({
@@ -45,17 +45,17 @@ export function ExtractionPreview({
   const [showDesc, setShowDesc] = useState(false);
 
   const platform =
-    PLATFORM_NAMES[preview.source_platform?.toLowerCase()] ?? preview.source_platform ?? 'la page';
+    PLATFORM_NAMES[preview.source_platform?.toLowerCase()] ?? preview.source_platform ?? 'the page';
   const found = [
-    preview.title && 'nom',
+    preview.title && 'name',
     preview.description && 'description',
-    preview.price !== null && preview.price !== undefined && 'prix',
+    preview.price !== null && preview.price !== undefined && 'price',
     imageCount > 0 && `${imageCount} photo${imageCount > 1 ? 's' : ''}`,
   ].filter(Boolean) as string[];
   const missing = [
-    !preview.title && 'le nom',
-    !preview.description && 'la description',
-    imageCount === 0 && 'les photos',
+    !preview.title && 'the name',
+    !preview.description && 'the description',
+    imageCount === 0 && 'the photos',
   ].filter(Boolean) as string[];
   const partial = missing.length > 0 || preview.extraction_status === 'partial';
   const desc = preview.description ?? '';
@@ -64,40 +64,40 @@ export function ExtractionPreview({
     <div className="animate-rise space-y-4 rounded-xl bg-cream p-4 motion-reduce:animate-none">
       <div role="status" className="space-y-1">
         <p className="text-[15px] font-semibold text-ink">
-          {partial ? 'Import partiel' : 'Import réussi'} depuis {platform}
+          {partial ? 'Partial import' : 'Imported'} from {platform}
         </p>
         <p className="text-sm text-ink">
-          {found.length > 0 ? `Pré-rempli : ${frenchList(found)}. ` : ''}
-          Relisez les champs marqués « Importé » dans la fiche.
+          {found.length > 0 ? `Prefilled: ${listText(found)}. ` : ''}
+          Review the fields marked “Imported” in the sheet.
         </p>
         {missing.length > 0 && (
           <p className="text-sm text-ink">
-            Non trouvé sur la page : {frenchList(missing)}. Complétez à la main.
+            Not found on the page: {listText(missing)}. Fill it in by hand.
           </p>
         )}
         <button type="button" onClick={onReview} className={linkButton}>
-          Relire la fiche
+          Review the sheet
         </button>
       </div>
 
       <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
         {preview.price !== null && preview.price !== undefined && (
           <div>
-            <dt className="text-ink-muted">Prix affiché</dt>
+            <dt className="text-ink-muted">Listed price</dt>
             <dd className="font-semibold tabular-nums text-ink">
-              {Number(preview.price).toLocaleString('fr-FR')} {preview.currency ?? ''}
+              {Number(preview.price).toLocaleString('en-US')} {preview.currency ?? ''}
             </dd>
           </div>
         )}
         {preview.rating !== null && preview.rating !== undefined && (
           <div>
-            <dt className="text-ink-muted">Note</dt>
+            <dt className="text-ink-muted">Rating</dt>
             <dd className="flex items-center gap-1 font-semibold tabular-nums text-ink">
               <Star className="size-3.5 fill-trend-gold text-trend-gold" aria-hidden />
               {Number(preview.rating).toFixed(1)}
               {preview.reviews_count ? (
                 <span className="font-normal text-ink-muted">
-                  ({preview.reviews_count.toLocaleString('fr-FR')} avis)
+                  ({preview.reviews_count.toLocaleString('en-US')} reviews)
                 </span>
               ) : null}
             </dd>
@@ -105,9 +105,9 @@ export function ExtractionPreview({
         )}
         {preview.availability && preview.availability !== 'unknown' && (
           <div>
-            <dt className="text-ink-muted">Disponibilité</dt>
+            <dt className="text-ink-muted">Availability</dt>
             <dd className="font-semibold text-ink">
-              {preview.availability === 'in_stock' ? 'En stock' : preview.availability}
+              {preview.availability === 'in_stock' ? 'In stock' : preview.availability}
             </dd>
           </div>
         )}
@@ -124,7 +124,7 @@ export function ExtractionPreview({
           </p>
           {desc.length > 220 && (
             <button type="button" onClick={() => setShowDesc((v) => !v)} className={linkButton}>
-              {showDesc ? 'Réduire la description' : 'Lire la description complète'}
+              {showDesc ? 'Show less' : 'Read the full description'}
             </button>
           )}
         </div>
@@ -133,7 +133,7 @@ export function ExtractionPreview({
       {videos.length > 0 && (
         <div className="space-y-2">
           <p className="text-sm font-semibold text-ink">
-            Vidéos trouvées{' '}
+            Videos found{' '}
             <span className="font-normal tabular-nums text-ink-muted">({videos.length})</span>
           </p>
           {video && (
@@ -161,7 +161,7 @@ export function ExtractionPreview({
                   }`}
                 >
                   <Play className="size-3 fill-current" aria-hidden />
-                  Vidéo {i + 1}
+                  Video {i + 1}
                 </button>
               ))}
             </div>
@@ -178,14 +178,14 @@ export function ExtractionPreview({
             onClick={() => setShowReviews((v) => !v)}
             className={linkButton}
           >
-            {showReviews ? 'Masquer les avis' : `Lire les avis clients (${reviews.length})`}
+            {showReviews ? 'Hide reviews' : `Read customer reviews (${reviews.length})`}
           </button>
           {showReviews && (
             <ul id="extracted-reviews" className="max-h-72 space-y-2 overflow-y-auto pr-1">
               {reviews.map((r, i) => (
                 <li key={i} className="rounded-lg bg-white p-3 text-sm">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-ink">{r.author || 'Client'}</span>
+                    <span className="font-semibold text-ink">{r.author || 'Customer'}</span>
                     {typeof r.rating === 'number' && (
                       <span className="tabular-nums text-ink-muted">
                         {Math.min(5, Math.max(0, r.rating)).toFixed(1)} / 5
@@ -209,7 +209,7 @@ export function ExtractionPreview({
           rel="noopener noreferrer"
           className="inline-flex min-h-11 items-center gap-1.5 text-sm text-ink-muted hover:text-ink"
         >
-          Voir la page source
+          View the source page
           <ExternalLink className="size-3.5" aria-hidden />
         </a>
       )}

@@ -7,21 +7,18 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
-  ChevronRight,
-  Clapperboard,
   ImagePlus,
   Link2,
-  LogOut,
-  Menu,
+  ListChecks,
   Package,
-  Plus,
+  PenLine,
   RefreshCw,
   Search,
-  X,
+  Sparkles,
 } from 'lucide-react';
+import { AppShell } from '../../components/AppShell';
 import { StatusBadge, type StatusTone } from '../../components/StatusBadge';
 import ProtectedRoute from '../../components/ProtectedRoute';
-import { useAuth } from '../../lib/auth';
 import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
 import type { Product } from '../../lib/types/product';
@@ -65,15 +62,27 @@ async function loadStudio(): Promise<Load> {
   }
 }
 
-const NAV = [
-  { href: '/dashboard', label: 'Studio', icon: Clapperboard },
-  { href: '/products', label: 'Products', icon: Package },
-  { href: '/product-input', label: 'New ad', icon: Plus },
-];
-
 const NOT_A_STORE = new Set(['null', 'unknown', 'generic', 'manual', 'custom', 'other']);
 
 const PIPELINE = ['Product sheet', 'Strategy', 'Storyboard', 'Shots', 'Final cut'];
+
+const FIRST_STEPS = [
+  {
+    title: 'Paste the product link',
+    body: 'TrendED reads the page and keeps facts apart from guesses.',
+    icon: Link2,
+  },
+  {
+    title: 'Pick the angle',
+    body: 'Choose the hook and the audience, then review the storyboard.',
+    icon: ListChecks,
+  },
+  {
+    title: 'Get the 9:16 video',
+    body: 'Shots are rendered, checked, and cut for TikTok, Reels and Shorts.',
+    icon: Sparkles,
+  },
+];
 
 function priceText(p: Product) {
   if (p.price === null || p.price === undefined) return null;
@@ -111,69 +120,40 @@ function Thumb({ product, className }: { product: Product; className: string }) 
   );
 }
 
-function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const { user, logout } = useAuth();
-  const name = user ? `${user.first_name} ${user.last_name}`.trim() : '';
-  return (
-    <div className="flex h-full flex-col justify-between">
-      <div>
-        <Link
-          href="/dashboard"
-          onClick={onNavigate}
-          className="flex h-16 items-center gap-2.5 px-5 focus-visible:outline-2 focus-visible:outline-trend-orange"
-        >
-          <Image src="/symbol.png" alt="" width={26} height={26} className="object-contain" />
-          <span className="text-[17px] font-semibold tracking-tight text-studio-text">TrendED</span>
-        </Link>
-        <nav aria-label="Main" className="mt-3 space-y-0.5 px-3">
-          {NAV.map(({ href, label, icon: Icon }) => {
-            const active = href === '/dashboard';
-            return (
-              <Link
-                key={href}
-                href={href}
-                onClick={onNavigate}
-                aria-current={active ? 'page' : undefined}
-                className={`flex h-9 items-center gap-2.5 rounded-lg px-2.5 text-sm transition-colors focus-visible:outline-2 focus-visible:outline-trend-orange ${
-                  active
-                    ? 'bg-studio-raised text-studio-text'
-                    : 'text-studio-muted hover:bg-studio-surface hover:text-studio-text'
-                }`}
-              >
-                <Icon className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+// Illustrates how every ad is cut; not a generated result, so it carries no product data.
+const AD_BEATS = [
+  { beat: 'Hook', time: '0–2 s', tone: 'bg-trend-orange' },
+  { beat: 'Problem', time: '2–5 s', tone: 'bg-stage-text/30' },
+  { beat: 'Product', time: '5–10 s', tone: 'bg-trend-gold' },
+  { beat: 'Proof', time: '10–13 s', tone: 'bg-stage-text/30' },
+  { beat: 'Call to action', time: '13–15 s', tone: 'bg-trend-orange' },
+];
 
-      <div className="border-t border-studio-rule p-3">
-        <div className="flex items-center gap-2.5 px-2 py-2">
-          <span
-            aria-hidden
-            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-studio-raised text-xs font-semibold text-studio-text"
-          >
-            {(user?.first_name?.[0] || user?.email?.[0] || '?').toUpperCase()}
-          </span>
-          <div className="min-w-0">
-            <p className="truncate text-sm text-studio-text">{name || 'Your account'}</p>
-            <p className="truncate text-xs text-studio-meta">{user?.email}</p>
-          </div>
+function AdAnatomy() {
+  return (
+    <figure className="hidden lg:block" aria-labelledby="anatomy-caption">
+      <div className="mx-auto flex aspect-[9/16] w-[220px] flex-col justify-between rounded-[28px] bg-stage p-4 text-stage-text shadow-[0_24px_60px_-24px_rgba(28,25,23,0.55)]">
+        <div className="flex items-center justify-between text-[11px] text-stage-text/70">
+          <span className="font-semibold tracking-wide text-stage-text">9:16</span>
+          <span>15 s</span>
         </div>
-        <button
-          type="button"
-          onClick={() => {
-            onNavigate?.();
-            logout();
-          }}
-          className="mt-1 flex h-9 w-full items-center gap-2.5 rounded-lg px-2.5 text-sm text-studio-muted transition-colors hover:bg-studio-surface hover:text-studio-text focus-visible:outline-2 focus-visible:outline-trend-orange"
-        >
-          <LogOut className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-          Sign out
-        </button>
+        <ol className="space-y-2">
+          {AD_BEATS.map(({ beat, time, tone }) => (
+            <li key={beat} className="flex items-center gap-2.5">
+              <span aria-hidden className={`h-8 w-1 shrink-0 rounded-full ${tone}`} />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[13px] font-medium leading-tight">{beat}</span>
+                <span className="block text-[11px] tabular-nums text-stage-text/60">{time}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
+        <p className="text-[11px] leading-snug text-stage-text/60">TikTok · Reels · Shorts</p>
       </div>
-    </div>
+      <figcaption id="anatomy-caption" className="mt-3 text-center text-xs text-studio-meta">
+        How every ad is cut
+      </figcaption>
+    </figure>
   );
 }
 
@@ -185,68 +165,92 @@ function Composer() {
     router.push(createHref(link));
   };
   return (
-    <section aria-labelledby="studio-title" className="rounded-2xl bg-cream p-5 sm:p-7">
-      <h1
-        id="studio-title"
-        className="font-editorial text-[34px] leading-[1.05] tracking-[-0.01em] text-balance text-studio-text sm:text-[46px]"
-      >
-        Turn a product into a video ad
-      </h1>
-      <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-studio-muted">
-        Paste the product page. TrendED reads it, separates facts from guesses, and builds the ad
-        shot by shot.
-      </p>
-
-      <form onSubmit={submit} className="mt-6 flex flex-col gap-3 sm:flex-row">
-        <label htmlFor="product-link" className="sr-only">
-          Product link
-        </label>
-        <div className="relative flex-1">
-          <Link2
-            className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-studio-meta"
-            strokeWidth={1.75}
-            aria-hidden
-          />
-          <input
-            id="product-link"
-            type="url"
-            inputMode="url"
-            autoComplete="off"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            placeholder="https://store.com/products/your-product"
-            className="h-14 w-full rounded-xl bg-white pl-12 pr-4 text-base text-studio-text caret-trend-orange outline-none ring-1 ring-[#f3e3c3] transition placeholder:text-studio-meta focus:ring-trend-orange"
-          />
-        </div>
-        <button
-          type="submit"
-          className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-trend-orange px-6 text-[15px] font-semibold text-white transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
+    <section
+      aria-labelledby="studio-title"
+      className="grid items-center gap-8 overflow-hidden rounded-3xl bg-cream p-5 sm:p-8 lg:grid-cols-[1fr_240px] lg:gap-12 lg:p-10"
+    >
+      <div className="min-w-0">
+        <p className="text-sm font-medium text-trend-orange-strong">Studio</p>
+        <h1
+          id="studio-title"
+          className="mt-2 font-editorial text-[38px] leading-[1.02] tracking-[-0.01em] text-balance text-studio-text sm:text-[52px]"
         >
-          Create ad
-          <ArrowRight className="h-4 w-4" aria-hidden />
-        </button>
-      </form>
+          Turn a product into a video ad
+        </h1>
+        <p className="mt-4 max-w-xl text-[15px] leading-relaxed text-studio-muted sm:text-base">
+          Paste the product page. TrendED reads it, separates facts from guesses, and builds the ad
+          shot by shot.
+        </p>
 
-      <div className="mt-5 flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+        <form onSubmit={submit} className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <label htmlFor="product-link" className="sr-only">
+            Product link
+          </label>
+          <div className="relative flex-1">
+            <Link2
+              className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-studio-meta"
+              strokeWidth={1.75}
+              aria-hidden
+            />
+            <input
+              id="product-link"
+              type="url"
+              inputMode="url"
+              autoComplete="off"
+              value={link}
+              onChange={(e) => setLink(e.target.value)}
+              placeholder="https://store.com/products/your-product"
+              className="h-14 w-full rounded-xl bg-white pl-12 pr-4 text-base text-studio-text caret-trend-orange shadow-sm outline-none ring-1 ring-line transition placeholder:text-studio-meta focus:ring-2 focus:ring-trend-orange"
+            />
+          </div>
+          <button
+            type="submit"
+            className="flex h-14 shrink-0 items-center justify-center gap-2 rounded-xl bg-trend-orange px-7 text-[15px] font-semibold text-white shadow-sm transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
+          >
+            Create ad
+            <ArrowRight className="h-4 w-4" aria-hidden />
+          </button>
+        </form>
+
+        <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm">
+          <Link
+            href="/product-input"
+            className="inline-flex min-h-11 items-center gap-1.5 text-studio-muted underline-offset-4 transition-colors hover:text-studio-text hover:underline"
+          >
+            <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            No link? Start from photos
+          </Link>
+          <Link
+            href="/product-input?mode=manual"
+            className="inline-flex min-h-11 items-center gap-1.5 text-studio-muted underline-offset-4 transition-colors hover:text-studio-text hover:underline"
+          >
+            <PenLine className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+            Type it in
+          </Link>
+        </div>
+
         <ol
-          className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-studio-meta"
+          className="mt-5 flex flex-wrap gap-2 border-t border-trend-gold/25 pt-5"
           aria-label="What happens next"
         >
           {PIPELINE.map((step, i) => (
-            <li key={step} className="flex items-center gap-1.5">
-              {i > 0 && <ChevronRight className="h-3.5 w-3.5" aria-hidden />}
-              <span>{step}</span>
+            <li
+              key={step}
+              className="inline-flex items-center gap-2 rounded-full bg-white/70 py-1 pl-1 pr-3 text-sm text-studio-muted"
+            >
+              <span
+                aria-hidden
+                className="flex size-6 items-center justify-center rounded-full bg-white text-xs font-semibold tabular-nums text-trend-orange-strong"
+              >
+                {i + 1}
+              </span>
+              {step}
             </li>
           ))}
         </ol>
-        <Link
-          href="/product-input"
-          className="inline-flex items-center gap-1.5 text-studio-muted underline-offset-4 transition-colors hover:text-studio-text hover:underline"
-        >
-          <ImagePlus className="h-4 w-4" strokeWidth={1.75} aria-hidden />
-          No link? Start from photos
-        </Link>
       </div>
+
+      <AdAnatomy />
     </section>
   );
 }
@@ -422,11 +426,28 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
       )}
 
       {load.state === 'ready' && load.entries.length === 0 && (
-        <div className="mt-4 rounded-2xl bg-studio-surface px-5 py-10 text-center">
-          <p className="text-[15px] text-studio-text">No products yet.</p>
-          <p className="mt-1 text-sm text-studio-muted">
-            Paste a product link above and your first ad starts here.
-          </p>
+        <div className="mt-4 rounded-2xl border border-dashed border-studio-rule p-5 sm:p-6">
+          <p className="text-[15px] font-medium text-studio-text">No products yet</p>
+          <p className="mt-1 text-sm text-studio-muted">Your first ad takes three steps.</p>
+          <ol className="mt-5 grid gap-3 md:grid-cols-3">
+            {FIRST_STEPS.map(({ title, body, icon: Icon }, i) => (
+              <li key={title} className="rounded-xl bg-studio-surface p-4">
+                <div className="flex items-center gap-2">
+                  <span
+                    aria-hidden
+                    className="flex size-7 items-center justify-center rounded-full bg-cream text-trend-orange-strong"
+                  >
+                    <Icon className="h-4 w-4" strokeWidth={1.75} />
+                  </span>
+                  <span className="text-xs font-medium tabular-nums text-studio-meta">
+                    Step {i + 1}
+                  </span>
+                </div>
+                <p className="mt-3 text-sm font-medium text-studio-text">{title}</p>
+                <p className="mt-1 text-sm leading-relaxed text-studio-muted">{body}</p>
+              </li>
+            ))}
+          </ol>
         </div>
       )}
 
@@ -450,7 +471,6 @@ function Gallery({ load, query, retry }: { load: Load; query: string; retry: () 
 export default function DashboardPage() {
   const [load, setLoad] = useState<Load>({ state: 'loading' });
   const [query, setQuery] = useState('');
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -467,90 +487,45 @@ export default function DashboardPage() {
     loadStudio().then(setLoad);
   };
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setMenuOpen(false);
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [menuOpen]);
+  const topbar = (
+    <>
+      <div className="relative w-full max-w-md">
+        <label htmlFor="studio-search" className="sr-only">
+          Search recent products
+        </label>
+        <Search
+          className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-studio-meta"
+          aria-hidden
+        />
+        <input
+          id="studio-search"
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search recent products"
+          className="h-10 w-full rounded-lg bg-studio-surface pr-3 pl-9 text-sm text-studio-text outline-none ring-1 ring-studio-rule transition placeholder:text-studio-meta focus:ring-trend-orange"
+        />
+      </div>
+      <Link
+        href="/products"
+        className="ml-auto hidden h-10 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-studio-muted transition hover:bg-studio-surface hover:text-studio-text sm:inline-flex"
+      >
+        <Package className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+        My products
+      </Link>
+    </>
+  );
 
   return (
     <ProtectedRoute>
-      <div className="flex min-h-dvh bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange selection:text-white">
-        <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 border-r border-studio-rule lg:block">
-          <Sidebar />
-        </aside>
-
-        {menuOpen && (
-          <div
-            className="fixed inset-0 z-50 lg:hidden"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Menu"
-          >
-            <button
-              type="button"
-              aria-label="Close menu"
-              className="absolute inset-0 bg-black/70"
-              onClick={() => setMenuOpen(false)}
-            />
-            <div className="relative h-full w-[272px] bg-studio-ground shadow-2xl">
-              <button
-                type="button"
-                onClick={() => setMenuOpen(false)}
-                className="absolute top-4 right-3 rounded-lg p-2 text-studio-muted hover:bg-studio-surface hover:text-studio-text"
-                aria-label="Close menu"
-              >
-                <X className="h-5 w-5" aria-hidden />
-              </button>
-              <Sidebar onNavigate={() => setMenuOpen(false)} />
-            </div>
-          </div>
-        )}
-
-        <div className="flex min-w-0 flex-1 flex-col">
-          <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b border-studio-rule bg-studio-ground px-4 sm:px-6 lg:px-8">
-            <button
-              type="button"
-              onClick={() => setMenuOpen(true)}
-              className="-ml-1 rounded-lg p-2 text-studio-muted hover:bg-studio-surface hover:text-studio-text lg:hidden"
-              aria-label="Open menu"
-            >
-              <Menu className="h-5 w-5" aria-hidden />
-            </button>
-            <div className="relative w-full max-w-md">
-              <label htmlFor="studio-search" className="sr-only">
-                Search recent products
-              </label>
-              <Search
-                className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-studio-meta"
-                aria-hidden
-              />
-              <input
-                id="studio-search"
-                type="search"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Search recent products"
-                className="h-9 w-full rounded-lg bg-studio-surface pr-3 pl-9 text-sm text-studio-text outline-none ring-1 ring-transparent transition placeholder:text-studio-meta focus:ring-studio-muted"
-              />
-            </div>
-            <Link
-              href="/products"
-              className="ml-auto hidden h-9 shrink-0 items-center rounded-full bg-studio-text px-4 text-sm font-medium text-studio-ground transition hover:bg-black active:scale-[0.98] sm:inline-flex"
-            >
-              My products
-            </Link>
-          </header>
-
-          <main className="mx-auto w-full max-w-[1200px] space-y-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-            <Composer />
-            {load.state === 'ready' && load.entries.length > 0 && <Stats entries={load.entries} />}
-            {load.state === 'ready' && <Generating entries={load.entries} />}
-            <Gallery load={load} query={query} retry={retry} />
-          </main>
-        </div>
-      </div>
+      <AppShell active="/dashboard" topbar={topbar}>
+        <main className="mx-auto w-full max-w-[1200px] space-y-10 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+          <Composer />
+          {load.state === 'ready' && load.entries.length > 0 && <Stats entries={load.entries} />}
+          {load.state === 'ready' && <Generating entries={load.entries} />}
+          <Gallery load={load} query={query} retry={retry} />
+        </main>
+      </AppShell>
     </ProtectedRoute>
   );
 }
