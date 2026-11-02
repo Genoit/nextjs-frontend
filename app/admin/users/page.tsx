@@ -118,7 +118,7 @@ export default function AdminUsersPage() {
     <div className="space-y-5 relative">
       {/* Toast Alert */}
       {actionSuccessMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-emerald-600 text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
+        <div className="fixed top-5 right-5 z-50 bg-success text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
           <Check className="w-4 h-4" />
           <span>{actionSuccessMsg}</span>
         </div>
@@ -128,8 +128,8 @@ export default function AdminUsersPage() {
       {/* PAGE HEADER */}
       {/* ========================================================= */}
       <div>
-        <h1 className="text-2xl sm:text-[26px] font-bold tracking-tight text-zinc-900">Users</h1>
-        <p className="text-xs sm:text-sm text-zinc-500 mt-0.5">
+        <h1 className="text-2xl sm:text-[26px] font-bold tracking-tight text-ink">Users</h1>
+        <p className="text-xs sm:text-sm text-ink-muted mt-0.5">
           Manage user accounts, permissions and access across your TrendED organization.
         </p>
       </div>
@@ -141,13 +141,13 @@ export default function AdminUsersPage() {
         <div className="flex items-center gap-2.5 flex-1 max-w-md">
           {/* Search input */}
           <div className="relative flex-1">
-            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-400" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-ink-muted" />
             <input
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search users by name or email..."
-              className="w-full rounded-xl border border-zinc-200/90 bg-white py-2 pl-9 pr-3 text-xs text-zinc-900 placeholder-zinc-400 shadow-2xs focus:border-[#EA580C] focus:ring-1 focus:ring-[#EA580C] transition"
+              className="w-full rounded-xl border border-line/90 bg-white py-2 pl-9 pr-3 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
             />
           </div>
 
@@ -156,14 +156,14 @@ export default function AdminUsersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none bg-white border border-zinc-200/90 rounded-xl px-3.5 py-2 pr-8 text-xs font-medium text-zinc-700 shadow-2xs cursor-pointer hover:bg-zinc-50 focus:border-[#EA580C] transition"
+              className="appearance-none bg-white border border-line/90 rounded-xl px-3.5 py-2 pr-8 text-xs font-medium text-ink-soft shadow-2xs cursor-pointer hover:bg-studio-surface focus:border-trend-orange transition"
             >
               <option value="All status">All status</option>
               <option value="Active">Active</option>
               <option value="Suspended">Suspended</option>
               <option value="Pending">Pending</option>
             </select>
-            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-zinc-400" />
+            <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
           </div>
         </div>
 
@@ -171,9 +171,9 @@ export default function AdminUsersPage() {
         <button
           type="button"
           onClick={() => alert('Exporting users to CSV...')}
-          className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white rounded-xl border border-zinc-200/90 shadow-2xs hover:bg-zinc-50 text-xs font-semibold text-zinc-700 transition"
+          className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
         >
-          <Download className="w-3.5 h-3.5 text-zinc-500" />
+          <Download className="w-3.5 h-3.5 text-ink-muted" />
           <span>Export</span>
         </button>
       </div>
@@ -184,13 +184,13 @@ export default function AdminUsersPage() {
       <div className="flex gap-6 items-start">
         {/* USERS TABLE */}
         <div
-          className={`bg-white rounded-2xl border border-zinc-200/80 shadow-2xs overflow-hidden transition-all duration-300 ${
+          className={`bg-white rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
             drawerOpen && selectedUserDetail ? 'w-full lg:w-3/5' : 'w-full'
           }`}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#FAF9FB] border-b border-zinc-100 text-zinc-400 text-[11px] font-semibold uppercase tracking-wider select-none">
+              <thead className="bg-[#FAF9FB] border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
                 <tr>
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-3">Plan</th>
@@ -201,16 +201,16 @@ export default function AdminUsersPage() {
                   <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-100 font-normal">
+              <tbody className="divide-y divide-line font-normal">
                 {loading ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-400">
+                    <td colSpan={7} className="py-12 text-center text-ink-muted">
                       Loading users...
                     </td>
                   </tr>
                 ) : users.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-zinc-400">
+                    <td colSpan={7} className="py-12 text-center text-ink-muted">
                       No users match your criteria.
                     </td>
                   </tr>
@@ -221,26 +221,26 @@ export default function AdminUsersPage() {
                       <tr
                         key={user.id}
                         onClick={() => handleRowClick(user)}
-                        className={`hover:bg-zinc-50/80 cursor-pointer transition ${
-                          isSelected ? 'bg-orange-50/40' : ''
+                        className={`hover:bg-studio-surface/80 cursor-pointer transition ${
+                          isSelected ? 'bg-cream/40' : ''
                         }`}
                       >
                         {/* User info */}
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3 min-w-0">
-                            <div className="w-8 h-8 rounded-full bg-zinc-100 text-zinc-700 font-bold text-xs flex items-center justify-center shrink-0 border border-zinc-200/60">
+                            <div className="w-8 h-8 rounded-full bg-studio-raised text-ink-soft font-bold text-xs flex items-center justify-center shrink-0 border border-line/60">
                               {user.initials}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-semibold text-zinc-900 truncate">{user.name}</p>
-                              <p className="text-[11px] text-zinc-400 truncate">{user.email}</p>
+                              <p className="font-semibold text-ink truncate">{user.name}</p>
+                              <p className="text-[11px] text-ink-muted truncate">{user.email}</p>
                             </div>
                           </div>
                         </td>
 
                         {/* Plan */}
                         <td className="py-3 px-3">
-                          <span className="font-medium text-zinc-700">{user.plan}</span>
+                          <span className="font-medium text-ink-soft">{user.plan}</span>
                         </td>
 
                         {/* Status */}
@@ -248,19 +248,19 @@ export default function AdminUsersPage() {
                           <span
                             className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${
                               user.status === 'Active'
-                                ? 'bg-emerald-50 text-emerald-700'
+                                ? 'bg-success-soft text-success'
                                 : user.status === 'Suspended'
-                                  ? 'bg-rose-50 text-rose-700'
-                                  : 'bg-amber-50 text-amber-700'
+                                  ? 'bg-danger-soft text-danger'
+                                  : 'bg-warning-soft text-warning'
                             }`}
                           >
                             <span
                               className={`w-1.5 h-1.5 rounded-full ${
                                 user.status === 'Active'
-                                  ? 'bg-emerald-500'
+                                  ? 'bg-success'
                                   : user.status === 'Suspended'
-                                    ? 'bg-rose-500'
-                                    : 'bg-amber-500'
+                                    ? 'bg-danger'
+                                    : 'bg-warning'
                               }`}
                             />
                             {user.status}
@@ -269,19 +269,19 @@ export default function AdminUsersPage() {
 
                         {/* Store */}
                         <td className="py-3 px-3 hidden sm:table-cell">
-                          <span className="text-zinc-600 font-medium">{user.store}</span>
+                          <span className="text-ink-soft font-medium">{user.store}</span>
                         </td>
 
                         {/* Last activity */}
-                        <td className="py-3 px-3 hidden md:table-cell text-zinc-500 text-[11px]">
+                        <td className="py-3 px-3 hidden md:table-cell text-ink-muted text-[11px]">
                           <span className="flex items-center gap-1">
-                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
                             {user.last_activity}
                           </span>
                         </td>
 
                         {/* Created */}
-                        <td className="py-3 px-3 hidden lg:table-cell text-zinc-500 text-[11px]">
+                        <td className="py-3 px-3 hidden lg:table-cell text-ink-muted text-[11px]">
                           {user.created_at}
                         </td>
 
@@ -295,17 +295,17 @@ export default function AdminUsersPage() {
                             onClick={() =>
                               setActiveMenuId(activeMenuId === user.id ? null : user.id)
                             }
-                            className="p-1 rounded-lg text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
+                            className="p-1 rounded-lg text-ink-muted hover:text-ink-soft hover:bg-studio-raised"
                             aria-label="Actions"
                           >
                             <MoreHorizontal className="w-4 h-4" />
                           </button>
 
                           {activeMenuId === user.id && (
-                            <div className="absolute right-4 top-8 w-44 bg-white rounded-xl shadow-xl border border-zinc-200/90 py-1 z-30 animate-in fade-in">
+                            <div className="absolute right-4 top-8 w-44 bg-white rounded-xl shadow-xl border border-line/90 py-1 z-30 animate-in fade-in">
                               <Link
                                 href={`/admin/users/${user.id}`}
-                                className="block px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50 text-left"
+                                className="block px-3 py-1.5 text-xs text-ink-soft hover:bg-studio-surface text-left"
                               >
                                 View full details
                               </Link>
@@ -318,7 +318,7 @@ export default function AdminUsersPage() {
                                   );
                                   setActiveMenuId(null);
                                 }}
-                                className="w-full px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50 text-left"
+                                className="w-full px-3 py-1.5 text-xs text-ink-soft hover:bg-studio-surface text-left"
                               >
                                 {user.status === 'Active' ? 'Suspend account' : 'Activate account'}
                               </button>
@@ -328,7 +328,7 @@ export default function AdminUsersPage() {
                                   handleResetAccess(user.id);
                                   setActiveMenuId(null);
                                 }}
-                                className="w-full px-3 py-1.5 text-xs text-zinc-700 hover:bg-zinc-50 text-left"
+                                className="w-full px-3 py-1.5 text-xs text-ink-soft hover:bg-studio-surface text-left"
                               >
                                 Reset access
                               </button>
@@ -344,7 +344,7 @@ export default function AdminUsersPage() {
           </div>
 
           {/* Table Pagination */}
-          <div className="px-4 py-3 border-t border-zinc-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-zinc-500">
+          <div className="px-4 py-3 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-ink-muted">
             <div>
               Showing 1 to {Math.min(pageSize, users.length)} of {totalUsers} users
             </div>
@@ -354,7 +354,7 @@ export default function AdminUsersPage() {
                 type="button"
                 disabled={currentPage <= 1}
                 onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 rounded-lg border border-zinc-200 disabled:opacity-40 hover:bg-zinc-50"
+                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
               >
                 <ChevronLeft className="w-3.5 h-3.5" />
               </button>
@@ -365,8 +365,8 @@ export default function AdminUsersPage() {
                   onClick={() => setCurrentPage(pageNum)}
                   className={`w-7 h-7 rounded-lg text-xs font-semibold ${
                     currentPage === pageNum
-                      ? 'bg-orange-50 text-[#EA580C] border border-orange-200'
-                      : 'text-zinc-600 hover:bg-zinc-50'
+                      ? 'bg-cream text-trend-orange border border-trend-orange/20'
+                      : 'text-ink-soft hover:bg-studio-surface'
                   }`}
                 >
                   {pageNum}
@@ -376,7 +376,7 @@ export default function AdminUsersPage() {
                 type="button"
                 disabled={currentPage >= 5}
                 onClick={() => setCurrentPage((p) => p + 1)}
-                className="p-1.5 rounded-lg border border-zinc-200 disabled:opacity-40 hover:bg-zinc-50"
+                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
               >
                 <ChevronRight className="w-3.5 h-3.5" />
               </button>
@@ -387,7 +387,7 @@ export default function AdminUsersPage() {
               <select
                 value={pageSize}
                 onChange={(e) => setPageSize(Number(e.target.value))}
-                className="border border-zinc-200 rounded-lg px-2 py-1 text-xs bg-white"
+                className="border border-line rounded-lg px-2 py-1 text-xs bg-white"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -401,28 +401,28 @@ export default function AdminUsersPage() {
         {/* RIGHT SIDE DRAWER (Sarah Johnson / Selected User) */}
         {/* ========================================================= */}
         {drawerOpen && selectedUserDetail && (
-          <aside className="w-full lg:w-2/5 bg-white rounded-2xl border border-zinc-200/80 shadow-2xs p-5 space-y-5 animate-in slide-in-from-right duration-200">
+          <aside className="w-full lg:w-2/5 bg-white rounded-2xl border border-line/80 shadow-2xs p-5 space-y-5 animate-in slide-in-from-right duration-200">
             {/* Drawer Header */}
-            <div className="flex items-start justify-between pb-3 border-b border-zinc-100">
+            <div className="flex items-start justify-between pb-3 border-b border-line">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-zinc-100 text-zinc-800 font-bold text-sm flex items-center justify-center border border-zinc-200">
+                <div className="w-10 h-10 rounded-full bg-studio-raised text-ink font-bold text-sm flex items-center justify-center border border-line">
                   {selectedUserDetail.initials}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h2 className="text-sm font-bold text-zinc-900">{selectedUserDetail.name}</h2>
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                    <h2 className="text-sm font-bold text-ink">{selectedUserDetail.name}</h2>
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-success-soft text-success">
+                      <span className="w-1.5 h-1.5 rounded-full bg-success" />
                       {selectedUserDetail.status}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-400">{selectedUserDetail.email}</p>
+                  <p className="text-[11px] text-ink-muted">{selectedUserDetail.email}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setDrawerOpen(false)}
-                className="p-1 text-zinc-400 hover:text-zinc-700 rounded-lg hover:bg-zinc-100"
+                className="p-1 text-ink-muted hover:text-ink-soft rounded-lg hover:bg-studio-raised"
                 aria-label="Close drawer"
               >
                 <X className="w-4 h-4" />
@@ -430,14 +430,14 @@ export default function AdminUsersPage() {
             </div>
 
             {/* Drawer Tabs */}
-            <div className="flex border-b border-zinc-100 text-xs font-semibold">
+            <div className="flex border-b border-line text-xs font-semibold">
               <button
                 type="button"
                 onClick={() => setDrawerTab('overview')}
                 className={`pb-2.5 px-3 border-b-2 transition ${
                   drawerTab === 'overview'
-                    ? 'border-[#EA580C] text-[#EA580C]'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-800'
+                    ? 'border-trend-orange text-trend-orange'
+                    : 'border-transparent text-ink-muted hover:text-ink'
                 }`}
               >
                 Overview
@@ -447,8 +447,8 @@ export default function AdminUsersPage() {
                 onClick={() => setDrawerTab('activity')}
                 className={`pb-2.5 px-3 border-b-2 transition ${
                   drawerTab === 'activity'
-                    ? 'border-[#EA580C] text-[#EA580C]'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-800'
+                    ? 'border-trend-orange text-trend-orange'
+                    : 'border-transparent text-ink-muted hover:text-ink'
                 }`}
               >
                 Activity
@@ -458,8 +458,8 @@ export default function AdminUsersPage() {
                 onClick={() => setDrawerTab('security')}
                 className={`pb-2.5 px-3 border-b-2 transition ${
                   drawerTab === 'security'
-                    ? 'border-[#EA580C] text-[#EA580C]'
-                    : 'border-transparent text-zinc-500 hover:text-zinc-800'
+                    ? 'border-trend-orange text-trend-orange'
+                    : 'border-transparent text-ink-muted hover:text-ink'
                 }`}
               >
                 Security
@@ -470,92 +470,88 @@ export default function AdminUsersPage() {
             {drawerTab === 'overview' && (
               <div className="space-y-4 text-xs">
                 {/* 1. Account information */}
-                <div className="p-3.5 bg-zinc-50/70 rounded-xl space-y-2 border border-zinc-100">
-                  <div className="flex items-center justify-between pb-1.5 border-b border-zinc-200/60">
-                    <span className="font-bold text-zinc-900 text-xs">Account information</span>
+                <div className="p-3.5 bg-studio-surface/70 rounded-xl space-y-2 border border-line">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-line/60">
+                    <span className="font-bold text-ink text-xs">Account information</span>
                     <button
                       type="button"
-                      className="text-[11px] text-zinc-600 hover:text-zinc-900 flex items-center gap-1 font-medium"
+                      className="text-[11px] text-ink-soft hover:text-ink flex items-center gap-1 font-medium"
                     >
-                      <Edit2 className="w-3 h-3 text-zinc-400" />
+                      <Edit2 className="w-3 h-3 text-ink-muted" />
                       Edit
                     </button>
                   </div>
-                  <div className="grid grid-cols-2 gap-y-1.5 text-zinc-600 text-[11px]">
-                    <span className="text-zinc-400">Full name</span>
-                    <span className="font-medium text-zinc-900">{selectedUserDetail.name}</span>
+                  <div className="grid grid-cols-2 gap-y-1.5 text-ink-soft text-[11px]">
+                    <span className="text-ink-muted">Full name</span>
+                    <span className="font-medium text-ink">{selectedUserDetail.name}</span>
 
-                    <span className="text-zinc-400">Email</span>
-                    <span className="font-medium text-zinc-900 truncate">
+                    <span className="text-ink-muted">Email</span>
+                    <span className="font-medium text-ink truncate">
                       {selectedUserDetail.email}
                     </span>
 
-                    <span className="text-zinc-400">Role</span>
-                    <span className="font-medium text-zinc-900">{selectedUserDetail.role}</span>
+                    <span className="text-ink-muted">Role</span>
+                    <span className="font-medium text-ink">{selectedUserDetail.role}</span>
 
-                    <span className="text-zinc-400">Joined</span>
-                    <span className="font-medium text-zinc-900">
+                    <span className="text-ink-muted">Joined</span>
+                    <span className="font-medium text-ink">
                       {selectedUserDetail.registration_date} (32 days ago)
                     </span>
 
-                    <span className="text-zinc-400">Last login</span>
-                    <span className="font-medium text-zinc-900 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                    <span className="text-ink-muted">Last login</span>
+                    <span className="font-medium text-ink flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
                       {selectedUserDetail.last_login}
                     </span>
 
-                    <span className="text-zinc-400">User ID</span>
-                    <span className="font-mono text-[10px] text-zinc-700">
+                    <span className="text-ink-muted">User ID</span>
+                    <span className="font-mono text-[10px] text-ink-soft">
                       {selectedUserDetail.user_id_display}
                     </span>
                   </div>
                 </div>
 
                 {/* 2. Subscription */}
-                <div className="p-3.5 bg-zinc-50/70 rounded-xl space-y-2 border border-zinc-100">
-                  <div className="flex items-center justify-between pb-1.5 border-b border-zinc-200/60">
-                    <span className="font-bold text-zinc-900 text-xs">Subscription</span>
+                <div className="p-3.5 bg-studio-surface/70 rounded-xl space-y-2 border border-line">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-line/60">
+                    <span className="font-bold text-ink text-xs">Subscription</span>
                     <button
                       type="button"
-                      className="text-[11px] text-zinc-600 hover:text-zinc-900 font-medium"
+                      className="text-[11px] text-ink-soft hover:text-ink font-medium"
                     >
                       Change plan
                     </button>
                   </div>
                   <div className="grid grid-cols-2 gap-y-1.5 text-[11px]">
-                    <span className="text-zinc-400">Plan</span>
-                    <span className="font-medium text-zinc-900">{selectedUserDetail.plan}</span>
+                    <span className="text-ink-muted">Plan</span>
+                    <span className="font-medium text-ink">{selectedUserDetail.plan}</span>
 
-                    <span className="text-zinc-400">Status</span>
-                    <span className="font-medium text-emerald-600 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                    <span className="text-ink-muted">Status</span>
+                    <span className="font-medium text-success flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
                       {selectedUserDetail.billing_status}
                     </span>
 
-                    <span className="text-zinc-400">Users</span>
-                    <span className="font-medium text-zinc-900">
-                      {selectedUserDetail.users_count}
-                    </span>
+                    <span className="text-ink-muted">Users</span>
+                    <span className="font-medium text-ink">{selectedUserDetail.users_count}</span>
 
-                    <span className="text-zinc-400">Renews on</span>
-                    <span className="font-medium text-zinc-900">
-                      {selectedUserDetail.renewal_date}
-                    </span>
+                    <span className="text-ink-muted">Renews on</span>
+                    <span className="font-medium text-ink">{selectedUserDetail.renewal_date}</span>
 
-                    <span className="text-zinc-400">Monthly cost</span>
-                    <span className="font-medium text-zinc-900">
+                    <span className="text-ink-muted">Monthly cost</span>
+                    <span className="font-medium text-ink">
                       ${selectedUserDetail.monthly_cost.toFixed(2)} USD
                     </span>
                   </div>
                 </div>
 
                 {/* 3. Connected stores */}
-                <div className="p-3.5 bg-zinc-50/70 rounded-xl space-y-2 border border-zinc-100">
-                  <div className="flex items-center justify-between pb-1.5 border-b border-zinc-200/60">
-                    <span className="font-bold text-zinc-900 text-xs">Connected stores (1)</span>
+                <div className="p-3.5 bg-studio-surface/70 rounded-xl space-y-2 border border-line">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-line/60">
+                    <span className="font-bold text-ink text-xs">Connected stores (1)</span>
                     <button
                       type="button"
-                      className="text-[11px] text-zinc-600 hover:text-zinc-900 font-medium"
+                      className="text-[11px] text-ink-soft hover:text-ink font-medium"
                     >
                       View all
                     </button>
@@ -563,15 +559,15 @@ export default function AdminUsersPage() {
                   {selectedUserDetail.stores.map((store) => (
                     <div key={store.url} className="flex items-center justify-between text-xs">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded bg-success-soft text-success flex items-center justify-center font-bold text-[10px]">
                           S
                         </div>
                         <div>
-                          <p className="font-semibold text-zinc-900 leading-tight">{store.name}</p>
-                          <p className="text-[10px] text-zinc-400">{store.url}</p>
+                          <p className="font-semibold text-ink leading-tight">{store.name}</p>
+                          <p className="text-[10px] text-ink-muted">{store.url}</p>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-semibold bg-success-soft text-success">
                         {store.status}
                       </span>
                     </div>
@@ -579,14 +575,14 @@ export default function AdminUsersPage() {
                 </div>
 
                 {/* 4. Usage (Current billing cycle) */}
-                <div className="p-3.5 bg-zinc-50/70 rounded-xl space-y-2.5 border border-zinc-100">
-                  <div className="flex items-center justify-between pb-1 border-b border-zinc-200/60">
-                    <span className="font-bold text-zinc-900 text-xs">
+                <div className="p-3.5 bg-studio-surface/70 rounded-xl space-y-2.5 border border-line">
+                  <div className="flex items-center justify-between pb-1 border-b border-line/60">
+                    <span className="font-bold text-ink text-xs">
                       Usage (Current billing cycle)
                     </span>
                     <button
                       type="button"
-                      className="text-[11px] text-zinc-600 hover:text-zinc-900 font-medium"
+                      className="text-[11px] text-ink-soft hover:text-ink font-medium"
                     >
                       View usage
                     </button>
@@ -595,16 +591,16 @@ export default function AdminUsersPage() {
                   {/* Progress bars */}
                   <div className="space-y-2 text-[11px]">
                     <div>
-                      <div className="flex justify-between text-zinc-600 mb-1">
+                      <div className="flex justify-between text-ink-soft mb-1">
                         <span>Product searches</span>
-                        <span className="font-medium text-zinc-900">
+                        <span className="font-medium text-ink">
                           {selectedUserDetail.usage.product_searches.toLocaleString()} /{' '}
                           {selectedUserDetail.usage.product_searches_limit.toLocaleString()}
                         </span>
                       </div>
-                      <div className="w-full bg-zinc-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-studio-rule h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-[#EA580C] h-full rounded-full"
+                          className="bg-trend-orange h-full rounded-full"
                           style={{
                             width: `${(selectedUserDetail.usage.product_searches / selectedUserDetail.usage.product_searches_limit) * 100}%`,
                           }}
@@ -613,16 +609,16 @@ export default function AdminUsersPage() {
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-zinc-600 mb-1">
+                      <div className="flex justify-between text-ink-soft mb-1">
                         <span>AI credits</span>
-                        <span className="font-medium text-zinc-900">
+                        <span className="font-medium text-ink">
                           {selectedUserDetail.usage.ai_credits.toLocaleString()} /{' '}
                           {selectedUserDetail.usage.ai_credits_limit.toLocaleString()}
                         </span>
                       </div>
-                      <div className="w-full bg-zinc-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-studio-rule h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-[#EA580C] h-full rounded-full"
+                          className="bg-trend-orange h-full rounded-full"
                           style={{
                             width: `${(selectedUserDetail.usage.ai_credits / selectedUserDetail.usage.ai_credits_limit) * 100}%`,
                           }}
@@ -631,16 +627,16 @@ export default function AdminUsersPage() {
                     </div>
 
                     <div>
-                      <div className="flex justify-between text-zinc-600 mb-1">
+                      <div className="flex justify-between text-ink-soft mb-1">
                         <span>Ad generations</span>
-                        <span className="font-medium text-zinc-900">
+                        <span className="font-medium text-ink">
                           {selectedUserDetail.usage.ad_generations.toLocaleString()} /{' '}
                           {selectedUserDetail.usage.ad_generations_limit.toLocaleString()}
                         </span>
                       </div>
-                      <div className="w-full bg-zinc-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="w-full bg-studio-rule h-1.5 rounded-full overflow-hidden">
                         <div
-                          className="bg-[#EA580C] h-full rounded-full"
+                          className="bg-trend-orange h-full rounded-full"
                           style={{
                             width: `${(selectedUserDetail.usage.ad_generations / selectedUserDetail.usage.ad_generations_limit) * 100}%`,
                           }}
@@ -651,24 +647,24 @@ export default function AdminUsersPage() {
                 </div>
 
                 {/* 5. Recent activity */}
-                <div className="p-3.5 bg-zinc-50/70 rounded-xl space-y-2 border border-zinc-100">
-                  <div className="flex items-center justify-between pb-1.5 border-b border-zinc-200/60">
-                    <span className="font-bold text-zinc-900 text-xs">Recent activity</span>
+                <div className="p-3.5 bg-studio-surface/70 rounded-xl space-y-2 border border-line">
+                  <div className="flex items-center justify-between pb-1.5 border-b border-line/60">
+                    <span className="font-bold text-ink text-xs">Recent activity</span>
                     <button
                       type="button"
-                      className="text-[11px] text-zinc-600 hover:text-zinc-900 font-medium"
+                      className="text-[11px] text-ink-soft hover:text-ink font-medium"
                     >
                       View all
                     </button>
                   </div>
                   <div className="space-y-2 text-[11px]">
                     {selectedUserDetail.recent_activity.slice(0, 3).map((act) => (
-                      <div key={act.id} className="flex items-center justify-between text-zinc-600">
-                        <span className="flex items-center gap-1.5 text-zinc-800 font-medium">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block" />
+                      <div key={act.id} className="flex items-center justify-between text-ink-soft">
+                        <span className="flex items-center gap-1.5 text-ink font-medium">
+                          <span className="w-1.5 h-1.5 rounded-full bg-success inline-block" />
                           {act.activity}
                         </span>
-                        <div className="flex items-center gap-3 text-[10px] text-zinc-400">
+                        <div className="flex items-center gap-3 text-[10px] text-ink-muted">
                           <span>{act.timestamp}</span>
                           <span>{act.location}</span>
                         </div>
@@ -682,15 +678,15 @@ export default function AdminUsersPage() {
             {/* TAB CONTENT: ACTIVITY */}
             {drawerTab === 'activity' && (
               <div className="space-y-3 text-xs">
-                <div className="divide-y divide-zinc-100">
+                <div className="divide-y divide-line">
                   {selectedUserDetail.recent_activity.map((act) => (
                     <div key={act.id} className="py-2.5 space-y-1">
-                      <div className="flex items-center justify-between font-medium text-zinc-900">
+                      <div className="flex items-center justify-between font-medium text-ink">
                         <span>{act.activity}</span>
-                        <span className="text-[10px] text-zinc-400">{act.date_time}</span>
+                        <span className="text-[10px] text-ink-muted">{act.date_time}</span>
                       </div>
-                      <p className="text-[11px] text-zinc-500">{act.details}</p>
-                      <p className="text-[10px] text-zinc-400">
+                      <p className="text-[11px] text-ink-muted">{act.details}</p>
+                      <p className="text-[10px] text-ink-muted">
                         IP: {act.ip_address} · {act.location}
                       </p>
                     </div>
@@ -702,28 +698,28 @@ export default function AdminUsersPage() {
             {/* TAB CONTENT: SECURITY */}
             {drawerTab === 'security' && (
               <div className="space-y-3 text-xs">
-                <div className="p-3 bg-zinc-50 rounded-xl space-y-2">
+                <div className="p-3 bg-studio-surface rounded-xl space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Email verification</span>
-                    <span className="font-semibold text-emerald-600">Verified</span>
+                    <span className="text-ink-muted">Email verification</span>
+                    <span className="font-semibold text-success">Verified</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Two-Factor Authentication</span>
-                    <span className="font-semibold text-emerald-600">Enabled</span>
+                    <span className="text-ink-muted">Two-Factor Authentication</span>
+                    <span className="font-semibold text-success">Enabled</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-zinc-500">Last password change</span>
-                    <span className="text-zinc-800">45 days ago</span>
+                    <span className="text-ink-muted">Last password change</span>
+                    <span className="text-ink">45 days ago</span>
                   </div>
                 </div>
               </div>
             )}
 
             {/* Drawer Actions Footer (Matching Figma Exactly) */}
-            <div className="pt-3 border-t border-zinc-100 grid grid-cols-2 gap-2 text-xs">
+            <div className="pt-3 border-t border-line grid grid-cols-2 gap-2 text-xs">
               <Link
                 href={`/admin/users/${selectedUserDetail.id}`}
-                className="w-full text-center py-2 px-3 rounded-xl border border-zinc-200 text-zinc-700 hover:bg-zinc-50 font-semibold transition"
+                className="w-full text-center py-2 px-3 rounded-xl border border-line text-ink-soft hover:bg-studio-surface font-semibold transition"
               >
                 View account
               </Link>
@@ -735,21 +731,21 @@ export default function AdminUsersPage() {
                     selectedUserDetail.status === 'Active' ? 'Suspended' : 'Active',
                   )
                 }
-                className="w-full py-2 px-3 rounded-xl border border-orange-300 text-orange-700 hover:bg-orange-50 font-semibold transition flex items-center justify-center gap-1.5"
+                className="w-full py-2 px-3 rounded-xl border border-trend-orange/20 text-trend-orange-strong hover:bg-cream font-semibold transition flex items-center justify-center gap-1.5"
               >
                 <ShieldAlert className="w-3.5 h-3.5" />
                 <span>{selectedUserDetail.status === 'Active' ? 'Suspend' : 'Activate'}</span>
               </button>
               <button
                 type="button"
-                className="w-full py-2 px-3 rounded-xl border border-zinc-200 text-zinc-700 hover:bg-zinc-50 font-semibold transition"
+                className="w-full py-2 px-3 rounded-xl border border-line text-ink-soft hover:bg-studio-surface font-semibold transition"
               >
                 Change plan
               </button>
               <button
                 type="button"
                 onClick={() => handleResetAccess(selectedUserDetail.id)}
-                className="w-full py-2 px-3 rounded-xl bg-red-600 text-white hover:bg-red-700 font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs"
+                className="w-full py-2 px-3 rounded-xl bg-danger text-white hover:bg-danger font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs"
               >
                 <KeyRound className="w-3.5 h-3.5" />
                 <span>Reset access</span>
