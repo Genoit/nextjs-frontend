@@ -48,7 +48,7 @@ function Card({ product, badge }: { product: Product; badge: Badge | undefined }
     <li>
       <Link
         href={`/products/${product.id}`}
-        className="group relative block overflow-hidden rounded-2xl border border-white/10 bg-[#141414] transition duration-300 hover:scale-[1.02] hover:border-trend-orange/50 hover:shadow-glow focus-visible:outline-2 focus-visible:outline-trend-orange active:scale-[0.98] motion-reduce:transition-none motion-reduce:hover:scale-100"
+        className="group relative block overflow-hidden rounded-[13px] border border-studio-rule bg-studio-surface transition duration-200 hover:border-studio-rule-strong focus-visible:outline-2 focus-visible:outline-trend-orange active:scale-[0.99] motion-reduce:transition-none"
       >
         <div className="relative aspect-square w-full overflow-hidden bg-black/40">
           {src && !broken ? (
@@ -58,7 +58,7 @@ function Card({ product, badge }: { product: Product; badge: Badge | undefined }
               fill
               unoptimized
               sizes="(min-width: 1280px) 20vw, (min-width: 640px) 33vw, 50vw"
-              className="object-cover"
+              className="object-cover transition duration-500 group-hover:scale-[1.03] motion-reduce:transition-none"
               onError={() => setBroken(true)}
             />
           ) : (
@@ -69,15 +69,17 @@ function Card({ product, badge }: { product: Product; badge: Badge | undefined }
         </div>
         <div className="absolute top-3 left-3 max-w-[calc(100%-1.5rem)]">
           {badge ? (
-            <StatusBadge tone={badge.tone} label={badge.label} className="bg-black/80" />
+            <StatusBadge tone={badge.tone} label={badge.label} className="bg-black/70" />
           ) : (
             <span className="block h-6 w-20 rounded-full bg-black/60" aria-hidden />
           )}
         </div>
         {/* Title always readable on touch screens: no hover-only text. */}
-        <div className="absolute inset-x-0 bottom-0 bg-black/85 p-3">
-          <p className="line-clamp-2 text-xs leading-snug font-bold text-white">{product.title}</p>
-          <p className="mt-1 truncate text-[11px] text-ink-muted capitalize tabular-nums">
+        <div className="absolute inset-x-0 bottom-0 bg-black/70 p-3">
+          <p className="line-clamp-2 text-[13px] leading-snug font-medium text-studio-text">
+            {product.title}
+          </p>
+          <p className="mt-1 truncate text-[11.5px] text-studio-muted capitalize tabular-nums">
             {meta || 'Added ' + new Date(product.created_at).toLocaleDateString('en-US')}
           </p>
         </div>
@@ -133,14 +135,18 @@ export default function ProductsPage() {
       <main className="w-full flex-1 px-4 py-8 md:px-10">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
           <div>
-            <h1 className="mb-1 text-3xl font-black tracking-tight text-white">Products</h1>
-            <p className="text-xs text-ink-muted">
-              {total > 0 ? `${total} products, newest first.` : 'Every product you add lands here.'}
+            <h1 className="mb-1 text-xl font-semibold tracking-[-0.01em] text-studio-text">
+              Products
+            </h1>
+            <p className="text-[13px] text-studio-meta">
+              {total > 0
+                ? `${total} product${total > 1 ? 's' : ''}, newest first.`
+                : 'Every product you add lands here.'}
             </p>
           </div>
           <Link
             href="/product-input"
-            className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-trend-orange px-6 text-sm font-black text-on-accent transition hover:scale-105 hover:shadow-glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-95 motion-reduce:transition-none"
+            className="inline-flex h-[38px] items-center gap-2 rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
           >
             <Plus className="size-4" aria-hidden />
             New ad
@@ -148,7 +154,7 @@ export default function ProductsPage() {
         </div>
 
         <div
-          className="mb-8 flex flex-wrap items-center gap-2"
+          className="studio-bar mb-8 flex w-fit max-w-full items-center gap-0.5 overflow-x-auto rounded-[15px] p-[5px]"
           role="group"
           aria-label="Filter by video status"
         >
@@ -158,11 +164,7 @@ export default function ProductsPage() {
               type="button"
               onClick={() => setFilter(f.key)}
               aria-pressed={filter === f.key}
-              className={`min-h-9 rounded-xl px-4 text-xs font-bold transition focus-visible:outline-2 focus-visible:outline-trend-orange ${
-                filter === f.key
-                  ? 'bg-white text-black'
-                  : 'border border-white/10 bg-white/5 text-ink-muted hover:bg-white/10 hover:text-white'
-              }`}
+              className="studio-tab focus-visible:outline-2 focus-visible:outline-trend-orange"
             >
               {f.label}
             </button>
@@ -172,11 +174,7 @@ export default function ProductsPage() {
         {error ? (
           <div className="mx-auto mt-16 flex max-w-md flex-col items-center gap-4 text-center">
             <p className="text-sm text-ink-muted">Your products could not be loaded. {error}</p>
-            <button
-              type="button"
-              onClick={() => refresh()}
-              className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-white/10 px-6 text-sm font-bold text-white hover:bg-white/20"
-            >
+            <button type="button" onClick={() => refresh()} className="studio-chip">
               <RefreshCw className="size-4" aria-hidden />
               Try again
             </button>
@@ -188,7 +186,7 @@ export default function ProductsPage() {
             className="grid grid-cols-2 gap-4 pb-16 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
           >
             {Array.from({ length: 10 }, (_, i) => (
-              <li key={i} className="aspect-square animate-pulse rounded-2xl bg-white/5" />
+              <li key={i} className="aspect-square animate-pulse rounded-[13px] bg-white/[0.03]" />
             ))}
           </ul>
         ) : shown.length === 0 ? (
@@ -215,11 +213,11 @@ export default function ProductsPage() {
               onClick={goToPreviousPage}
               disabled={!canGoToPreviousPage}
               aria-label="Previous page"
-              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-30"
+              className="studio-chip !size-9 justify-center !p-0 disabled:opacity-30"
             >
               <ChevronLeft className="size-4" aria-hidden />
             </button>
-            <span className="text-xs font-bold text-ink-muted tabular-nums">
+            <span className="text-xs text-studio-muted tabular-nums">
               {page} / {totalPages}
             </span>
             <button
@@ -227,7 +225,7 @@ export default function ProductsPage() {
               onClick={goToNextPage}
               disabled={!canGoToNextPage}
               aria-label="Next page"
-              className="flex size-10 items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 disabled:opacity-30"
+              className="studio-chip !size-9 justify-center !p-0 disabled:opacity-30"
             >
               <ChevronRight className="size-4" aria-hidden />
             </button>

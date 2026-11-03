@@ -326,7 +326,7 @@ export function ProductDetail({
 
   // Success state - Product detail
   const pill =
-    'inline-flex min-h-11 items-center gap-2 rounded-2xl border border-white/5 bg-white/10 px-6 text-xs font-bold text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:opacity-50';
+    'studio-chip focus-visible:outline-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:opacity-50';
   const rows: [string, React.ReactNode][] = [
     ['Brand', product.brand || 'N/A'],
     ['Category', product.category || 'N/A'],
@@ -354,7 +354,7 @@ export function ProductDetail({
           type="button"
           onClick={handleBack}
           aria-label="Back"
-          className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-trend-orange"
+          className="studio-chip !size-9 shrink-0 justify-center !p-0 focus-visible:outline-2 focus-visible:outline-trend-orange"
         >
           <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
             <path
@@ -366,8 +366,10 @@ export function ProductDetail({
           </svg>
         </button>
         <div className="min-w-0">
-          <h1 className="truncate text-lg font-black text-white sm:text-2xl">{product.title}</h1>
-          <p className="truncate text-xs text-ink-muted">
+          <h1 className="truncate text-xl font-semibold tracking-[-0.01em] text-studio-text">
+            {product.title}
+          </h1>
+          <p className="truncate text-[13px] text-studio-meta tabular-nums">
             {formatCurrency(product.price, product.currency)}
             {product.compare_at_price !== null && product.compare_at_price > 0 && (
               <span className="ml-2 line-through">
@@ -403,7 +405,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={() => router.push(`/products/${product.id}/creative`)}
-            className="inline-flex min-h-11 items-center gap-2 rounded-2xl bg-trend-orange px-8 text-sm font-black text-on-accent shadow-glow transition hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-95 motion-reduce:transition-none"
+            className="inline-flex h-[38px] items-center gap-2 rounded-[10px] bg-trend-orange px-5 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
           >
             Create the ad
           </button>
@@ -418,8 +420,8 @@ export function ProductDetail({
         </div>
       )}
 
-      <details className="group mx-auto mt-10 w-full max-w-3xl rounded-3xl border border-white/10 bg-[#111] p-5">
-        <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between text-sm font-bold text-white">
+      <details className="group mx-auto mt-10 w-full max-w-3xl rounded-[13px] border border-studio-rule bg-studio-surface p-4">
+        <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between text-[13px] font-semibold text-studio-text">
           Product details
           <svg
             className="size-4 text-ink-muted transition group-open:rotate-180"

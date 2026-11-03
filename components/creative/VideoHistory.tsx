@@ -115,7 +115,7 @@ export function VideoHistory({ productId, refreshKey, activeJobId, onOpen }: Pro
 
       <section
         aria-labelledby="history-title"
-        className="max-w-4xl space-y-3 rounded-3xl border border-white/10 bg-[#111] p-6 md:hidden"
+        className="max-w-4xl space-y-3 rounded-[13px] border border-studio-rule bg-studio-surface p-4 md:hidden"
       >
         <h4 id="history-title" className="flex items-center gap-2 text-sm font-bold text-ink">
           <History className="size-4 text-trend-orange" aria-hidden />

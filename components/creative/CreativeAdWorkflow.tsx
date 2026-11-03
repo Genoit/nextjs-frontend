@@ -150,8 +150,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   return (
     <div className="space-y-8">
       {/* Step Navigation Header */}
-      <div className="mx-auto w-full max-w-5xl rounded-[1.5rem] border border-white/10 bg-[#111] p-2 md:rounded-[2rem]">
-        <div className="relative flex items-center justify-between overflow-x-auto gap-1.5">
+      <div className="studio-bar mx-auto w-fit max-w-full rounded-[15px] p-[5px]">
+        <div className="relative flex items-center gap-0.5 overflow-x-auto">
           {[
             { num: 1, label: 'Intelligence', icon: Sparkles },
             { num: 2, label: 'Configuration créative', icon: Sliders },
@@ -170,21 +170,17 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                 type="button"
                 onClick={() => setUserSelectedStep(s.num as Step)}
                 aria-current={isActive ? 'step' : undefined}
-                className={`flex min-h-10 items-center gap-2 px-4 rounded-2xl text-xs font-bold transition whitespace-nowrap focus-visible:outline-2 focus-visible:outline-trend-orange ${
-                  isActive
-                    ? 'bg-white text-black'
-                    : isPassed
-                      ? 'bg-white/5 text-white hover:bg-white/10'
-                      : 'text-ink-muted hover:bg-white/5 hover:text-white'
+                className={`studio-tab focus-visible:outline-2 focus-visible:outline-trend-orange ${
+                  isPassed ? '!text-studio-text' : ''
                 }`}
               >
                 <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  className={`flex size-[18px] items-center justify-center rounded-full text-[10px] font-semibold tabular-nums ${
                     isActive
-                      ? 'bg-black text-white'
+                      ? 'bg-trend-orange text-on-accent'
                       : isPassed
-                        ? 'bg-trend-orange text-on-accent'
-                        : 'bg-white/10 text-ink-muted'
+                        ? 'bg-accent-soft text-trend-orange'
+                        : 'bg-white/[0.07] text-studio-meta'
                   }`}
                 >
                   <span aria-hidden>{isPassed ? '✓' : s.num}</span>

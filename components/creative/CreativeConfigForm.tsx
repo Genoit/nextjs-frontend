@@ -218,7 +218,7 @@ export function CreativeConfigForm({
           </div>
           <span className="text-xs text-ink-muted">Étape 2 / 5</span>
         </div>
-        <h3 className="text-lg font-bold text-ink">
+        <h3 className="text-lg font-semibold text-ink">
           Configuration créative et contraintes de génération
         </h3>
         <p className="text-xs text-ink-muted">
@@ -235,7 +235,7 @@ export function CreativeConfigForm({
       )}
 
       {/* Section 1: Objectif & Audience */}
-      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Target className="w-4 h-4 text-trend-orange" />
           <span>1. Objectif de campagne & Audience cible</span>
@@ -327,7 +327,7 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 2: Angle créatif & Émotion */}
-      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-trend-orange" />
           <span>2. Famille de Concept & Angle Publicitaire</span>
@@ -455,7 +455,7 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 3: Format, Durée & Plateforme */}
-      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Smartphone className="w-4 h-4 text-trend-orange" />
           <span>3. Format, Durée & Diffusion</span>
@@ -574,7 +574,7 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 4: Voix, Ambiance & Contraintes */}
-      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Volume2 className="w-4 h-4 text-trend-orange" />
           <span>4. Voix-off, Ambiance sonore & Contraintes spécifiques</span>
@@ -662,7 +662,7 @@ export function CreativeConfigForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-sm font-bold shadow-xs transition flex items-center gap-2"
+          className="px-6 py-3 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-sm font-semibold transition flex items-center gap-2"
         >
           {isLoading ? (
             <span>Sauvegarde en cours...</span>

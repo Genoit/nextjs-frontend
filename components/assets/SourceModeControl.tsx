@@ -131,7 +131,7 @@ export function SourceModeControl({
                 processingRadioRef.current?.focus();
                 void save('request_processing');
               }}
-              className="min-h-11 rounded-lg bg-trend-orange px-4 font-semibold text-on-accent hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+              className="min-h-11 rounded-[10px] bg-trend-orange px-4 font-semibold text-on-accent hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
             >
               Lancer
             </button>

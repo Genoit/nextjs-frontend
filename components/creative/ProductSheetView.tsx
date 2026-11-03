@@ -161,7 +161,7 @@ function AnalysisHeader({
             <Sparkles className="w-3.5 h-3.5" aria-hidden />
             <span>Fiche produit structurée</span>
           </div>
-          <h2 className="text-xl font-bold text-ink break-words">
+          <h2 className="text-lg font-semibold text-ink break-words">
             {analysis?.sheet?.normalized_name ?? 'Produit non analysé'}
           </h2>
           {analysis && status && (
@@ -203,7 +203,7 @@ function AnalysisHeader({
             <button
               type="button"
               onClick={onProceedToSetup}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-sm font-semibold shadow-xs transition"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-sm font-semibold transition"
             >
               <span>Configurer la pub</span>
               <span aria-hidden>→</span>

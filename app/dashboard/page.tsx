@@ -7,11 +7,12 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import {
   ArrowRight,
-  Clapperboard,
+  ChevronRight,
   ImagePlus,
   Link2,
   Package,
   PenLine,
+  Plus,
   RefreshCw,
 } from 'lucide-react';
 import { AppShell } from '../../components/AppShell';
@@ -54,9 +55,6 @@ async function loadStudio(): Promise<Load> {
   }
 }
 
-// What TrendED does after a link is pasted, in the order the flow runs it.
-const FLOW = ['Product sheet', 'Strategy', 'Storyboard', 'Shots checked one by one', 'Final cut'];
-
 function badgeOf({ jobs }: Entry) {
   return jobs === null ? { tone: 'idle', label: 'Status unavailable' } : jobBadge(latestJob(jobs));
 }
@@ -85,32 +83,10 @@ function Thumb({ product, className }: { product: Product; className: string }) 
   );
 }
 
-/** Icon tile above the title, the studio's emblem. */
-function Emblem() {
-  return (
-    <div className="relative mb-8 md:mb-10">
-      <div
-        aria-hidden
-        className="absolute inset-0 rounded-full bg-trend-orange/20 opacity-40 blur-[100px]"
-      />
-      <div className="relative flex size-24 items-center justify-center overflow-hidden rounded-3xl border border-white/5 bg-white/[0.04] md:size-32">
-        <Clapperboard
-          aria-hidden
-          strokeWidth={1}
-          className="absolute -right-4 -bottom-4 size-20 text-trend-orange opacity-20"
-        />
-        <div className="relative z-10 flex size-16 items-center justify-center rounded-2xl border border-trend-orange/20 bg-trend-orange/10 shadow-glow">
-          <Clapperboard aria-hidden strokeWidth={1.5} className="size-8 text-trend-orange" />
-        </div>
-      </div>
-    </div>
-  );
-}
+// Rows under the title: the latest products, like the reference studio's starter rows.
+const RECENT_ROWS = 4;
 
-const chip =
-  'inline-flex min-h-10 items-center gap-2 whitespace-nowrap rounded-2xl border border-white/5 bg-white/5 px-4 text-xs font-bold text-white transition hover:bg-white/10 hover:text-trend-orange focus-visible:outline-2 focus-visible:outline-trend-orange';
-
-/** The prompt bar: paste a product page, or start from photos / your own words. */
+/** The prompt bar, docked at the foot of the screen: paste a product page, or start from photos / words. */
 function Composer() {
   const router = useRouter();
   const [link, setLink] = useState('');
@@ -119,50 +95,57 @@ function Composer() {
     router.push(createHref(link));
   };
   return (
-    <form
-      onSubmit={submit}
-      className="flex w-full max-w-4xl flex-col gap-3 rounded-[1.5rem] border border-white/10 bg-[#111] p-3 md:gap-5 md:rounded-[2.5rem] md:p-5"
-    >
-      <div className="flex items-start gap-4 px-2">
-        <Link2 aria-hidden className="mt-3.5 size-5 shrink-0 text-trend-orange md:mt-4" />
-        <label htmlFor="product-link" className="sr-only">
-          Product page link
-        </label>
-        <input
-          id="product-link"
-          type="url"
-          inputMode="url"
-          autoComplete="off"
-          value={link}
-          onChange={(e) => setLink(e.target.value)}
-          placeholder="Paste your product page link"
-          className="min-h-12 min-w-0 flex-1 bg-transparent pt-1 text-base text-white caret-trend-orange outline-none placeholder:text-studio-meta md:text-xl"
-        />
-      </div>
-      <div className="flex flex-col items-stretch justify-between gap-4 border-t border-white/5 px-2 pt-4 sm:flex-row sm:items-center">
-        <div className="flex items-center gap-2 overflow-x-auto">
-          <Link href="/product-input" className={chip}>
-            <ImagePlus className="size-4" aria-hidden />
+    <div className="pointer-events-none fixed inset-x-0 bottom-0 z-40 px-3 pb-3 md:px-5 md:pb-5">
+      <form
+        onSubmit={submit}
+        className="studio-bar pointer-events-auto mx-auto flex w-full max-w-[940px] flex-col gap-2 rounded-[24px] p-3 transition-colors has-[input:focus]:border-accent-line"
+      >
+        <div className="flex items-center gap-3">
+          <Link
+            href="/product-input"
+            aria-label="Start from photos"
+            className="studio-chip !size-9 shrink-0 justify-center !p-0"
+          >
+            <Plus className="size-4" aria-hidden />
+          </Link>
+          <label htmlFor="product-link" className="sr-only">
+            Product page link
+          </label>
+          <Link2 aria-hidden className="hidden size-4 shrink-0 text-studio-meta sm:block" />
+          <input
+            id="product-link"
+            type="url"
+            inputMode="url"
+            autoComplete="off"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            placeholder="Paste your product page link"
+            className="min-h-10 min-w-0 flex-1 bg-transparent text-[15px] text-studio-text caret-trend-orange outline-none placeholder:text-studio-meta"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Link href="/product-input" className="studio-chip">
+            <ImagePlus className="size-3.5" aria-hidden />
             Start from photos
           </Link>
-          <Link href="/product-input?mode=manual" className={chip}>
-            <PenLine className="size-4" aria-hidden />
+          <Link href="/product-input?mode=manual" className="studio-chip">
+            <PenLine className="size-3.5" aria-hidden />
             Type it in
           </Link>
+          <button
+            type="submit"
+            className="ml-auto inline-flex h-[38px] w-full items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98] sm:w-auto"
+          >
+            Create ad
+            <ArrowRight className="size-4" aria-hidden />
+          </button>
         </div>
-        <button
-          type="submit"
-          className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-trend-orange px-8 text-sm font-black text-on-accent transition hover:scale-105 hover:shadow-glow focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-95 motion-reduce:transition-none md:rounded-[1.5rem] md:text-base"
-        >
-          Create ad
-          <ArrowRight className="size-4" aria-hidden />
-        </button>
-      </div>
-    </form>
+      </form>
+    </div>
   );
 }
 
-/** Ads rendering right now, as cards under the prompt bar. Nothing when none run. */
+/** Ads rendering right now. Nothing when none run. */
 function Rendering({ load }: { load: Load }) {
   if (load.state !== 'ready') return null;
   const running = load.entries.flatMap(({ product, jobs }) =>
@@ -170,24 +153,24 @@ function Rendering({ load }: { load: Load }) {
   );
   if (running.length === 0) return null;
   return (
-    <section aria-labelledby="rendering-title" className="mt-10 w-full max-w-4xl">
-      <h2 id="rendering-title" className="px-2 text-sm font-bold text-white">
+    <section aria-labelledby="rendering-title" className="w-full">
+      <h2 id="rendering-title" className="px-1 text-[13px] font-semibold text-studio-text">
         Rendering now
       </h2>
-      <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+      <ul className="mt-2 grid grid-cols-[minmax(0,1fr)] gap-[7px]">
         {running.map(({ product, job }) => {
           const pct = Math.max(0, Math.min(100, Math.round(job.progress_percentage ?? 0)));
           return (
             <li key={job.id}>
               <Link
                 href={`/products/${product.id}/creative`}
-                className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-3 transition hover:bg-white/10"
+                className="flex items-center gap-[13px] rounded-[13px] border border-studio-rule bg-white/[0.018] py-2.5 pr-3 pl-2.5 transition hover:border-studio-rule-strong hover:bg-studio-surface"
               >
-                <Thumb product={product} className="size-12 rounded-xl" />
+                <Thumb product={product} className="h-10 w-[58px] rounded-[7px]" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between gap-2">
-                    <p className="truncate text-sm font-bold text-white">{product.title}</p>
-                    <span className="shrink-0 text-xs tabular-nums text-ink-muted">{pct}%</span>
+                    <p className="truncate text-[13px] text-studio-text">{product.title}</p>
+                    <span className="shrink-0 text-xs tabular-nums text-studio-muted">{pct}%</span>
                   </div>
                   <div
                     className="mt-2 h-1 overflow-hidden rounded-full bg-white/10"
@@ -200,7 +183,7 @@ function Rendering({ load }: { load: Load }) {
                     <div className="h-full rounded-full bg-warning" style={{ width: `${pct}%` }} />
                   </div>
                   {job.current_step && (
-                    <p className="mt-1 truncate text-xs text-ink-muted">{job.current_step}</p>
+                    <p className="mt-1 truncate text-xs text-studio-meta">{job.current_step}</p>
                   )}
                 </div>
               </Link>
@@ -212,98 +195,67 @@ function Rendering({ load }: { load: Load }) {
   );
 }
 
-/** History: recent products as thumbnails. Right rail on desktop, a strip on phones. */
-function History({ load, retry }: { load: Load; retry: () => void }) {
-  const entries = load.state === 'ready' ? load.entries : [];
-  const items = entries.map((entry, i) => {
-    const badge = badgeOf(entry);
+/** Latest products as rows under the title: thumbnail, name, status. */
+function Recent({ load, retry }: { load: Load; retry: () => void }) {
+  if (load.state === 'loading') {
     return (
-      <li key={entry.product.id} className="shrink-0">
-        <Link
-          href={`/products/${entry.product.id}`}
-          title={`${entry.product.title} · ${badge.label}`}
-          className={`group relative block overflow-hidden rounded-xl border-2 transition focus-visible:outline-2 focus-visible:outline-trend-orange ${
-            i === 0 ? 'border-trend-orange shadow-glow' : 'border-white/10 hover:border-white/30'
-          }`}
-        >
-          <Thumb
-            product={entry.product}
-            className="size-16 md:aspect-square md:size-auto md:w-full"
-          />
-          <span className="sr-only">
-            {entry.product.title}, {badge.label}
-          </span>
-        </Link>
-      </li>
+      <ul aria-hidden className="grid w-full gap-[7px]">
+        {[0, 1, 2].map((i) => (
+          <li key={i} className="h-[62px] animate-pulse rounded-[13px] bg-white/[0.03]" />
+        ))}
+      </ul>
     );
-  });
-
-  const empty =
-    load.state === 'loading' ? (
-      <p className="text-center text-[11px] text-ink-muted">Loading…</p>
-    ) : load.state === 'error' ? (
-      <button
-        type="button"
-        onClick={retry}
-        title={load.message}
-        className="flex flex-col items-center gap-1 text-[11px] font-bold text-ink-muted hover:text-white"
-      >
-        <RefreshCw className="size-4" aria-hidden />
-        Retry
+  }
+  if (load.state === 'error') {
+    return (
+      <button type="button" onClick={retry} title={load.message} className="studio-chip mx-auto">
+        <RefreshCw className="size-3.5" aria-hidden />
+        Could not load your products. Retry
       </button>
-    ) : entries.length === 0 ? (
-      <p className="text-center text-[11px] text-ink-muted">No products yet</p>
-    ) : null;
-
+    );
+  }
+  if (load.entries.length === 0) return null;
   return (
-    <>
-      <aside
-        aria-labelledby="history-title"
-        className="fixed top-16 right-0 bottom-0 z-40 hidden w-24 flex-col items-center gap-3 overflow-y-auto border-l border-white/5 bg-black/60 py-4 md:flex"
-      >
-        <h2 id="history-title" className="text-[11px] font-bold text-ink-muted">
-          Recent
+    <section aria-labelledby="recent-title" className="w-full">
+      <div className="flex items-baseline justify-between px-1">
+        <h2 id="recent-title" className="text-[13px] font-semibold text-studio-text">
+          Recent products
         </h2>
-        {empty}
-        <ul className="flex w-full flex-col gap-2 px-2">{items}</ul>
-        {entries.length > 0 && (
-          <Link
-            href="/products"
-            className="mt-1 text-[11px] font-bold text-ink-muted hover:text-white"
-          >
-            All
-          </Link>
-        )}
-      </aside>
-
-      <section aria-label="Recent products" className="mt-10 w-full max-w-4xl md:hidden">
-        <div className="flex items-center justify-between px-2">
-          <h2 className="text-sm font-bold text-white">Recent</h2>
-          <Link href="/products" className="text-xs font-bold text-ink-muted hover:text-white">
-            All products
-          </Link>
-        </div>
-        <div className="mt-3 px-2">{empty}</div>
-        <ul className="mt-1 flex gap-2 overflow-x-auto px-2 pb-2">{items}</ul>
-      </section>
-    </>
-  );
-}
-
-/** Latest product with its status, under the prompt: what the rail's highlighted thumb is. */
-function Latest({ load }: { load: Load }) {
-  if (load.state !== 'ready' || load.entries.length === 0) return null;
-  const entry = load.entries[0];
-  const badge = badgeOf(entry);
-  return (
-    <Link
-      href={`/products/${entry.product.id}`}
-      className="mt-6 inline-flex max-w-full items-center gap-3 rounded-2xl border border-white/5 bg-white/5 py-2 pr-3 pl-2 transition hover:bg-white/10"
-    >
-      <Thumb product={entry.product} className="size-9 rounded-lg" />
-      <span className="truncate text-xs font-bold text-white">{entry.product.title}</span>
-      <StatusBadge tone={badge.tone as StatusTone} label={badge.label} className="shrink-0" />
-    </Link>
+        <Link
+          href="/products"
+          className="text-xs text-studio-meta transition hover:text-studio-text"
+        >
+          All products
+        </Link>
+      </div>
+      <ul className="mt-2 grid grid-cols-[minmax(0,1fr)] gap-[7px]">
+        {load.entries.slice(0, RECENT_ROWS).map((entry) => {
+          const badge = badgeOf(entry);
+          return (
+            <li key={entry.product.id}>
+              <Link
+                href={`/products/${entry.product.id}`}
+                className="group flex items-center gap-[13px] rounded-[13px] border border-studio-rule bg-white/[0.018] py-2.5 pr-3 pl-2.5 transition hover:border-studio-rule-strong hover:bg-studio-surface focus-visible:outline-2 focus-visible:outline-trend-orange"
+              >
+                <Thumb product={entry.product} className="h-10 w-[58px] rounded-[7px]" />
+                <span className="min-w-0 flex-1 truncate text-[13px] text-studio-muted transition group-hover:text-studio-text">
+                  {entry.product.title}
+                </span>
+                <StatusBadge
+                  tone={badge.tone as StatusTone}
+                  label={badge.label}
+                  className="shrink-0"
+                />
+                <ChevronRight
+                  className="size-4 shrink-0 text-studio-meta transition group-hover:translate-x-0.5 group-hover:text-studio-text"
+                  aria-hidden
+                />
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
   );
 }
 
@@ -328,27 +280,22 @@ export default function DashboardPage() {
   return (
     <ProtectedRoute>
       <AppShell active="/dashboard">
-        <main className="flex flex-1 flex-col items-center justify-center px-4 py-12 md:pr-28 md:pl-6 lg:py-16">
-          <div className="flex flex-col items-center">
-            <Emblem />
-            <h1 className="px-4 text-center text-4xl font-black tracking-widest text-white uppercase sm:text-5xl md:text-7xl">
+        {/* pb clears the docked composer (about 130px tall, more on phones). */}
+        <main className="flex flex-1 flex-col items-center justify-center px-4 pt-10 pb-56 sm:pb-44">
+          <div className="flex w-full max-w-[544px] flex-col items-center gap-[9px] text-center">
+            <h1 className="text-xl font-semibold tracking-[-0.01em] text-studio-text">
               Create an ad
             </h1>
-            <p className="mt-4 max-w-xl text-center text-sm font-medium text-ink-muted">
-              Paste a product page. TrendED writes the product sheet, plans the shots and renders
-              the ad. You check the facts before anything is rendered.
+            <p className="max-w-[46ch] text-[13px] text-studio-meta">
+              Paste a product page below. TrendED writes the product sheet, plans the shots and
+              renders the ad. You check the facts before anything is rendered.
             </p>
           </div>
-
-          <div className="mt-10 flex w-full flex-col items-center md:mt-16">
-            <Composer />
-            <p className="mt-5 max-w-4xl px-4 text-center text-xs text-studio-meta">
-              {FLOW.join('  ·  ')}
-            </p>
-            <Latest load={load} />
+          <div className="mt-6 flex w-full max-w-[544px] flex-col gap-6">
             <Rendering load={load} />
-            <History load={load} retry={retry} />
+            <Recent load={load} retry={retry} />
           </div>
+          <Composer />
         </main>
       </AppShell>
     </ProtectedRoute>

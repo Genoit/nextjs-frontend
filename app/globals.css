@@ -2,8 +2,8 @@
 
 :root {
   color-scheme: dark;
-  --background: #070707;
-  --foreground: #f2f2f2;
+  --background: #0a0a0b;
+  --foreground: #edefef;
 }
 
 @theme inline {
@@ -22,11 +22,11 @@
   --color-trend-orange-strong: #ff8a47; /* hover/pressed: lighter on dark */
   --color-on-accent: #0a0a0a; /* text on any solid accent or status fill */
   --color-trend-gold: #facc15; /* opportunities, sparingly */
-  --color-cream: #121212; /* raised sections (was cream on light) */
-  --color-ink: #f2f2f2; /* text */
-  --color-ink-muted: #a1a1aa; /* secondary text, 7.6:1 on ground */
-  --color-ink-soft: #c8c8ce; /* small text on raised sections */
-  --color-line: #262626; /* borders */
+  --color-cream: #151719; /* raised sections (was cream on light) */
+  --color-ink: #edefef; /* text */
+  --color-ink-muted: #a8aeaf; /* secondary text, 8:1 on ground */
+  --color-ink-soft: #c9cecf; /* small text on raised sections */
+  --color-line: rgb(255 255 255 / 0.11); /* borders */
 
   /* Statuses. Never orange; always with an icon and a label. */
   --color-success: #4ade80; /* ad ready */
@@ -41,17 +41,106 @@
   --color-stage: #000000;
   --color-stage-text: #e7e5e4;
 
-  /* Studio (app screens): one near-black ground, elevation by lightness alone, no shadows, no glows. */
-  --color-studio-ground: #070707;
-  --color-studio-surface: #0f0f0f;
-  --color-studio-raised: #1a1a1a;
-  --color-studio-rule: #232323;
-  --color-studio-text: #f2f2f2;
-  --color-studio-muted: #b4b4bb;
-  --color-studio-meta: #8e8e96;
+  /* Studio (app screens), 2026-11-03 restyle after the open-higgsfield studio: a near-black ground,
+     four graded grey surfaces, hairline rules, floating bars. Orange marks state and the one action only. */
+  --color-studio-ground: #0a0a0b;
+  --color-studio-rail: #101112;
+  --color-studio-surface: #151719;
+  --color-studio-raised: #1a1d1f;
+  --color-studio-raised-2: #222629;
+  --color-studio-hover: #2b3033;
+  --color-studio-rule: rgb(255 255 255 / 0.06);
+  --color-studio-rule-strong: rgb(255 255 255 / 0.11);
+  --color-studio-text: #edefef;
+  --color-studio-muted: #a8aeaf;
+  --color-studio-meta: #878e90;
+  --color-accent-soft: rgb(255 107 26 / 0.14); /* pressed chip, selected row */
+  --color-accent-line: rgb(255 107 26 / 0.32); /* focused composer, pressed chip edge */
 
-  /* Accent glow, studio screens only (Higgsfield-like): primary button hover, active history thumb. */
-  --shadow-glow: 0 0 20px rgb(255 107 26 / 0.4);
+  /* Elevation: a top glint on surfaces, a real shadow only on what floats (bars, composer, menus). */
+  --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-float:
+    0 4px 12px rgb(0 0 0 / 0.3), 0 16px 40px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.045);
+  --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.4), 0 32px 88px rgb(0 0 0 / 0.52);
+  --ease-studio: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Floating bar: the nav pill, the account pill, the step rail, the composer. */
+@utility studio-bar {
+  background: var(--color-studio-raised);
+  border: 1px solid var(--color-studio-rule);
+  box-shadow: var(--shadow-float);
+}
+
+/* Tab inside a floating bar. Active: lifted plate, its icon in the accent. */
+@utility studio-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 550;
+  white-space: nowrap;
+  color: var(--color-studio-muted);
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+  & svg {
+    color: var(--color-studio-meta);
+  }
+  &:hover {
+    color: var(--color-studio-text);
+    background: rgb(255 255 255 / 0.035);
+  }
+  &[aria-current='page'],
+  &[aria-current='step'],
+  &[aria-pressed='true'] {
+    color: var(--color-studio-text);
+    background: var(--color-studio-raised-2);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 1px 2px rgb(0 0 0 / 0.4);
+  }
+  &[aria-current='page'] svg,
+  &[aria-current='step'] svg,
+  &[aria-pressed='true'] svg {
+    color: var(--color-trend-orange);
+  }
+}
+
+/* Setting chip (composer rail, filters). */
+@utility studio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-studio-muted);
+  background: var(--color-studio-surface);
+  border: 1px solid var(--color-studio-rule);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s var(--ease-studio);
+  &:hover {
+    background: var(--color-studio-raised-2);
+    color: var(--color-studio-text);
+  }
+  &:active {
+    transform: scale(0.96);
+  }
+  &[aria-pressed='true'] {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-line);
+    color: var(--color-trend-orange);
+  }
 }
 
 @keyframes rise-in {
@@ -66,6 +155,8 @@
 }
 
 body {
+  font-size: 14px;
+  line-height: 1.45;
   background: var(--background);
   color: var(--foreground);
   font-family:

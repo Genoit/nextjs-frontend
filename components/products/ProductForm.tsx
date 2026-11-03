@@ -809,7 +809,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         <button
           type="submit"
-          className="rounded-lg bg-trend-orange px-6 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-[10px] bg-trend-orange px-6 py-2 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? (

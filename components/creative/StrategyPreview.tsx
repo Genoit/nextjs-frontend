@@ -38,7 +38,7 @@ export function StrategyPreview({
             Zéro faux avis, uniquement des faits sourcés
           </span>
         </div>
-        <h3 className="text-xl font-bold text-ink">Choisissez un angle publicitaire</h3>
+        <h3 className="text-lg font-semibold text-ink">Choisissez un angle publicitaire</h3>
         <p className="text-xs text-ink-soft">
           Chaque angle s&apos;appuie sur la fiche produit. Les éléments marqués « à valider » sont
           des hypothèses, pas des faits.
@@ -181,7 +181,7 @@ export function StrategyPreview({
           onClick={() => angleId && onGenerateStoryboard(angleId)}
           disabled={!angleId || isGeneratingStoryboard || isRegenerating}
           aria-busy={isGeneratingStoryboard}
-          className="px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-bold shadow-xs transition flex items-center gap-2"
+          className="px-5 py-2.5 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-semibold transition flex items-center gap-2"
         >
           <span>{isGeneratingStoryboard ? 'Création…' : 'Générer le storyboard de cet angle'}</span>
           <ArrowRight className="w-4 h-4" aria-hidden />

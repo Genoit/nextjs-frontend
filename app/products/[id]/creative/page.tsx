@@ -18,15 +18,13 @@ export default function ProductCreativePage() {
         <Link
           href={`/products/${productId}`}
           aria-label="Back to the product"
-          className="absolute top-8 left-4 flex size-10 items-center justify-center rounded-full bg-white/10 text-white transition hover:bg-white/20 focus-visible:outline-2 focus-visible:outline-trend-orange md:left-6"
+          className="studio-chip absolute top-7 left-4 !size-9 justify-center !p-0 md:left-6"
         >
           <ArrowLeft className="size-4" aria-hidden />
         </Link>
-        <div className="mb-8 flex flex-col items-center px-12 text-center">
-          <h1 className="text-3xl font-black tracking-widest text-white uppercase md:text-5xl">
-            Ad studio
-          </h1>
-          <p className="mt-3 text-sm font-medium text-ink-muted">
+        <div className="mb-6 flex flex-col items-center px-12 text-center">
+          <h1 className="text-xl font-semibold tracking-[-0.01em] text-studio-text">Ad studio</h1>
+          <p className="mt-[9px] max-w-[52ch] text-[13px] text-studio-meta">
             Product sheet, strategy, storyboard, visuals, then each shot generated and checked.
           </p>
         </div>

@@ -346,7 +346,7 @@ export function StoryboardEditor({
             onClick={onPrepareAssets}
             disabled={!storyboard.accepted || !isDurationMatching}
             aria-describedby="launch-hint"
-            className="w-full px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-bold shadow-xs transition flex items-center justify-center gap-2"
+            className="w-full px-5 py-2.5 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-semibold transition flex items-center justify-center gap-2"
           >
             <Images className="w-4 h-4" aria-hidden />
             <span>Préparer les visuels produit</span>

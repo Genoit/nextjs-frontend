@@ -227,7 +227,7 @@ export function FinalVideoPanel({ job, finalAsset, videoUrl, videoFailed, notRea
   };
 
   return (
-    <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-5">
+    <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Film className="w-4 h-4 text-trend-orange" aria-hidden />

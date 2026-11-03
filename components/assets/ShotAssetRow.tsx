@@ -38,7 +38,10 @@ const focusRing =
 const PILL: Record<string, { className: string; Icon: typeof Check }> = {
   pending: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Clock },
   processing: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Loader2 },
-  direct: { className: 'border-ink bg-ink text-on-accent', Icon: Check },
+  direct: {
+    className: 'border-studio-rule-strong bg-studio-raised-2 text-studio-text',
+    Icon: Check,
+  },
   processed: { className: 'border-success/30 bg-success-soft text-success', Icon: Check },
   simulated: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: FlaskConical },
   fallback: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: ShieldAlert },
