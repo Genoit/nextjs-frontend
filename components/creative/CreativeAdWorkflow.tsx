@@ -150,8 +150,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   return (
     <div className="space-y-8">
       {/* Step Navigation Header */}
-      <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs">
-        <div className="relative flex items-center justify-between overflow-x-auto gap-2">
+      <div className="mx-auto w-full max-w-5xl rounded-[1.5rem] border border-white/10 bg-[#111] p-2 md:rounded-[2rem]">
+        <div className="relative flex items-center justify-between overflow-x-auto gap-1.5">
           {[
             { num: 1, label: 'Intelligence', icon: Sparkles },
             { num: 2, label: 'Configuration créative', icon: Sliders },
@@ -170,21 +170,21 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                 type="button"
                 onClick={() => setUserSelectedStep(s.num as Step)}
                 aria-current={isActive ? 'step' : undefined}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
+                className={`flex min-h-10 items-center gap-2 px-4 rounded-2xl text-xs font-bold transition whitespace-nowrap focus-visible:outline-2 focus-visible:outline-trend-orange ${
                   isActive
-                    ? 'bg-trend-orange text-on-accent shadow-xs'
+                    ? 'bg-white text-black'
                     : isPassed
-                      ? 'bg-cream text-trend-orange hover:bg-trend-orange/30'
-                      : 'text-ink-muted hover:text-ink-soft'
+                      ? 'bg-white/5 text-white hover:bg-white/10'
+                      : 'text-ink-muted hover:bg-white/5 hover:text-white'
                 }`}
               >
                 <div
                   className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                     isActive
-                      ? 'bg-studio-ground text-trend-orange'
+                      ? 'bg-black text-white'
                       : isPassed
                         ? 'bg-trend-orange text-on-accent'
-                        : 'bg-studio-rule text-ink-muted'
+                        : 'bg-white/10 text-ink-muted'
                   }`}
                 >
                   <span aria-hidden>{isPassed ? '✓' : s.num}</span>
@@ -400,14 +400,15 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
               Aucune génération en cours : lancez la vidéo depuis l&apos;étape Visuels produit.
             </p>
           )}
-          <VideoHistory
-            productId={productId}
-            refreshKey={`${activeJob?.id ?? ''}:${activeJob?.status ?? ''}`}
-            activeJobId={activeJob?.id ?? null}
-            onOpen={openVideoJob}
-          />
         </>
       )}
+      {/* Video history: the studio's right rail on every step (a list on phones). */}
+      <VideoHistory
+        productId={productId}
+        refreshKey={`${activeJob?.id ?? ''}:${activeJob?.status ?? ''}`}
+        activeJobId={activeJob?.id ?? null}
+        onOpen={openVideoJob}
+      />
     </div>
   );
 }

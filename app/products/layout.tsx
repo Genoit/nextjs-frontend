@@ -1,13 +1,8 @@
 'use client';
 
 import React from 'react';
-import Navbar from '../../components/Navbar';
+import { AppShell } from '../../components/AppShell';
 
 export default function ProductsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      {children}
-    </>
-  );
+  return <AppShell active="/products">{children}</AppShell>;
 }

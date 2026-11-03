@@ -15,7 +15,7 @@ export default function ProductDetailPage() {
 
   return (
     <ProtectedRoute>
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+      <div className="w-full flex-1 px-4 py-8 md:px-10">
         <ProductDetail productId={productId} showActions={true} />
       </div>
     </ProtectedRoute>
