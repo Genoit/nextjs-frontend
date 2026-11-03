@@ -1,8 +1,8 @@
 'use client';
 
 import React from 'react';
-import { AppShell } from '../../components/AppShell';
+import { DashShell } from '../../components/dashboard/DashShell';
 
 export default function ProductsLayout({ children }: { children: React.ReactNode }) {
-  return <AppShell active="/products">{children}</AppShell>;
+  return <DashShell>{children}</DashShell>;
 }

@@ -1,6 +1,9 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import {
+  clockText,
+  discountPct,
+  jobSeconds,
   createHref,
   daysUntil,
   durationText,
@@ -108,5 +111,24 @@ describe('durationText / timeAgo / daysUntil', () => {
     assert.strictEqual(daysUntil('2026-12-04T12:00:00Z', now), 14);
     assert.strictEqual(daysUntil('2026-11-01T00:00:00Z', now), 0);
     assert.strictEqual(daysUntil(null, now), null);
+  });
+});
+
+describe('jobSeconds / clockText / discountPct', () => {
+  it('sums shot durations, numeric strings included', () => {
+    assert.strictEqual(jobSeconds({ shots: [{ duration_shot_s: 5 }, { duration_shot_s: '7.5' }] }), 13);
+    assert.strictEqual(jobSeconds({ shots: [{ duration_shot_s: null }] }), null);
+    assert.strictEqual(jobSeconds(null), null);
+  });
+  it('formats a clock', () => {
+    assert.strictEqual(clockText(28), '00:28');
+    assert.strictEqual(clockText(65), '01:05');
+    assert.strictEqual(clockText(null), null);
+  });
+  it('computes a discount only when there is one', () => {
+    assert.strictEqual(discountPct(39.99, 59.99), 33);
+    assert.strictEqual(discountPct(20, 20), null);
+    assert.strictEqual(discountPct(null, 20), null);
+    assert.strictEqual(discountPct(10, 0), null);
   });
 });
