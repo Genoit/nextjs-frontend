@@ -57,6 +57,18 @@
   --color-accent-soft: rgb(255 107 26 / 0.14); /* pressed chip, selected row */
   --color-accent-line: rgb(255 107 26 / 0.32); /* focused composer, pressed chip edge */
 
+  /* Dashboard mockup (maquette Figma, 2026-11-03): burnt orange actions, deep ember for the active nav. */
+  --color-ember: #a6441d; /* Generate ad */
+  --color-ember-strong: #b9501f;
+  --color-ember-deep: #8e2704; /* hero CTA, active nav start */
+  --color-ember-text: #e0662e; /* View all, In progress, ED */
+  --color-coin: #e9a135; /* credits coin and bar */
+  --color-dash-ground: #0b0b0b;
+  --color-dash-panel: #131313;
+  --color-dash-raised: #181818;
+  --color-dash-line: #242424;
+  --color-dash-green: #5daf66; /* Ready / Completed */
+
   /* Elevation: a top glint on surfaces, a real shadow only on what floats (bars, composer, menus). */
   --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);
   --shadow-float:

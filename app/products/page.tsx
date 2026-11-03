@@ -88,6 +88,12 @@ function Card({ product, badge }: { product: Product; badge: Badge | undefined }
   );
 }
 
+// The dashboard search lands here as ?search=; the list fetches once on mount, so it is an initial filter.
+function searchParam() {
+  if (typeof window === 'undefined') return '';
+  return new URLSearchParams(window.location.search).get('search')?.trim() ?? '';
+}
+
 export default function ProductsPage() {
   const {
     products,
@@ -101,7 +107,11 @@ export default function ProductsPage() {
     goToPreviousPage,
     canGoToNextPage,
     canGoToPreviousPage,
-  } = useProducts({ initialPageSize: 20, fetchOnMount: true });
+  } = useProducts({
+    initialPageSize: 20,
+    fetchOnMount: true,
+    initialFilters: searchParam() ? { search: searchParam() } : undefined,
+  });
   const [badges, setBadges] = useState<Record<string, Badge>>({});
   const [filter, setFilter] = useState<(typeof FILTERS)[number]['key']>('all');
 

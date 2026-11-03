@@ -142,7 +142,18 @@ export function CreativeConfigForm({
   );
   const [platform, setPlatform] = useState<TargetPlatform>(initialConfig?.platform || 'tiktok');
   const [language, setLanguage] = useState(initialConfig?.language || 'fr');
-  const [aspectRatio, setAspectRatio] = useState(initialConfig?.aspect_ratio || '9:16');
+  // A new config starts from the output format picked on the dashboard. This form only renders
+  // client-side after its data loads, so reading storage here cannot mismatch server HTML.
+  const [aspectRatio, setAspectRatio] = useState(() => {
+    if (initialConfig?.aspect_ratio) return initialConfig.aspect_ratio;
+    try {
+      const picked = sessionStorage.getItem('trended.outputFormat');
+      if (picked && ['9:16', '1:1', '16:9'].includes(picked)) return picked;
+    } catch {
+      // storage blocked: keep 9:16
+    }
+    return '9:16';
+  });
   const [callToAction, setCallToAction] = useState(
     initialConfig?.call_to_action || 'Profitez de notre offre exclusive aujourd’hui',
   );
