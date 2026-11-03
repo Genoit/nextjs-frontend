@@ -93,12 +93,12 @@ function Hero({ empty }: { empty: boolean }) {
         <h1 className="text-[34px] leading-[1.1] font-bold tracking-[-0.03em] text-white sm:text-[42px]">
           Turn products into ads.
         </h1>
-        <p className="mt-2.5 text-[15px] text-[#a8a8a8] sm:text-[16px]">
+        <p className="mt-2.5 text-[15px] text-studio-muted sm:text-[16px]">
           Create cinematic product videos that make people stop scrolling.
         </p>
         <Link
           href="/product-input"
-          className={`mt-6 inline-flex h-[42px] items-center gap-2.5 rounded-[9px] bg-gradient-to-b from-[#a2300a] to-ember-deep px-5 text-[14.5px] font-semibold text-white shadow-[0_0_28px_rgb(184_56_8/0.35),inset_0_1px_0_rgb(255_255_255/0.12)] transition hover:brightness-110 active:scale-[0.98] ${focusRing}`}
+          className={`mt-6 inline-flex h-[42px] items-center gap-2.5 rounded-[9px] bg-gradient-to-b from-ember-cta-start to-ember-deep px-5 text-[14.5px] font-semibold text-on-ember shadow-[0_0_28px_rgb(184_56_8/0.35),inset_0_1px_0_rgb(255_255_255/0.12)] transition hover:brightness-110 active:scale-[0.98] ${focusRing}`}
         >
           <Sparkles className="size-[18px]" aria-hidden />
           {empty ? 'Create your first ad' : 'Create a new ad'}
@@ -137,7 +137,7 @@ function CreatePanel() {
         </p>
         <div className="mt-3.5 flex gap-2">
           <span
-            className="flex size-[43px] shrink-0 items-center justify-center rounded-[9px] border border-[#2a2a2a] bg-dash-raised text-studio-muted"
+            className="flex size-[43px] shrink-0 items-center justify-center rounded-[9px] border border-dash-edge bg-dash-raised text-studio-muted"
             aria-hidden
           >
             <Link2 className="size-[18px]" />
@@ -153,13 +153,13 @@ function CreatePanel() {
             value={link}
             onChange={(e) => setLink(e.target.value)}
             placeholder="Paste your product URL..."
-            className="h-[43px] min-w-0 flex-1 rounded-[9px] border border-[#2a2a2a] bg-dash-raised px-3.5 text-[13px] text-white outline-none placeholder:text-studio-meta focus:border-ember-text/60"
+            className="h-[43px] min-w-0 flex-1 rounded-[9px] border border-dash-edge bg-dash-raised px-3.5 text-[13px] text-white outline-none placeholder:text-studio-meta focus:border-ember-text/60"
           />
         </div>
         <Link
           href="/product-input?mode=manual"
           onClick={keepFormat}
-          className={`mt-3.5 inline-flex items-center gap-2.5 rounded-md text-[13px] text-[#d4d4d4] transition hover:text-white ${focusRing}`}
+          className={`mt-3.5 inline-flex items-center gap-2.5 rounded-md text-[13px] text-dash-soft transition hover:text-white ${focusRing}`}
         >
           <PenLine className="size-4" aria-hidden />
           Enter product details manually
@@ -179,7 +179,7 @@ function CreatePanel() {
       <Link
         href="/product-input"
         onClick={keepFormat}
-        className={`flex h-[100px] flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-[#3a3a3a] bg-white/[0.015] text-[12.5px] text-[#cfcfcf] transition hover:border-[#555] hover:text-white ${focusRing}`}
+        className={`flex h-[100px] flex-col items-center justify-center gap-3 rounded-[10px] border border-dashed border-dash-edge-strong bg-white/[0.015] text-[12.5px] text-dash-soft transition hover:border-dash-edge-hover hover:text-white ${focusRing}`}
       >
         <ImageUp className="size-6 text-studio-muted" strokeWidth={1.5} aria-hidden />
         Upload product image
@@ -198,7 +198,7 @@ function CreatePanel() {
             id="output-format"
             value={format}
             onChange={(e) => setFormat(e.target.value)}
-            className="h-[43px] w-full appearance-none rounded-[9px] border border-[#2a2a2a] bg-dash-raised pr-10 pl-10 text-[13px] text-white outline-none focus:border-ember-text/60"
+            className="h-[43px] w-full appearance-none rounded-[9px] border border-dash-edge bg-dash-raised pr-10 pl-10 text-[13px] text-white outline-none focus:border-ember-text/60"
           >
             {FORMATS.map((f) => (
               <option key={f.value} value={f.value}>
@@ -213,7 +213,7 @@ function CreatePanel() {
         </div>
         <button
           type="submit"
-          className={`inline-flex h-[43px] items-center justify-center gap-2.5 rounded-[9px] bg-ember text-[14px] font-semibold text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.1)] transition hover:bg-ember-strong active:scale-[0.99] ${focusRing}`}
+          className={`inline-flex h-[43px] items-center justify-center gap-2.5 rounded-[9px] bg-ember text-[14px] font-semibold text-on-ember shadow-[inset_0_1px_0_rgb(255_255_255/0.1)] transition hover:bg-ember-strong active:scale-[0.99] ${focusRing}`}
         >
           <Sparkles className="size-[18px]" aria-hidden />
           Generate ad
@@ -231,7 +231,7 @@ function ProductCard({ entry }: { entry: Entry }) {
     .filter((t) => t && !NOT_A_TAG.includes(String(t)))
     .join(' · ');
   return (
-    <li className="overflow-hidden rounded-[12px] border border-dash-line bg-[#111]">
+    <li className="overflow-hidden rounded-[12px] border border-dash-line bg-dash-panel">
       <Link href={`/products/${entry.product.id}`} className={`group relative block ${focusRing}`}>
         <Thumb
           src={job?.thumbnail_url || productImage(entry.product)}
@@ -299,7 +299,7 @@ function LatestProducts({ load, retry }: { load: Load; retry: () => void }) {
       ) : load.entries.length === 0 ? (
         <Link
           href="/product-input"
-          className="mt-3 flex h-[205px] flex-col items-center justify-center gap-2 rounded-[12px] border border-dashed border-[#333] text-[13px] text-studio-muted transition hover:text-white"
+          className="mt-3 flex h-[205px] flex-col items-center justify-center gap-2 rounded-[12px] border border-dashed border-dash-edge-strong text-[13px] text-studio-muted transition hover:text-white"
         >
           <Package className="size-7" strokeWidth={1.25} aria-hidden />
           Add your first product: its card appears here.
@@ -327,7 +327,7 @@ function RecentCreations({ load }: { load: Load }) {
   return (
     <section
       aria-labelledby="recent-title"
-      className="rounded-[14px] border border-dash-line bg-[#151515] px-[18px] pt-3.5 pb-1.5"
+      className="rounded-[14px] border border-dash-line bg-dash-panel px-[18px] pt-3.5 pb-1.5"
     >
       <div className="flex items-center justify-between border-b border-dash-line pb-2.5">
         <h2 id="recent-title" className="text-[14.5px] font-medium text-white">
@@ -375,7 +375,7 @@ function RecentCreations({ load }: { load: Load }) {
                     <p className="text-[11.5px] text-studio-muted tabular-nums">{format}</p>
                   )}
                   <p
-                    className={`mt-0.5 flex items-center gap-1.5 text-[11.5px] ${ready ? 'text-[#d4d4d4]' : STATUS_DOT[badge.tone]}`}
+                    className={`mt-0.5 flex items-center gap-1.5 text-[11.5px] ${ready ? 'text-dash-soft' : STATUS_DOT[badge.tone]}`}
                   >
                     {done ? (
                       <CheckCircle2

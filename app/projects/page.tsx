@@ -111,7 +111,7 @@ function Card({ c }: { c: Creative }) {
   const format = formatsOf(c.job)[0];
   const tier = c.job.quality_tier ? TIER[c.job.quality_tier] : null;
   return (
-    <li className="overflow-hidden rounded-[10px] border border-dash-line bg-dash-panel transition hover:border-[#333]">
+    <li className="overflow-hidden rounded-[10px] border border-dash-line bg-dash-panel transition hover:border-dash-edge-strong">
       <Link href={href} className={`group relative block ${focusRing}`}>
         <Thumb
           src={c.job.thumbnail_url || c.job.exports?.[0]?.thumbnail_url || productImage(c.product)}
@@ -191,7 +191,7 @@ function Row({ c }: { c: Creative }) {
 }
 
 const control =
-  'h-[38px] rounded-[8px] border border-[#2a2a2a] bg-[#141414] text-[13px] text-white outline-none focus:border-ember-text/60';
+  'h-[38px] rounded-[8px] border border-dash-edge bg-dash-field text-[13px] text-white outline-none focus:border-ember-text/60';
 
 function Select({
   label,
@@ -329,7 +329,7 @@ export default function ProjectsPage() {
           />
           <Link
             href="/product-input"
-            className={`inline-flex h-[38px] items-center gap-2 rounded-[8px] bg-ember px-4 text-[13px] font-semibold text-white transition hover:bg-ember-strong active:scale-[0.98] sm:ml-auto ${focusRing}`}
+            className={`inline-flex h-[38px] items-center gap-2 rounded-[8px] bg-ember px-4 text-[13px] font-semibold text-on-ember transition hover:bg-ember-strong active:scale-[0.98] sm:ml-auto ${focusRing}`}
           >
             <Plus className="size-4" aria-hidden />
             Create ad
@@ -369,7 +369,7 @@ export default function ProjectsPage() {
                 { value: 'asc', label: 'Oldest first' },
               ]}
             />
-            <div className="flex overflow-hidden rounded-[8px] border border-[#2a2a2a]">
+            <div className="flex overflow-hidden rounded-[8px] border border-dash-edge">
               {(['grid', 'list'] as const).map((v) => {
                 const Icon = v === 'grid' ? LayoutGrid : List;
                 return (
@@ -423,7 +423,7 @@ export default function ProjectsPage() {
           ) : all.length === 0 ? (
             <Link
               href="/product-input"
-              className="flex h-[220px] flex-col items-center justify-center gap-2 rounded-[10px] border border-dashed border-[#333] text-[13px] text-studio-muted transition hover:text-white"
+              className="flex h-[220px] flex-col items-center justify-center gap-2 rounded-[10px] border border-dashed border-dash-edge-strong text-[13px] text-studio-muted transition hover:text-white"
             >
               <Film className="size-7" strokeWidth={1.25} aria-hidden />
               No ad yet. Paste a product link: your first ad lands here.

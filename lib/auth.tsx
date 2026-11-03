@@ -10,6 +10,7 @@ import {
   startGoogleRedirectSignIn,
 } from './firebase/auth';
 import { AuthResponse, LoginPayload, RegisterPayload, User } from './types';
+import { resetThemeCache } from './theme';
 
 interface AuthContextType {
   user: User | null;
@@ -21,6 +22,8 @@ interface AuthContextType {
   loginWithGoogleRedirect: () => Promise<void>;
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => void;
+  /** Replace the cached user after a profile edit. */
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -171,6 +174,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    resetThemeCache();
     setToken(null);
     setUser(null);
     startTransition(() => {
@@ -190,6 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginWithGoogleRedirect,
         register,
         logout,
+        updateUser: setUser,
       }}
     >
       {children}

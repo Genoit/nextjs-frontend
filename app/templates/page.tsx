@@ -38,7 +38,7 @@ const STYLE_LABEL: Record<string, string> = {
 };
 const BEAT_FILL: Record<string, string> = {
   hook: 'bg-ember',
-  context: 'bg-[#3a3a3a]',
+  context: 'bg-dash-edge-strong',
   reveal: 'bg-[#575757]',
   demonstration: 'bg-[#474747]',
   resolution: 'bg-[#626262]',
@@ -67,7 +67,7 @@ function Timeline({ t }: { t: Template }) {
         {rows.map((r, i) => (
           <li key={i} className="flex items-center gap-2.5 text-[12px]">
             <span className={`size-2 shrink-0 rounded-full ${BEAT_FILL[r.role]}`} />
-            <span className="flex-1 truncate text-[#d4d4d4]">{r.label}</span>
+            <span className="flex-1 truncate text-dash-soft">{r.label}</span>
             <span className="text-studio-muted tabular-nums">
               {r.from}–{r.to}s
             </span>
@@ -95,7 +95,7 @@ function UseTemplate({ t, products }: { t: Template; products: Product[] | null 
       className="right-0 bottom-12 w-64"
       buttonClassName="w-full"
       button={
-        <span className="inline-flex h-[38px] w-full items-center justify-center gap-2 rounded-[8px] bg-ember text-[13px] font-semibold text-white transition hover:bg-ember-strong">
+        <span className="inline-flex h-[38px] w-full items-center justify-center gap-2 rounded-[8px] bg-ember text-[13px] font-semibold text-on-ember transition hover:bg-ember-strong">
           <Wand2 className="size-4" aria-hidden />
           Use template
           <ChevronDown className="size-4" aria-hidden />
@@ -140,14 +140,14 @@ function Card({ t, products }: { t: Template; products: Product[] | null }) {
         {tags.map((tag) => (
           <li
             key={tag}
-            className="rounded-[6px] bg-white/[0.05] px-2 py-0.5 text-[11.5px] text-[#d4d4d4] tabular-nums"
+            className="rounded-[6px] bg-white/[0.05] px-2 py-0.5 text-[11.5px] text-dash-soft tabular-nums"
           >
             {tag}
           </li>
         ))}
       </ul>
       <p className="mt-3 text-[12px] text-studio-muted">
-        Best for <span className="text-[#d4d4d4]">{t.bestFor.join(', ')}</span>
+        Best for <span className="text-dash-soft">{t.bestFor.join(', ')}</span>
       </p>
       {t.note && (
         <p className="mt-2 flex items-start gap-1.5 text-[11.5px] text-warning">
@@ -210,7 +210,7 @@ export default function TemplatesPage() {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search templates..."
-              className="h-[38px] w-full rounded-[8px] border border-[#2a2a2a] bg-[#141414] pr-3 pl-10 text-[13px] text-white outline-none placeholder:text-studio-meta focus:border-ember-text/60"
+              className="h-[38px] w-full rounded-[8px] border border-dash-edge bg-dash-field pr-3 pl-10 text-[13px] text-white outline-none placeholder:text-studio-meta focus:border-ember-text/60"
             />
           </div>
         </div>
@@ -225,7 +225,7 @@ export default function TemplatesPage() {
               className={`h-[32px] rounded-[8px] border px-3 text-[13px] transition ${
                 platform === p.key
                   ? 'border-ember-text bg-ember/10 text-white'
-                  : 'border-[#2a2a2a] text-[#d4d4d4] hover:text-white'
+                  : 'border-dash-edge text-dash-soft hover:text-white'
               } ${focusRing}`}
             >
               {p.label}
@@ -260,7 +260,7 @@ export default function TemplatesPage() {
                   href={s.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#d4d4d4] underline-offset-2 hover:underline"
+                  className="text-dash-soft underline-offset-2 hover:underline"
                 >
                   {s.label}
                 </a>

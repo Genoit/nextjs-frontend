@@ -25,6 +25,7 @@ import {
 } from 'lucide-react';
 import ProtectedRoute from '../ProtectedRoute';
 import { useAuth } from '../../lib/auth';
+import { useStudioTheme } from '../../lib/theme';
 import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
 import { billingApi, type BillingPlan, type BillingSummary } from '../../lib/api/billing';
@@ -196,7 +197,7 @@ const NAV: { label: string; Icon: typeof House; href?: string }[] = [
   { label: 'Brand Kit', Icon: Tag },
 ];
 const NAV_FOOT: typeof NAV = [
-  { label: 'Settings', Icon: Settings },
+  { label: 'Settings', Icon: Settings, href: '/settings' },
   { label: 'Help', Icon: CircleHelp },
 ];
 
@@ -221,8 +222,8 @@ function NavItem({ item, onNavigate }: { item: (typeof NAV)[number]; onNavigate?
   const active = isActive(href, usePathname() ?? '');
   const cls = `flex h-[45px] items-center gap-3.5 rounded-[10px] px-4 text-[13.5px] transition ${
     active
-      ? 'bg-gradient-to-r from-ember-deep/90 to-[#3f1c0e] text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]'
-      : 'text-[#e6e6e6] hover:bg-white/[0.04]'
+      ? 'bg-gradient-to-r from-ember-deep/90 to-ember-nav-end text-on-ember shadow-[inset_0_1px_0_rgb(255_255_255/0.06)]'
+      : 'text-dash-nav hover:bg-white/[0.04]'
   }`;
   const icon = <Icon className="size-[19px] shrink-0" strokeWidth={1.6} aria-hidden />;
   if (!href) {
@@ -269,7 +270,7 @@ function CreditsCard({ summary, total }: { summary: BillingSummary | null; total
       </p>
       {total ? (
         <div
-          className="mt-2 h-[7px] overflow-hidden rounded-full bg-[#272727]"
+          className="mt-2 h-[7px] overflow-hidden rounded-full bg-dash-rail-line"
           role="progressbar"
           aria-label="Credits remaining"
           aria-valuenow={pct}
@@ -337,7 +338,7 @@ function AccountMenu() {
       className="top-12 right-0 w-60"
       button={
         <span className="flex items-center gap-2 text-studio-muted">
-          <span className="flex size-[38px] items-center justify-center rounded-full bg-gradient-to-br from-[#3a3a3a] to-[#1f1f1f] text-[13px] font-semibold text-white ring-1 ring-white/10">
+          <span className="flex size-[38px] items-center justify-center rounded-full bg-gradient-to-br from-dash-edge-strong to-dash-raised text-[13px] font-semibold text-white ring-1 ring-white/10">
             {(user?.first_name?.[0] || user?.email?.[0] || '?').toUpperCase()}
           </span>
           <ChevronDown className="size-4" aria-hidden />
@@ -384,7 +385,7 @@ function Topbar({
 }) {
   const router = useRouter();
   const path = usePathname() ?? '';
-  const crumb = NAV.find((n) => isActive(n.href, path))?.label ?? 'Workspace';
+  const crumb = [...NAV, ...NAV_FOOT].find((n) => isActive(n.href, path))?.label ?? 'Workspace';
   const [q, setQ] = useState('');
   const input = useRef<HTMLInputElement>(null);
   useEffect(() => {
@@ -441,9 +442,9 @@ function Topbar({
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Search projects or products..."
-              className="h-[38px] w-[300px] rounded-[9px] border border-[#2a2a2a] bg-[#141414] pr-12 pl-10 text-[13px] text-white outline-none placeholder:text-studio-muted focus:border-ember-text/60 xl:w-[318px]"
+              className="h-[38px] w-[300px] rounded-[9px] border border-dash-edge bg-dash-field pr-12 pl-10 text-[13px] text-white outline-none placeholder:text-studio-muted focus:border-ember-text/60 xl:w-[318px]"
             />
-            <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-[5px] border border-[#333] bg-[#1d1d1d] px-1.5 py-0.5 font-sans text-[10.5px] text-studio-muted">
+            <kbd className="pointer-events-none absolute top-1/2 right-2.5 -translate-y-1/2 rounded-[5px] border border-dash-edge-strong bg-dash-raised px-1.5 py-0.5 font-sans text-[10.5px] text-studio-muted">
               ⌘K
             </kbd>
           </form>
@@ -516,11 +517,15 @@ export function DashShell({
   }, [menuOpen]);
 
   const total = (summary && plans.find((p) => p.id === summary.plan)?.monthly_credits) || null;
+  const theme = useStudioTheme();
 
   return (
     <ProtectedRoute>
-      <div className="flex min-h-dvh bg-dash-ground font-sans text-white antialiased">
-        <aside className="sticky top-0 hidden h-dvh w-[220px] shrink-0 border-r border-[#262626] bg-[#0c0c0c] lg:block">
+      <div
+        data-theme={theme}
+        className="flex min-h-dvh bg-dash-ground font-sans text-white antialiased"
+      >
+        <aside className="sticky top-0 hidden h-dvh w-[220px] shrink-0 border-r border-dash-rail-line bg-dash-sidebar lg:block">
           <Sidebar summary={summary} total={total} />
         </aside>
 
@@ -537,7 +542,7 @@ export function DashShell({
               className="absolute inset-0 bg-black/70"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="relative h-full w-[260px] border-r border-[#262626] bg-[#0c0c0c]">
+            <div className="relative h-full w-[260px] border-r border-dash-rail-line bg-dash-sidebar">
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}

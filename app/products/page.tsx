@@ -48,7 +48,7 @@ const DOT: Record<Status['key'], string> = {
   simulated: 'bg-white/10 text-studio-muted',
   failed: 'bg-danger/15 text-danger',
   idle: 'bg-white/5 text-studio-meta',
-  none: 'bg-white/5 text-[#d4d4d4]',
+  none: 'bg-white/5 text-dash-soft',
 };
 const AVAILABILITY: { value: AvailabilityStatus; label: string }[] = [
   { value: 'in_stock', label: 'In stock' },
@@ -118,7 +118,14 @@ function RatingRing({ rating }: { rating: number | null }) {
   return (
     <span className={`relative inline-flex size-[36px] items-center justify-center ${tone}`}>
       <svg viewBox="0 0 36 36" className="absolute inset-0 -rotate-90" aria-hidden>
-        <circle cx="18" cy="18" r={r} fill="none" stroke="#262626" strokeWidth="3" />
+        <circle
+          cx="18"
+          cy="18"
+          r={r}
+          fill="none"
+          stroke="var(--color-dash-rail-line)"
+          strokeWidth="3"
+        />
         <circle
           cx="18"
           cy="18"
@@ -138,7 +145,7 @@ function RatingRing({ rating }: { rating: number | null }) {
 
 function ToolButton({ Icon, children }: { Icon: typeof Filter; children: ReactNode }) {
   return (
-    <span className="inline-flex h-[38px] items-center gap-2 rounded-[8px] border border-[#2a2a2a] bg-[#141414] px-4 text-[13px] text-white">
+    <span className="inline-flex h-[38px] items-center gap-2 rounded-[8px] border border-dash-edge bg-dash-field px-4 text-[13px] text-white">
       <Icon className="size-4 text-studio-muted" aria-hidden />
       {children}
     </span>
@@ -308,7 +315,7 @@ export default function ProductsPage() {
               value={q}
               onChange={(e) => reset(setQ)(e.target.value)}
               placeholder="Search products..."
-              className="h-[38px] w-full rounded-[8px] border border-[#2a2a2a] bg-[#141414] pr-3 pl-10 text-[13px] text-white outline-none placeholder:text-studio-meta focus:border-ember-text/60"
+              className="h-[38px] w-full rounded-[8px] border border-dash-edge bg-dash-field pr-3 pl-10 text-[13px] text-white outline-none placeholder:text-studio-meta focus:border-ember-text/60"
             />
           </div>
           <Popover
@@ -370,7 +377,7 @@ export default function ProductsPage() {
           </Popover>
           <Link
             href="/product-input"
-            className={`inline-flex h-[38px] items-center gap-2 rounded-[8px] bg-ember px-4 text-[13px] font-semibold text-white transition hover:bg-ember-strong active:scale-[0.98] ${focusRing}`}
+            className={`inline-flex h-[38px] items-center gap-2 rounded-[8px] bg-ember px-4 text-[13px] font-semibold text-on-ember transition hover:bg-ember-strong active:scale-[0.98] ${focusRing}`}
           >
             <Plus className="size-4" aria-hidden />
             Add product
@@ -394,12 +401,12 @@ export default function ProductsPage() {
                   className={`flex h-[32px] items-center rounded-[8px] border px-3 text-[13px] transition ${
                     on
                       ? 'border-ember-text bg-ember/10 text-white'
-                      : 'border-[#2a2a2a] text-[#d4d4d4] hover:text-white'
+                      : 'border-dash-edge text-dash-soft hover:text-white'
                   }`}
                 >
                   {c.label}
                 </span>
-                <span className="flex h-[32px] min-w-[32px] items-center justify-center rounded-[8px] border border-[#2a2a2a] px-2 text-[12px] text-studio-muted tabular-nums">
+                <span className="flex h-[32px] min-w-[32px] items-center justify-center rounded-[8px] border border-dash-edge px-2 text-[12px] text-studio-muted tabular-nums">
                   {load.state === 'ready' ? (counts[c.key] ?? 0) : '…'}
                 </span>
               </button>
@@ -547,7 +554,7 @@ export default function ProductsPage() {
                         {e.jobs === null ? '—' : e.jobs.length}
                       </td>
                       <td className="pr-4">
-                        <span className="ml-auto flex size-[32px] items-center justify-center rounded-[7px] border border-[#2a2a2a] text-studio-muted">
+                        <span className="ml-auto flex size-[32px] items-center justify-center rounded-[7px] border border-dash-edge text-studio-muted">
                           <RowMenu product={p} />
                         </span>
                       </td>
@@ -605,7 +612,7 @@ export default function ProductsPage() {
               aria-label="Products per page"
               value={size}
               onChange={(e) => reset(setSize)(Number(e.target.value))}
-              className="h-[32px] appearance-none rounded-[7px] border border-[#2a2a2a] bg-[#141414] pr-8 pl-3 text-[12.5px] text-white outline-none focus:border-ember-text/60"
+              className="h-[32px] appearance-none rounded-[7px] border border-dash-edge bg-dash-field pr-8 pl-3 text-[12.5px] text-white outline-none focus:border-ember-text/60"
             >
               {PAGE_SIZES.map((n) => (
                 <option key={n} value={n}>

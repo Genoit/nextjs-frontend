@@ -12,6 +12,7 @@ import { ProductInfoForm } from '../../components/product-input/ProductInfoForm'
 import { Stepper } from '../../components/product-input/StepRail';
 import { useProductDraft } from '../../components/product-input/use-product-draft';
 import { nextStepHref } from '../../lib/product-input-rules.mjs';
+import { tempting } from '../fonts';
 
 const focusField = (id: string) => document.getElementById(id)?.focus();
 
@@ -71,10 +72,12 @@ export default function ProductInputPage() {
           <div className="mx-auto w-full max-w-[1100px] flex-1 px-4 pt-8 pb-12 sm:px-6 lg:pt-12">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
               <div className="min-w-0">
-                <h1 className="font-editorial text-[28px] leading-[1.1] text-studio-text sm:text-[32px]">
+                <h1 className="font-sans text-[44px] leading-[1] font-extrabold tracking-[-0.035em] text-studio-text sm:text-[60px] lg:text-[68px]">
                   Add a product
                 </h1>
-                <p className="mt-1 max-w-xl text-sm leading-5 text-studio-muted">
+                <p
+                  className={`${tempting.className} mt-3 max-w-xl text-[22px] leading-[1.35] text-studio-muted sm:text-[26px]`}
+                >
                   Import it or fill in the sheet. You review everything before the analysis starts.
                 </p>
               </div>

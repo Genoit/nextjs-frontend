@@ -6,6 +6,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Clapperboard, LogOut, Menu, Package, Plus, X, Zap } from 'lucide-react';
 import { useAuth } from '../lib/auth';
+import { useStudioTheme } from '../lib/theme';
 import { billingApi, type BillingSummary } from '../lib/api/billing';
 import { creditsText, isSubscribed, PLAN_LABEL } from '../lib/billing-rules.mjs';
 
@@ -115,6 +116,7 @@ export function AppShell({
   const [menuOpen, setMenuOpen] = useState(false);
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const { logout } = useAuth();
+  const theme = useStudioTheme();
 
   useEffect(() => {
     let alive = true;
@@ -135,7 +137,10 @@ export function AppShell({
   }, [menuOpen]);
 
   return (
-    <div className="flex min-h-dvh flex-col bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange/30 selection:text-studio-text">
+    <div
+      data-theme={theme}
+      className="flex min-h-dvh flex-col bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange/30 selection:text-studio-text"
+    >
       {/* No bar across the page: the wordmark, the nav pill and the account pill float over the ground. */}
       <header className="sticky top-0 z-50 flex h-[70px] shrink-0 items-center justify-between gap-2 lg:grid lg:grid-cols-[1fr_auto_1fr] px-3 pt-3 pb-1 md:px-5">
         <div className="flex items-center gap-1">

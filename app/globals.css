@@ -68,6 +68,17 @@
   --color-dash-raised: #181818;
   --color-dash-line: #242424;
   --color-dash-green: #5daf66; /* Ready / Completed */
+  --color-dash-edge: #2a2a2a; /* field and chip borders */
+  --color-dash-edge-strong: #333333; /* dashed drop zones, hover borders */
+  --color-dash-edge-hover: #555555;
+  --color-dash-field: #141414; /* inputs and selects */
+  --color-dash-soft: #d4d4d4; /* secondary text one step above muted */
+  --color-dash-nav: #e6e6e6; /* idle nav labels */
+  --color-dash-sidebar: #0c0c0c;
+  --color-dash-rail-line: #262626;
+  --color-ember-nav-end: #3f1c0e; /* active nav gradient end */
+  --color-ember-cta-start: #a2300a; /* hero CTA gradient start */
+  --color-on-ember: #ffffff; /* text on solid ember fills, both themes */
 
   /* Elevation: a top glint on surfaces, a real shadow only on what floats (bars, composer, menus). */
   --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);
@@ -76,6 +87,114 @@
     inset 0 1px 0 rgb(255 255 255 / 0.045);
   --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.4), 0 32px 88px rgb(0 0 0 / 0.52);
   --ease-studio: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Light theme, set by the studio shells (DashShell, AppShell) from the user's preference.
+   Scoped to the shell, not <html>: landing, auth and onboarding stay dark.
+   white/black are swapped so text-white, bg-white/5 and border-white/10 read as ink on paper. */
+[data-theme='light'] {
+  color-scheme: light;
+  --color-white: #1c1917;
+  --color-black: #ffffff;
+  --color-trend-orange-strong: #e85a0c;
+  --color-trend-gold: #a16207;
+  --color-cream: #f4f1ed;
+  --color-ink: #1c1917;
+  --color-ink-muted: #57534e;
+  --color-ink-soft: #44403c;
+  --color-line: rgb(0 0 0 / 0.1);
+  --color-success: #15803d;
+  --color-success-soft: #e7f6ec;
+  --color-warning: #a16207;
+  --color-warning-soft: #fdf3dc;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fdeaea;
+  --color-info: #1d4ed8;
+  --color-studio-ground: #f6f4f1;
+  --color-studio-rail: #efece8;
+  --color-studio-surface: #ffffff;
+  --color-studio-raised: #ffffff;
+  --color-studio-raised-2: #f1eeea;
+  --color-studio-hover: #e8e4df;
+  --color-studio-rule: rgb(0 0 0 / 0.07);
+  --color-studio-rule-strong: rgb(0 0 0 / 0.12);
+  --color-studio-text: #1c1917;
+  --color-studio-muted: #57534e;
+  --color-studio-meta: #6f6a64;
+  --color-ember-text: #b4471a;
+  --color-coin: #b7791f;
+  --color-dash-ground: #f6f4f1;
+  --color-dash-panel: #ffffff;
+  --color-dash-raised: #f4f1ed;
+  --color-dash-line: #e7e3de;
+  --color-dash-green: #2f855a;
+  --color-dash-edge: #ddd8d2;
+  --color-dash-edge-strong: #cfc9c2;
+  --color-dash-edge-hover: #b8b1a9;
+  --color-dash-field: #ffffff;
+  --color-dash-soft: #44403c;
+  --color-dash-nav: #292524;
+  --color-dash-sidebar: #ffffff;
+  --color-dash-rail-line: #e7e3de;
+  --color-ember-nav-end: #c2551f;
+  --color-ember-cta-start: #c2410c;
+  --shadow-glow: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-float: 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 40px rgb(0 0 0 / 0.08);
+  --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.1), 0 32px 88px rgb(0 0 0 / 0.14);
+}
+
+/* Dark again inside a light shell (the theme previews on /settings). Generated from @theme above; keep in sync. */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-trend-orange-strong: #ff8a47;
+  --color-trend-gold: #facc15;
+  --color-cream: #151719;
+  --color-ink: #edefef;
+  --color-ink-muted: #a8aeaf;
+  --color-ink-soft: #c9cecf;
+  --color-line: rgb(255 255 255 / 0.11);
+  --color-success: #4ade80;
+  --color-success-soft: #0d2116;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #241a05;
+  --color-danger: #f87171;
+  --color-danger-soft: #2a1010;
+  --color-info: #60a5fa;
+  --color-studio-ground: #0a0a0b;
+  --color-studio-rail: #101112;
+  --color-studio-surface: #151719;
+  --color-studio-raised: #1a1d1f;
+  --color-studio-raised-2: #222629;
+  --color-studio-hover: #2b3033;
+  --color-studio-rule: rgb(255 255 255 / 0.06);
+  --color-studio-rule-strong: rgb(255 255 255 / 0.11);
+  --color-studio-text: #edefef;
+  --color-studio-muted: #a8aeaf;
+  --color-studio-meta: #878e90;
+  --color-ember-text: #e0662e;
+  --color-coin: #e9a135;
+  --color-dash-ground: #0b0b0b;
+  --color-dash-panel: #131313;
+  --color-dash-raised: #181818;
+  --color-dash-line: #242424;
+  --color-dash-green: #5daf66;
+  --color-dash-edge: #2a2a2a;
+  --color-dash-edge-strong: #333333;
+  --color-dash-edge-hover: #555555;
+  --color-dash-field: #141414;
+  --color-dash-soft: #d4d4d4;
+  --color-dash-nav: #e6e6e6;
+  --color-dash-sidebar: #0c0c0c;
+  --color-dash-rail-line: #262626;
+  --color-ember-nav-end: #3f1c0e;
+  --color-ember-cta-start: #a2300a;
+  --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-float:
+    0 4px 12px rgb(0 0 0 / 0.3), 0 16px 40px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.045);
+  --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.4), 0 32px 88px rgb(0 0 0 / 0.52);
 }
 
 /* Floating bar: the nav pill, the account pill, the step rail, the composer. */
