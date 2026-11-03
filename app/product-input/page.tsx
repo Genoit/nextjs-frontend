@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { BookOpen, ChevronRight } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { AppShell } from '../../components/AppShell';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { ActionBar } from '../../components/product-input/ActionBar';
@@ -53,21 +52,6 @@ export default function ProductInputPage() {
 
   const topbar = (
     <>
-      <nav aria-label="Breadcrumb" className="min-w-0 text-sm">
-        <ol className="flex items-center gap-1.5 text-studio-muted">
-          <li className="hidden sm:block">
-            <Link href="/dashboard" className="hover:text-studio-text hover:underline">
-              Studio
-            </Link>
-          </li>
-          <li aria-hidden className="hidden sm:block">
-            <ChevronRight className="h-3.5 w-3.5" />
-          </li>
-          <li aria-current="page" className="truncate font-medium text-studio-text">
-            New ad
-          </li>
-        </ol>
-      </nav>
       <button
         type="button"
         onClick={() => setGuideOpen(true)}
