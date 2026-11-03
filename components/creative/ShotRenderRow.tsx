@@ -36,8 +36,8 @@ import { HeuristicBadge } from './CreativeStatus';
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
-const primaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-trend-orange px-4 text-sm font-semibold text-white hover:bg-trend-orange-strong disabled:opacity-60 ${focusRing}`;
+const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
+const primaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-trend-orange px-4 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong disabled:opacity-60 ${focusRing}`;
 const summaryClass = `inline-flex min-h-11 cursor-pointer items-center rounded-lg text-sm font-semibold text-ink ${focusRing}`;
 
 const PILL: Record<string, { className: string; Icon: typeof Check }> = {
@@ -118,7 +118,7 @@ function ClipPreview({
           className="max-h-80 w-auto"
         />
         {simulated && (
-          <span className="absolute top-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="absolute top-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
             Simulation
           </span>
         )}
@@ -284,7 +284,7 @@ function QualityPanel({ quality }: { quality: ShotQuality }) {
       <p className="flex flex-wrap items-center gap-2">
         <span className="font-semibold text-ink">Contrôle qualité : {view.decisionLabel}</span>
         {view.simulated && (
-          <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
             Rendu simulé
           </span>
         )}
@@ -403,7 +403,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJo
   const rejected = (shot.routing?.candidates ?? []).filter((c) => !c.eligible);
 
   return (
-    <li className="space-y-3 rounded-xl border border-line bg-white p-4 sm:p-5">
+    <li className="space-y-3 rounded-xl border border-line bg-studio-ground p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <h4

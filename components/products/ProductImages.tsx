@@ -151,7 +151,7 @@ export function ProductImages({
                 {/* Primary image indicator */}
                 {image.is_primary && (
                   <div className="absolute top-1 right-1 z-10">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-warning text-white text-xs font-bold">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-warning text-on-accent text-xs font-bold">
                       *
                     </span>
                   </div>
@@ -241,7 +241,7 @@ export function ProductImageSingle({
       {/* Primary indicator */}
       {image?.is_primary && (
         <div className="absolute top-1 right-1 z-10">
-          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-warning text-white text-[10px] font-bold">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-warning text-on-accent text-[10px] font-bold">
             *
           </span>
         </div>

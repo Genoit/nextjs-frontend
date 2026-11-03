@@ -63,7 +63,7 @@ export default function AdminOverviewPage() {
         <div className="relative">
           <button
             type="button"
-            className="flex items-center gap-2 px-3.5 py-2 bg-white rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-medium text-ink-soft transition"
+            className="flex items-center gap-2 px-3.5 py-2 bg-studio-ground rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-medium text-ink-soft transition"
           >
             <Calendar className="w-3.5 h-3.5 text-ink-muted" />
             <span>{timeRange}</span>
@@ -77,7 +77,7 @@ export default function AdminOverviewPage() {
       {/* ========================================================= */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3.5">
         {/* 1. Total users */}
-        <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
           <div className="text-xs text-ink-muted font-medium">Total users</div>
           <div className="mt-2">
             <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -94,7 +94,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* 2. Active users */}
-        <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center gap-1.5 text-xs text-ink-muted font-medium">
             <Users className="w-3.5 h-3.5 text-ink-muted" />
             <span>Active users</span>
@@ -114,7 +114,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* 3. MRR */}
-        <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
           <div className="text-xs text-ink-muted font-medium">MRR</div>
           <div className="mt-2">
             <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -129,7 +129,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* 4. New subscriptions */}
-        <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
           <div className="text-xs text-ink-muted font-medium">New subscriptions</div>
           <div className="mt-2">
             <div className="flex items-baseline gap-1.5 flex-wrap">
@@ -146,7 +146,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* 5. AI generations */}
-        <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center gap-1.5 text-xs text-ink-muted font-medium">
             <Sparkles className="w-3.5 h-3.5 text-ink-muted" />
             <span>AI generations</span>
@@ -166,7 +166,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* 6. System health */}
-        <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center gap-1.5 text-xs text-ink-muted font-medium">
             <Activity className="w-3.5 h-3.5 text-success" />
             <span>System health</span>
@@ -183,7 +183,7 @@ export default function AdminOverviewPage() {
       {/* ========================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* CARD 1: User growth (5 cols) */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-2 border-b border-line">
               <div className="flex items-center gap-1.5">
@@ -278,7 +278,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* CARD 2: MRR evolution (4 cols) */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-2 border-b border-line">
               <div className="flex items-center gap-1.5">
@@ -366,7 +366,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* CARD 3: Subscription distribution (4 cols) */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-4 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <div className="flex items-center gap-1.5">
               <h2 className="text-xs font-bold text-ink">Subscription distribution</h2>
@@ -497,7 +497,7 @@ export default function AdminOverviewPage() {
       {/* ========================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5" id="alerts">
         {/* Left: Alerts Card (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-line">
               <div className="flex items-center gap-2">
@@ -561,7 +561,7 @@ export default function AdminOverviewPage() {
         </div>
 
         {/* Right: System status (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-line">
               <h2 className="text-sm font-bold text-ink">System status</h2>

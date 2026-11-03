@@ -156,8 +156,8 @@ export function ExtractionPreview({
                   aria-pressed={v === video}
                   className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-sm focus-visible:outline-2 focus-visible:outline-trend-orange ${
                     v === video
-                      ? 'border-ink bg-ink text-white'
-                      : 'border-line bg-white text-ink hover:border-ink'
+                      ? 'border-ink bg-ink text-on-accent'
+                      : 'border-line bg-studio-ground text-ink hover:border-ink'
                   }`}
                 >
                   <Play className="size-3 fill-current" aria-hidden />
@@ -183,7 +183,7 @@ export function ExtractionPreview({
           {showReviews && (
             <ul id="extracted-reviews" className="max-h-72 space-y-2 overflow-y-auto pr-1">
               {reviews.map((r, i) => (
-                <li key={i} className="rounded-lg bg-white p-3 text-sm">
+                <li key={i} className="rounded-lg bg-studio-ground p-3 text-sm">
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold text-ink">{r.author || 'Customer'}</span>
                     {typeof r.rating === 'number' && (

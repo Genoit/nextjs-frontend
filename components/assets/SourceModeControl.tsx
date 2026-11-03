@@ -77,7 +77,7 @@ export function SourceModeControl({
       {/* aria-disabled, not disabled: a disabled input would drop keyboard focus to <body>. */}
       <fieldset aria-describedby={disabledReason ? reasonId : undefined}>
         <legend className="mb-1.5 text-xs font-semibold text-ink">Source de l&apos;image</legend>
-        <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-white">
+        <div className="flex flex-col overflow-hidden rounded-lg border border-line bg-studio-ground">
           {OPTIONS.map((opt, i) => (
             <label
               key={opt.value}
@@ -131,14 +131,14 @@ export function SourceModeControl({
                 processingRadioRef.current?.focus();
                 void save('request_processing');
               }}
-              className="min-h-11 rounded-lg bg-trend-orange px-4 font-semibold text-white hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+              className="min-h-11 rounded-lg bg-trend-orange px-4 font-semibold text-on-accent hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
             >
               Lancer
             </button>
             <button
               type="button"
               onClick={cancel}
-              className="min-h-11 rounded-lg px-4 font-semibold text-ink hover:bg-white focus-visible:outline-2 focus-visible:outline-trend-orange"
+              className="min-h-11 rounded-lg px-4 font-semibold text-ink hover:bg-studio-ground focus-visible:outline-2 focus-visible:outline-trend-orange"
             >
               Annuler
             </button>

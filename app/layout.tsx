@@ -22,7 +22,7 @@ export default function RootLayout({
       lang="en"
       className={`h-full antialiased ${inter.className} ${inter.variable} ${playfair.variable} ${instrumentSerif.variable} ${caveat.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-white text-ink font-sans">
+      <body className="min-h-full flex flex-col bg-studio-ground text-ink font-sans">
         <AuthProvider>
           <div className="flex flex-1 flex-col min-w-0">{children}</div>
         </AuthProvider>

@@ -71,7 +71,7 @@ function Card({
 }) {
   return (
     <section
-      className={`bg-white rounded-2xl border p-5 shadow-2xs space-y-4 ${
+      className={`bg-studio-ground rounded-2xl border p-5 shadow-2xs space-y-4 ${
         tone === 'amber' ? 'border-warning/30' : 'border-line/80'
       }`}
     >
@@ -154,7 +154,7 @@ function AnalysisHeader({
 }) {
   const status = analysis ? STATUS_STYLES[analysis.status] : null;
   return (
-    <div className="rounded-2xl bg-gradient-to-r from-cream to-white border border-trend-orange/30 p-6 shadow-2xs">
+    <div className="rounded-2xl bg-gradient-to-r from-cream to-studio-ground border border-trend-orange/30 p-6 shadow-2xs">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1 min-w-0">
           <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-trend-orange/10 text-trend-orange text-xs font-semibold">
@@ -192,7 +192,7 @@ function AnalysisHeader({
             onClick={() => onAnalyze(Boolean(analysis))}
             disabled={isAnalyzing}
             aria-busy={isAnalyzing}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-line bg-white hover:bg-studio-surface text-ink text-sm font-semibold transition disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-line bg-studio-ground hover:bg-studio-surface text-ink text-sm font-semibold transition disabled:opacity-60"
           >
             <RotateCw className={`w-4 h-4 ${isAnalyzing ? 'animate-spin' : ''}`} aria-hidden />
             <span>
@@ -203,7 +203,7 @@ function AnalysisHeader({
             <button
               type="button"
               onClick={onProceedToSetup}
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-white text-sm font-semibold shadow-xs transition"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-sm font-semibold shadow-xs transition"
             >
               <span>Configurer la pub</span>
               <span aria-hidden>→</span>
@@ -406,7 +406,7 @@ export function ProductSheetView({ productId, onProceedToSetup }: Props) {
           </div>
 
           {analysis && analysis.grounding_issues.length > 0 && (
-            <details className="rounded-2xl border border-line bg-white p-4 text-xs text-ink-soft">
+            <details className="rounded-2xl border border-line bg-studio-ground p-4 text-xs text-ink-soft">
               <summary className="cursor-pointer font-semibold text-ink inline-flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-ink-muted" aria-hidden />
                 {analysis.grounding_issues.length} élément(s) corrigé(s) par le contrôle de

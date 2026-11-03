@@ -15,7 +15,7 @@ export default function ProductCreativePage() {
     <ProtectedRoute>
       <div className="min-h-screen bg-studio-surface text-ink flex flex-col font-sans">
         {/* Header */}
-        <header className="sticky top-0 z-40 h-[70px] bg-white border-b border-line/80 px-4 sm:px-8 flex items-center justify-between shadow-2xs">
+        <header className="sticky top-0 z-40 h-[70px] bg-studio-ground border-b border-line/80 px-4 sm:px-8 flex items-center justify-between shadow-2xs">
           <div className="flex items-center gap-4">
             <Link
               href={`/products/${productId}`}

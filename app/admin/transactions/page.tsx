@@ -106,7 +106,7 @@ export default function AdminTransactionsPage() {
       {kpis && (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {/* 1. Total Revenue */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs">
             <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
               <span>Total Revenue</span>
               <Info className="w-3 h-3 text-ink-muted" />
@@ -126,7 +126,7 @@ export default function AdminTransactionsPage() {
           </div>
 
           {/* 2. Successful Payments */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs">
             <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
               <span>Successful Payments</span>
               <Info className="w-3 h-3 text-ink-muted" />
@@ -146,7 +146,7 @@ export default function AdminTransactionsPage() {
           </div>
 
           {/* 3. Failed Payments */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs">
             <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
               <span>Failed Payments</span>
               <Info className="w-3 h-3 text-ink-muted" />
@@ -166,7 +166,7 @@ export default function AdminTransactionsPage() {
           </div>
 
           {/* 4. Refunds */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs">
             <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
               <span>Refunds</span>
               <Info className="w-3 h-3 text-ink-muted" />
@@ -188,7 +188,7 @@ export default function AdminTransactionsPage() {
       {/* ========================================================= */}
       {/* FILTER CONTROLS BAR */}
       {/* ========================================================= */}
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-2xl border border-line/80 shadow-2xs">
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-studio-ground p-3 rounded-2xl border border-line/80 shadow-2xs">
         <div className="flex flex-wrap items-center gap-2.5">
           {/* Date range picker */}
           <button
@@ -205,7 +205,7 @@ export default function AdminTransactionsPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none bg-white border border-line rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-ink-soft cursor-pointer hover:bg-studio-surface"
+              className="appearance-none bg-studio-ground border border-line rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-ink-soft cursor-pointer hover:bg-studio-surface"
             >
               <option value="All Status">All Status</option>
               <option value="Succeeded">Succeeded</option>
@@ -221,7 +221,7 @@ export default function AdminTransactionsPage() {
             <select
               value={providerFilter}
               onChange={(e) => setProviderFilter(e.target.value)}
-              className="appearance-none bg-white border border-line rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-ink-soft cursor-pointer hover:bg-studio-surface"
+              className="appearance-none bg-studio-ground border border-line rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-ink-soft cursor-pointer hover:bg-studio-surface"
             >
               <option value="All Providers">All Providers</option>
               <option value="Stripe">Stripe</option>
@@ -236,7 +236,7 @@ export default function AdminTransactionsPage() {
             <select
               value={typeFilter}
               onChange={(e) => setTypeFilter(e.target.value)}
-              className="appearance-none bg-white border border-line rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-ink-soft cursor-pointer hover:bg-studio-surface"
+              className="appearance-none bg-studio-ground border border-line rounded-xl px-3 py-1.5 pr-8 text-xs font-medium text-ink-soft cursor-pointer hover:bg-studio-surface"
             >
               <option value="All Transaction Types">All Transaction Types</option>
               <option value="Subscription Payment">Subscription Payment</option>
@@ -271,13 +271,13 @@ export default function AdminTransactionsPage() {
       <div className="flex gap-6 items-start">
         {/* TRANSACTIONS TABLE */}
         <div
-          className={`bg-white rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
+          className={`bg-studio-ground rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
             drawerOpen && trxDetail ? 'w-full lg:w-3/5' : 'w-full'
           }`}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#FAF9FB] border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
+              <thead className="bg-cream border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
                 <tr>
                   <th className="py-3 px-3 w-8" />
                   <th className="py-3 px-3">Transaction ID</th>
@@ -460,7 +460,7 @@ export default function AdminTransactionsPage() {
         {/* RIGHT SIDE DRAWER: TRANSACTION DETAILS */}
         {/* ========================================================= */}
         {drawerOpen && trxDetail && (
-          <aside className="w-full lg:w-2/5 bg-white rounded-2xl border border-line/80 shadow-2xs p-5 space-y-5 animate-in slide-in-from-right duration-200">
+          <aside className="w-full lg:w-2/5 bg-studio-ground rounded-2xl border border-line/80 shadow-2xs p-5 space-y-5 animate-in slide-in-from-right duration-200">
             {/* Header */}
             <div className="flex items-start justify-between pb-3 border-b border-line">
               <div>
@@ -573,7 +573,7 @@ export default function AdminTransactionsPage() {
             {/* 3. Timeline Card */}
             <div className="pt-3 border-t border-line space-y-3">
               <h3 className="text-xs font-bold text-ink">Timeline</h3>
-              <div className="p-3.5 rounded-xl bg-[#FFF9F3] border border-trend-orange/30 space-y-3">
+              <div className="p-3.5 rounded-xl bg-cream border border-trend-orange/30 space-y-3">
                 {trxDetail.timeline.map((event, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs">
                     <span

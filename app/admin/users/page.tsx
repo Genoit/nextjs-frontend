@@ -118,7 +118,7 @@ export default function AdminUsersPage() {
     <div className="space-y-5 relative">
       {/* Toast Alert */}
       {actionSuccessMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-success text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
+        <div className="fixed top-5 right-5 z-50 bg-success text-on-accent text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
           <Check className="w-4 h-4" />
           <span>{actionSuccessMsg}</span>
         </div>
@@ -147,7 +147,7 @@ export default function AdminUsersPage() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               placeholder="Search users by name or email..."
-              className="w-full rounded-xl border border-line/90 bg-white py-2 pl-9 pr-3 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
+              className="w-full rounded-xl border border-line/90 bg-studio-ground py-2 pl-9 pr-3 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
             />
           </div>
 
@@ -156,7 +156,7 @@ export default function AdminUsersPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="appearance-none bg-white border border-line/90 rounded-xl px-3.5 py-2 pr-8 text-xs font-medium text-ink-soft shadow-2xs cursor-pointer hover:bg-studio-surface focus:border-trend-orange transition"
+              className="appearance-none bg-studio-ground border border-line/90 rounded-xl px-3.5 py-2 pr-8 text-xs font-medium text-ink-soft shadow-2xs cursor-pointer hover:bg-studio-surface focus:border-trend-orange transition"
             >
               <option value="All status">All status</option>
               <option value="Active">Active</option>
@@ -171,7 +171,7 @@ export default function AdminUsersPage() {
         <button
           type="button"
           onClick={() => alert('Exporting users to CSV...')}
-          className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-white rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
+          className="flex items-center justify-center gap-1.5 px-3.5 py-2 bg-studio-ground rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
         >
           <Download className="w-3.5 h-3.5 text-ink-muted" />
           <span>Export</span>
@@ -184,13 +184,13 @@ export default function AdminUsersPage() {
       <div className="flex gap-6 items-start">
         {/* USERS TABLE */}
         <div
-          className={`bg-white rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
+          className={`bg-studio-ground rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
             drawerOpen && selectedUserDetail ? 'w-full lg:w-3/5' : 'w-full'
           }`}
         >
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#FAF9FB] border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
+              <thead className="bg-cream border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
                 <tr>
                   <th className="py-3 px-4">User</th>
                   <th className="py-3 px-3">Plan</th>
@@ -302,7 +302,7 @@ export default function AdminUsersPage() {
                           </button>
 
                           {activeMenuId === user.id && (
-                            <div className="absolute right-4 top-8 w-44 bg-white rounded-xl shadow-xl border border-line/90 py-1 z-30 animate-in fade-in">
+                            <div className="absolute right-4 top-8 w-44 bg-studio-ground rounded-xl shadow-xl border border-line/90 py-1 z-30 animate-in fade-in">
                               <Link
                                 href={`/admin/users/${user.id}`}
                                 className="block px-3 py-1.5 text-xs text-ink-soft hover:bg-studio-surface text-left"
@@ -387,7 +387,7 @@ export default function AdminUsersPage() {
               <select
                 value={pageSize}
                 onChange={(e) => setPageSize(Number(e.target.value))}
-                className="border border-line rounded-lg px-2 py-1 text-xs bg-white"
+                className="border border-line rounded-lg px-2 py-1 text-xs bg-studio-ground"
               >
                 <option value={10}>10</option>
                 <option value={20}>20</option>
@@ -401,7 +401,7 @@ export default function AdminUsersPage() {
         {/* RIGHT SIDE DRAWER (Sarah Johnson / Selected User) */}
         {/* ========================================================= */}
         {drawerOpen && selectedUserDetail && (
-          <aside className="w-full lg:w-2/5 bg-white rounded-2xl border border-line/80 shadow-2xs p-5 space-y-5 animate-in slide-in-from-right duration-200">
+          <aside className="w-full lg:w-2/5 bg-studio-ground rounded-2xl border border-line/80 shadow-2xs p-5 space-y-5 animate-in slide-in-from-right duration-200">
             {/* Drawer Header */}
             <div className="flex items-start justify-between pb-3 border-b border-line">
               <div className="flex items-center gap-3">
@@ -745,7 +745,7 @@ export default function AdminUsersPage() {
               <button
                 type="button"
                 onClick={() => handleResetAccess(selectedUserDetail.id)}
-                className="w-full py-2 px-3 rounded-xl bg-danger text-white hover:bg-danger font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs"
+                className="w-full py-2 px-3 rounded-xl bg-danger text-on-accent hover:bg-danger font-semibold transition flex items-center justify-center gap-1.5 shadow-2xs"
               >
                 <KeyRound className="w-3.5 h-3.5" />
                 <span>Reset access</span>

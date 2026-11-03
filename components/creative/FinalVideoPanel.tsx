@@ -28,7 +28,7 @@ import { CheckItem } from './ShotRenderRow';
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
+const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
 const summaryClass = `inline-flex min-h-11 cursor-pointer items-center rounded-lg text-sm font-semibold text-ink ${focusRing}`;
 const badgeClass =
   'inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning-soft px-2.5 py-0.5 text-xs font-semibold text-warning';
@@ -227,13 +227,13 @@ export function FinalVideoPanel({ job, finalAsset, videoUrl, videoFailed, notRea
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-5">
+    <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Film className="w-4 h-4 text-trend-orange" aria-hidden />
           <span>Vidéo finale</span>
           {notRealLabel && (
-            <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+            <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
               {notRealLabel}
             </span>
           )}

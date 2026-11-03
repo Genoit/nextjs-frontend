@@ -169,7 +169,7 @@ export default function AdminSystemLogsPage() {
       {/* ========================================================= */}
       {/* FILTER BAR (Faithful to Figma) */}
       {/* ========================================================= */}
-      <div className="bg-white p-4 rounded-2xl border border-line/80 shadow-2xs space-y-2">
+      <div className="bg-studio-ground p-4 rounded-2xl border border-line/80 shadow-2xs space-y-2">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 items-end">
           {/* 1. Severity */}
           <div>
@@ -178,7 +178,7 @@ export default function AdminSystemLogsPage() {
               <select
                 value={severityFilter}
                 onChange={(e) => setSeverityFilter(e.target.value)}
-                className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink-soft hover:bg-studio-surface cursor-pointer"
+                className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink-soft hover:bg-studio-surface cursor-pointer"
               >
                 <option value="All Severities">All Severities</option>
                 <option value="Info">Info</option>
@@ -197,7 +197,7 @@ export default function AdminSystemLogsPage() {
               <select
                 value={serviceFilter}
                 onChange={(e) => setServiceFilter(e.target.value)}
-                className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink-soft hover:bg-studio-surface cursor-pointer"
+                className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink-soft hover:bg-studio-surface cursor-pointer"
               >
                 <option value="All Services">All Services</option>
                 <option value="AI Generation">AI Generation</option>
@@ -232,7 +232,7 @@ export default function AdminSystemLogsPage() {
               <select
                 value={statusFilter}
                 onChange={(e) => setStatusFilter(e.target.value)}
-                className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink-soft hover:bg-studio-surface cursor-pointer"
+                className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink-soft hover:bg-studio-surface cursor-pointer"
               >
                 <option value="All Statuses">All Statuses</option>
                 <option value="Success">Success</option>
@@ -253,7 +253,7 @@ export default function AdminSystemLogsPage() {
             </button>
             <button
               type="button"
-              className="flex-1 py-2 px-3 rounded-xl bg-trend-orange text-white text-xs font-semibold hover:bg-trend-orange shadow-2xs transition"
+              className="flex-1 py-2 px-3 rounded-xl bg-trend-orange text-on-accent text-xs font-semibold hover:bg-trend-orange shadow-2xs transition"
             >
               Apply Filters
             </button>
@@ -267,7 +267,7 @@ export default function AdminSystemLogsPage() {
       <div className="flex gap-6 items-start">
         {/* LOGS TABLE */}
         <div
-          className={`bg-white rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
+          className={`bg-studio-ground rounded-2xl border border-line/80 shadow-2xs overflow-hidden transition-all duration-300 ${
             drawerOpen && logDetail ? 'w-full lg:w-3/5' : 'w-full'
           }`}
         >
@@ -295,7 +295,7 @@ export default function AdminSystemLogsPage() {
           {/* Table */}
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-[#FAF9FB] border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
+              <thead className="bg-cream border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
                 <tr>
                   <th className="py-3 px-4">Timestamp &darr;</th>
                   <th className="py-3 px-3">Service</th>
@@ -416,7 +416,7 @@ export default function AdminSystemLogsPage() {
         {/* RIGHT SIDE DRAWER: LOG DETAILS (Faithful to Figma) */}
         {/* ========================================================= */}
         {drawerOpen && logDetail && (
-          <aside className="w-full lg:w-2/5 bg-white rounded-2xl border border-line/80 shadow-2xs p-5 space-y-4 animate-in slide-in-from-right duration-200">
+          <aside className="w-full lg:w-2/5 bg-studio-ground rounded-2xl border border-line/80 shadow-2xs p-5 space-y-4 animate-in slide-in-from-right duration-200">
             {/* Drawer Header */}
             <div className="flex items-start justify-between pb-3 border-b border-line">
               <div>

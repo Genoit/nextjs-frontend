@@ -40,7 +40,7 @@ export default function EditProductPage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -74,7 +74,7 @@ export default function EditProductPage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -111,7 +111,7 @@ export default function EditProductPage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="mt-4 rounded-lg border border-line bg-white px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="mt-4 rounded-lg border border-line bg-studio-ground px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               Back to Product
             </button>
@@ -130,7 +130,7 @@ export default function EditProductPage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -146,7 +146,7 @@ export default function EditProductPage() {
             <h1 className="text-2xl font-bold text-ink">Edit Product</h1>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-line bg-white p-6 shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-line bg-studio-ground p-6 shadow-sm">
             <ProductForm product={product} onSuccess={handleSuccess} onCancel={handleCancel} />
           </div>
         </div>

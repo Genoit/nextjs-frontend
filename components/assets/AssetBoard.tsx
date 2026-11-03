@@ -9,7 +9,7 @@ import { ShotAssetRow, StatusPill, sceneMeta } from './ShotAssetRow';
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const primaryClass = `inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 text-sm font-semibold text-white hover:bg-trend-orange-strong disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto ${focusRing}`;
+const primaryClass = `inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto ${focusRing}`;
 
 interface Props {
   storyboard: Storyboard;
@@ -65,7 +65,7 @@ export function AssetBoard({
   return (
     <section
       aria-labelledby="assets-title"
-      className="space-y-5 rounded-2xl border border-line bg-white p-4 sm:p-6"
+      className="space-y-5 rounded-2xl border border-line bg-studio-ground p-4 sm:p-6"
     >
       {/* A. Title row */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

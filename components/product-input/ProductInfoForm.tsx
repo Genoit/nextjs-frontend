@@ -84,7 +84,7 @@ function SheetPreview({ draft }: { draft: ProductDraft }) {
   return (
     <figure className="mt-6 hidden lg:block">
       <figcaption className="text-xs text-ink-muted">In your Studio</figcaption>
-      <div className="mt-2 flex items-center gap-3 rounded-xl border border-studio-rule bg-white px-3 py-2.5">
+      <div className="mt-2 flex items-center gap-3 rounded-xl border border-studio-rule bg-studio-ground px-3 py-2.5">
         <div className="relative size-10 shrink-0 overflow-hidden rounded-lg bg-studio-raised">
           {cover ? (
             // eslint-disable-next-line @next/next/no-img-element -- local blob or remote preview
@@ -228,7 +228,7 @@ export function ProductInfoForm({ draft }: { draft: ProductDraft }) {
                     type="button"
                     onClick={() => changeBenefits(benefits.filter((x) => x !== b))}
                     aria-label={`Remove “${b}”`}
-                    className="flex size-7 shrink-0 items-center justify-center rounded-md text-ink-muted hover:bg-white hover:text-ink focus-visible:outline-2 focus-visible:outline-trend-orange"
+                    className="flex size-7 shrink-0 items-center justify-center rounded-md text-ink-muted hover:bg-studio-ground hover:text-ink focus-visible:outline-2 focus-visible:outline-trend-orange"
                   >
                     <X className="size-3.5" aria-hidden />
                   </button>

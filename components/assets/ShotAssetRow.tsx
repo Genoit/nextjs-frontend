@@ -38,7 +38,7 @@ const focusRing =
 const PILL: Record<string, { className: string; Icon: typeof Check }> = {
   pending: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Clock },
   processing: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Loader2 },
-  direct: { className: 'border-ink bg-ink text-white', Icon: Check },
+  direct: { className: 'border-ink bg-ink text-on-accent', Icon: Check },
   processed: { className: 'border-success/30 bg-success-soft text-success', Icon: Check },
   simulated: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: FlaskConical },
   fallback: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: ShieldAlert },
@@ -122,7 +122,7 @@ function Thumb({ url, failed, loading, alt, caption, used, overlay, size }: Thum
           </span>
         )}
         {overlay && (
-          <span className="absolute bottom-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="absolute bottom-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
             {overlay}
           </span>
         )}
@@ -233,7 +233,7 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
   );
 
   return (
-    <li className="rounded-xl border border-line bg-white p-5">
+    <li className="rounded-xl border border-line bg-studio-ground p-5">
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[120px_196px_minmax(0,1fr)_200px_208px]">
         {/* Identity */}
         <div className="flex items-start justify-between gap-3 xl:block xl:space-y-0.5">

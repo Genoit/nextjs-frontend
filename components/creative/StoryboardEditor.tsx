@@ -81,11 +81,11 @@ export function StoryboardEditor({
 
   return (
     <div className="space-y-6 max-w-5xl">
-      <div className="rounded-2xl bg-white border border-line/80 p-6 shadow-2xs space-y-4">
+      <div className="rounded-2xl bg-studio-ground border border-line/80 p-6 shadow-2xs space-y-4">
         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
           <div className="space-y-2 min-w-0">
             <div className="flex flex-wrap items-center gap-2" role="status">
-              <span className="px-2.5 py-1 rounded-full bg-trend-orange text-white text-xs font-bold uppercase tracking-wider">
+              <span className="px-2.5 py-1 rounded-full bg-trend-orange text-on-accent text-xs font-bold uppercase tracking-wider">
                 Storyboard v{storyboard.version}
               </span>
               {storyboard.accepted && (
@@ -168,7 +168,7 @@ export function StoryboardEditor({
                 disabled={acceptReason !== null}
                 aria-busy={isAccepting}
                 aria-describedby={acceptReason ? 'accept-reason' : undefined}
-                className="px-4 py-2.5 rounded-xl bg-success hover:bg-success disabled:opacity-50 text-white text-xs font-bold transition flex items-center gap-2"
+                className="px-4 py-2.5 rounded-xl bg-success hover:bg-success disabled:opacity-50 text-on-accent text-xs font-bold transition flex items-center gap-2"
               >
                 <CheckCircle2 className="w-4 h-4" aria-hidden />
                 <span>{isAccepting ? 'Acceptation…' : 'Accepter cette version'}</span>
@@ -190,7 +190,7 @@ export function StoryboardEditor({
           {spec && (spec.promise || spec.concept) && (
             <section
               aria-labelledby="concept-title"
-              className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-2 text-xs"
+              className="rounded-2xl bg-studio-ground border border-line/80 p-5 shadow-2xs space-y-2 text-xs"
             >
               <h4 id="concept-title" className="text-sm font-bold text-ink">
                 Concept
@@ -231,7 +231,7 @@ export function StoryboardEditor({
         <aside className="space-y-6">
           <section
             aria-labelledby="versions-title"
-            className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-3"
+            className="rounded-2xl bg-studio-ground border border-line/80 p-5 shadow-2xs space-y-3"
           >
             <h4 id="versions-title" className="text-sm font-bold text-ink flex items-center gap-2">
               <History className="w-4 h-4 text-ink-muted" aria-hidden />
@@ -305,7 +305,7 @@ export function StoryboardEditor({
           {cost && (
             <section
               aria-labelledby="cost-title"
-              className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-2 text-xs"
+              className="rounded-2xl bg-studio-ground border border-line/80 p-5 shadow-2xs space-y-2 text-xs"
             >
               <h4 id="cost-title" className="text-sm font-bold text-ink">
                 Coût cumulé
@@ -346,7 +346,7 @@ export function StoryboardEditor({
             onClick={onPrepareAssets}
             disabled={!storyboard.accepted || !isDurationMatching}
             aria-describedby="launch-hint"
-            className="w-full px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-white text-xs font-bold shadow-xs transition flex items-center justify-center gap-2"
+            className="w-full px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-bold shadow-xs transition flex items-center justify-center gap-2"
           >
             <Images className="w-4 h-4" aria-hidden />
             <span>Préparer les visuels produit</span>
@@ -363,7 +363,7 @@ export function StoryboardEditor({
           return (
             <li
               key={scene.id || idx}
-              className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-4"
+              className="rounded-2xl bg-studio-ground border border-line/80 p-5 shadow-2xs space-y-4"
             >
               <fieldset disabled={readOnly} className="space-y-4">
                 <legend className="sr-only">Plan #{scene.scene_order}</legend>
@@ -387,7 +387,7 @@ export function StoryboardEditor({
                       onChange={(e) =>
                         change(idx, 'persuasive_role', e.target.value as PersuasiveRole)
                       }
-                      className={`${inputClass} bg-white`}
+                      className={`${inputClass} bg-studio-ground`}
                     >
                       {Object.entries(ROLE_LABELS).map(([value, label]) => (
                         <option key={value} value={value}>

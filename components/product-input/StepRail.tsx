@@ -29,7 +29,7 @@ export function Stepper({ current = 0 }: { current?: number }) {
               aria-current={now ? 'step' : undefined}
               className="flex items-center gap-3"
             >
-              {i > 0 && <span aria-hidden className="h-px w-4 bg-[#d1d5db]" />}
+              {i > 0 && <span aria-hidden className="h-px w-4 bg-studio-raised" />}
               <span
                 className={`inline-flex items-center gap-1.5 ${now ? 'font-medium text-studio-text' : 'text-studio-muted'}`}
               >

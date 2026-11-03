@@ -116,7 +116,7 @@ export default function AdminSubscriptionsPage() {
         <div className="flex items-center gap-2.5">
           <button
             type="button"
-            className="flex items-center gap-2 px-3.5 py-2 bg-white rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-medium text-ink-soft transition"
+            className="flex items-center gap-2 px-3.5 py-2 bg-studio-ground rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-medium text-ink-soft transition"
           >
             <Calendar className="w-3.5 h-3.5 text-ink-muted" />
             <span>May 12 - Jun 12, 2025</span>
@@ -125,7 +125,7 @@ export default function AdminSubscriptionsPage() {
 
           <button
             type="button"
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-white rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-studio-ground rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
           >
             <Download className="w-3.5 h-3.5 text-ink-muted" />
             <span>Export</span>
@@ -139,7 +139,7 @@ export default function AdminSubscriptionsPage() {
       {kpis && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
           {/* 1. MRR */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
                 <span>MRR</span>
@@ -162,13 +162,13 @@ export default function AdminSubscriptionsPage() {
           </div>
 
           {/* 2. ARR */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
                 <span>ARR</span>
                 <Info className="w-3 h-3 text-ink-muted" />
               </div>
-              <div className="w-7 h-7 rounded-lg bg-trend-orange text-white flex items-center justify-center font-bold text-xs">
+              <div className="w-7 h-7 rounded-lg bg-trend-orange text-on-accent flex items-center justify-center font-bold text-xs">
                 <TrendingUp className="w-3.5 h-3.5" />
               </div>
             </div>
@@ -185,7 +185,7 @@ export default function AdminSubscriptionsPage() {
           </div>
 
           {/* 3. Active Subscriptions */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
                 <span>Active Subscriptions</span>
@@ -210,7 +210,7 @@ export default function AdminSubscriptionsPage() {
           </div>
 
           {/* 4. Churn Rate */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
                 <span>Churn Rate</span>
@@ -233,7 +233,7 @@ export default function AdminSubscriptionsPage() {
           </div>
 
           {/* 5. Trial Users */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs flex flex-col justify-between">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-1 text-xs text-ink-muted font-medium">
                 <span>Trial Users</span>
@@ -264,7 +264,7 @@ export default function AdminSubscriptionsPage() {
       {/* ========================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left: Subscription Distribution Donut (7 cols) */}
-        <div className="lg:col-span-7 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between pb-2 border-b border-line">
             <div className="flex items-center gap-1.5">
               <h2 className="text-xs font-bold text-ink">Subscription Distribution</h2>
@@ -355,7 +355,7 @@ export default function AdminSubscriptionsPage() {
         </div>
 
         {/* Right: Alerts Card (5 cols) */}
-        <div className="lg:col-span-5 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between">
           <div className="flex items-center justify-between pb-3 border-b border-line">
             <h2 className="text-sm font-bold text-ink">Alerts</h2>
             <Link
@@ -413,7 +413,7 @@ export default function AdminSubscriptionsPage() {
       {/* ========================================================= */}
       {/* SUBSCRIPTIONS TABLE SECTION WITH TABS */}
       {/* ========================================================= */}
-      <div className="bg-white rounded-2xl border border-line/80 shadow-2xs overflow-hidden">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 shadow-2xs overflow-hidden">
         {/* Filter Tabs & Search Controls */}
         <div className="p-4 border-b border-line flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           {/* Tabs */}
@@ -434,7 +434,9 @@ export default function AdminSubscriptionsPage() {
                   <span>{tab.label}</span>
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full ${
-                      isActive ? 'bg-trend-orange text-white' : 'bg-studio-raised text-ink-muted'
+                      isActive
+                        ? 'bg-trend-orange text-on-accent'
+                        : 'bg-studio-raised text-ink-muted'
                     }`}
                   >
                     {tab.count}
@@ -453,7 +455,7 @@ export default function AdminSubscriptionsPage() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by user, email or ID..."
-                className="rounded-xl border border-line/90 bg-white py-1.5 pl-8 pr-3 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
+                className="rounded-xl border border-line/90 bg-studio-ground py-1.5 pl-8 pr-3 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
               />
             </div>
             <button
@@ -469,7 +471,7 @@ export default function AdminSubscriptionsPage() {
         {/* Table */}
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF9FB] border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
+            <thead className="bg-cream border-b border-line text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
               <tr>
                 <th className="py-3 px-4 w-10">
                   <input
@@ -630,7 +632,7 @@ export default function AdminSubscriptionsPage() {
           </div>
 
           <div className="flex items-center gap-1.5">
-            <select className="border border-line rounded-lg px-2 py-1 text-xs bg-white">
+            <select className="border border-line rounded-lg px-2 py-1 text-xs bg-studio-ground">
               <option value="10">10 per page</option>
               <option value="25">25 per page</option>
               <option value="50">50 per page</option>

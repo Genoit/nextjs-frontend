@@ -117,7 +117,7 @@ export function ProductList({
           <h2 className="text-lg font-semibold text-ink">Products</h2>
           <Link
             href="/products/new"
-            className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong transition"
+            className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong transition"
           >
             Add Product
           </Link>
@@ -145,7 +145,7 @@ export function ProductList({
           <h2 className="text-lg font-semibold text-ink">Products</h2>
           <Link
             href="/products/new"
-            className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong transition"
+            className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong transition"
           >
             Add Product
           </Link>
@@ -189,7 +189,7 @@ export function ProductList({
           <h2 className="text-lg font-semibold text-ink">Products</h2>
           <Link
             href="/products/new"
-            className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong transition"
+            className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong transition"
           >
             Add Product
           </Link>
@@ -217,7 +217,7 @@ export function ProductList({
           </p>
           <Link
             href="/products/new"
-            className="mt-4 rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong transition"
+            className="mt-4 rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong transition"
           >
             Add Your First Product
           </Link>
@@ -239,7 +239,7 @@ export function ProductList({
 
         <Link
           href="/products/new"
-          className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong transition"
+          className="rounded-lg bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong transition"
         >
           Add Product
         </Link>
@@ -257,7 +257,7 @@ export function ProductList({
                 handleProductClick(product);
               }
             }}
-            className="group block overflow-hidden rounded-2xl border border-line bg-white shadow-sm hover:shadow-md hover:border-trend-orange transition"
+            className="group block overflow-hidden rounded-2xl border border-line bg-studio-ground shadow-sm hover:shadow-md hover:border-trend-orange transition"
           >
             <div className="aspect-square w-full overflow-hidden bg-studio-surface">
               {product.main_image_url ? (
@@ -447,7 +447,7 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
               onProductClick(product);
             }
           }}
-          className="group block overflow-hidden rounded-2xl border border-line bg-white shadow-sm hover:shadow-md hover:border-trend-orange transition"
+          className="group block overflow-hidden rounded-2xl border border-line bg-studio-ground shadow-sm hover:shadow-md hover:border-trend-orange transition"
         >
           <div className="aspect-square w-full overflow-hidden bg-studio-surface">
             {product.main_image_url ? (

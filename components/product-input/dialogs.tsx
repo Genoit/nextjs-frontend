@@ -54,7 +54,7 @@ export function Lightbox({
         if (e.key === 'ArrowRight') go(1);
       }}
       onClick={(e) => e.target === e.currentTarget && onClose()}
-      className="m-0 h-dvh max-h-none w-screen max-w-none bg-ink p-3 text-white backdrop:bg-ink/60 sm:p-6"
+      className="m-0 h-dvh max-h-none w-screen max-w-none bg-ink p-3 text-on-accent backdrop:bg-stage/60 sm:p-6"
     >
       {img && index !== null && (
         <div className="mx-auto flex h-full max-w-6xl flex-col gap-3">
@@ -109,7 +109,7 @@ export function Lightbox({
                 <button
                   type="button"
                   onClick={() => go(-1)}
-                  className={`${iconButton} absolute left-0 top-1/2 -translate-y-1/2 bg-ink/60`}
+                  className={`${iconButton} absolute left-0 top-1/2 -translate-y-1/2 bg-stage/60`}
                   aria-label="Previous photo"
                 >
                   <ChevronLeft className="size-6" aria-hidden />
@@ -117,7 +117,7 @@ export function Lightbox({
                 <button
                   type="button"
                   onClick={() => go(1)}
-                  className={`${iconButton} absolute right-0 top-1/2 -translate-y-1/2 bg-ink/60`}
+                  className={`${iconButton} absolute right-0 top-1/2 -translate-y-1/2 bg-stage/60`}
                   aria-label="Next photo"
                 >
                   <ChevronRight className="size-6" aria-hidden />
@@ -164,7 +164,7 @@ export function GuideDialog({ open, onClose }: { open: boolean; onClose: () => v
       ref={ref}
       aria-labelledby="guide-title"
       onClick={(e) => e.target === e.currentTarget && onClose()}
-      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-2xl border border-line bg-white p-0 text-ink shadow-xl backdrop:bg-ink/40"
+      className="m-auto w-[calc(100%-2rem)] max-w-lg rounded-2xl border border-line bg-studio-ground p-0 text-ink shadow-xl backdrop:bg-stage/40"
     >
       <div className="p-6">
         <h2 id="guide-title" className="text-xl font-bold">
@@ -194,7 +194,7 @@ export function GuideDialog({ open, onClose }: { open: boolean; onClose: () => v
             type="button"
             onClick={onClose}
             autoFocus
-            className="inline-flex min-h-11 items-center rounded-lg bg-trend-orange px-5 text-sm font-semibold text-white hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+            className="inline-flex min-h-11 items-center rounded-lg bg-trend-orange px-5 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
           >
             Got it
           </button>

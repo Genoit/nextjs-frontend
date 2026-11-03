@@ -14,17 +14,17 @@ const MODES: { id: ImportMode; label: string; short: string; icon: typeof Upload
 ];
 
 export const inputClass =
-  'block min-h-11 w-full rounded-[10px] border border-line bg-white px-3 py-2.5 text-[15px] text-ink placeholder:text-ink-muted outline-none transition-colors focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25 aria-[invalid=true]:border-danger';
+  'block min-h-11 w-full rounded-[10px] border border-line bg-studio-ground px-3 py-2.5 text-[15px] text-ink placeholder:text-ink-muted outline-none transition-colors focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25 aria-[invalid=true]:border-danger';
 
 export const primaryButton =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 text-sm font-semibold text-white transition-[transform,background-color] hover:bg-trend-orange-strong active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:bg-cream disabled:text-ink-muted motion-reduce:transition-none';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 text-sm font-semibold text-on-accent transition-[transform,background-color] hover:bg-trend-orange-strong active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:bg-cream disabled:text-ink-muted motion-reduce:transition-none';
 
 /** The near-black action for a step inside the form; orange stays on the screen's one action. */
 export const darkButton =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-ink px-5 text-sm font-semibold text-white transition-[transform,background-color] hover:bg-black active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:bg-studio-raised disabled:text-ink-muted motion-reduce:transition-none';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-ink px-5 text-sm font-semibold text-on-accent transition-[transform,background-color] hover:bg-black active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:bg-studio-raised disabled:text-ink-muted motion-reduce:transition-none';
 
 export const secondaryButton =
-  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
+  'inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
 
 export function ImportPanel({
   draft,
@@ -88,7 +88,7 @@ export function ImportPanel({
                 onClick={() => setMode(m.id)}
                 onKeyDown={(e) => onTabKey(e, i)}
                 className={`flex min-h-11 items-center justify-center gap-2 rounded-lg px-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-trend-orange ${
-                  selected ? 'bg-white text-ink' : 'text-ink-muted hover:text-ink'
+                  selected ? 'bg-studio-ground text-ink' : 'text-ink-muted hover:text-ink'
                 }`}
               >
                 <Icon className="size-4 shrink-0" aria-hidden />
@@ -134,10 +134,10 @@ export function ImportPanel({
                 if (e.dataTransfer.files.length) draft.addFiles(e.dataTransfer.files);
               }}
               aria-describedby="upload-rules"
-              className={`flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-white px-4 py-8 text-center transition-[transform,border-color,background-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange motion-reduce:transition-none ${
+              className={`flex w-full flex-col items-center justify-center gap-2 rounded-xl border border-dashed bg-studio-ground px-4 py-8 text-center transition-[transform,border-color,background-color] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange motion-reduce:transition-none ${
                 dragging
                   ? 'scale-[1.01] border-trend-orange bg-cream'
-                  : 'border-[#d1d5db] hover:border-ink-soft'
+                  : 'border-line hover:border-ink-soft'
               }`}
             >
               <Upload className="size-6 text-ink-soft" strokeWidth={1.75} aria-hidden />
@@ -262,7 +262,7 @@ export function ImportPanel({
           )}
 
           {mode === 'manual' && (
-            <div className="space-y-3 rounded-xl border border-studio-rule bg-white p-4 text-[15px] text-ink">
+            <div className="space-y-3 rounded-xl border border-studio-rule bg-studio-ground p-4 text-[15px] text-ink">
               <p>
                 Fill in the product sheet. A name and a short description are enough to continue;
                 photos make a better ad.

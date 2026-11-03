@@ -68,7 +68,7 @@ export function VideoHistory({ productId, refreshKey, activeJobId, onOpen }: Pro
   return (
     <section
       aria-labelledby="history-title"
-      className="max-w-4xl space-y-3 rounded-2xl border border-line/80 bg-white p-6 shadow-2xs"
+      className="max-w-4xl space-y-3 rounded-2xl border border-line/80 bg-studio-ground p-6 shadow-2xs"
     >
       <h4 id="history-title" className="flex items-center gap-2 text-sm font-bold text-ink">
         <History className="size-4 text-trend-orange" aria-hidden />
@@ -124,7 +124,7 @@ export function VideoHistory({ productId, refreshKey, activeJobId, onOpen }: Pro
                     type="button"
                     onClick={() => onOpen(job)}
                     aria-label={`Ouvrir la vidéo du ${date}`}
-                    className={`inline-flex min-h-11 items-center rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-studio-surface ${focusRing}`}
+                    className={`inline-flex min-h-11 items-center rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface ${focusRing}`}
                   >
                     Ouvrir
                   </button>

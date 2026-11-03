@@ -66,7 +66,7 @@ export function VideoGenerationTracker({
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Status & Progress Bar */}
-      <div className="rounded-2xl bg-white border border-line/80 p-6 shadow-2xs space-y-5">
+      <div className="rounded-2xl bg-studio-ground border border-line/80 p-6 shadow-2xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export function VideoGenerationTracker({
               <button
                 type="button"
                 onClick={onRetry}
-                className="min-h-11 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-white text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                className="min-h-11 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
               >
                 <RotateCw className="w-4 h-4" aria-hidden />
                 <span>Réessayer</span>
@@ -124,7 +124,7 @@ export function VideoGenerationTracker({
                 <a
                   href={finalVideo.url}
                   download={notReal ? 'trended-video-simulation.mp4' : 'trended-video.mp4'}
-                  className="min-h-11 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-white text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                  className="min-h-11 px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
                 >
                   <Download className="w-4 h-4" aria-hidden />
                   <span>
@@ -290,7 +290,7 @@ export function VideoGenerationTracker({
 
       {/* Legacy QA card (pre-module 6); the finishing report replaces it and has no score. */}
       {job.quality_report && !job.finishing_report && (
-        <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-4">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-4">
           <div className="flex items-center justify-between border-b border-line pb-3">
             <div className="flex items-center gap-2">
               <Award

@@ -55,7 +55,7 @@ export default function BillingSuccessPage() {
               </p>
               <Link
                 href="/dashboard"
-                className="mt-8 inline-flex h-12 items-center gap-2 rounded-xl bg-trend-orange px-6 text-[15px] font-semibold text-white transition hover:bg-trend-orange-strong"
+                className="mt-8 inline-flex h-12 items-center gap-2 rounded-xl bg-trend-orange px-6 text-[15px] font-semibold text-on-accent transition hover:bg-trend-orange-strong"
               >
                 Go to Studio
                 <ArrowRight className="h-4 w-4" aria-hidden />

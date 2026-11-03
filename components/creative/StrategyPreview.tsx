@@ -27,9 +27,9 @@ export function StrategyPreview({
 
   return (
     <div className="space-y-6 max-w-4xl">
-      <div className="rounded-2xl bg-gradient-to-r from-cream to-white border border-trend-orange/30 p-6 shadow-2xs space-y-3">
+      <div className="rounded-2xl bg-gradient-to-r from-cream to-studio-ground border border-trend-orange/30 p-6 shadow-2xs space-y-3">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="px-2.5 py-1 rounded-full bg-trend-orange text-white text-xs font-bold uppercase tracking-wider">
+          <span className="px-2.5 py-1 rounded-full bg-trend-orange text-on-accent text-xs font-bold uppercase tracking-wider">
             Brief & angles
           </span>
           <HeuristicBadge entity={strategy} />
@@ -49,7 +49,7 @@ export function StrategyPreview({
       {brief && (
         <section
           aria-labelledby="brief-title"
-          className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3 text-xs"
+          className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3 text-xs"
         >
           <h4 id="brief-title" className="text-sm font-bold text-ink">
             Brief créatif
@@ -102,7 +102,7 @@ export function StrategyPreview({
           return (
             <label
               key={angle.id}
-              className={`block p-4 rounded-2xl border bg-white cursor-pointer transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-trend-orange ${
+              className={`block p-4 rounded-2xl border bg-studio-ground cursor-pointer transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-trend-orange ${
                 checked
                   ? 'border-trend-orange ring-1 ring-trend-orange'
                   : 'border-line hover:border-line'
@@ -171,7 +171,7 @@ export function StrategyPreview({
           onClick={onRegenerate}
           disabled={isRegenerating || isGeneratingStoryboard}
           aria-busy={isRegenerating}
-          className="px-4 py-2.5 rounded-xl border border-line bg-white hover:bg-studio-surface text-ink text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
+          className="px-4 py-2.5 rounded-xl border border-line bg-studio-ground hover:bg-studio-surface text-ink text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
         >
           <RotateCw className={`w-4 h-4 ${isRegenerating ? 'animate-spin' : ''}`} aria-hidden />
           <span>{isRegenerating ? 'Régénération…' : 'Régénérer les angles'}</span>
@@ -181,7 +181,7 @@ export function StrategyPreview({
           onClick={() => angleId && onGenerateStoryboard(angleId)}
           disabled={!angleId || isGeneratingStoryboard || isRegenerating}
           aria-busy={isGeneratingStoryboard}
-          className="px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-white text-xs font-bold shadow-xs transition flex items-center gap-2"
+          className="px-5 py-2.5 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-bold shadow-xs transition flex items-center gap-2"
         >
           <span>{isGeneratingStoryboard ? 'Création…' : 'Générer le storyboard de cet angle'}</span>
           <ArrowRight className="w-4 h-4" aria-hidden />

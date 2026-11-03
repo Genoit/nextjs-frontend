@@ -4,11 +4,11 @@ export type StatusTone = 'idle' | 'active' | 'ready' | 'simulated' | 'failed';
 
 // Palette 2026-11-02: statuses never use the action orange, and a mock never looks like a success.
 const TONES: Record<StatusTone, { className: string; Icon: typeof Circle }> = {
-  idle: { className: 'border-line bg-white text-ink-soft', Icon: Circle },
+  idle: { className: 'border-line bg-studio-ground text-ink-soft', Icon: Circle },
   active: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: Loader2 },
   ready: { className: 'border-success/30 bg-success-soft text-success', Icon: CheckCircle2 },
   simulated: {
-    className: 'border-dashed border-ink-soft/60 bg-white text-ink-soft',
+    className: 'border-dashed border-ink-soft/60 bg-studio-ground text-ink-soft',
     Icon: FlaskConical,
   },
   failed: { className: 'border-danger/30 bg-danger-soft text-danger', Icon: XCircle },

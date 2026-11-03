@@ -26,7 +26,7 @@ export default function Navbar() {
   }
 
   return (
-    <header className="sticky top-0 z-50 border-b border-line bg-white/95 backdrop-blur-md transition-all">
+    <header className="sticky top-0 z-50 border-b border-line bg-studio-ground/95 backdrop-blur-md transition-all">
       <div className="flex w-full items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
         {/* Brand Logo */}
         <Link href="/" className="hover:opacity-95 transition">
@@ -60,7 +60,7 @@ export default function Navbar() {
             </button>
 
             {activeDropdown === 'product' && (
-              <div className="absolute top-full -left-4 w-72 rounded-2xl bg-white p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full -left-4 w-72 rounded-2xl bg-studio-ground p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
                   href="#ugc-generator"
                   className="flex items-start gap-3 rounded-xl p-2.5 hover:bg-cream/50 transition"
@@ -183,7 +183,7 @@ export default function Navbar() {
             </button>
 
             {activeDropdown === 'solutions' && (
-              <div className="absolute top-full -left-4 w-64 rounded-2xl bg-white p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full -left-4 w-64 rounded-2xl bg-studio-ground p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
                   href="#workflow"
                   className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
@@ -237,7 +237,7 @@ export default function Navbar() {
             </button>
 
             {activeDropdown === 'resources' && (
-              <div className="absolute top-full -left-4 w-60 rounded-2xl bg-white p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
+              <div className="absolute top-full -left-4 w-60 rounded-2xl bg-studio-ground p-3 shadow-xl border border-line z-50 animate-in fade-in slide-in-from-top-1 duration-150">
                 <Link
                   href="#workflow"
                   className="block rounded-xl p-2.5 hover:bg-studio-surface transition"
@@ -282,7 +282,7 @@ export default function Navbar() {
               <button
                 type="button"
                 onClick={logout}
-                className="rounded-xl border border-line bg-white px-3.5 py-1.5 text-[13px] font-medium text-ink-soft hover:bg-studio-surface transition"
+                className="rounded-xl border border-line bg-studio-ground px-3.5 py-1.5 text-[13px] font-medium text-ink-soft hover:bg-studio-surface transition"
               >
                 Log out
               </button>
@@ -297,7 +297,7 @@ export default function Navbar() {
               </Link>
               <Link
                 href="/register"
-                className="rounded-xl bg-trend-orange px-5 py-2.5 text-[17px] font-semibold text-white shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition"
+                className="rounded-xl bg-trend-orange px-5 py-2.5 text-[17px] font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition"
               >
                 Start creating
               </Link>
@@ -338,7 +338,7 @@ export default function Navbar() {
 
       {/* Mobile menu dropdown */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-line bg-white px-4 py-6 space-y-4 shadow-lg">
+        <div className="md:hidden border-t border-line bg-studio-ground px-4 py-6 space-y-4 shadow-lg">
           <nav className="flex flex-col space-y-3 font-medium text-ink-soft">
             <Link
               href="#ugc-generator"
@@ -383,7 +383,7 @@ export default function Navbar() {
                 <Link
                   href="/dashboard"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center rounded-xl bg-trend-orange px-4 py-2.5 text-sm font-semibold text-white"
+                  className="w-full text-center rounded-xl bg-trend-orange px-4 py-2.5 text-sm font-semibold text-on-accent"
                 >
                   Go to Dashboard ({user?.first_name})
                 </Link>
@@ -410,7 +410,7 @@ export default function Navbar() {
                 <Link
                   href="/register"
                   onClick={() => setMobileMenuOpen(false)}
-                  className="w-full text-center rounded-xl bg-trend-orange px-4 py-2.5 text-sm font-semibold text-white shadow-sm"
+                  className="w-full text-center rounded-xl bg-trend-orange px-4 py-2.5 text-sm font-semibold text-on-accent shadow-sm"
                 >
                   Start creating
                 </Link>

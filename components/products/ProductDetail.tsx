@@ -181,7 +181,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -211,7 +211,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -254,7 +254,7 @@ export function ProductDetail({
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-lg border border-line bg-white px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="rounded-lg border border-line bg-studio-ground px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               Back to Products
             </button>
@@ -272,7 +272,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -332,7 +332,7 @@ export function ProductDetail({
         <button
           type="button"
           onClick={handleBack}
-          className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+          className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
         >
           <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -347,7 +347,7 @@ export function ProductDetail({
             <button
               type="button"
               onClick={() => router.push(`/products/${product.id}/creative`)}
-              className="flex items-center gap-2 rounded-lg bg-trend-orange hover:bg-trend-orange-strong px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition"
+              className="flex items-center gap-2 rounded-lg bg-trend-orange hover:bg-trend-orange-strong px-3.5 py-2 text-sm font-semibold text-on-accent shadow-xs transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -363,7 +363,7 @@ export function ProductDetail({
             <button
               type="button"
               onClick={handleEdit}
-              className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path

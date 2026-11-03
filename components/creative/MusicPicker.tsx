@@ -15,10 +15,10 @@ import {
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
-const dangerClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-danger px-4 text-sm font-semibold text-white hover:bg-danger disabled:opacity-60 ${focusRing}`;
+const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
+const dangerClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-danger px-4 text-sm font-semibold text-on-accent hover:bg-danger disabled:opacity-60 ${focusRing}`;
 const inputClass =
-  'w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange';
+  'w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange';
 
 interface Props {
   /** MUSIC_AUTO, MUSIC_NONE or a track id. */
@@ -256,7 +256,7 @@ export function MusicPicker({ value, onChange }: Props) {
               }}
               aria-describedby={fileError ? 'music-file-error' : undefined}
               aria-invalid={!!fileError}
-              className="block w-full text-sm text-ink file:mr-3 file:min-h-11 file:rounded-lg file:border file:border-line file:bg-white file:px-4 file:text-sm file:font-semibold"
+              className="block w-full text-sm text-ink file:mr-3 file:min-h-11 file:rounded-lg file:border file:border-line file:bg-studio-ground file:px-4 file:text-sm file:font-semibold"
             />
             {fileError && (
               <p id="music-file-error" className="mt-1 text-sm text-danger">

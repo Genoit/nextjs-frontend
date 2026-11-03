@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 /** Billing stands alone, like a checkout: no app sidebar or header, only the mark and a way back. */
 export default function BillingLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="min-h-dvh bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange selection:text-white">
+    <div className="min-h-dvh bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange selection:text-on-accent">
       <header>
         <div className="mx-auto flex h-16 w-full max-w-[1440px] items-center justify-between px-4 sm:px-7">
           <Link

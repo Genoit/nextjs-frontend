@@ -23,7 +23,7 @@ function CreditsBadge({ summary }: { summary: BillingSummary | null }) {
   return (
     <Link
       href="/billing"
-      className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-studio-rule bg-white pl-3 pr-1 text-sm transition hover:border-trend-orange focus-visible:outline-2 focus-visible:outline-trend-orange"
+      className="inline-flex h-9 shrink-0 items-center gap-2 rounded-full border border-studio-rule bg-studio-ground pl-3 pr-1 text-sm transition hover:border-trend-orange focus-visible:outline-2 focus-visible:outline-trend-orange"
       aria-label={`${creditsText(summary.credits)} left. ${subscribed ? 'Manage plan' : 'Upgrade'}`}
     >
       <Zap
@@ -145,7 +145,7 @@ function Sidebar({
           <div className="flex items-center gap-2.5 px-2 py-2">
             <span
               aria-hidden
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-white"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-ink text-xs font-semibold text-on-accent"
             >
               {(user?.first_name?.[0] || user?.email?.[0] || '?').toUpperCase()}
             </span>
@@ -203,7 +203,7 @@ export function AppShell({
   }, [menuOpen]);
 
   return (
-    <div className="flex min-h-dvh bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange selection:text-white">
+    <div className="flex min-h-dvh bg-studio-ground font-sans text-studio-text antialiased selection:bg-trend-orange selection:text-on-accent">
       <aside className="sticky top-0 hidden h-dvh w-[232px] shrink-0 border-r border-studio-rule lg:block">
         <Sidebar active={active} summary={summary} />
       </aside>

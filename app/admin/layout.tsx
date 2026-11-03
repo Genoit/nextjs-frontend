@@ -111,7 +111,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* ========================================================= */}
         {mobileMenuOpen && (
           <div className="fixed inset-0 z-50 md:hidden bg-black/50 backdrop-blur-xs flex">
-            <div className="w-64 bg-white h-full p-5 flex flex-col justify-between shadow-2xl animate-in slide-in-from-left duration-200">
+            <div className="w-64 bg-studio-ground h-full p-5 flex flex-col justify-between shadow-2xl animate-in slide-in-from-left duration-200">
               <div className="space-y-6">
                 <div className="flex items-center justify-between pb-3 border-b border-line">
                   <Link
@@ -119,15 +119,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-2"
                   >
-                    <Image
-                      src="/dashboard/trended-logo.png"
-                      alt="TrendED"
-                      width={130}
-                      height={44}
-                      unoptimized
-                      priority
-                      className="object-contain"
-                    />
+                    <span className="flex items-center gap-2">
+                      <Image
+                        src="/symbol.png"
+                        alt=""
+                        width={26}
+                        height={26}
+                        className="object-contain"
+                      />
+                      <span className="text-[17px] font-semibold tracking-tight text-ink">
+                        TrendED
+                      </span>
+                    </span>
                   </Link>
                   <button
                     type="button"
@@ -186,20 +189,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* ========================================================= */}
         {/* DESKTOP SIDEBAR (Faithful to Figma) */}
         {/* ========================================================= */}
-        <aside className="hidden md:flex w-60 bg-white border-r border-line/80 p-5 flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto z-30">
+        <aside className="hidden md:flex w-60 bg-studio-ground border-r border-line/80 p-5 flex-col justify-between shrink-0 h-screen sticky top-0 overflow-y-auto z-30">
           <div className="space-y-6">
             {/* Logo & Baseline */}
             <div className="px-1 pt-1">
               <Link href="/admin/overview" className="block">
-                <Image
-                  src="/dashboard/trended-logo.png"
-                  alt="TrendED"
-                  width={145}
-                  height={50}
-                  unoptimized
-                  priority
-                  className="object-contain"
-                />
+                <span className="flex items-center gap-2">
+                  <Image
+                    src="/symbol.png"
+                    alt=""
+                    width={26}
+                    height={26}
+                    className="object-contain"
+                  />
+                  <span className="text-[17px] font-semibold tracking-tight text-ink">TrendED</span>
+                </span>
               </Link>
               <p className="text-[10px] text-ink-muted mt-1 pl-1 tracking-tight">
                 E-commerce · Dropshipping · Growth
@@ -216,7 +220,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     href={item.href}
                     className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition ${
                       item.isActive
-                        ? 'bg-[#FFF7ED] text-trend-orange font-semibold border-l-3 border-trend-orange'
+                        ? 'bg-cream text-trend-orange font-semibold border-l-3 border-trend-orange'
                         : 'text-ink-soft hover:text-ink hover:bg-studio-surface'
                     }`}
                   >
@@ -253,7 +257,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </button>
 
               {userDropdownOpen && (
-                <div className="absolute bottom-full left-0 mb-2 w-full bg-white rounded-2xl shadow-xl border border-line/80 p-1.5 z-40 animate-in fade-in slide-in-from-bottom-2">
+                <div className="absolute bottom-full left-0 mb-2 w-full bg-studio-ground rounded-2xl shadow-xl border border-line/80 p-1.5 z-40 animate-in fade-in slide-in-from-bottom-2">
                   <div className="px-3 py-2 border-b border-line text-xs text-ink-muted">
                     Logged in as <strong className="text-ink">{user?.email}</strong>
                   </div>
@@ -300,7 +304,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* ========================================================= */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* Top Header Bar */}
-          <header className="px-6 sm:px-8 pt-5 pb-3 flex items-center justify-between gap-4 border-b border-line/80 bg-white/50 backdrop-blur-xs sticky top-0 z-20">
+          <header className="px-6 sm:px-8 pt-5 pb-3 flex items-center justify-between gap-4 border-b border-line/80 bg-studio-ground/50 backdrop-blur-xs sticky top-0 z-20">
             <div className="flex items-center gap-3 flex-1 max-w-xl">
               <button
                 type="button"
@@ -319,7 +323,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search users, orders, products..."
-                  className="w-full rounded-2xl border border-line/90 bg-white py-2 pl-9 pr-12 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
+                  className="w-full rounded-2xl border border-line/90 bg-studio-ground py-2 pl-9 pr-12 text-xs text-ink placeholder-ink-muted shadow-2xs focus:border-trend-orange focus:ring-1 focus:ring-trend-orange transition"
                 />
                 <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-ink-muted border border-line rounded px-1.5 py-0.5 bg-studio-surface">
                   ⌘ K
@@ -346,7 +350,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 aria-label="Notifications"
               >
                 <Bell className="w-4.5 h-4.5" />
-                <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-danger text-[9px] font-bold text-white flex items-center justify-center leading-none">
+                <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-danger text-[9px] font-bold text-on-accent flex items-center justify-center leading-none">
                   12
                 </span>
               </Link>

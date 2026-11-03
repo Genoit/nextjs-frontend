@@ -119,16 +119,20 @@ export function TrendedBrandLogo({ className = '' }: { className?: string }) {
   return (
     <div className={`inline-flex flex-col select-none ${className}`}>
       <div className="flex items-center">
+        {/* logo.png has black lettering, unreadable on the dark theme: symbol + live text instead. */}
         <Image
-          src="/logo.png"
-          alt="TrendED Logo"
-          width={220}
-          height={56}
-          className="h-10 sm:h-12 w-auto object-contain"
+          src="/symbol.png"
+          alt=""
+          width={40}
+          height={40}
+          className="h-9 w-9 sm:h-10 sm:w-10 object-contain"
           priority
         />
+        <span className="ml-2 text-[28px] sm:text-[32px] font-extrabold leading-none tracking-[-.04em] text-ink">
+          Trend<span className="text-trend-orange">ED</span>
+        </span>
       </div>
-      <span className="text-[10px] sm:text-[11px] tracking-wider uppercase font-semibold text-zinc-500 mt-1">
+      <span className="text-[10px] sm:text-[11px] tracking-wider uppercase font-semibold text-ink-muted mt-1">
         E-commerce · Dropshipping · Growth
       </span>
     </div>

@@ -71,7 +71,7 @@ export function ViolationsPanel({ violations }: { violations: ComplianceViolatio
   return (
     <section
       aria-labelledby="violations-title"
-      className="rounded-2xl bg-white border border-line/80 p-5 shadow-2xs space-y-3"
+      className="rounded-2xl bg-studio-ground border border-line/80 p-5 shadow-2xs space-y-3"
     >
       <h4 id="violations-title" className="text-sm font-bold text-ink">
         Contrôle de persuasion & conformité

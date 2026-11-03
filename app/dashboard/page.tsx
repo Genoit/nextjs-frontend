@@ -121,7 +121,7 @@ function Panel({
         <h2 id={id} className="flex items-center gap-2 text-sm font-semibold text-studio-text">
           {title}
           {count !== undefined && (
-            <span className="rounded-full bg-white px-2 py-0.5 text-xs font-medium tabular-nums text-studio-muted">
+            <span className="rounded-full bg-studio-ground px-2 py-0.5 text-xs font-medium tabular-nums text-studio-muted">
               {count}
             </span>
           )}
@@ -134,7 +134,7 @@ function Panel({
 }
 
 const rowClass =
-  'flex min-h-[63px] items-center gap-3 rounded-xl border border-studio-rule bg-white px-3 py-2.5 transition-colors hover:border-[#d1d5db] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
+  'flex min-h-[63px] items-center gap-3 rounded-xl border border-studio-rule bg-studio-ground px-3 py-2.5 transition-colors hover:border-line focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
 
 function Composer() {
   const router = useRouter();
@@ -177,12 +177,12 @@ function Composer() {
               value={link}
               onChange={(e) => setLink(e.target.value)}
               placeholder="https://store.com/products/your-product"
-              className="h-12 w-full rounded-[10px] border border-[#e7dcc6] bg-white pr-4 pl-10 text-[15px] text-studio-text caret-trend-orange outline-none transition-colors placeholder:text-studio-meta focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25"
+              className="h-12 w-full rounded-[10px] border border-line bg-studio-ground pr-4 pl-10 text-[15px] text-studio-text caret-trend-orange outline-none transition-colors placeholder:text-studio-meta focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25"
             />
           </div>
           <button
             type="submit"
-            className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-6 text-[15px] font-semibold text-white transition-[background-color,transform] hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98] motion-reduce:transition-none"
+            className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-6 text-[15px] font-semibold text-on-accent transition-[background-color,transform] hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98] motion-reduce:transition-none"
           >
             Create ad
             <ArrowRight className="h-4 w-4" aria-hidden />
@@ -292,7 +292,7 @@ function RecentProducts({ load, query, retry }: { load: Load; query: string; ret
       )}
 
       {load.state === 'error' && (
-        <div className="flex flex-col items-start gap-3 rounded-xl border border-studio-rule bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col items-start gap-3 rounded-xl border border-studio-rule bg-studio-ground p-4 sm:flex-row sm:items-center sm:justify-between">
           <p className="text-sm text-studio-text">
             Your products could not be loaded.{' '}
             <span className="text-studio-muted">{load.message}</span>
@@ -300,7 +300,7 @@ function RecentProducts({ load, query, retry }: { load: Load; query: string; ret
           <button
             type="button"
             onClick={retry}
-            className="inline-flex h-9 items-center gap-2 rounded-lg border border-[#d1d5db] bg-white px-3 text-sm font-medium text-studio-text hover:border-studio-text"
+            className="inline-flex h-9 items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 text-sm font-medium text-studio-text hover:border-studio-text"
           >
             <RefreshCw className="h-4 w-4" aria-hidden />
             Try again
@@ -309,13 +309,13 @@ function RecentProducts({ load, query, retry }: { load: Load; query: string; ret
       )}
 
       {load.state === 'ready' && load.entries.length === 0 && (
-        <p className="rounded-xl border border-dashed border-[#d1d5db] px-4 py-3 text-sm text-studio-muted">
+        <p className="rounded-xl border border-dashed border-line px-4 py-3 text-sm text-studio-muted">
           No products yet. Paste a product link above: your first ad starts here.
         </p>
       )}
 
       {load.state === 'ready' && load.entries.length > 0 && shown.length === 0 && (
-        <p className="rounded-xl border border-dashed border-[#d1d5db] px-4 py-3 text-sm text-studio-muted">
+        <p className="rounded-xl border border-dashed border-line px-4 py-3 text-sm text-studio-muted">
           No recent product matches &ldquo;{query}&rdquo;.
         </p>
       )}
@@ -348,7 +348,7 @@ function Generating({ load }: { load: Load }) {
       className="lg:col-span-4"
     >
       {running.length === 0 ? (
-        <p className="rounded-xl border border-dashed border-[#d1d5db] px-4 py-3 text-sm text-studio-muted">
+        <p className="rounded-xl border border-dashed border-line px-4 py-3 text-sm text-studio-muted">
           {load.state === 'loading'
             ? 'Checking your renders…'
             : 'Nothing is rendering. Ads you start show their progress here.'}
@@ -434,7 +434,7 @@ export default function DashboardPage() {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Search recent products"
-        className="h-10 w-full rounded-lg border border-studio-rule bg-white pr-3 pl-9 text-sm text-studio-text outline-none transition-colors placeholder:text-studio-meta focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25"
+        className="h-10 w-full rounded-lg border border-studio-rule bg-studio-ground pr-3 pl-9 text-sm text-studio-text outline-none transition-colors placeholder:text-studio-meta focus:border-trend-orange focus:ring-2 focus:ring-trend-orange/25"
       />
     </div>
   );

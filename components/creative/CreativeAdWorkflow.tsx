@@ -150,7 +150,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   return (
     <div className="space-y-8">
       {/* Step Navigation Header */}
-      <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs">
         <div className="relative flex items-center justify-between overflow-x-auto gap-2">
           {[
             { num: 1, label: 'Intelligence', icon: Sparkles },
@@ -172,7 +172,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                 aria-current={isActive ? 'step' : undefined}
                 className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
                   isActive
-                    ? 'bg-trend-orange text-white shadow-xs'
+                    ? 'bg-trend-orange text-on-accent shadow-xs'
                     : isPassed
                       ? 'bg-cream text-trend-orange hover:bg-trend-orange/30'
                       : 'text-ink-muted hover:text-ink-soft'
@@ -181,9 +181,9 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                 <div
                   className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
                     isActive
-                      ? 'bg-white text-trend-orange'
+                      ? 'bg-studio-ground text-trend-orange'
                       : isPassed
-                        ? 'bg-trend-orange text-white'
+                        ? 'bg-trend-orange text-on-accent'
                         : 'bg-studio-rule text-ink-muted'
                   }`}
                 >
@@ -216,7 +216,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                   resetError();
                   setUserSelectedStep(1);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-white border border-danger/30 text-danger font-bold hover:bg-danger-soft"
+                className="px-3 py-1.5 rounded-lg bg-studio-ground border border-danger/30 text-danger font-bold hover:bg-danger-soft"
               >
                 Aller à l&apos;analyse produit
               </button>
@@ -348,7 +348,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                   value={qualityTier}
                   onChange={(e) => setQualityTier(e.target.value as QualityTier)}
                   disabled={isStartingJob}
-                  className="min-h-11 rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                  className="min-h-11 rounded-lg border border-line bg-studio-ground px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
                 >
                   {QUALITY_TIERS.map((t) => (
                     <option key={t.value} value={t.value}>

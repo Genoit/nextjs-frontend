@@ -93,7 +93,7 @@ export default function AdminSettingsPage() {
     <div className="space-y-6">
       {/* Toast */}
       {saveSuccessMsg && (
-        <div className="fixed top-5 right-5 z-50 bg-success text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
+        <div className="fixed top-5 right-5 z-50 bg-success text-on-accent text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in duration-200">
           <Check className="w-4 h-4" />
           <span>{saveSuccessMsg}</span>
         </div>
@@ -119,7 +119,7 @@ export default function AdminSettingsPage() {
             type="button"
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-trend-orange text-white hover:bg-trend-orange rounded-xl text-xs font-bold shadow-2xs transition cursor-pointer disabled:opacity-50"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-trend-orange text-on-accent hover:bg-trend-orange rounded-xl text-xs font-bold shadow-2xs transition cursor-pointer disabled:opacity-50"
           >
             <Save className="w-3.5 h-3.5" />
             <span>{saving ? 'Saving...' : 'Save changes'}</span>
@@ -133,7 +133,7 @@ export default function AdminSettingsPage() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
         {/* Left Mini Nav (2 cols) */}
         <div className="lg:col-span-2 space-y-4">
-          <div className="bg-white rounded-2xl border border-line/80 p-2 shadow-2xs space-y-1">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-2 shadow-2xs space-y-1">
             {navItems.map((item) => (
               <button
                 key={item.id}
@@ -151,7 +151,7 @@ export default function AdminSettingsPage() {
           </div>
 
           {/* System Health Card */}
-          <div className="bg-white rounded-2xl border border-line/80 p-4 shadow-2xs space-y-2 text-xs">
+          <div className="bg-studio-ground rounded-2xl border border-line/80 p-4 shadow-2xs space-y-2 text-xs">
             <div className="flex items-center gap-1.5 text-ink-muted font-medium">
               <span className="w-2 h-2 rounded-full bg-success" />
               <span>System Health</span>
@@ -182,7 +182,7 @@ export default function AdminSettingsPage() {
           {/* ======================================================= */}
           <div className="space-y-5">
             {/* 1. AI Configuration */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <Sparkles className="w-3.5 h-3.5 text-ink-muted" />
                 <span>AI Configuration</span>
@@ -194,7 +194,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.default_ai_model}
                     onChange={(e) => updateSetting('default_ai_model', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="OpenAI GPT-4o">OpenAI GPT-4o</option>
                     <option value="OpenAI GPT-4-turbo">OpenAI GPT-4-turbo</option>
@@ -210,7 +210,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.fallback_model}
                     onChange={(e) => updateSetting('fallback_model', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Anthropic Claude 3.5 Sonnet">Anthropic Claude 3.5 Sonnet</option>
                     <option value="OpenAI GPT-4o-mini">OpenAI GPT-4o-mini</option>
@@ -243,7 +243,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* 2. Product Intelligence */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <TrendingUp className="w-3.5 h-3.5 text-ink-muted" />
                 <span>Product Intelligence</span>
@@ -258,7 +258,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.data_refresh_interval}
                     onChange={(e) => updateSetting('data_refresh_interval', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Every 6 hours">Every 6 hours</option>
                     <option value="Every 12 hours">Every 12 hours</option>
@@ -277,7 +277,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.trend_calculation_window}
                     onChange={(e) => updateSetting('trend_calculation_window', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="30 days">30 days</option>
                     <option value="60 days">60 days</option>
@@ -308,7 +308,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.trend_score_algorithm}
                     onChange={(e) => updateSetting('trend_score_algorithm', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Weighted Momentum v2">Weighted Momentum v2</option>
                     <option value="Exponential Decay v1">Exponential Decay v1</option>
@@ -319,7 +319,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* 3. Tax Configuration */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <CreditCard className="w-3.5 h-3.5 text-ink-muted" />
                 <span>Tax Configuration</span>
@@ -344,7 +344,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.tax_display_mode}
                     onChange={(e) => updateSetting('tax_display_mode', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Inclusive">Inclusive</option>
                     <option value="Exclusive">Exclusive</option>
@@ -359,7 +359,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.origin_country}
                     onChange={(e) => updateSetting('origin_country', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="United States">United States</option>
                     <option value="France">France</option>
@@ -389,7 +389,7 @@ export default function AdminSettingsPage() {
           {/* ======================================================= */}
           <div className="space-y-5">
             {/* 1. AI Generation Limits */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <Sparkles className="w-3.5 h-3.5 text-ink-muted" />
                 <span>AI Generation Limits</span>
@@ -445,7 +445,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* 2. Trend Calculation Settings */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <Sliders className="w-3.5 h-3.5 text-ink-muted" />
                 <span>Trend Calculation Settings</span>
@@ -538,7 +538,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* 3. Security */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <Shield className="w-3.5 h-3.5 text-ink-muted" />
                 <span>Security</span>
@@ -550,7 +550,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.session_duration}
                     onChange={(e) => updateSetting('session_duration', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="8 hours">8 hours</option>
                     <option value="24 hours">24 hours</option>
@@ -566,7 +566,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.idle_session_timeout}
                     onChange={(e) => updateSetting('idle_session_timeout', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="30 minutes">30 minutes</option>
                     <option value="1 hour">1 hour</option>
@@ -582,7 +582,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.force_re_authentication}
                     onChange={(e) => updateSetting('force_re_authentication', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Every 7 days">Every 7 days</option>
                     <option value="Every 14 days">Every 14 days</option>
@@ -609,7 +609,7 @@ export default function AdminSettingsPage() {
           {/* ======================================================= */}
           <div className="space-y-5">
             {/* 1. AI Cost Thresholds */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <Sparkles className="w-3.5 h-3.5 text-ink-muted" />
                 <span>AI Cost Thresholds</span>
@@ -679,7 +679,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* 2. Payments */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <CreditCard className="w-3.5 h-3.5 text-ink-muted" />
                 <span>Payments</span>
@@ -691,7 +691,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.payment_provider}
                     onChange={(e) => updateSetting('payment_provider', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Stripe">Stripe</option>
                     <option value="PayPal">PayPal</option>
@@ -707,7 +707,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.currency}
                     onChange={(e) => updateSetting('currency', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="USD - US Dollar ($)">USD - US Dollar ($)</option>
                     <option value="EUR - Euro (€)">EUR - Euro (€)</option>
@@ -723,7 +723,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.tax_calculation}
                     onChange={(e) => updateSetting('tax_calculation', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Automatic">Automatic</option>
                     <option value="Manual">Manual</option>
@@ -758,7 +758,7 @@ export default function AdminSettingsPage() {
             </div>
 
             {/* 3. Authentication Policy */}
-            <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
+            <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3.5 text-xs">
               <div className="flex items-center gap-1.5 font-bold text-ink pb-2 border-b border-line">
                 <Lock className="w-3.5 h-3.5 text-ink-muted" />
                 <span>Authentication Policy</span>
@@ -770,7 +770,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.two_factor_authentication}
                     onChange={(e) => updateSetting('two_factor_authentication', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Required for Admins">Required for Admins</option>
                     <option value="Optional for all">Optional for all</option>
@@ -798,7 +798,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.password_complexity}
                     onChange={(e) => updateSetting('password_complexity', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Strong">Strong</option>
                     <option value="Medium">Medium</option>
@@ -813,7 +813,7 @@ export default function AdminSettingsPage() {
                   <select
                     value={settings.enforce_password_rotation}
                     onChange={(e) => updateSetting('enforce_password_rotation', e.target.value)}
-                    className="w-full appearance-none bg-white border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
+                    className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
                     <option value="Every 90 days">Every 90 days</option>
                     <option value="Every 180 days">Every 180 days</option>
@@ -830,7 +830,7 @@ export default function AdminSettingsPage() {
       {/* ========================================================= */}
       {/* BOTTOM FULL-WIDTH TABLE: ADMIN PERMISSIONS */}
       {/* ========================================================= */}
-      <div className="bg-white rounded-2xl border border-line/80 shadow-2xs p-5 space-y-4">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 shadow-2xs p-5 space-y-4">
         <div className="flex items-center gap-2 pb-3 border-b border-line font-bold text-sm text-ink">
           <Users className="w-4 h-4 text-ink-muted" />
           <span>Admin Permissions</span>
@@ -838,7 +838,7 @@ export default function AdminSettingsPage() {
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="bg-[#FAF9FB] text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
+            <thead className="bg-cream text-ink-muted text-[11px] font-semibold uppercase tracking-wider select-none">
               <tr>
                 <th className="py-3 px-4">Role</th>
                 <th className="py-3 px-3 text-center">Dashboard Access</th>

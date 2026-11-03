@@ -208,7 +208,7 @@ export function CreativeConfigForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
       {/* Header card */}
-      <div className="rounded-2xl bg-white border border-line/80 p-6 shadow-2xs space-y-2">
+      <div className="rounded-2xl bg-studio-ground border border-line/80 p-6 shadow-2xs space-y-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-trend-orange">
             <Sliders className="w-5 h-5" />
@@ -235,7 +235,7 @@ export function CreativeConfigForm({
       )}
 
       {/* Section 1: Objectif & Audience */}
-      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Target className="w-4 h-4 text-trend-orange" />
           <span>1. Objectif de campagne & Audience cible</span>
@@ -265,7 +265,7 @@ export function CreativeConfigForm({
                 className={`p-3.5 rounded-xl border text-left transition ${
                   objective === item.id
                     ? 'border-trend-orange bg-cream ring-1 ring-trend-orange'
-                    : 'border-line hover:border-line bg-white'
+                    : 'border-line hover:border-line bg-studio-ground'
                 }`}
               >
                 <div className="font-bold text-xs text-ink">{item.label}</div>
@@ -327,7 +327,7 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 2: Angle créatif & Émotion */}
-      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-trend-orange" />
           <span>2. Famille de Concept & Angle Publicitaire</span>
@@ -355,7 +355,7 @@ export function CreativeConfigForm({
                 className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
                   conceptType === fam.id
                     ? 'border-trend-orange bg-cream ring-2 ring-trend-orange/20 shadow-2xs'
-                    : 'border-line hover:border-line bg-white'
+                    : 'border-line hover:border-line bg-studio-ground'
                 }`}
               >
                 <div>
@@ -404,7 +404,7 @@ export function CreativeConfigForm({
                 onClick={() => setCreativeAngle(ang)}
                 className={`text-[11px] px-2.5 py-1 rounded-lg transition ${
                   creativeAngle === ang
-                    ? 'bg-trend-orange text-white font-medium'
+                    ? 'bg-trend-orange text-on-accent font-medium'
                     : 'bg-studio-raised hover:bg-studio-rule text-ink-soft'
                 }`}
               >
@@ -426,7 +426,7 @@ export function CreativeConfigForm({
               id="cfg-primaryEmotion"
               value={primaryEmotion}
               onChange={(e) => setPrimaryEmotion(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="confiance">Confiance & Réassurance</option>
               <option value="enthousiasme">Enthousiasme & Excitation</option>
@@ -444,7 +444,7 @@ export function CreativeConfigForm({
               id="cfg-videoStyle"
               value={videoStyle}
               onChange={(e) => setVideoStyle(e.target.value as VideoStyle)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="hybrid">Hybride (Créateur UGC + Focus Produit)</option>
               <option value="ugc_natural">100% UGC Naturel (Format selfie casual)</option>
@@ -455,7 +455,7 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 3: Format, Durée & Plateforme */}
-      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Smartphone className="w-4 h-4 text-trend-orange" />
           <span>3. Format, Durée & Diffusion</span>
@@ -503,7 +503,7 @@ export function CreativeConfigForm({
               id="cfg-platform"
               value={platform}
               onChange={(e) => setPlatform(e.target.value as TargetPlatform)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="tiktok">TikTok Ads</option>
               <option value="instagram_reels">Instagram Reels</option>
@@ -525,7 +525,7 @@ export function CreativeConfigForm({
               id="cfg-aspectRatio"
               value={aspectRatio}
               onChange={(e) => setAspectRatio(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="9:16">9:16 (Vertical TikTok/Reels)</option>
               <option value="1:1">1:1 (Carré Feed)</option>
@@ -562,7 +562,7 @@ export function CreativeConfigForm({
               id="cfg-language"
               value={language}
               onChange={(e) => setLanguage(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="fr">Français (FR)</option>
               <option value="en">English (US)</option>
@@ -574,7 +574,7 @@ export function CreativeConfigForm({
       </div>
 
       {/* Section 4: Voix, Ambiance & Contraintes */}
-      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
         <h4 className="text-sm font-bold text-ink flex items-center gap-2">
           <Volume2 className="w-4 h-4 text-trend-orange" />
           <span>4. Voix-off, Ambiance sonore & Contraintes spécifiques</span>
@@ -589,7 +589,7 @@ export function CreativeConfigForm({
               id="cfg-voiceGender"
               value={voiceGender}
               onChange={(e) => setVoiceGender(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="female">Voix Féminine</option>
               <option value="male">Voix Masculine</option>
@@ -620,7 +620,7 @@ export function CreativeConfigForm({
               onChange={(e) => setMusicMood(e.target.value)}
               disabled={musicChoice === MUSIC_NONE}
               aria-describedby="cfg-musicMood-hint"
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-white focus:outline-none focus:border-trend-orange"
+              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
             >
               <option value="upbeat">Rythmée & Énergique (Trendy TikTok)</option>
               <option value="calm">Calme & Apaisante (Acoustique / Lo-Fi)</option>
@@ -662,7 +662,7 @@ export function CreativeConfigForm({
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-white text-sm font-bold shadow-xs transition flex items-center gap-2"
+          className="px-6 py-3 rounded-xl bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-sm font-bold shadow-xs transition flex items-center gap-2"
         >
           {isLoading ? (
             <span>Sauvegarde en cours...</span>

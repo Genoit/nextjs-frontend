@@ -179,7 +179,7 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-white">
+    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-studio-ground">
       {/* Left visual showcase panel - faithfully matching Figma Register_TrendED.jpg */}
       <div className="hidden lg:flex lg:col-span-7 flex-col justify-start gap-8 bg-cream p-8 xl:p-10 relative overflow-hidden border-r border-amber-950/5 min-h-screen">
         {/* Ambient subtle background decorative arcs */}
@@ -222,7 +222,7 @@ export default function RegisterPage() {
           {/* Pipeline visual diagram with Product + AI badge + features + Phone */}
           <div className="relative flex items-center justify-start gap-5 xl:gap-7 py-5 scale-[1.18] origin-left">
             {/* Step 1: Product card */}
-            <div className="flex flex-col items-center justify-between rounded-[1.7rem] bg-white p-4 xl:p-5 shadow-sm border border-line/90 w-40 sm:w-44 h-60 shrink-0">
+            <div className="flex flex-col items-center justify-between rounded-[1.7rem] bg-studio-ground p-4 xl:p-5 shadow-sm border border-line/90 w-40 sm:w-44 h-60 shrink-0">
               <span className="text-[12px] font-semibold text-ink-muted">Product</span>
               <div className="relative w-28 h-36 my-auto flex items-center justify-center">
                 <Image
@@ -244,7 +244,7 @@ export default function RegisterPage() {
             {/* Step 2: Middle column with Logo Symbol badge & feature list */}
             <div className="flex flex-col items-center gap-3 shrink-0">
               {/* Logo symbol badge */}
-              <div className="flex items-center justify-center rounded-[1.6rem] bg-white p-3.5 shadow-sm border border-line/90">
+              <div className="flex items-center justify-center rounded-[1.6rem] bg-studio-ground p-3.5 shadow-sm border border-line/90">
                 <Image
                   src="/symbol.png"
                   alt="TrendED Logo Symbol"
@@ -259,7 +259,7 @@ export default function RegisterPage() {
               <div className="h-5 border-l-[3px] border-dashed border-warning/30" />
 
               {/* Feature list card */}
-              <div className="rounded-[1.6rem] bg-white p-4 xl:p-5 shadow-sm border border-line/90 space-y-3 min-w-[190px] xl:min-w-[210px]">
+              <div className="rounded-[1.6rem] bg-studio-ground p-4 xl:p-5 shadow-sm border border-line/90 space-y-3 min-w-[190px] xl:min-w-[210px]">
                 <div className="flex items-center gap-2.5 text-sm font-medium text-ink">
                   <span className="text-trend-orange">
                     <ChatScriptIcon className="h-5 w-5" />
@@ -307,7 +307,7 @@ export default function RegisterPage() {
           </div>
 
           {/* Bottom badge */}
-          <div className="inline-flex items-center gap-2.5 rounded-2xl bg-white p-3 pr-5 shadow-sm border border-amber-950/5">
+          <div className="inline-flex items-center gap-2.5 rounded-2xl bg-studio-ground p-3 pr-5 shadow-sm border border-amber-950/5">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-warning-soft/70 text-warning">
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
@@ -485,7 +485,7 @@ export default function RegisterPage() {
                     <span
                       className={`inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold ${
                         check.ok
-                          ? 'bg-success text-white'
+                          ? 'bg-success text-on-accent'
                           : 'bg-studio-raised text-ink-muted border border-line'
                       }`}
                     >
@@ -558,7 +558,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full justify-center items-center gap-2 rounded-xl bg-trend-orange px-4 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:opacity-50 transition mt-2"
+              className="flex w-full justify-center items-center gap-2 rounded-xl bg-trend-orange px-4 py-3.5 text-base font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:opacity-50 transition mt-2"
             >
               {isLoading ? (
                 <>
@@ -577,7 +577,9 @@ export default function RegisterPage() {
               <div className="w-full border-t border-line" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-3 text-ink-muted font-medium tracking-wider">OR</span>
+              <span className="bg-studio-ground px-3 text-ink-muted font-medium tracking-wider">
+                OR
+              </span>
             </div>
           </div>
 
@@ -586,7 +588,7 @@ export default function RegisterPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-line bg-white px-4 py-2.5 text-base font-medium text-ink-soft shadow-sm hover:bg-studio-surface disabled:opacity-50 transition"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-line bg-studio-ground px-4 py-2.5 text-base font-medium text-ink-soft shadow-sm hover:bg-studio-surface disabled:opacity-50 transition"
           >
             {isGoogleLoading ? (
               <>

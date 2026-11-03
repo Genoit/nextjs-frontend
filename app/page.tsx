@@ -199,12 +199,12 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen overflow-x-clip bg-white text-ink selection:bg-trend-orange/15 selection:text-trend-orange">
+    <div className="min-h-screen overflow-x-clip bg-studio-ground text-ink selection:bg-trend-orange/15 selection:text-trend-orange">
       <Navbar />
       {/* ============================================================ */}
       {/* 01 — HERO SECTION                                             */}
       {/* ============================================================ */}
-      <section className="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden bg-gradient-to-b from-cream/40 via-cream/30 to-white">
+      <section className="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden bg-gradient-to-b from-cream/40 via-cream/30 to-studio-ground">
         {/* Subtle decorative background light */}
         <div className="absolute top-10 right-1/4 w-[650px] h-[650px] rounded-full bg-trend-gold/10 blur-3xl pointer-events-none -z-10" />
         <div className="absolute top-0 right-10 w-[500px] h-[500px] rounded-full bg-trend-orange/10 blur-3xl pointer-events-none -z-10" />
@@ -238,7 +238,7 @@ export default function LandingPage() {
                 {isAuthenticated ? (
                   <Link
                     href="/dashboard"
-                    className="rounded-xl bg-trend-orange px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/30 transition duration-200 flex items-center gap-2"
+                    className="rounded-xl bg-trend-orange px-7 py-3.5 text-base font-semibold text-on-accent shadow-md shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/30 transition duration-200 flex items-center gap-2"
                   >
                     <SparkleIcon className="h-4 w-4 text-white" />
                     <span>Go to Dashboard</span>
@@ -249,7 +249,7 @@ export default function LandingPage() {
                 ) : (
                   <Link
                     href="/register"
-                    className="rounded-xl bg-trend-orange px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/30 transition duration-200 flex items-center gap-2 group"
+                    className="rounded-xl bg-trend-orange px-7 py-3.5 text-base font-semibold text-on-accent shadow-md shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/30 transition duration-200 flex items-center gap-2 group"
                   >
                     <SparkleIcon className="h-4 w-4 text-trend-gold" />
                     <span>Create your first video</span>
@@ -258,7 +258,7 @@ export default function LandingPage() {
 
                 <Link
                   href="#how-it-works"
-                  className="rounded-xl border border-line bg-white px-6 py-3.5 text-base font-semibold text-ink shadow-sm hover:bg-studio-surface hover:border-line transition duration-200 flex items-center gap-2 group"
+                  className="rounded-xl border border-line bg-studio-ground px-6 py-3.5 text-base font-semibold text-ink shadow-sm hover:bg-studio-surface hover:border-line transition duration-200 flex items-center gap-2 group"
                 >
                   <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cream text-trend-orange group-hover:scale-110 transition">
                     <Play className="h-3.5 w-3.5 fill-current" />
@@ -308,7 +308,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 02 — SOCIAL PROOF / TRUST SECTION                             */}
       {/* ============================================================ */}
-      <section className="py-16 sm:py-20 bg-white border-y border-line">
+      <section className="py-16 sm:py-20 bg-studio-ground border-y border-line">
         <div className="w-full px-4 sm:px-6 lg:px-8 text-center space-y-12">
           {/* Headings */}
           <div className="space-y-3 max-w-4xl mx-auto">
@@ -436,7 +436,10 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 03 — PROBLÈME → SOLUTION                                      */}
       {/* ============================================================ */}
-      <section id="problem-solution" className="py-20 bg-gradient-to-b from-white to-cream/40">
+      <section
+        id="problem-solution"
+        className="py-20 bg-gradient-to-b from-studio-ground to-cream/40"
+      >
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="space-y-10 text-center">
             <div className="flex justify-center">
@@ -454,7 +457,7 @@ export default function LandingPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(140px,0.7fr)_minmax(48px,0.22fr)_minmax(572px,2.7fr)_minmax(140px,0.7fr)] lg:items-end lg:gap-2 xl:grid-cols-[minmax(200px,0.75fr)_minmax(72px,0.28fr)_minmax(692px,2.3fr)_minmax(200px,0.75fr)] xl:gap-3">
-              <div className="relative rounded-[1.8rem] border border-line/80 bg-[#F4F2EE] p-5 lg:p-6 text-left shadow-sm">
+              <div className="relative rounded-[1.8rem] border border-line/80 bg-cream p-5 lg:p-6 text-left shadow-sm">
                 <h3 className="mb-5 text-[1.05rem] sm:text-[1.2rem] font-medium text-ink">
                   Traditional UGC production
                 </h3>
@@ -469,7 +472,7 @@ export default function LandingPage() {
                     'Publish',
                   ].map((step, index) => (
                     <div key={step} className="flex items-center gap-3">
-                      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-white text-ink-muted ring-1 ring-line shadow-sm">
+                      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-studio-ground text-ink-muted ring-1 ring-line shadow-sm">
                         <span className="text-[0.62rem] font-bold">{index + 1}</span>
                       </div>
                       <span>{step}</span>
@@ -507,7 +510,7 @@ export default function LandingPage() {
               </div>
 
               <div className="flex items-end justify-center pt-2 lg:pt-5 xl:translate-x-6">
-                <div className="relative h-[248px] w-[160px] shrink-0 overflow-hidden rounded-[1.7rem] border border-line bg-[#E9E2D9] shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                <div className="relative h-[248px] w-[160px] shrink-0 overflow-hidden rounded-[1.7rem] border border-line bg-cream shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                   <Image
                     src="/landing_page/landing_3_product.png"
                     alt="Product bottle"
@@ -563,7 +566,7 @@ export default function LandingPage() {
                       }`}
                     >
                       <div className="relative h-full w-full origin-bottom transition-transform duration-[250ms] ease-out group-hover:-translate-y-2 group-hover:scale-[1.1] group-focus-visible:-translate-y-2 group-focus-visible:scale-[1.1] motion-reduce:transition-none">
-                        <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] border border-white/80 bg-[#FAF5F0] shadow-[0_16px_28px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] transition-shadow duration-[250ms] ease-out group-hover:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-hover:ring-2 group-hover:ring-trend-orange/35 group-focus-visible:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-focus-visible:ring-2 group-focus-visible:ring-trend-orange/45 motion-reduce:transition-none">
+                        <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] border border-white/80 bg-cream shadow-[0_16px_28px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] transition-shadow duration-[250ms] ease-out group-hover:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-hover:ring-2 group-hover:ring-trend-orange/35 group-focus-visible:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-focus-visible:ring-2 group-focus-visible:ring-trend-orange/45 motion-reduce:transition-none">
                           <Image
                             src={`/landing_page/landing_3_image_${card}.png`}
                             alt={`UGC concept ${card}`}
@@ -608,7 +611,7 @@ export default function LandingPage() {
                   {['Product', 'AI Script', 'AI Creator', 'Generate', 'Publish'].map(
                     (step, index) => (
                       <div key={step} className="flex items-center gap-3">
-                        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[#F9E3CE] text-trend-orange ring-1 ring-trend-orange/30 shadow-sm">
+                        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-cream text-trend-orange ring-1 ring-trend-orange/30 shadow-sm">
                           <span className="text-[0.62rem] font-bold">{index + 1}</span>
                         </div>
                         <span>{step}</span>
@@ -633,7 +636,7 @@ export default function LandingPage() {
                     className={`flex items-center gap-2 rounded-full border px-4 py-2 ${
                       item.label === 'Minutes, not weeks'
                         ? 'border-trend-orange/30 bg-cream text-trend-orange'
-                        : 'border-line bg-white text-ink-soft'
+                        : 'border-line bg-studio-ground text-ink-soft'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -649,7 +652,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 04 — COMMENT TRENDed FONCTIONNE (How it works — 01 → 02 → 03) */}
       {/* ============================================================ */}
-      <section id="how-it-works" className="border-t border-[#eee8e1] bg-cream/20 py-20 lg:py-24">
+      <section id="how-it-works" className="border-t border-line bg-cream/20 py-20 lg:py-24">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <header className="mx-auto max-w-5xl text-center">
             <div className="mb-5 text-xs font-bold uppercase tracking-[0.18em] text-trend-orange">
@@ -666,7 +669,7 @@ export default function LandingPage() {
           </header>
 
           <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)_48px_minmax(0,1fr)] lg:items-center xl:gap-7 xl:grid-cols-[minmax(0,1fr)_56px_minmax(0,1fr)_56px_minmax(0,1fr)]">
-            <article className="min-w-0 rounded-[1.35rem] border border-line bg-white p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
+            <article className="min-w-0 rounded-[1.35rem] border border-line bg-studio-ground p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
               <div className="mb-5 flex items-center gap-3">
                 <span className="font-editorial text-[3.25rem] leading-none text-trend-orange">
                   01
@@ -676,7 +679,7 @@ export default function LandingPage() {
                 </h3>
               </div>
               <div className="grid grid-cols-[minmax(105px,1fr)_minmax(145px,1fr)] gap-4 sm:gap-5">
-                <div className="relative min-h-[270px] overflow-hidden rounded-lg bg-[#f6f2ee]">
+                <div className="relative min-h-[270px] overflow-hidden rounded-lg bg-cream">
                   <Image
                     src="/landing_page/landing_4_01_produit_necktek.png"
                     alt="Nekteck neck massager"
@@ -737,7 +740,7 @@ export default function LandingPage() {
 
             <div
               aria-hidden="true"
-              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-trend-orange/30 bg-white text-trend-orange shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
+              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-trend-orange/30 bg-studio-ground text-trend-orange shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -750,7 +753,7 @@ export default function LandingPage() {
               </svg>
             </div>
 
-            <article className="min-w-0 rounded-[1.35rem] border border-line bg-white p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
+            <article className="min-w-0 rounded-[1.35rem] border border-line bg-studio-ground p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
                   <span className="font-editorial text-[3.25rem] leading-none text-trend-orange">
@@ -760,7 +763,7 @@ export default function LandingPage() {
                     Build your creative
                   </h3>
                 </div>
-                <span className="shrink-0 rounded-md bg-trend-gold/20 px-2 py-1 text-[0.58rem] font-semibold text-[#8c5a00] flex items-center gap-1">
+                <span className="shrink-0 rounded-md bg-trend-gold/20 px-2 py-1 text-[0.58rem] font-semibold text-ink flex items-center gap-1">
                   <Sparkles className="h-3 w-3 text-[#eaa500]" />
                   AI optimized
                 </span>
@@ -789,7 +792,7 @@ export default function LandingPage() {
                     key={label}
                     className="grid grid-cols-[34px_minmax(75px,0.85fr)_minmax(116px,1.4fr)] items-center gap-2"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#faf8f6] text-ink">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-cream text-ink">
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"
@@ -801,7 +804,7 @@ export default function LandingPage() {
                       </svg>
                     </div>
                     <span className="text-xs font-medium text-ink">{label}</span>
-                    <div className="flex min-w-0 items-center justify-between rounded-lg border border-line bg-white px-2.5 py-2 text-[0.66rem] text-ink-soft">
+                    <div className="flex min-w-0 items-center justify-between rounded-lg border border-line bg-studio-ground px-2.5 py-2 text-[0.66rem] text-ink-soft">
                       <span className="truncate">{value}</span>
                       <svg
                         className="ml-1 h-3.5 w-3.5 shrink-0 text-ink-muted"
@@ -827,7 +830,7 @@ export default function LandingPage() {
 
             <div
               aria-hidden="true"
-              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-trend-orange/30 bg-white text-trend-orange shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
+              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-trend-orange/30 bg-studio-ground text-trend-orange shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -840,7 +843,7 @@ export default function LandingPage() {
               </svg>
             </div>
 
-            <article className="min-w-0 rounded-[1.35rem] border border-line bg-white p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
+            <article className="min-w-0 rounded-[1.35rem] border border-line bg-studio-ground p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
               <div className="mb-5 flex items-center gap-3">
                 <span className="font-editorial text-[3.25rem] leading-none text-trend-orange">
                   03
@@ -889,13 +892,13 @@ export default function LandingPage() {
                   <div className="mt-2 flex items-center gap-2 border-t border-white/40 pt-1.5 text-[0.52rem]">
                     <Play className="h-3 w-3 fill-current" />
                     <span>00:00 / 00:27</span>
-                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
+                    <span className="ml-auto h-2 w-2 rounded-full bg-studio-ground" />
                   </div>
                 </div>
               </div>
               <button
                 type="button"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 py-3.5 text-base font-semibold text-white shadow-[0_8px_18px_rgba(194,65,12,0.22)] transition hover:bg-trend-orange-strong"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 py-3.5 text-base font-semibold text-on-accent shadow-[0_8px_18px_rgba(194,65,12,0.22)] transition hover:bg-trend-orange-strong"
               >
                 <ArrowRight className="h-5 w-5" />
                 Export video
@@ -914,7 +917,7 @@ export default function LandingPage() {
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.72fr_1.88fr]">
               <div className="max-w-[580px] lg:max-w-none">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#F1C79F] bg-cream shadow-sm">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-cream shadow-sm">
                     <TrendedBrandLogo className="items-center" />
                   </div>
                 </div>
@@ -968,7 +971,7 @@ export default function LandingPage() {
 
                 <div className="mt-8 flex items-center gap-7 text-left">
                   <div className="flex items-center gap-2 text-[0.9rem] font-medium text-ink-soft">
-                    <div className="h-3 w-3 rounded-full border-2 border-trend-orange bg-white" />
+                    <div className="h-3 w-3 rounded-full border-2 border-trend-orange bg-studio-ground" />
                     <span>Product</span>
                   </div>
                   <div className="flex items-center gap-2 text-[0.9rem] font-medium text-ink-soft">
@@ -982,7 +985,7 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="relative w-full rounded-[2rem] border border-line bg-white p-2 shadow-[0_14px_36px_rgba(15,23,42,0.08)] lg:p-3">
+              <div className="relative w-full rounded-[2rem] border border-line bg-studio-ground p-2 shadow-[0_14px_36px_rgba(15,23,42,0.08)] lg:p-3">
                 <Image
                   src="/landing_page/landing_5_image_a_droite.png"
                   alt="TrendED product-to-video dashboard mockup"
@@ -1003,7 +1006,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       <section
         id="ugc-generator"
-        className="py-24 bg-gradient-to-b from-cream/40 via-cream/40 to-white text-ink relative overflow-hidden border-t border-line"
+        className="py-24 bg-gradient-to-b from-cream/40 via-cream/40 to-studio-ground text-ink relative overflow-hidden border-t border-line"
       >
         {/* Subtle warm radial lighting */}
         <div className="absolute top-0 right-1/3 w-[600px] h-[600px] rounded-full bg-cream/40 blur-3xl pointer-events-none" />
@@ -1028,7 +1031,7 @@ export default function LandingPage() {
           {/* Interactive Generator Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Floating Controls Panel */}
-            <div className="lg:col-span-4 rounded-2xl border border-line/90 bg-white p-6 space-y-5 text-left shadow-xl">
+            <div className="lg:col-span-4 rounded-2xl border border-line/90 bg-studio-ground p-6 space-y-5 text-left shadow-xl">
               <div className="flex items-center justify-between pb-3 border-b border-line">
                 <span className="text-xs font-extrabold uppercase tracking-wider text-ink">
                   Generation Controls
@@ -1086,7 +1089,7 @@ export default function LandingPage() {
               {/* Prominent CTA */}
               <Link
                 href="/register"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-trend-orange py-3.5 text-sm font-bold text-white shadow-lg shadow-trend-orange/25 hover:bg-trend-orange-strong transition"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-trend-orange py-3.5 text-sm font-bold text-on-accent shadow-lg shadow-trend-orange/25 hover:bg-trend-orange-strong transition"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>Generate UGC Video</span>
@@ -1122,7 +1125,7 @@ export default function LandingPage() {
                     <span className="text-[10px] font-bold bg-black/60 text-white px-2 py-0.5 rounded backdrop-blur-sm">
                       Creator {creator.id}
                     </span>
-                    <span className="text-[10px] font-bold bg-trend-gold text-ink px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="text-[10px] font-bold bg-trend-gold text-on-accent px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Sparkles className="h-3 w-3" />
                       <span>AI</span>
                     </span>
@@ -1220,7 +1223,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 07 — MULTI-PLATFORM                                           */}
       {/* ============================================================ */}
-      <section id="multi-platform" className="py-20 bg-white">
+      <section id="multi-platform" className="py-20 bg-studio-ground">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12 text-center">
           {/* Headings */}
           <div className="space-y-3 max-w-3xl mx-auto">
@@ -1266,7 +1269,7 @@ export default function LandingPage() {
                   onClick={() =>
                     setActivePlatformFilter(activePlatformFilter === p.id ? 'all' : p.id)
                   }
-                  className={`cursor-pointer rounded-xl border p-4 bg-white transition ${
+                  className={`cursor-pointer rounded-xl border p-4 bg-studio-ground transition ${
                     activePlatformFilter === p.id
                       ? 'border-trend-orange shadow-md ring-2 ring-trend-orange/20'
                       : 'border-line hover:border-trend-orange/40 hover:shadow-sm'
@@ -1338,7 +1341,7 @@ export default function LandingPage() {
               <div className="pt-2">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-xl bg-trend-orange px-6 py-3.5 text-sm font-bold text-white shadow-md shadow-trend-orange/20 hover:bg-trend-orange-strong transition"
+                  className="inline-flex items-center gap-2 rounded-xl bg-trend-orange px-6 py-3.5 text-sm font-bold text-on-accent shadow-md shadow-trend-orange/20 hover:bg-trend-orange-strong transition"
                 >
                   <span>Explore your creatives</span>
                   <ArrowRight className="h-4 w-4" />
@@ -1348,7 +1351,7 @@ export default function LandingPage() {
 
             {/* Right Mockup Cutout */}
             <div className="lg:col-span-8 drop-shadow-2xl">
-              <div className="rounded-2xl overflow-hidden border border-line bg-white p-2">
+              <div className="rounded-2xl overflow-hidden border border-line bg-studio-ground p-2">
                 <Image
                   src="/landing_page/landing_8_image_a_droite.png"
                   alt="TrendED Creative Library Showcase"
@@ -1367,7 +1370,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       <section
         id="ai-intelligence"
-        className="py-24 bg-gradient-to-b from-cream/40 via-cream/40 to-white text-ink relative overflow-hidden border-t border-line"
+        className="py-24 bg-gradient-to-b from-cream/40 via-cream/40 to-studio-ground text-ink relative overflow-hidden border-t border-line"
       >
         {/* Ambient glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-cream/40 blur-3xl pointer-events-none" />
@@ -1388,7 +1391,7 @@ export default function LandingPage() {
           </div>
 
           {/* AI Creative Insight UI Dashboard Card */}
-          <div className="max-w-4xl mx-auto rounded-3xl border border-line/90 bg-white p-6 sm:p-8 shadow-xl space-y-8 text-left">
+          <div className="max-w-4xl mx-auto rounded-3xl border border-line/90 bg-studio-ground p-6 sm:p-8 shadow-xl space-y-8 text-left">
             {/* Top Insight Alert & Score Metrics */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center pb-6 border-b border-line">
               <div className="md:col-span-6 space-y-2">
@@ -1436,7 +1439,7 @@ export default function LandingPage() {
                     Weaker
                   </span>
                 </div>
-                <div className="text-sm font-bold text-ink bg-white p-3 rounded-xl border border-danger/30 shadow-sm">
+                <div className="text-sm font-bold text-ink bg-studio-ground p-3 rounded-xl border border-danger/30 shadow-sm">
                   “Check out this amazing portable blender!”
                 </div>
                 <p className="text-xs text-ink-soft leading-relaxed font-medium">
@@ -1457,7 +1460,7 @@ export default function LandingPage() {
                     Stronger
                   </span>
                 </div>
-                <div className="text-sm font-bold text-trend-orange bg-white p-3 rounded-xl border border-trend-orange/20 shadow-sm">
+                <div className="text-sm font-bold text-trend-orange bg-studio-ground p-3 rounded-xl border border-trend-orange/20 shadow-sm">
                   “Still using bulky blenders that are hard to clean?”
                 </div>
                 <p className="text-xs text-ink-soft leading-relaxed font-medium">
@@ -1486,7 +1489,7 @@ export default function LandingPage() {
               <div className="flex items-center gap-3">
                 <Link
                   href="/register"
-                  className="rounded-xl bg-trend-orange px-5 py-2.5 text-xs font-bold text-white hover:bg-trend-orange-strong transition shadow-md shadow-trend-orange/25 flex items-center gap-2"
+                  className="rounded-xl bg-trend-orange px-5 py-2.5 text-xs font-bold text-on-accent hover:bg-trend-orange-strong transition shadow-md shadow-trend-orange/25 flex items-center gap-2"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>Apply Suggested Hook</span>
@@ -1505,7 +1508,7 @@ export default function LandingPage() {
           <div className="mx-auto max-w-[1240px] text-center">
             <div className="mb-8 flex items-center justify-center">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F1E8DE] shadow-sm ring-1 ring-[#E7D4BD]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cream shadow-sm ring-1 ring-line">
                   <TrendedBrandLogo className="items-center" />
                 </div>
               </div>
@@ -1528,7 +1531,7 @@ export default function LandingPage() {
                   role: 'DTC Founder',
                   company: 'Velora.co',
                   stat: '5x faster creative testing',
-                  statClass: 'bg-cream text-trend-orange border-[#F3C89C]',
+                  statClass: 'bg-cream text-trend-orange border-line',
                   avatar: '/login-profile.jpg',
                   icon: BarChart3,
                 },
@@ -1538,7 +1541,7 @@ export default function LandingPage() {
                   role: 'E-commerce Entrepreneur',
                   company: 'Northline Basics',
                   stat: '70% less production time',
-                  statClass: 'bg-[#F5E8D4] text-[#B85B1B] border-[#E7C89C]',
+                  statClass: 'bg-cream text-[#B85B1B] border-line',
                   avatar: '/login-profile-2.jpg',
                   icon: Clock3,
                 },
@@ -1555,7 +1558,7 @@ export default function LandingPage() {
               ].map((card) => (
                 <article
                   key={card.name}
-                  className="flex min-h-[440px] flex-col justify-between rounded-[1.5rem] border border-line bg-[#F5F1ED] p-6 text-left shadow-[0_10px_24px_rgba(0,0,0,0.02)]"
+                  className="flex min-h-[440px] flex-col justify-between rounded-[1.5rem] border border-line bg-cream p-6 text-left shadow-[0_10px_24px_rgba(0,0,0,0.02)]"
                 >
                   <div className="space-y-6">
                     <div className="text-[4.25rem] font-bold leading-none text-trend-orange">“</div>
@@ -1567,7 +1570,7 @@ export default function LandingPage() {
 
                   <div className="mt-8 space-y-5 border-t border-line/80 pt-5">
                     <div className="flex items-center gap-4">
-                      <div className="relative h-[74px] w-[74px] overflow-hidden rounded-full ring-2 ring-line bg-white">
+                      <div className="relative h-[74px] w-[74px] overflow-hidden rounded-full ring-2 ring-line bg-studio-ground">
                         <Image
                           src={card.avatar}
                           alt={card.name}
@@ -1604,7 +1607,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 11 — PRICING                                                  */}
       {/* ============================================================ */}
-      <section id="pricing" className="py-20 bg-white">
+      <section id="pricing" className="py-20 bg-studio-ground">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12 text-center">
           {/* Headings */}
           <div className="space-y-3 max-w-3xl mx-auto">
@@ -1625,7 +1628,7 @@ export default function LandingPage() {
                 onClick={() => setBillingCycle('monthly')}
                 className={`rounded-full px-5 py-2 text-xs font-semibold transition ${
                   billingCycle === 'monthly'
-                    ? 'bg-white text-ink shadow-sm'
+                    ? 'bg-studio-ground text-ink shadow-sm'
                     : 'text-ink-muted hover:text-ink'
                 }`}
               >
@@ -1636,12 +1639,12 @@ export default function LandingPage() {
                 onClick={() => setBillingCycle('yearly')}
                 className={`rounded-full px-5 py-2 text-xs font-semibold transition flex items-center gap-1.5 ${
                   billingCycle === 'yearly'
-                    ? 'bg-trend-orange text-white shadow-sm'
+                    ? 'bg-trend-orange text-on-accent shadow-sm'
                     : 'text-ink-muted hover:text-ink'
                 }`}
               >
                 <span>Yearly</span>
-                <span className="bg-trend-gold text-ink text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+                <span className="bg-trend-gold text-on-accent text-[10px] px-1.5 py-0.2 rounded-full font-bold">
                   Save 20%
                 </span>
               </button>
@@ -1651,7 +1654,7 @@ export default function LandingPage() {
           {/* 3 Pricing Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-left items-stretch">
             {/* STARTER */}
-            <div className="rounded-3xl border border-line bg-white p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
+            <div className="rounded-3xl border border-line bg-studio-ground p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-bold text-ink">STARTER</h3>
@@ -1692,15 +1695,15 @@ export default function LandingPage() {
 
               <Link
                 href="/register"
-                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-white hover:bg-trend-orange-strong transition shadow-sm"
+                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition shadow-sm"
               >
                 Start creating
               </Link>
             </div>
 
             {/* GROWTH (Most Popular) */}
-            <div className="rounded-3xl border-2 border-trend-orange bg-gradient-to-b from-cream/40 via-white to-cream/20 p-8 shadow-xl relative flex flex-col justify-between space-y-8 ring-4 ring-trend-orange/10">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-trend-orange text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-md flex items-center gap-1">
+            <div className="rounded-3xl border-2 border-trend-orange bg-gradient-to-b from-cream/40 via-studio-ground to-cream/20 p-8 shadow-xl relative flex flex-col justify-between space-y-8 ring-4 ring-trend-orange/10">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-trend-orange text-on-accent text-[11px] font-bold px-3 py-0.5 rounded-full shadow-md flex items-center gap-1">
                 <Star className="h-3 w-3 fill-current" />
                 <span>Most popular</span>
               </div>
@@ -1745,14 +1748,14 @@ export default function LandingPage() {
 
               <Link
                 href="/register"
-                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-white shadow-md shadow-trend-orange/30 hover:bg-trend-orange-strong transition"
+                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-on-accent shadow-md shadow-trend-orange/30 hover:bg-trend-orange-strong transition"
               >
                 Start creating
               </Link>
             </div>
 
             {/* SCALE */}
-            <div className="rounded-3xl border border-line bg-white p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
+            <div className="rounded-3xl border border-line bg-studio-ground p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
               <div className="space-y-6">
                 <div>
                   <h3 className="text-xl font-bold text-ink">SCALE</h3>
@@ -1795,7 +1798,7 @@ export default function LandingPage() {
 
               <Link
                 href="/register"
-                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-white hover:bg-trend-orange-strong transition shadow-sm"
+                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition shadow-sm"
               >
                 Start creating
               </Link>
@@ -1812,7 +1815,7 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 12 — FINAL CTA                                                */}
       {/* ============================================================ */}
-      <section className="py-20 bg-gradient-to-b from-cream/40 via-cream/50 to-white relative overflow-hidden border-t border-line">
+      <section className="py-20 bg-gradient-to-b from-cream/40 via-cream/50 to-studio-ground relative overflow-hidden border-t border-line">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Conversion Content */}
@@ -1829,7 +1832,7 @@ export default function LandingPage() {
               <div>
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-xl bg-trend-orange px-8 py-4 text-base font-bold text-white shadow-lg shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/35 transition duration-200"
+                  className="inline-flex items-center gap-2 rounded-xl bg-trend-orange px-8 py-4 text-base font-bold text-on-accent shadow-lg shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/35 transition duration-200"
                 >
                   <span>Create your first video</span>
                   <ArrowRight className="h-4 w-4" />
@@ -1872,21 +1875,25 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 13 — FOOTER                                                   */}
       {/* ============================================================ */}
-      <footer className="bg-[#FAF6ED] text-ink pt-16 pb-12 border-t border-trend-gold/40">
+      <footer className="bg-cream text-ink pt-16 pb-12 border-t border-trend-gold/40">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12">
           {/* Top Area */}
           <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-trend-gold/40">
             {/* Brand column */}
             <div className="md:col-span-4 space-y-4 text-left">
               <Link href="/" className="inline-flex flex-col items-start">
-                <Image
-                  src="/logo.png"
-                  alt="TrendED Logo"
-                  width={260}
-                  height={72}
-                  className="h-14 w-auto sm:h-20 object-contain"
-                  priority
-                />
+                <span className="flex items-center gap-3">
+                  <Image
+                    src="/symbol.png"
+                    alt=""
+                    width={56}
+                    height={56}
+                    className="h-12 w-12 sm:h-14 sm:w-14 object-contain"
+                  />
+                  <span className="text-[40px] sm:text-[52px] font-extrabold leading-none tracking-[-.04em] text-ink">
+                    Trend<span className="text-trend-orange">ED</span>
+                  </span>
+                </span>
                 <span className="mt-2 block text-sm font-bold uppercase tracking-wider text-ink-soft">
                   E-commerce · Dropshipping · Growth
                 </span>

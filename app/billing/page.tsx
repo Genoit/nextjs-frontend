@@ -32,35 +32,35 @@ const BEATS = [
     s: 2,
     words: 'Two seconds',
     clause: 'First, the hook that stops the scroll.',
-    tone: 'bg-trend-orange text-white',
+    tone: 'bg-trend-orange text-on-accent',
   },
   {
     beat: 'Problem',
     s: 3,
     words: 'Three seconds',
     clause: 'Then the problem your buyer already has.',
-    tone: 'bg-[#f3e3c3] text-ink',
+    tone: 'bg-[#f3e3c3] text-on-accent',
   },
   {
     beat: 'Product',
     s: 5,
     words: 'Five seconds',
     clause: 'Then the product, shown from the facts on its page.',
-    tone: 'bg-trend-gold text-ink',
+    tone: 'bg-trend-gold text-on-accent',
   },
   {
     beat: 'Proof',
     s: 3,
     words: 'Three seconds',
     clause: 'Then proof the page really gives.',
-    tone: 'bg-stage text-stage-text',
+    tone: 'bg-studio-raised text-ink',
   },
   {
     beat: 'Call to action',
     s: 2,
     words: 'Two seconds',
     clause: 'Last, the call to action.',
-    tone: 'bg-trend-orange-strong text-white',
+    tone: 'bg-trend-orange-strong text-on-accent',
   },
 ];
 
@@ -126,7 +126,7 @@ function PlanOffer({
     );
   } else if (paid && !plan.available) {
     action = (
-      <button type="button" disabled className={`${button} bg-ink text-white`}>
+      <button type="button" disabled className={`${button} bg-ink text-on-accent`}>
         Not available yet
       </button>
     );
@@ -136,7 +136,7 @@ function PlanOffer({
         type="button"
         onClick={onManage}
         disabled={busy !== null}
-        className={`${button} bg-ink text-white hover:bg-black`}
+        className={`${button} bg-ink text-on-accent hover:bg-white`}
       >
         {busy === 'portal' && (
           <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
@@ -150,7 +150,7 @@ function PlanOffer({
         type="button"
         onClick={() => onChoose(plan.id)}
         disabled={busy !== null}
-        className={`${button} bg-trend-orange text-white hover:bg-trend-orange-strong`}
+        className={`${button} bg-trend-orange text-on-accent hover:bg-trend-orange-strong`}
       >
         {busy === plan.id ? (
           <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
@@ -175,11 +175,11 @@ function PlanOffer({
                 aria-checked={on}
                 onClick={() => setPicked(p.id)}
                 className={`min-h-11 rounded-full px-5 text-[15px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
-                  on ? 'bg-ink text-white' : 'bg-white text-ink hover:bg-[#fdebc8]'
+                  on ? 'bg-ink text-on-accent' : 'bg-studio-ground text-ink hover:bg-cream'
                 }`}
               >
                 {PLAN_LABEL[p.id]}
-                <span className={`ml-2 tabular-nums ${on ? 'text-white/75' : 'text-ink-soft'}`}>
+                <span className={`ml-2 tabular-nums ${on ? 'text-on-accent/70' : 'text-ink-soft'}`}>
                   ${Number(p.price_usd)}
                 </span>
                 {p.id === summary.plan && <span className="sr-only"> (your plan)</span>}
@@ -198,7 +198,7 @@ function PlanOffer({
           </span>
           <span className="block">
             for{' '}
-            <span className="inline-block bg-trend-orange px-[0.15em] leading-[1] text-white tabular-nums">
+            <span className="inline-block bg-trend-orange px-[0.15em] leading-[1] text-on-accent tabular-nums">
               ${shown}
             </span>
             {offer && (
@@ -244,7 +244,7 @@ function PlanOffer({
             <li
               key={`${plan.id}-${i}`}
               style={{ animationDelay: `${i * 18}ms` }}
-              className="rise aspect-[9/16] w-[clamp(22px,2.6vw,38px)] rounded-[6px] bg-stage"
+              className="rise aspect-[9/16] w-[clamp(22px,2.6vw,38px)] rounded-[6px] bg-studio-meta"
             />
           ))}
         </ul>
@@ -368,7 +368,7 @@ export default function BillingPage() {
           )}
           <a
             href="#plans"
-            className={`rise mt-8 self-start ${button} bg-ink text-white hover:bg-black`}
+            className={`rise mt-8 self-start ${button} bg-ink text-on-accent hover:bg-white`}
             style={rise(360)}
           >
             Find your plan
@@ -487,7 +487,7 @@ export default function BillingPage() {
         </section>
 
         {/* Close: the way back is the display line. */}
-        <footer className="flex min-h-[520px] flex-col justify-between gap-24 bg-trend-orange lg:min-h-[90svh] px-4 py-10 text-white sm:px-7">
+        <footer className="flex min-h-[520px] flex-col justify-between gap-24 bg-trend-orange lg:min-h-[90svh] px-4 py-10 text-on-accent sm:px-7">
           <div className="mx-auto flex w-full max-w-[1440px] flex-col justify-between gap-4 text-[15px] sm:flex-row">
             <div className="flex flex-col gap-1 sm:flex-row sm:gap-10">
               <p>TrendED plans and credits</p>

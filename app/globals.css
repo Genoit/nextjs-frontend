@@ -1,8 +1,9 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #070707;
+  --foreground: #f2f2f2;
 }
 
 @theme inline {
@@ -14,38 +15,40 @@
   --font-script: var(--font-caveat), cursive;
 }
 
-/* TrendED brand charter V2 (Professional). Use these tokens, not raw hex. */
+/* TrendED dark theme (2026-11-03, Higgsfield-like true-black). Token names kept from the light charter so
+   components did not change meaning: "ink" is the text colour, "cream" the raised section. Use tokens, not hex. */
 @theme {
-  --color-trend-orange: #c2410c; /* actions, CTA */
-  --color-trend-orange-strong: #9a3412; /* hover/pressed state of the orange */
-  --color-trend-gold: #eab308; /* opportunities, sparingly */
-  --color-cream: #fff7e6; /* surfaces, sections */
-  --color-ink: #171717; /* text */
-  --color-ink-muted: #6b7280; /* secondary text (4.53:1 on cream: not for small text there) */
-  --color-ink-soft: #57534e; /* small text on cream */
-  --color-line: #e5e7eb; /* borders */
+  --color-trend-orange: #ff6b1a; /* the one accent: actions, CTA. Text on it is on-accent (dark). */
+  --color-trend-orange-strong: #ff8a47; /* hover/pressed: lighter on dark */
+  --color-on-accent: #0a0a0a; /* text on any solid accent or status fill */
+  --color-trend-gold: #facc15; /* opportunities, sparingly */
+  --color-cream: #121212; /* raised sections (was cream on light) */
+  --color-ink: #f2f2f2; /* text */
+  --color-ink-muted: #a1a1aa; /* secondary text, 7.6:1 on ground */
+  --color-ink-soft: #c8c8ce; /* small text on raised sections */
+  --color-line: #262626; /* borders */
 
-  /* Statuses (palette 2026-11-02). Never orange; always with an icon and a label. */
-  --color-success: #15803d; /* ad ready */
-  --color-success-soft: #f0fdf4;
-  --color-warning: #b45309; /* in progress, waiting */
-  --color-warning-soft: #fffbeb;
-  --color-danger: #b91c1c; /* failed */
-  --color-danger-soft: #fef2f2;
-  --color-info: #2563eb;
+  /* Statuses. Never orange; always with an icon and a label. */
+  --color-success: #4ade80; /* ad ready */
+  --color-success-soft: #0d2116;
+  --color-warning: #fbbf24; /* in progress, waiting */
+  --color-warning-soft: #241a05;
+  --color-danger: #f87171; /* failed */
+  --color-danger-soft: #2a1010;
+  --color-info: #60a5fa;
 
-  /* Dark frame around 9:16 video previews only; the app stays light. */
-  --color-stage: #1c1917;
+  /* Video frame around 9:16 previews: pure black, one step below the ground. */
+  --color-stage: #000000;
   --color-stage-text: #e7e5e4;
 
-  /* Studio (app screens) on the charter's light ground: elevation by tone steps, no shadows on cards. */
-  --color-studio-ground: #ffffff;
-  --color-studio-surface: #fafaf9;
-  --color-studio-raised: #f4f4f5;
-  --color-studio-rule: #e5e7eb;
-  --color-studio-text: #171717;
-  --color-studio-muted: #4b5563;
-  --color-studio-meta: #6b7280;
+  /* Studio (app screens): one near-black ground, elevation by lightness alone, no shadows, no glows. */
+  --color-studio-ground: #070707;
+  --color-studio-surface: #0f0f0f;
+  --color-studio-raised: #1a1a1a;
+  --color-studio-rule: #232323;
+  --color-studio-text: #f2f2f2;
+  --color-studio-muted: #b4b4bb;
+  --color-studio-meta: #8e8e96;
 }
 
 @keyframes rise-in {

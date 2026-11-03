@@ -98,7 +98,7 @@ export default function AdminUserDetailPage() {
     <div className="space-y-6">
       {/* Action Toast */}
       {actionMessage && (
-        <div className="fixed top-5 right-5 z-50 bg-success text-white text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in">
+        <div className="fixed top-5 right-5 z-50 bg-success text-on-accent text-xs font-semibold px-4 py-2.5 rounded-xl shadow-lg flex items-center gap-2 animate-in fade-in">
           <Check className="w-4 h-4" />
           <span>{actionMessage}</span>
         </div>
@@ -122,7 +122,7 @@ export default function AdminUserDetailPage() {
       {/* ========================================================= */}
       {/* USER PROFILE HEADER CARD */}
       {/* ========================================================= */}
-      <div className="bg-white rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
+      <div className="bg-studio-ground rounded-2xl border border-line/80 p-6 shadow-2xs space-y-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pb-6 border-b border-line">
           {/* Avatar & Identifiers */}
           <div className="flex items-center gap-4">
@@ -195,7 +195,7 @@ export default function AdminUserDetailPage() {
           <div className="relative">
             <button
               type="button"
-              className="flex items-center gap-2 px-4 py-2 bg-white rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
+              className="flex items-center gap-2 px-4 py-2 bg-studio-ground rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-semibold text-ink-soft transition"
             >
               <Edit2 className="w-3.5 h-3.5 text-ink-muted" />
               <span>Edit User</span>
@@ -263,7 +263,7 @@ export default function AdminUserDetailPage() {
       {/* ========================================================= */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
         {/* Card 1: Subscription */}
-        <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between space-y-4">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center gap-2 pb-3 border-b border-line font-bold text-xs text-ink">
               <CreditCard className="w-4 h-4 text-ink-muted" />
@@ -303,7 +303,7 @@ export default function AdminUserDetailPage() {
         </div>
 
         {/* Card 2: Usage */}
-        <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between space-y-4">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center justify-between pb-3 border-b border-line">
               <div className="flex items-center gap-2 font-bold text-xs text-ink">
@@ -401,7 +401,7 @@ export default function AdminUserDetailPage() {
         </div>
 
         {/* Card 3: Connected stores */}
-        <div className="bg-white rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between space-y-4">
+        <div className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs flex flex-col justify-between space-y-4">
           <div>
             <div className="flex items-center gap-2 pb-3 border-b border-line font-bold text-xs text-ink">
               <Store className="w-4 h-4 text-ink-muted" />
@@ -455,7 +455,7 @@ export default function AdminUserDetailPage() {
       {/* ========================================================= */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
         {/* Left: Recent Activity Table (8 cols) */}
-        <div className="lg:col-span-8 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-4">
+        <div className="lg:col-span-8 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-line">
             <div className="flex items-center gap-2 font-bold text-sm text-ink">
               <Clock className="w-4 h-4 text-ink-muted" />
@@ -523,7 +523,7 @@ export default function AdminUserDetailPage() {
         </div>
 
         {/* Right: Admin Actions (4 cols) */}
-        <div className="lg:col-span-4 bg-white rounded-2xl border border-line/80 p-5 shadow-2xs space-y-4">
+        <div className="lg:col-span-4 bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-4">
           <div className="pb-3 border-b border-line font-bold text-sm text-ink flex items-center gap-2">
             <ShieldAlert className="w-4 h-4 text-ink-muted" />
             <span>Admin actions</span>

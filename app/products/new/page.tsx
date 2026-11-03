@@ -30,7 +30,7 @@ export default function NewProductPage() {
             <button
               type="button"
               onClick={handleCancel}
-              className="flex items-center gap-2 rounded-lg border border-line bg-white px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
+              className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path
@@ -60,13 +60,13 @@ export default function NewProductPage() {
             <button
               type="button"
               onClick={() => router.push('/product-input')}
-              className="rounded-lg bg-trend-orange px-3 py-1.5 text-xs font-semibold text-white hover:bg-trend-orange-strong transition"
+              className="rounded-lg bg-trend-orange px-3 py-1.5 text-xs font-semibold text-on-accent hover:bg-trend-orange-strong transition"
             >
               Open UGC Input →
             </button>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-line bg-white p-6 shadow-sm">
+          <div className="overflow-hidden rounded-2xl border border-line bg-studio-ground p-6 shadow-sm">
             <ProductForm onSuccess={handleSuccess} onCancel={handleCancel} />
           </div>
         </div>

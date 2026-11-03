@@ -402,7 +402,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.title}
             onChange={handleChange}
             placeholder="Enter product name"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.title
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -429,7 +429,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             onChange={handleChange}
             placeholder="Enter product description"
             rows={3}
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
@@ -446,7 +446,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.brand}
             onChange={handleChange}
             placeholder="Brand name"
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
@@ -462,7 +462,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.category}
             onChange={handleChange}
             placeholder="Product category"
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
@@ -479,7 +479,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.sourceUrl}
             onChange={handleChange}
             placeholder="https://example.com/product"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.sourceUrl
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -506,7 +506,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.canonicalUrl}
             onChange={handleChange}
             placeholder="https://example.com/canonical-product"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.canonicalUrl
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -531,7 +531,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             name="sourcePlatform"
             value={formData.sourcePlatform}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           >
             {SOURCE_PLATFORMS.map((option) => (
@@ -554,7 +554,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.externalId}
             onChange={handleChange}
             placeholder="External ID from source"
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
@@ -577,7 +577,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
               placeholder="0.00"
               step="0.01"
               min="0"
-              className={`block w-full rounded-lg border bg-white px-3 py-2 pl-8 text-sm shadow-sm transition ${
+              className={`block w-full rounded-lg border bg-studio-ground px-3 py-2 pl-8 text-sm shadow-sm transition ${
                 formErrors.price
                   ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                   : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -610,7 +610,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
               placeholder="0.00"
               step="0.01"
               min="0"
-              className={`block w-full rounded-lg border bg-white px-3 py-2 pl-8 text-sm shadow-sm transition ${
+              className={`block w-full rounded-lg border bg-studio-ground px-3 py-2 pl-8 text-sm shadow-sm transition ${
                 formErrors.compareAtPrice
                   ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                   : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -636,7 +636,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             name="currency"
             value={formData.currency}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           >
             {CURRENCY_OPTIONS.map((option) => (
@@ -657,7 +657,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             name="availability"
             value={formData.availability}
             onChange={handleChange}
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           >
             {AVAILABILITY_OPTIONS.map((option) => (
@@ -680,7 +680,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.mainImageUrl}
             onChange={handleChange}
             placeholder="https://example.com/image.jpg"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.mainImageUrl
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -707,7 +707,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.sellerName}
             onChange={handleChange}
             placeholder="Seller name"
-            className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
+            className="mt-1 block w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm shadow-sm transition focus:border-trend-orange focus:ring-trend-orange"
             disabled={isLoading}
           />
         </div>
@@ -723,7 +723,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             value={formData.sellerUrl}
             onChange={handleChange}
             placeholder="https://example.com/seller"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.sellerUrl
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -753,7 +753,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             step="0.1"
             min="0"
             max="5"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.rating
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -780,7 +780,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
             onChange={handleChange}
             placeholder="0"
             min="0"
-            className={`mt-1 block w-full rounded-lg border bg-white px-3 py-2 text-sm shadow-sm transition ${
+            className={`mt-1 block w-full rounded-lg border bg-studio-ground px-3 py-2 text-sm shadow-sm transition ${
               formErrors.reviewsCount
                 ? 'border-danger/30 focus:border-red-500 focus:ring-red-500'
                 : 'border-line focus:border-trend-orange focus:ring-trend-orange'
@@ -801,7 +801,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
         <button
           type="button"
           onClick={onCancel}
-          className="rounded-lg border border-line bg-white px-6 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-studio-surface transition"
+          className="rounded-lg border border-line bg-studio-ground px-6 py-2 text-sm font-medium text-ink-soft shadow-sm hover:bg-studio-surface transition"
           disabled={isLoading}
         >
           Cancel
@@ -809,7 +809,7 @@ export function ProductForm({ product, onSuccess, onCancel, onError }: ProductFo
 
         <button
           type="submit"
-          className="rounded-lg bg-trend-orange px-6 py-2 text-sm font-semibold text-white shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition disabled:opacity-50 disabled:cursor-not-allowed"
+          className="rounded-lg bg-trend-orange px-6 py-2 text-sm font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange transition disabled:opacity-50 disabled:cursor-not-allowed"
           disabled={isLoading}
         >
           {isLoading ? (
