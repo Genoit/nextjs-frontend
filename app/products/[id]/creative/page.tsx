@@ -1,11 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useSearchParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
 import { CreativeAdWorkflow } from '../../../../components/creative/CreativeAdWorkflow';
+
+// ?step=setup comes from the Templates page: open the creative setup the template just filled.
+function Workflow({ productId }: { productId: string }) {
+  const openSetup = useSearchParams().get('step') === 'setup';
+  return <CreativeAdWorkflow productId={productId} openSetup={openSetup} />;
+}
 
 export default function ProductCreativePage() {
   const params = useParams();
@@ -29,7 +35,9 @@ export default function ProductCreativePage() {
           </p>
         </div>
         <div className="mx-auto w-full max-w-7xl">
-          <CreativeAdWorkflow productId={productId} />
+          <Suspense>
+            <Workflow productId={productId} />
+          </Suspense>
         </div>
       </main>
     </ProtectedRoute>

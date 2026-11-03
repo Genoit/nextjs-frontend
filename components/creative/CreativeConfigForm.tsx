@@ -8,6 +8,7 @@ import {
   musicChoiceOf,
   musicPreferences,
 } from '../../lib/finishing-rules.mjs';
+import { pickedTemplate, TEMPLATE_KEY } from '../../lib/template-rules.mjs';
 import {
   Sparkles,
   Sliders,
@@ -118,8 +119,17 @@ export function CreativeConfigForm({
   onSubmit,
   isLoading = false,
 }: Props) {
+  // A template picked on the Templates page presets the form (see pickedTemplate for when).
+  // This form only renders client-side, so reading storage here cannot mismatch server HTML.
+  const [preset] = useState(() => {
+    try {
+      return pickedTemplate(sessionStorage.getItem(TEMPLATE_KEY), productId, !!initialConfig);
+    } catch {
+      return null; // storage blocked: no preset
+    }
+  });
   const [conceptType, setConceptType] = useState<string>(
-    initialConfig?.concept_type || 'product_demo',
+    preset?.concept_type || initialConfig?.concept_type || 'product_demo',
   );
   const [objective, setObjective] = useState<CampaignObjective>(
     initialConfig?.objective || 'sales',
@@ -131,20 +141,27 @@ export function CreativeConfigForm({
     initialConfig?.target_motivation || 'Gagner du temps et simplifier mon quotidien',
   );
   const [primaryEmotion, setPrimaryEmotion] = useState(
-    initialConfig?.primary_emotion || 'confiance',
+    preset?.primary_emotion || initialConfig?.primary_emotion || 'confiance',
   );
   const [creativeAngle, setCreativeAngle] = useState(
-    initialConfig?.creative_angle || 'Démonstration concrète en situation réelle',
+    preset?.creative_angle ||
+      initialConfig?.creative_angle ||
+      'Démonstration concrète en situation réelle',
   );
-  const [videoStyle, setVideoStyle] = useState<VideoStyle>(initialConfig?.video_style || 'hybrid');
+  const [videoStyle, setVideoStyle] = useState<VideoStyle>(
+    (preset?.video_style as VideoStyle) || initialConfig?.video_style || 'hybrid',
+  );
   const [targetDuration, setTargetDuration] = useState<15 | 30 | 45 | 60>(
-    initialConfig?.target_duration || 30,
+    preset?.target_duration || initialConfig?.target_duration || 30,
   );
-  const [platform, setPlatform] = useState<TargetPlatform>(initialConfig?.platform || 'tiktok');
+  const [platform, setPlatform] = useState<TargetPlatform>(
+    (preset?.platform as TargetPlatform) || initialConfig?.platform || 'tiktok',
+  );
   const [language, setLanguage] = useState(initialConfig?.language || 'fr');
   // A new config starts from the output format picked on the dashboard. This form only renders
   // client-side after its data loads, so reading storage here cannot mismatch server HTML.
   const [aspectRatio, setAspectRatio] = useState(() => {
+    if (preset) return preset.aspect_ratio;
     if (initialConfig?.aspect_ratio) return initialConfig.aspect_ratio;
     try {
       const picked = sessionStorage.getItem('trended.outputFormat');
@@ -155,17 +172,21 @@ export function CreativeConfigForm({
     return '9:16';
   });
   const [callToAction, setCallToAction] = useState(
-    initialConfig?.call_to_action || 'Profitez de notre offre exclusive aujourd’hui',
+    preset?.call_to_action ||
+      initialConfig?.call_to_action ||
+      'Profitez de notre offre exclusive aujourd’hui',
   );
   const [voiceTone, setVoiceTone] = useState(
-    (initialConfig?.voice_preferences?.tone as string) || 'naturel et dynamique',
+    preset?.voice_tone ||
+      (initialConfig?.voice_preferences?.tone as string) ||
+      'naturel et dynamique',
   );
   const [voiceGender, setVoiceGender] = useState(
     (initialConfig?.voice_preferences?.gender as string) || 'female',
   );
   const storedMood = initialConfig?.music_preferences?.mood as string | undefined;
   const [musicMood, setMusicMood] = useState(
-    storedMood && storedMood !== MUSIC_NONE ? storedMood : 'upbeat',
+    preset?.music_mood || (storedMood && storedMood !== MUSIC_NONE ? storedMood : 'upbeat'),
   );
   const [musicChoice, setMusicChoice] = useState(() =>
     musicChoiceOf(initialConfig?.music_preferences),
@@ -218,6 +239,14 @@ export function CreativeConfigForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
+      {preset && (
+        <p
+          role="status"
+          className="rounded-xl border border-trend-orange/40 bg-trend-orange/10 px-4 py-3 text-sm text-ink"
+        >
+          Modèle « {preset.name} » appliqué : vérifiez les champs puis enregistrez la configuration.
+        </p>
+      )}
       {/* Header card */}
       <div className="rounded-2xl bg-studio-ground border border-line/80 p-6 shadow-2xs space-y-2">
         <div className="flex items-center justify-between">

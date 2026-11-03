@@ -33,12 +33,14 @@ const ANALYSIS_MISSING = "Lancez d'abord l'analyse produit";
 interface Props {
   productId: string;
   initialStep?: Step;
+  openSetup?: boolean;
 }
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
-export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
-  const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(null);
+export function CreativeAdWorkflow({ productId, initialStep = 1, openSetup = false }: Props) {
+  // openSetup (Templates page) shows the creative setup even when one is already saved.
+  const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(openSetup ? 2 : null);
   const [qualityTier, setQualityTier] = useState<QualityTier>('standard');
 
   const {

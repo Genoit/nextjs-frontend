@@ -192,7 +192,7 @@ const NAV: { label: string; Icon: typeof House; href?: string }[] = [
   { label: 'Create Ad', Icon: Sparkles, href: '/product-input' },
   { label: 'My Projects', Icon: Folder, href: '/projects' },
   { label: 'Product Library', Icon: Package, href: '/products' },
-  { label: 'Templates', Icon: Layers },
+  { label: 'Templates', Icon: Layers, href: '/templates' },
   { label: 'Brand Kit', Icon: Tag },
 ];
 const NAV_FOOT: typeof NAV = [
