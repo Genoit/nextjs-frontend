@@ -22,6 +22,7 @@ import {
   UserIcon,
   VoiceoverIcon,
 } from '../../components/Icons';
+import ThemeToggle from '../../components/ThemeToggle';
 
 export default function RegisterPage() {
   const { register, loginWithGoogle, loginWithGoogleRedirect } = useAuth();
@@ -324,7 +325,8 @@ export default function RegisterPage() {
       </div>
 
       {/* Right side form */}
-      <div className="lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
+      <div className="relative lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
+        <ThemeToggle className="absolute right-4 top-4 sm:right-6 sm:top-6" />
         <div className="w-full max-w-[430px] space-y-5">
           {/* Mobile logo when left panel is hidden */}
           <div className="lg:hidden mb-4 flex justify-center">

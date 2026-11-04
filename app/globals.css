@@ -89,13 +89,10 @@
   --ease-studio: cubic-bezier(0.2, 0, 0, 1);
 }
 
-/* Light theme, set by the studio shells (DashShell, AppShell) from the user's preference.
-   Scoped to the shell, not <html>: landing, auth and onboarding stay dark.
-   white/black are swapped so text-white, bg-white/5 and border-white/10 read as ink on paper. */
+/* Light theme from the user's preference: on <html> (ThemeSync, boot script in layout) for landing,
+   auth and onboarding, and on the studio shells (DashShell, AppShell). */
 [data-theme='light'] {
   color-scheme: light;
-  --color-white: #1c1917;
-  --color-black: #ffffff;
   --color-trend-orange-strong: #e85a0c;
   --color-trend-gold: #a16207;
   --color-cream: #f4f1ed;
@@ -141,6 +138,13 @@
   --shadow-glow: 0 1px 2px rgb(0 0 0 / 0.06);
   --shadow-float: 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 40px rgb(0 0 0 / 0.08);
   --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.1), 0 32px 88px rgb(0 0 0 / 0.14);
+}
+
+/* Shells only: white/black are swapped so text-white, bg-white/5 and border-white/10 read as ink on paper.
+   Not on <html>: the public pages keep real white text on photos and video frames. */
+[data-theme='light']:not(html) {
+  --color-white: #1c1917;
+  --color-black: #ffffff;
 }
 
 /* Dark again inside a light shell (the theme previews on /settings). Generated from @theme above; keep in sync. */

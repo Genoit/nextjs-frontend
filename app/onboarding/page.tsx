@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useAuth } from '../../lib/auth';
 import { api, ApiRequestError } from '../../lib/api/core';
+import ThemeToggle from '../../components/ThemeToggle';
 import {
   OnboardingBusinessType,
   OnboardingCategory,
@@ -509,6 +510,7 @@ const connectionOptions = [
 function Brand({ className = '' }: { className?: string }) {
   return (
     <div className={`select-none ${className}`}>
+      <ThemeToggle className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6" />
       <div className="flex items-center gap-2">
         <svg
           className="h-[37px] w-[42px] shrink-0"

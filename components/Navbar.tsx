@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '../lib/auth';
 import { SparkleIcon, TrendedBrandLogo } from './Icons';
+import ThemeToggle from './ThemeToggle';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -266,6 +267,7 @@ export default function Navbar() {
 
         {/* Right CTA / Auth Controls */}
         <div className="hidden md:flex items-center gap-5">
+          <ThemeToggle />
           {isLoading ? (
             <div className="h-9 w-24 animate-pulse rounded-xl bg-studio-raised" />
           ) : isAuthenticated ? (
@@ -307,6 +309,7 @@ export default function Navbar() {
 
         {/* Mobile menu button */}
         <div className="flex md:hidden items-center gap-3">
+          <ThemeToggle />
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}

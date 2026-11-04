@@ -19,6 +19,7 @@ import {
   UsersGroupIcon,
   VideoCameraIcon,
 } from '../../components/Icons';
+import ThemeToggle from '../../components/ThemeToggle';
 
 function LoginForm() {
   const { login, loginWithGoogle, loginWithGoogleRedirect } = useAuth();
@@ -429,7 +430,8 @@ export default function LoginPage() {
       </div>
 
       {/* Right side form */}
-      <div className="lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
+      <div className="relative lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
+        <ThemeToggle className="absolute right-4 top-4 sm:right-6 sm:top-6" />
         <Suspense fallback={<div className="text-sm text-ink-muted">Loading form...</div>}>
           <LoginForm />
         </Suspense>
