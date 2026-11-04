@@ -32,6 +32,7 @@ import {
 import { useAuth } from '../lib/auth';
 import { SparkleIcon, TrendedBrandLogo } from '../components/Icons';
 import Navbar from '../components/Navbar';
+import { tempting } from './fonts';
 
 function AnimatedStat({
   target,
@@ -222,7 +223,9 @@ export default function LandingPage() {
               {/* Headline */}
               <h1 className="text-5xl sm:text-6xl xl:text-[5rem] font-extrabold tracking-[-0.06em] text-ink leading-[0.92] mx-auto max-w-[680px]">
                 Turn your products into scroll-stopping{' '}
-                <span className="font-editorial italic text-trend-orange font-normal tracking-normal">
+                <span
+                  className={`${tempting.className} mt-8 mb-3 inline-block leading-[1.15] text-trend-orange font-normal tracking-normal`}
+                >
                   UGC.
                 </span>
               </h1>
