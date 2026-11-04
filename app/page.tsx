@@ -224,7 +224,7 @@ export default function LandingPage() {
               <h1 className="text-5xl sm:text-6xl xl:text-[5rem] font-extrabold tracking-[-0.06em] text-ink leading-[0.92] mx-auto max-w-[680px]">
                 Turn your products into scroll-stopping{' '}
                 <span
-                  className={`${tempting.className} mt-8 mb-3 inline-block leading-[1.15] text-trend-orange font-normal tracking-normal`}
+                  className={`${tempting.className} mt-5 mb-2 inline-block text-[0.7em] leading-[1.15] text-trend-orange font-normal tracking-normal`}
                 >
                   UGC.
                 </span>
