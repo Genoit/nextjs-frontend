@@ -5,6 +5,7 @@ import {
   discountPct,
   jobSeconds,
   createHref,
+  fromPrice,
   daysUntil,
   durationText,
   jobBadge,
@@ -130,5 +131,30 @@ describe('jobSeconds / clockText / discountPct', () => {
     assert.strictEqual(discountPct(20, 20), null);
     assert.strictEqual(discountPct(null, 20), null);
     assert.strictEqual(discountPct(10, 0), null);
+  });
+});
+
+describe('createHref text', () => {
+  it('sends a bare domain path to the URL import', () => {
+    assert.strictEqual(createHref('shop.com/p/1'), '/product-input?url=shop.com%2Fp%2F1');
+  });
+  it('sends a description to manual entry', () => {
+    assert.strictEqual(
+      createHref('Portable blender, USB'),
+      '/product-input?mode=manual&describe=Portable%20blender%2C%20USB',
+    );
+  });
+});
+
+describe('fromPrice', () => {
+  const plan = (id, price_usd) => ({ id, price_usd });
+  it('picks the cheapest paid plan', () => {
+    assert.strictEqual(fromPrice([plan('free', '0'), plan('pro', '39.00'), plan('starter', '19.00')]), '$19');
+  });
+  it('keeps cents and skips bad prices', () => {
+    assert.strictEqual(fromPrice([plan('starter', '9.99'), plan('pro', 'n/a')]), '$9.99');
+  });
+  it('is null without a paid plan', () => {
+    assert.strictEqual(fromPrice([plan('free', '0')]), null);
   });
 });

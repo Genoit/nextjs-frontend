@@ -157,7 +157,17 @@ export function CreativeConfigForm({
   const [platform, setPlatform] = useState<TargetPlatform>(
     (preset?.platform as TargetPlatform) || initialConfig?.platform || 'tiktok',
   );
-  const [language, setLanguage] = useState(initialConfig?.language || 'fr');
+  // A new config starts from the video language picked on the dashboard composer.
+  const [language, setLanguage] = useState(() => {
+    if (initialConfig?.language) return initialConfig.language;
+    try {
+      const picked = sessionStorage.getItem('trended.videoLanguage');
+      if (picked && ['fr', 'en', 'es', 'de'].includes(picked)) return picked;
+    } catch {
+      // storage blocked: keep French
+    }
+    return 'fr';
+  });
   // A new config starts from the output format picked on the dashboard. This form only renders
   // client-side after its data loads, so reading storage here cannot mismatch server HTML.
   const [aspectRatio, setAspectRatio] = useState(() => {

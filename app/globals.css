@@ -79,6 +79,8 @@
   --color-ember-nav-end: #3f1c0e; /* active nav gradient end */
   --color-ember-cta-start: #a2300a; /* hero CTA gradient start */
   --color-on-ember: #ffffff; /* text on solid ember fills, both themes */
+  --color-cta-top: #ee6a1f; /* dashboard Generate button, both themes */
+  --color-cta-bottom: #c9480c;
 
   /* Elevation: a top glint on surfaces, a real shadow only on what floats (bars, composer, menus). */
   --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);

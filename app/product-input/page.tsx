@@ -24,16 +24,22 @@ export default function ProductInputPage() {
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const closeGuide = useCallback(() => setGuideOpen(false), []);
 
-  // The dashboard sends `?url=` (link import, prefilled) or `?mode=manual`.
-  const { setMode, setUrl } = draft;
+  // The dashboard sends `?url=` (link import, prefilled), `?mode=upload`, or `?mode=manual` with an
+  // optional `describe=` typed in its composer.
+  const { setMode, setUrl, setField } = draft;
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pasted = params.get('url');
+    const mode = params.get('mode');
     if (pasted) {
       setMode('url');
       setUrl(pasted);
-    } else if (params.get('mode') === 'manual') {
+    } else if (mode === 'manual') {
       setMode('manual');
+      const described = params.get('describe');
+      if (described) setField('description', described);
+    } else if (mode === 'upload') {
+      setMode('upload');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps -- read the query once on arrival
   }, []);
