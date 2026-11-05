@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { BookOpen } from 'lucide-react';
 import { AppShell } from '../../components/AppShell';
@@ -25,16 +25,20 @@ export default function ProductInputPage() {
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const closeGuide = useCallback(() => setGuideOpen(false), []);
 
-  // The dashboard sends `?url=` (link import, prefilled), `?mode=upload`, or `?mode=manual` with an
-  // optional `describe=` typed in its composer.
-  const { setMode, setUrl, setField, addFiles } = draft;
+  // The dashboard sends `?url=` (imported on arrival: the sheet opens prefilled to review),
+  // `?mode=upload`, or `?mode=manual` with an optional `describe=` typed in its composer.
+  const { setMode, setUrl, setField, addFiles, runExtract } = draft;
+  const arrived = useRef(false);
   useEffect(() => {
+    if (arrived.current) return; // dev StrictMode runs effects twice: import once
+    arrived.current = true;
     const params = new URLSearchParams(window.location.search);
     const pasted = params.get('url');
     const mode = params.get('mode');
     if (pasted) {
       setMode('url');
       setUrl(pasted);
+      void runExtract(pasted);
     } else if (mode === 'manual') {
       setMode('manual');
       const described = params.get('describe');

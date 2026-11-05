@@ -8,6 +8,7 @@ import { usePathname } from 'next/navigation';
 import {
   Bell,
   ChevronDown,
+  Clapperboard,
   Crown,
   Folder,
   House,
@@ -193,6 +194,7 @@ export function RowMenu({ product, up = false }: { product: Product; up?: boolea
 const NAV: { label: string; Icon: typeof House; href: string }[] = [
   { label: 'New ad', Icon: Plus, href: '/product-input' },
   { label: 'Home', Icon: House, href: '/dashboard' },
+  { label: 'Generate', Icon: Clapperboard, href: '/generate' },
   { label: 'Studio', Icon: Sparkles, href: '/studio' },
   { label: 'Library', Icon: Folder, href: '/projects' },
   { label: 'Assets', Icon: ImageIcon, href: '/products' },

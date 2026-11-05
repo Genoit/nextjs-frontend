@@ -118,8 +118,9 @@ export function useProductDraft() {
       return [item, ...copy];
     });
 
-  const runExtract = async () => {
-    const target = url.trim();
+  /** Imports the product page; `link` reads a link not yet in state (dashboard hand-off). */
+  const runExtract = async (link?: string) => {
+    const target = (link ?? url).trim();
     if (!isValidEcommerceUrl(target)) {
       setUrlError('Paste a full link that starts with https://');
       return;
