@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { useAuth } from '../../lib/auth';
+import { takeReturnTo, useAuth } from '../../lib/auth';
 import { api, ApiRequestError } from '../../lib/api/core';
 import ThemeToggle from '../../components/ThemeToggle';
 import {
@@ -1054,7 +1054,7 @@ export default function OnboardingPage() {
         const progress = await api.getOnboarding(token);
         if (!active) return;
         if (progress.is_completed) {
-          router.replace('/dashboard');
+          router.replace(takeReturnTo() ?? '/dashboard');
           return;
         }
 
@@ -1116,7 +1116,7 @@ export default function OnboardingPage() {
       } else {
         await api.saveOnboardingStep4(token, goals);
         await api.completeOnboarding(token);
-        router.push('/dashboard');
+        router.push(takeReturnTo() ?? '/dashboard');
         return;
       }
       setStep((current) => current + 1);

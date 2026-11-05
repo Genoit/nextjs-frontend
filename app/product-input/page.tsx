@@ -13,6 +13,7 @@ import { Stepper } from '../../components/product-input/StepRail';
 import { useProductDraft } from '../../components/product-input/use-product-draft';
 import { nextStepHref } from '../../lib/product-input-rules.mjs';
 import { tempting } from '../fonts';
+import { takePendingPhotos } from '../../lib/pending-photos';
 
 const focusField = (id: string) => document.getElementById(id)?.focus();
 
@@ -26,7 +27,7 @@ export default function ProductInputPage() {
 
   // The dashboard sends `?url=` (link import, prefilled), `?mode=upload`, or `?mode=manual` with an
   // optional `describe=` typed in its composer.
-  const { setMode, setUrl, setField } = draft;
+  const { setMode, setUrl, setField, addFiles } = draft;
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const pasted = params.get('url');
@@ -41,6 +42,9 @@ export default function ProductInputPage() {
     } else if (mode === 'upload') {
       setMode('upload');
     }
+    // Photos picked in the dashboard composer (kept across the login detour).
+    const photos = takePendingPhotos();
+    if (photos.length) addFiles(photos);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- read the query once on arrival
   }, []);
 

@@ -17,24 +17,57 @@ import {
   ShoppingBag,
   Sparkles,
   SquarePlay,
+  X,
 } from 'lucide-react';
 import {
   DashShell,
   focusRing,
+  Popover,
   loadEntries,
   productImage,
   Thumb,
   type Entry,
   type Load,
 } from '../../components/dashboard/DashShell';
-import { createHref, jobBadge, latestJob, timeAgo } from '../../lib/dashboard-rules.mjs';
-import { outfit } from '../fonts';
+import {
+  acceptPhotos,
+  createHref,
+  jobBadge,
+  latestJob,
+  timeAgo,
+} from '../../lib/dashboard-rules.mjs';
+import { ACCEPTED_IMAGE_TYPES, LIMITS } from '../../lib/product-input-rules.mjs';
+import { goToLogin, rememberReturnTo, useAuth } from '../../lib/auth';
+import { setPendingPhotos } from '../../lib/pending-photos';
+import { inter, tempting } from '../fonts';
+import { SocialIcon, type Social } from '../../components/SocialIcon';
 
 // Both read by CreativeConfigForm as the defaults of a new ad.
 const FORMAT_KEY = 'trended.outputFormat';
 const LANGUAGE_KEY = 'trended.videoLanguage';
 
-const FORMATS = ['9:16', '1:1', '16:9'];
+/** Formats named by where the ad runs; the ratio is what the ad studio stores. */
+const FORMATS: { value: string; label: string; option: string; socials: Social[] }[] = [
+  {
+    value: '9:16',
+    label: 'TikTok, Reels, Shorts',
+    option: 'TikTok, Reels, Shorts (vertical 9:16)',
+    socials: ['tiktok', 'instagram', 'youtube'],
+  },
+  {
+    value: '1:1',
+    label: 'Instagram, Facebook feed',
+    option: 'Instagram and Facebook feed (square 1:1)',
+    socials: ['instagram', 'facebook'],
+  },
+  {
+    value: '16:9',
+    label: 'YouTube, Facebook',
+    option: 'YouTube and Facebook (wide 16:9)',
+    socials: ['youtube', 'facebook'],
+  },
+];
+
 const LANGUAGES = [
   { value: 'en', label: 'English' },
   { value: 'fr', label: 'Français' },
@@ -55,10 +88,19 @@ function Glow() {
         WebkitMaskImage: 'linear-gradient(to bottom, #000 65%, transparent)',
       }}
     >
-      <div className="absolute inset-0 bg-[radial-gradient(48%_62%_at_80%_-8%,rgb(255_107_26/0.42),transparent_72%)]" />
-      <div className="absolute -top-[180px] right-[-140px] h-[260px] w-[1150px] origin-right -rotate-[34deg] rounded-full bg-[linear-gradient(90deg,transparent,rgb(255_120_40/0.55)_55%,rgb(255_150_60/0.25))] blur-[38px]" />
+      <div className="glow-breathe absolute -top-[420px] right-[-260px] h-[860px] w-[1100px] rounded-full bg-[radial-gradient(closest-side,rgb(255_107_26/0.42),transparent)]" />
+      <div className="glow-sway absolute -top-[180px] right-[-140px] h-[260px] w-[1150px] origin-right -rotate-[34deg] rounded-full bg-[linear-gradient(90deg,transparent,rgb(255_120_40/0.55)_55%,rgb(255_150_60/0.25))] blur-[38px]" />
       <div className="absolute top-[300px] right-[-520px] size-[1150px] rounded-full bg-[radial-gradient(closest-side,transparent_95.5%,rgb(255_107_26/0.4)_99.2%,transparent_100%)] blur-[1.5px]" />
-      <div className="absolute top-[300px] right-[-520px] size-[1150px] rounded-full bg-[radial-gradient(closest-side,transparent_88%,rgb(255_107_26/0.13)_99%,transparent_100%)] blur-[24px]" />
+      <div className="glow-pulse absolute top-[300px] right-[-520px] size-[1150px] rounded-full bg-[radial-gradient(closest-side,transparent_88%,rgb(255_107_26/0.13)_99%,transparent_100%)] blur-[24px]" />
+      {/* A brighter spark travelling along the arc. */}
+      <div
+        className="glow-orbit absolute top-[300px] right-[-520px] size-[1150px] rounded-full bg-[conic-gradient(from_0deg,transparent_0_72%,rgb(255_160_70/0.85)_84%,transparent_90%)] blur-[2px]"
+        style={{
+          maskImage: 'radial-gradient(closest-side, transparent 95%, #000 98.6%, transparent 100%)',
+          WebkitMaskImage:
+            'radial-gradient(closest-side, transparent 95%, #000 98.6%, transparent 100%)',
+        }}
+      />
     </div>
   );
 }
@@ -73,10 +115,35 @@ function Capsule() {
   );
 }
 
-function Composer() {
+type Photo = { file: File; url: string };
+
+/** `credits`: balance of a signed-in merchant, null while unknown (or signed out). */
+function Composer({ credits }: { credits: number | null }) {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const field = useRef<HTMLTextAreaElement>(null);
+  const picker = useRef<HTMLInputElement>(null);
   const [text, setText] = useState('');
+  const [photos, setPhotos] = useState<Photo[]>([]);
+  const [photoErrors, setPhotoErrors] = useState<string[]>([]);
+  const previews = useRef<string[]>([]);
+  useEffect(() => () => previews.current.forEach((u) => URL.revokeObjectURL(u)), []);
+
+  const addPhotos = (list: FileList | null) => {
+    if (!list?.length) return;
+    const { accepted, errors } = acceptPhotos(photos.length, Array.from(list));
+    const added = accepted.map((file) => ({ file, url: URL.createObjectURL(file) }));
+    previews.current.push(...added.map((p) => p.url));
+    setPhotos((prev) => [...prev, ...added]);
+    setPhotoErrors(errors);
+  };
+  const removePhoto = (url: string) => {
+    URL.revokeObjectURL(url);
+    previews.current = previews.current.filter((u) => u !== url);
+    setPhotos((prev) => prev.filter((p) => p.url !== url));
+    setPhotoErrors([]);
+  };
+  const openPicker = () => picker.current?.click();
   const [urlMode, setUrlMode] = useState(false);
   const [format, setFormat] = useState('9:16');
   const [language, setLanguage] = useState('en');
@@ -92,7 +159,18 @@ function Composer() {
   const submit = (e?: FormEvent) => {
     e?.preventDefault();
     keepChoices();
-    router.push(createHref(text));
+    const href = text.trim() || !photos.length ? createHref(text) : '/product-input?mode=upload';
+    setPendingPhotos(photos.map((p) => p.file));
+    if (!isAuthenticated) {
+      goToLogin(router, href); // back to this product once signed in
+      return;
+    }
+    // Free plan has 0 credits and the shortest ad costs 1: plans first, before any work is lost.
+    if (credits !== null && credits < 1) {
+      router.push('/billing');
+      return;
+    }
+    router.push(href);
   };
   const onKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) submit(e);
@@ -101,17 +179,31 @@ function Composer() {
   return (
     <form
       onSubmit={submit}
-      className="mx-auto mt-9 w-full max-w-[1156px] rounded-[24px] border border-white/10 bg-white/[0.045] p-5 shadow-[0_24px_60px_-30px_rgb(0_0_0/0.7)] backdrop-blur-xl sm:p-7"
+      className="relative z-20 mx-auto mt-9 w-full max-w-[1156px] rounded-[24px] border border-white/10 bg-white/[0.045] p-5 shadow-[0_24px_60px_-30px_rgb(0_0_0/0.7)] backdrop-blur-xl sm:p-7"
     >
       <div className="flex gap-4 sm:gap-6">
-        <Link
-          href="/product-input?mode=upload"
-          onClick={keepChoices}
-          aria-label="Upload a product image"
-          className={`flex h-[72px] w-[72px] shrink-0 sm:h-[84px] sm:w-[90px] items-center justify-center rounded-[14px] bg-white/[0.08] text-white transition hover:bg-white/[0.13] ${focusRing}`}
+        <input
+          ref={picker}
+          type="file"
+          multiple
+          accept={ACCEPTED_IMAGE_TYPES.join(',')}
+          className="sr-only"
+          tabIndex={-1}
+          aria-hidden
+          onChange={(e) => {
+            addPhotos(e.target.files);
+            e.target.value = ''; // picking the same file again still fires
+          }}
+        />
+        <button
+          type="button"
+          onClick={openPicker}
+          disabled={photos.length >= LIMITS.photos}
+          aria-label={`Add product photos (${LIMITS.photos} max)`}
+          className={`flex h-[72px] w-[72px] shrink-0 sm:h-[84px] sm:w-[90px] items-center justify-center rounded-[14px] bg-white/[0.08] text-white transition hover:bg-white/[0.13] disabled:cursor-not-allowed disabled:opacity-40 ${focusRing}`}
         >
           <Plus className="size-9" strokeWidth={1.4} aria-hidden />
-        </Link>
+        </button>
         <label htmlFor="composer" className="sr-only">
           Describe your product or paste its link
         </label>
@@ -128,11 +220,54 @@ function Composer() {
           className="min-w-0 flex-1 resize-none bg-transparent pt-1 text-[16px] sm:pt-4 sm:text-[18px] text-white caret-ember-text outline-none placeholder:text-dash-soft/80"
         />
       </div>
+      {photos.length > 0 && (
+        <ul
+          aria-label="Product photos"
+          className="mt-4 flex flex-wrap items-center gap-3 sm:pl-[114px]"
+        >
+          {photos.map((p, i) => (
+            <li
+              key={p.url}
+              className="relative size-[64px] overflow-hidden rounded-[10px] ring-1 ring-white/10"
+            >
+              {/* eslint-disable-next-line @next/next/no-img-element -- local blob preview */}
+              <img
+                src={p.url}
+                alt={`Photo ${i + 1}: ${p.file.name}`}
+                className="size-full object-cover"
+              />
+              <button
+                type="button"
+                onClick={() => removePhoto(p.url)}
+                aria-label={`Remove ${p.file.name}`}
+                className={`absolute top-1 right-1 flex size-6 items-center justify-center rounded-full bg-black/70 text-white hover:bg-danger ${focusRing}`}
+              >
+                <X className="size-3.5" aria-hidden />
+              </button>
+            </li>
+          ))}
+          <li className="text-[13.5px] text-dash-soft tabular-nums">
+            {photos.length}/{LIMITS.photos} photos · front, side and in use give the best render
+          </li>
+        </ul>
+      )}
+      {photoErrors.length > 0 && (
+        <ul role="alert" className="mt-2 space-y-0.5 text-[13.5px] text-danger sm:pl-[114px]">
+          {photoErrors.map((err) => (
+            <li key={err}>{err}</li>
+          ))}
+        </ul>
+      )}
       <div className="mt-4 flex flex-wrap items-center gap-3 sm:pl-[104px] 2xl:gap-[17px]">
-        <Link href="/product-input?mode=upload" onClick={keepChoices} className={chip}>
+        <button
+          type="button"
+          onClick={openPicker}
+          disabled={photos.length >= LIMITS.photos}
+          className={`${chip} disabled:cursor-not-allowed disabled:opacity-40`}
+        >
           <ImageIcon className="size-[18px]" strokeWidth={1.6} aria-hidden />
           Upload Image
-        </Link>
+        </button>
         <button
           type="button"
           aria-pressed={urlMode}
@@ -150,22 +285,48 @@ function Composer() {
           From Store
         </Link>
         <span aria-hidden className="mx-2 hidden h-[42px] w-px bg-white/10 xl:block" />
-        <label className={`${chip} relative min-w-[114px] justify-between`}>
-          <span className="sr-only">Video format</span>
-          <select
-            value={format}
-            onChange={(e) => setFormat(e.target.value)}
-            className="absolute inset-0 cursor-pointer appearance-none opacity-0"
-          >
-            {FORMATS.map((f) => (
-              <option key={f} value={f}>
-                {f}
-              </option>
-            ))}
-          </select>
-          <span className="pl-2 tabular-nums">{format}</span>
-          <ChevronDown className="size-[18px]" aria-hidden />
-        </label>
+        <Popover
+          label={`Video format: ${format}`}
+          className="bottom-12 left-0 w-[300px] sm:top-12 sm:bottom-auto"
+          buttonClassName={`${chip} min-w-[96px] justify-between`}
+          button={
+            <>
+              <span className="pl-1 tabular-nums">{format}</span>
+              <ChevronDown className="size-[18px]" aria-hidden />
+            </>
+          }
+        >
+          {(close) => (
+            <ul role="listbox" aria-label="Video format">
+              {FORMATS.map((f) => (
+                <li key={f.value} role="option" aria-selected={f.value === format}>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormat(f.value);
+                      close();
+                    }}
+                    className={`flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left transition hover:bg-white/[0.06] ${
+                      f.value === format ? 'bg-white/[0.06]' : ''
+                    } ${focusRing}`}
+                  >
+                    <span className="w-10 text-[14.5px] font-semibold text-white tabular-nums">
+                      {f.value}
+                    </span>
+                    <span className="flex -space-x-1.5">
+                      {f.socials.map((n) => (
+                        <SocialIcon key={n} name={n} mono />
+                      ))}
+                    </span>
+                    <span className="min-w-0 flex-1 truncate text-[13px] text-dash-soft">
+                      {f.label}
+                    </span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Popover>
         <label className={`${chip} relative`}>
           <span className="sr-only">Video language</span>
           <select
@@ -339,12 +500,20 @@ function ProjectRow({ entry, now }: { entry: Entry; now: Date }) {
   );
 }
 
-function RecentProjects({ load, retry }: { load: Load; retry: () => void }) {
+function RecentProjects({ load, retry, guest }: { load: Load; retry: () => void; guest: boolean }) {
   const now = new Date();
   return (
     <section className={card}>
       <CardHead title="Recent Projects" href="/projects" />
-      {load.state === 'loading' ? (
+      {guest ? (
+        <Link
+          href="/login"
+          onClick={() => rememberReturnTo('/dashboard')}
+          className={`mt-4 flex h-[140px] items-center justify-center rounded-[12px] px-4 text-center border border-dashed border-white/15 text-[14.5px] text-dash-soft transition hover:text-white ${focusRing}`}
+        >
+          Sign in to see your projects here.
+        </Link>
+      ) : load.state === 'loading' ? (
         <ul aria-hidden className="mt-4 space-y-3">
           {[0, 1].map((i) => (
             <li key={i} className="h-[66px] animate-pulse rounded-[10px] bg-white/[0.04]" />
@@ -376,15 +545,17 @@ function RecentProjects({ load, retry }: { load: Load; retry: () => void }) {
 }
 
 export default function DashboardPage() {
+  const { isAuthenticated, isLoading } = useAuth();
   const [load, setLoad] = useState<Load>({ state: 'loading' });
 
   useEffect(() => {
+    if (!isAuthenticated) return; // visitors have no projects to load
     let alive = true;
     loadEntries(2).then((next) => alive && setLoad(next));
     return () => {
       alive = false;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   const retry = () => {
     setLoad({ state: 'loading' });
@@ -392,38 +563,42 @@ export default function DashboardPage() {
   };
 
   return (
-    <DashShell backdrop={<Glow />}>
-      <main className="relative px-5 pb-10 md:pr-12 md:pl-[46px]">
-        <section className="relative -mt-3.5 text-center">
-          <Capsule />
-          <Link
-            href="/product-input"
-            className={`inline-flex h-10 items-center gap-2 rounded-full border border-ember-text/70 bg-ember-deep/15 px-5 text-[14.5px] text-[#ffc59a] transition hover:bg-ember-deep/30 in-data-[theme=light]:text-ember-text ${focusRing}`}
-          >
-            AI-Powered Creative Studio
-            <Sparkles className="size-4 text-coin" fill="currentColor" aria-hidden />
-          </Link>
-          <h1
-            className={`${outfit.className} mx-auto mt-5 max-w-[760px] text-[40px] leading-[1.1] font-normal tracking-[-0.005em] text-balance text-white sm:text-[52px] lg:text-[64px]`}
-          >
-            Turn your products into scroll-stopping{' '}
-            <span className="font-script text-[1.12em] font-bold text-trend-orange italic">
-              UGC.
-            </span>
-          </h1>
-          <p className="mt-2 text-[18px] text-white/90 sm:text-[21px]">
-            Create authentic product videos with AI in minutes.
-          </p>
-        </section>
+    <DashShell guest backdrop={<Glow />}>
+      {({ summary }) => (
+        <main className="relative px-5 pb-10 md:pr-12 md:pl-[46px]">
+          <section className="relative -mt-3.5 text-center">
+            <Capsule />
+            <Link
+              href="/product-input"
+              className={`inline-flex h-10 items-center gap-2 rounded-full border border-ember-text/70 bg-ember-deep/15 px-5 text-[14.5px] text-[#ffc59a] transition hover:bg-ember-deep/30 in-data-[theme=light]:text-ember-text ${focusRing}`}
+            >
+              AI-Powered Creative Studio
+              <Sparkles className="size-4 text-coin" fill="currentColor" aria-hidden />
+            </Link>
+            <h1
+              className={`${inter.className} mx-auto mt-5 max-w-[860px] text-[44px] leading-[1.15] font-extrabold tracking-[-0.03em] text-balance text-white sm:text-[60px] lg:text-[76px]`}
+            >
+              Turn your products into <span className="whitespace-nowrap">scroll-stopping</span>{' '}
+              <span
+                className={`${tempting.className} mt-2 inline-block text-[0.72em] font-normal tracking-normal text-trend-orange`}
+              >
+                UGC.
+              </span>
+            </h1>
+            <p className="mt-2 text-[18px] text-white/90 sm:text-[21px]">
+              Create authentic product videos with AI in minutes.
+            </p>
+          </section>
 
-        <Composer />
+          <Composer credits={summary?.credits ?? null} />
 
-        <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-7 lg:grid-cols-2 2xl:grid-cols-[1.2fr_1fr_1.14fr]">
-          <Promo />
-          <QuickActions />
-          <RecentProjects load={load} retry={retry} />
-        </div>
-      </main>
+          <div className="mt-12 grid grid-cols-[minmax(0,1fr)] gap-7 lg:grid-cols-2 2xl:grid-cols-[1.2fr_1fr_1.14fr]">
+            <Promo />
+            <QuickActions />
+            <RecentProjects load={load} retry={retry} guest={!isLoading && !isAuthenticated} />
+          </div>
+        </main>
+      )}
     </DashShell>
   );
 }

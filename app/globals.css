@@ -362,3 +362,49 @@ body {
     }
   }
 }
+
+/* Dashboard background light: slow ambient motion, off when the user asks for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Halo and beam drift from the top right across the headline toward the sidebar, then back. */
+  @keyframes glow-breathe {
+    50% {
+      transform: translate(-720px, 140px);
+      opacity: 0.85;
+    }
+  }
+  @keyframes glow-sway {
+    50% {
+      transform: translate(-780px, 160px);
+      opacity: 0.9;
+    }
+  }
+  @keyframes glow-pulse {
+    50% {
+      opacity: 0.45;
+      transform: scale(1.015);
+    }
+  }
+  @keyframes glow-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .glow-breathe {
+    animation: glow-breathe 14s ease-in-out infinite;
+  }
+  .glow-sway {
+    animation: glow-sway 14s ease-in-out infinite;
+  }
+  .glow-pulse {
+    animation: glow-pulse 7s ease-in-out infinite;
+  }
+  .glow-orbit {
+    animation: glow-orbit 18s linear infinite;
+    will-change: transform;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow-orbit {
+    display: none;
+  }
+}

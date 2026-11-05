@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,14 +17,14 @@ import {
   MoreHorizontal,
   MoreVertical,
   Package,
-  Play,
+  Plus,
   Settings,
   Sparkles,
   X,
   Zap,
 } from 'lucide-react';
 import ProtectedRoute from '../ProtectedRoute';
-import { useAuth } from '../../lib/auth';
+import { rememberReturnTo, useAuth } from '../../lib/auth';
 import { useStudioTheme } from '../../lib/theme';
 import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
@@ -191,9 +191,9 @@ export function RowMenu({ product, up = false }: { product: Product; up?: boolea
 // Mockup labels (2026-11-04) over the existing pages: Studio picks an ad structure, Generate starts
 // from a product, Library holds the ad projects, Assets the product library.
 const NAV: { label: string; Icon: typeof House; href: string }[] = [
+  { label: 'New ad', Icon: Plus, href: '/product-input' },
   { label: 'Home', Icon: House, href: '/dashboard' },
-  { label: 'Studio', Icon: Sparkles, href: '/templates' },
-  { label: 'Generate', Icon: Play, href: '/product-input' },
+  { label: 'Studio', Icon: Sparkles, href: '/studio' },
   { label: 'Library', Icon: Folder, href: '/projects' },
   { label: 'Assets', Icon: ImageIcon, href: '/products' },
 ];
@@ -266,7 +266,7 @@ function PlanCard({
 }
 
 function MoreMenu() {
-  const { logout } = useAuth();
+  const { logout, isAuthenticated } = useAuth();
   return (
     <Popover
       label="More"
@@ -284,17 +284,19 @@ function MoreMenu() {
             <Zap className="size-4" aria-hidden />
             Plan and credits
           </Link>
-          <button
-            type="button"
-            onClick={() => {
-              close();
-              logout();
-            }}
-            className={menuItem}
-          >
-            <LogOut className="size-4" aria-hidden />
-            Sign out
-          </button>
+          {isAuthenticated && (
+            <button
+              type="button"
+              onClick={() => {
+                close();
+                logout();
+              }}
+              className={menuItem}
+            >
+              <LogOut className="size-4" aria-hidden />
+              Sign out
+            </button>
+          )}
         </>
       )}
     </Popover>
@@ -309,7 +311,7 @@ function Rail({
   onNavigate?: () => void;
 }) {
   return (
-    <div className="flex h-full w-[93px] flex-col items-center pt-6 pb-4 pl-[5px]">
+    <div className="pointer-events-auto flex min-h-full w-[93px] flex-col items-center pt-6 pb-4 pl-[5px]">
       <Link href="/dashboard" aria-label="TrendED home" className={`rounded-lg ${focusRing}`}>
         <BrandSymbol className="h-[55px] w-[56px]" />
       </Link>
@@ -335,6 +337,17 @@ function Rail({
 
 function AccountMenu() {
   const { user, logout } = useAuth();
+  if (!user) {
+    return (
+      <Link
+        href="/login"
+        onClick={() => rememberReturnTo(window.location.pathname)}
+        className={`inline-flex h-10 items-center rounded-full border border-white/15 px-5 text-[15px] font-medium text-white transition hover:bg-white/[0.07] ${focusRing}`}
+      >
+        Sign in
+      </Link>
+    );
+  }
   const name = user ? `${user.first_name} ${user.last_name}`.trim() : '';
   return (
     <Popover
@@ -432,21 +445,27 @@ export type Billing = { summary: BillingSummary | null; total: number | null };
  */
 export function DashShell({
   backdrop,
+  guest = false,
   children,
 }: {
   backdrop?: ReactNode;
+  /** Signed-out visitors may see the page (the dashboard); paid actions send them to login. */
+  guest?: boolean;
   children: ReactNode | ((billing: Billing) => ReactNode);
 }) {
+  const { isAuthenticated } = useAuth();
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [plans, setPlans] = useState<BillingPlan[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     let alive = true;
-    billingApi
-      .getSummary()
-      .then((s) => alive && setSummary(s))
-      .catch(() => undefined); // the plan card falls back to "See plans"; the page still works
+    if (isAuthenticated) {
+      billingApi
+        .getSummary()
+        .then((s) => alive && setSummary(s))
+        .catch(() => undefined); // the plan card falls back to "See plans"; the page still works
+    }
     billingApi
       .getPlans()
       .then((p) => alive && setPlans(p))
@@ -454,7 +473,7 @@ export function DashShell({
     return () => {
       alive = false;
     };
-  }, []);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -467,14 +486,17 @@ export function DashShell({
   const billing = { summary, total, from: fromPrice(plans) };
   const theme = useStudioTheme();
 
+  const Guard = guest ? Fragment : ProtectedRoute;
   return (
-    <ProtectedRoute>
+    <Guard>
       <div
         data-theme={theme}
         className="relative flex min-h-dvh overflow-x-clip bg-dash-ground font-sans text-white antialiased"
       >
         {backdrop}
-        <aside className="sticky top-0 z-20 hidden h-dvh w-[104px] shrink-0 md:block">
+        {/* Scrolls when the window is short (100 % zoom). 140px wide with -36px margin so the
+            plan card that spills past the rail is not clipped; the extra strip lets clicks through. */}
+        <aside className="pointer-events-none sticky top-0 z-20 -mr-[36px] hidden h-dvh w-[140px] shrink-0 overflow-y-auto overscroll-contain [scrollbar-width:none] md:block">
           <Rail billing={billing} />
         </aside>
 
@@ -491,7 +513,7 @@ export function DashShell({
               className="absolute inset-0 bg-black/70"
               onClick={() => setMenuOpen(false)}
             />
-            <div className="relative h-full w-[150px] border-r border-dash-rail-line bg-dash-sidebar">
+            <div className="relative h-full w-[150px] overflow-y-auto border-r border-dash-rail-line bg-dash-sidebar">
               <button
                 type="button"
                 onClick={() => setMenuOpen(false)}
@@ -510,6 +532,6 @@ export function DashShell({
           {typeof children === 'function' ? children({ summary, total }) : children}
         </div>
       </div>
-    </ProtectedRoute>
+    </Guard>
   );
 }

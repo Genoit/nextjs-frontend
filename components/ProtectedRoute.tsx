@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useAuth } from '../lib/auth';
+import { goToLogin, useAuth } from '../lib/auth';
 
 export default function ProtectedRoute({
   children,
@@ -18,7 +18,7 @@ export default function ProtectedRoute({
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/login');
+      goToLogin(router, window.location.pathname + window.location.search);
     } else if (!isLoading && forbidden) {
       router.replace('/dashboard');
     }

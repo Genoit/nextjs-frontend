@@ -103,6 +103,15 @@ async function handleResponse<T>(response: Response): Promise<T> {
       // Non-JSON response
     }
 
+    // Out of credits wherever a paid action was tried: send the merchant to the plans.
+    if (
+      response.status === 402 &&
+      errorCode === 'NOT_ENOUGH_CREDITS' &&
+      typeof window !== 'undefined'
+    ) {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- no router outside React; a full load also refreshes the balance
+      window.location.assign('/billing');
+    }
     throw new ApiRequestError(errorMessage, response.status, errorData, errorCode);
   }
 

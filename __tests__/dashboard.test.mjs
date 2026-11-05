@@ -158,3 +158,14 @@ describe('fromPrice', () => {
     assert.strictEqual(fromPrice([plan('free', '0')]), null);
   });
 });
+
+import { acceptPhotos } from '../lib/dashboard-rules.mjs';
+
+it('acceptPhotos keeps valid photos up to the limit of 3', () => {
+  const ok = (name) => ({ name, type: 'image/png', size: 1000 });
+  const r = acceptPhotos(1, [ok('a'), { name: 'b.gif', type: 'image/gif', size: 1 }, ok('c'), ok('d')]);
+  assert.deepEqual(r.accepted.map((f) => f.name), ['a', 'c']);
+  assert.equal(r.errors.length, 2);
+  assert.match(r.errors[1], /3 photos max: d/);
+  assert.deepEqual(acceptPhotos(3, [ok('e')]).accepted, []);
+});

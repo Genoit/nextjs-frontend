@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from 'react';
 import { settingsApi, type ThemePref } from './api/settings';
+import { TOKEN_KEY } from './api/core';
 
 // The server keeps the preference; localStorage is only a per-browser cache so pages open in the
 // right theme without waiting for a request.
@@ -60,7 +61,14 @@ export function useStudioTheme(): 'light' | 'dark' {
   const theme = useSyncExternalStore(subscribe, snapshot, () => 'dark' as const);
   useEffect(() => {
     // No cached choice in this browser yet: fetch the account's preference once.
-    if (fetched || readPref()) return;
+    // Signed-out visitors (guest dashboard) have no account preference to fetch.
+    let signedIn = false;
+    try {
+      signedIn = !!localStorage.getItem(TOKEN_KEY);
+    } catch {
+      // storage blocked: treat as signed out
+    }
+    if (fetched || !signedIn || readPref()) return;
     fetched = true;
     settingsApi
       .getPreferences()

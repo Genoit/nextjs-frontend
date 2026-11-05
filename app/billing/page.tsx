@@ -1,10 +1,22 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { CSSProperties } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, ArrowUp, Loader2 } from 'lucide-react';
-import ProtectedRoute from '../../components/ProtectedRoute';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  ChevronDown,
+  Clapperboard,
+  FileSearch,
+  Languages,
+  Loader2,
+  RotateCcw,
+  Star,
+} from 'lucide-react';
+import { SocialIcon, type Social } from '../../components/SocialIcon';
+import { goToLogin, useAuth } from '../../lib/auth';
 import {
   billingApi,
   type BillingPlan,
@@ -24,239 +36,62 @@ import {
 const RECOMMENDED: PlanId = 'pro';
 // shortcut: mirrors backend billing_signup_credits (Free has no monthly quota); expose it in /billing/plans if it ever changes.
 const FREE_TRIAL_CREDITS = 1;
+const SPC_DEFAULT = 15;
 
-// How every 15 s ad is cut, in real seconds: one credit pays for exactly this.
-const BEATS = [
-  {
-    beat: 'Hook',
-    s: 2,
-    words: 'Two seconds',
-    clause: 'First, the hook that stops the scroll.',
-    tone: 'bg-trend-orange text-on-accent',
-  },
-  {
-    beat: 'Problem',
-    s: 3,
-    words: 'Three seconds',
-    clause: 'Then the problem your buyer already has.',
-    tone: 'bg-[#f3e3c3] text-on-accent',
-  },
-  {
-    beat: 'Product',
-    s: 5,
-    words: 'Five seconds',
-    clause: 'Then the product, shown from the facts on its page.',
-    tone: 'bg-trend-gold text-on-accent',
-  },
-  {
-    beat: 'Proof',
-    s: 3,
-    words: 'Three seconds',
-    clause: 'Then proof the page really gives.',
-    tone: 'bg-studio-raised text-ink',
-  },
-  {
-    beat: 'Call to action',
-    s: 2,
-    words: 'Two seconds',
-    clause: 'Last, the call to action.',
-    tone: 'bg-trend-orange-strong text-on-accent',
-  },
+/** Networks the plans are shown for: each one sets the ad length the card counts in. */
+const NETWORKS: { id: Social; label: string; adSeconds: number }[] = [
+  { id: 'tiktok', label: 'TikTok', adSeconds: 15 },
+  { id: 'instagram', label: 'Instagram', adSeconds: 15 },
+  { id: 'facebook', label: 'Facebook', adSeconds: 30 },
+  { id: 'youtube', label: 'YouTube', adSeconds: 30 },
 ];
 
-const rise = (ms: number) => ({ '--rise-delay': `${ms}ms` }) as CSSProperties;
+const PREVIOUS: Record<PlanId, string | null> = {
+  free: null,
+  starter: 'Free',
+  pro: 'Starter',
+  business: 'Pro',
+};
 
-const button =
-  'inline-flex min-h-12 items-center justify-center gap-2 rounded-full px-7 text-[15px] font-semibold transition-[background-color,transform] active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink disabled:opacity-60 motion-reduce:transition-none';
+// How every 15 s ad is cut: one credit pays for exactly this.
+const BEATS = [
+  { beat: 'Hook', s: 2, text: 'Two seconds that stop the scroll.' },
+  { beat: 'Problem', s: 3, text: 'The problem your buyer already has.' },
+  { beat: 'Product', s: 5, text: 'Your product, shown from the facts on its page.' },
+  { beat: 'Proof', s: 3, text: 'Proof the product page really gives.' },
+  { beat: 'Call to action', s: 2, text: 'The one thing to do next.' },
+];
 
-/** The 15 s of ad a credit buys, drawn small enough to sit inside the headline. */
-function CreditStrip() {
-  return (
-    <span
-      data-ui
-      aria-hidden
-      className="shutter relative inline-flex h-[0.74em] min-w-[3em] flex-1 overflow-hidden rounded-[14px] max-sm:my-3 max-sm:aspect-[2/1] max-sm:h-auto max-sm:w-full sm:mx-[0.15em]"
-    >
-      <span className="flex h-full w-full gap-1 font-sans">
-        {BEATS.map((b) => (
-          <span
-            key={b.beat}
-            style={{ flexGrow: b.s }}
-            className={`flex min-w-0 basis-0 flex-col justify-between rounded-[11px] p-2 text-[13px] leading-tight tracking-normal sm:p-2.5 ${b.tone}`}
-          >
-            <span className="truncate font-medium">{b.beat}</span>
-            <span className="tabular-nums opacity-80">{b.s} s</span>
-          </span>
-        ))}
-      </span>
-    </span>
-  );
-}
-
-function PlanOffer({
-  plans,
-  summary,
-  busy,
-  onChoose,
-  onManage,
-}: {
-  plans: BillingPlan[];
-  summary: BillingSummary;
-  busy: string | null;
-  onChoose: (id: PlanId) => void;
-  onManage: () => void;
-}) {
-  const subscribed = isSubscribed(summary);
-  const [picked, setPicked] = useState<PlanId>(subscribed ? summary.plan : RECOMMENDED);
-  const plan = plans.find((p) => p.id === picked) ?? plans[0];
-  const paid = plan.id !== 'free';
-  const spc = summary.seconds_per_credit;
-  const credits = paid ? plan.monthly_credits : FREE_TRIAL_CREDITS;
-  const price = Number(plan.price_usd);
-  const offer = paid && summary.founder_offer && !subscribed;
-  const shown = offer ? founderPrice(price) : String(price);
-  const ads30 = adsFor(credits, 30, spc);
-  const ads15 = adsFor(credits, 15, spc);
-  const current = summary.plan === plan.id;
-
-  let action = null;
-  if (current) {
-    action = (
-      <p className="flex min-h-12 items-center text-[17px] font-medium">This is your plan</p>
-    );
-  } else if (paid && !plan.available) {
-    action = (
-      <button type="button" disabled className={`${button} bg-ink text-on-accent`}>
-        Not available yet
-      </button>
-    );
-  } else if (paid && subscribed) {
-    action = (
-      <button
-        type="button"
-        onClick={onManage}
-        disabled={busy !== null}
-        className={`${button} bg-ink text-on-accent hover:bg-white`}
-      >
-        {busy === 'portal' && (
-          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
-        )}
-        Switch in billing portal
-      </button>
-    );
-  } else if (paid) {
-    action = (
-      <button
-        type="button"
-        onClick={() => onChoose(plan.id)}
-        disabled={busy !== null}
-        className={`${button} bg-trend-orange text-on-accent hover:bg-trend-orange-strong`}
-      >
-        {busy === plan.id ? (
-          <Loader2 className="h-4 w-4 animate-spin motion-reduce:animate-none" aria-hidden />
-        ) : null}
-        Choose {PLAN_LABEL[plan.id]}
-        {busy !== plan.id && <ArrowRight className="h-4 w-4" aria-hidden />}
-      </button>
-    );
-  }
-
-  return (
-    <div className="grid gap-14 lg:grid-cols-12 lg:items-end lg:gap-10">
-      <div className="lg:col-span-7">
-        <div role="radiogroup" aria-label="Plan" className="reveal flex flex-wrap gap-2">
-          {plans.map((p) => {
-            const on = p.id === plan.id;
-            return (
-              <button
-                key={p.id}
-                type="button"
-                role="radio"
-                aria-checked={on}
-                onClick={() => setPicked(p.id)}
-                className={`min-h-11 rounded-full px-5 text-[15px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ink ${
-                  on ? 'bg-ink text-on-accent' : 'bg-studio-ground text-ink hover:bg-cream'
-                }`}
-              >
-                {PLAN_LABEL[p.id]}
-                <span className={`ml-2 tabular-nums ${on ? 'text-on-accent/70' : 'text-ink-soft'}`}>
-                  ${Number(p.price_usd)}
-                </span>
-                {p.id === summary.plan && <span className="sr-only"> (your plan)</span>}
-              </button>
-            );
-          })}
-        </div>
-
-        <h2
-          id="plans-title"
-          aria-live="polite"
-          className="mt-12 font-editorial text-[11vw] leading-[1] tracking-[-0.02em] text-ink sm:text-[8vw] lg:text-[5.6vw] 2xl:text-[88px]"
-        >
-          <span className="block">
-            {paid ? `${ads30} ads of 30 s a month` : `${ads15} ad of 15 s to try`}
-          </span>
-          <span className="block">
-            for{' '}
-            <span className="inline-block bg-trend-orange px-[0.15em] leading-[1] text-on-accent tabular-nums">
-              ${shown}
-            </span>
-            {offer && (
-              <span className="ml-[0.3em] align-middle font-sans text-[18px] tracking-normal text-ink-soft line-through sm:text-[22px]">
-                ${price}
-              </span>
-            )}
-          </span>
-        </h2>
-
-        <p className="mt-10 max-w-[52ch] text-[17px] leading-relaxed text-ink md:text-[20px]">
-          {PLAN_LABEL[plan.id]} is {PLAN_PITCH[plan.id].charAt(0).toLowerCase()}
-          {PLAN_PITCH[plan.id].slice(1)}{' '}
-          {paid
-            ? `${creditsText(credits)} every month, or ${ads15} ads of 15 s. Cancel anytime.`
-            : `${creditsText(credits)} at sign-up for one 15 s ad.`}{' '}
-          Product analysis and storyboards never use credits.
-          {offer && (
-            <span className="mt-2 block text-[15px] text-trend-orange-strong md:text-[17px]">
-              Founder price for your first 3 months, then ${price} a month.
-            </span>
-          )}
-        </p>
-        <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2">
-          {action}
-          {summary.has_billing_account && (
-            <button
-              type="button"
-              onClick={onManage}
-              disabled={busy !== null}
-              className="min-h-11 text-[15px] text-ink underline underline-offset-4 hover:text-trend-orange-strong"
-            >
-              Manage billing and invoices
-            </button>
-          )}
-        </div>
-      </div>
-
-      {/* The plan's month drawn as what it buys: one 9:16 frame per 15 s credit. */}
-      <figure data-ui className="lg:col-span-5">
-        <ul aria-hidden className="flex max-w-[540px] flex-wrap gap-1.5">
-          {Array.from({ length: credits }, (_, i) => (
-            <li
-              key={`${plan.id}-${i}`}
-              style={{ animationDelay: `${i * 18}ms` }}
-              className="rise aspect-[9/16] w-[clamp(22px,2.6vw,38px)] rounded-[6px] bg-studio-meta"
-            />
-          ))}
-        </ul>
-        <figcaption className="mt-5 text-[17px] leading-relaxed text-ink">
-          {creditsText(credits)}
-          {paid ? ' a month' : ''}: {videoTime(credits, spc)} of finished video, one frame per {spc}{' '}
-          s.
-        </figcaption>
-      </figure>
-    </div>
-  );
-}
+const INCLUDED = [
+  {
+    Icon: FileSearch,
+    title: 'Product analysis',
+    text: 'Read from your link or photos',
+    points: [
+      'Facts, benefits and buyer',
+      'Photos checked for the ad',
+      'Edit everything before use',
+    ],
+  },
+  {
+    Icon: Clapperboard,
+    title: 'Strategy and storyboard',
+    text: 'Angles and shots planned for you',
+    points: ['Several ad angles', 'Shot by shot storyboard', 'Change any shot'],
+  },
+  {
+    Icon: Languages,
+    title: 'Formats and languages',
+    text: 'One ad, cut for each network',
+    points: ['9:16, 1:1 and 16:9', 'English, French, Spanish, German', 'Voice and music included'],
+  },
+  {
+    Icon: RotateCcw,
+    title: 'Credits back',
+    text: 'Pay only for finished video',
+    points: ['Cancel a render: credits back', 'Failed render: free retry', 'No commitment'],
+  },
+];
 
 const FAQ = [
   {
@@ -281,29 +116,297 @@ const FAQ = [
   },
   {
     q: 'Who handles the payment?',
-    a: 'Stripe. TrendED never sees your card. Prices are in USD and billed monthly; the launch offer takes 25% off your first 3 months at checkout.',
+    a: 'Stripe. TrendED never sees your card. Prices are in USD and billed monthly; the Founder offer takes 25% off your first 3 months at checkout.',
   },
 ];
 
+const focus =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
+const cta = `inline-flex h-11 items-center justify-center gap-2 rounded-[10px] text-[13.5px] font-semibold tracking-wide uppercase transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 ${focus}`;
+const ctaMain = `${cta} bg-trend-orange text-on-accent hover:bg-trend-orange-strong`;
+const ctaSoft = `${cta} bg-studio-raised text-studio-text hover:bg-studio-hover`;
+
+type Actions = {
+  summary: BillingSummary | null;
+  busy: string | null;
+  onChoose: (id: PlanId) => void;
+  onManage: () => void;
+};
+
+function PlanAction({ plan, summary, busy, onChoose, onManage }: Actions & { plan: BillingPlan }) {
+  const paid = plan.id !== 'free';
+  const featured = plan.id === RECOMMENDED;
+  const subscribed = summary ? isSubscribed(summary) : false;
+  if (summary?.plan === plan.id) {
+    return (
+      <p className="flex h-11 items-center justify-center rounded-[10px] border border-studio-rule text-[13.5px] font-semibold tracking-wide text-studio-muted uppercase">
+        Your plan
+      </p>
+    );
+  }
+  if (!paid) {
+    return (
+      <Link href="/dashboard" className={`${ctaSoft} w-full`}>
+        Start free
+      </Link>
+    );
+  }
+  if (!plan.available) {
+    return (
+      <button type="button" disabled className={`${ctaSoft} w-full`}>
+        Not available yet
+      </button>
+    );
+  }
+  if (subscribed) {
+    return (
+      <button
+        type="button"
+        onClick={onManage}
+        disabled={busy !== null}
+        className={`${featured ? ctaMain : ctaSoft} w-full`}
+      >
+        {busy === 'portal' && <Loader2 className="size-4 animate-spin" aria-hidden />}
+        Switch plan
+      </button>
+    );
+  }
+  return (
+    <button
+      type="button"
+      onClick={() => onChoose(plan.id)}
+      disabled={busy !== null}
+      className={`${featured ? ctaMain : ctaSoft} w-full`}
+    >
+      {busy === plan.id && <Loader2 className="size-4 animate-spin" aria-hidden />}
+      Choose {PLAN_LABEL[plan.id]}
+    </button>
+  );
+}
+
+function PlanCard({
+  plan,
+  founder,
+  network,
+  spc,
+  ...actions
+}: Actions & {
+  plan: BillingPlan;
+  founder: boolean;
+  network: (typeof NETWORKS)[number];
+  spc: number;
+}) {
+  const paid = plan.id !== 'free';
+  const featured = plan.id === RECOMMENDED;
+  const credits = paid ? plan.monthly_credits : FREE_TRIAL_CREDITS;
+  const price = Number(plan.price_usd);
+  const discounted = paid && founder;
+  const ads = adsFor(credits, network.adSeconds, spc);
+  const previous = PREVIOUS[plan.id];
+  const points = paid
+    ? [
+        `${creditsText(credits)} every month`,
+        `${videoTime(credits, spc)} of finished video`,
+        `${adsFor(credits, 15, spc)} ads of 15 s or ${adsFor(credits, 30, spc)} of 30 s`,
+        'Cancel anytime',
+      ]
+    : [
+        `${creditsText(credits)} at sign-up`,
+        'Product analysis from a link or photos',
+        'Strategy and storyboard',
+        '9:16, 1:1 and 16:9 formats',
+      ];
+
+  return (
+    <li
+      className={`relative flex flex-col rounded-[14px] border bg-studio-surface p-6 ${
+        featured
+          ? 'border-trend-orange shadow-[0_20px_50px_-24px_rgb(255_107_26/0.55)]'
+          : 'border-studio-rule'
+      }`}
+    >
+      {featured && (
+        <span className="absolute -top-px right-5 inline-flex items-center gap-1 rounded-b-[8px] bg-trend-orange px-2.5 py-1 text-[10.5px] font-bold tracking-wider text-on-accent uppercase">
+          <Star className="size-3" fill="currentColor" aria-hidden />
+          Most popular
+        </span>
+      )}
+      <span className="w-fit rounded-[6px] bg-studio-raised px-2 py-0.5 text-[12.5px] font-medium text-studio-text">
+        {PLAN_LABEL[plan.id]}
+      </span>
+      <p className="mt-4 flex items-baseline gap-1.5">
+        <span className="text-[34px] leading-none font-bold tracking-[-0.02em] text-studio-text tabular-nums">
+          ${discounted ? founderPrice(price) : price}
+        </span>
+        <span className="text-[13.5px] text-studio-muted">/month</span>
+        {discounted && (
+          <span className="text-[13.5px] text-studio-meta tabular-nums line-through">${price}</span>
+        )}
+      </p>
+      <p className="mt-3 text-[13px] font-medium text-studio-text">
+        {paid
+          ? `Up to ${ads} ${network.label} ads of ${network.adSeconds} s`
+          : 'One 15 s ad to try'}
+      </p>
+      <p className="mt-1 min-h-[36px] text-[12.5px] leading-snug text-studio-muted">
+        {PLAN_PITCH[plan.id]}
+      </p>
+
+      <p className="mt-5 text-[10.5px] font-semibold tracking-wider text-studio-meta uppercase">
+        {previous ? `Everything in ${previous}, and:` : 'Includes:'}
+      </p>
+      <ul className="mt-3 flex-1 space-y-2.5">
+        {points.map((p) => (
+          <li key={p} className="flex gap-2 text-[13.5px] leading-snug text-studio-text">
+            <Check className="mt-0.5 size-3.5 shrink-0 text-trend-orange" aria-hidden />
+            {p}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-6">
+        <PlanAction plan={plan} {...actions} />
+      </div>
+    </li>
+  );
+}
+
+function CompareTable({ plans, spc }: { plans: BillingPlan[]; spc: number }) {
+  const credits = (p: BillingPlan) => (p.id === 'free' ? FREE_TRIAL_CREDITS : p.monthly_credits);
+  const rows: [string, (p: BillingPlan) => string][] = [
+    ['Price', (p) => (p.id === 'free' ? '$0' : `$${Number(p.price_usd)}/month`)],
+    ['Credits', (p) => (p.id === 'free' ? '1 at sign-up' : `${p.monthly_credits} a month`)],
+    ['Finished video', (p) => videoTime(credits(p), spc)],
+    ['15 s ads', (p) => String(adsFor(credits(p), 15, spc))],
+    ['30 s ads', (p) => String(adsFor(credits(p), 30, spc))],
+    ['Product analysis', () => 'Free'],
+    ['Strategy and storyboard', () => 'Free'],
+    ['Formats', () => '9:16, 1:1, 16:9'],
+    ['Cancelled render', () => 'Credits back'],
+  ];
+  return (
+    <div className="mt-8 overflow-x-auto rounded-[14px] border border-studio-rule">
+      <table className="w-full min-w-[640px] text-left text-[13.5px]">
+        <thead className="bg-studio-surface">
+          <tr>
+            <th scope="col" className="px-5 py-3.5 font-medium text-studio-muted">
+              Feature
+            </th>
+            {plans.map((p) => (
+              <th
+                key={p.id}
+                scope="col"
+                className={`px-5 py-3.5 font-semibold ${p.id === RECOMMENDED ? 'text-trend-orange' : 'text-studio-text'}`}
+              >
+                {PLAN_LABEL[p.id]}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map(([label, value]) => (
+            <tr key={label} className="border-t border-studio-rule">
+              <th scope="row" className="px-5 py-3 font-normal text-studio-muted">
+                {label}
+              </th>
+              {plans.map((p) => (
+                <td key={p.id} className="px-5 py-3 text-studio-text tabular-nums">
+                  {value(p)}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/** Carousel of the five beats one credit pays for. */
+function Beats() {
+  const track = useRef<HTMLUListElement>(null);
+  const slide = (dir: 1 | -1) =>
+    track.current?.scrollBy({ left: dir * track.current.clientWidth * 0.8, behavior: 'smooth' });
+  return (
+    <section aria-labelledby="beats-title" className="py-20">
+      <h2
+        id="beats-title"
+        className="mx-auto max-w-[620px] px-4 text-center text-[30px] leading-tight font-bold tracking-[-0.02em] text-studio-text sm:text-[38px]"
+      >
+        What one credit buys: fifteen seconds of ad
+      </h2>
+      <ul
+        ref={track}
+        className="mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth scroll-px-4 px-4 pb-2 [scrollbar-width:none] sm:px-[max(16px,calc((100vw_-_1180px)/2))] sm:scroll-px-[max(16px,calc((100vw_-_1180px)/2))]"
+      >
+        {BEATS.map((b, i) => (
+          <li key={b.beat} className="w-[280px] shrink-0 snap-start sm:w-[300px]">
+            <div className="flex aspect-[4/3] flex-col justify-between rounded-[14px] bg-[linear-gradient(150deg,rgb(255_107_26/0.28),rgb(255_107_26/0.04))] p-5 ring-1 ring-studio-rule">
+              <span className="text-[13px] text-studio-muted tabular-nums">
+                Beat {i + 1} of {BEATS.length}
+              </span>
+              <span className="text-[44px] leading-none font-bold text-studio-text tabular-nums">
+                {b.s} s
+              </span>
+            </div>
+            <p className="mt-4 text-[17px] font-semibold text-studio-text">{b.beat}</p>
+            <p className="mt-1 text-[14.5px] leading-snug text-studio-muted">{b.text}</p>
+          </li>
+        ))}
+      </ul>
+      <div className="mt-8 flex justify-center gap-3">
+        {([-1, 1] as const).map((d) => (
+          <button
+            key={d}
+            type="button"
+            onClick={() => slide(d)}
+            aria-label={d < 0 ? 'Previous beat' : 'Next beat'}
+            className={`flex size-10 items-center justify-center rounded-full border border-studio-rule-strong text-studio-text hover:bg-studio-raised ${focus}`}
+          >
+            {d < 0 ? (
+              <ArrowLeft className="size-4" aria-hidden />
+            ) : (
+              <ArrowRight className="size-4" aria-hidden />
+            )}
+          </button>
+        ))}
+      </div>
+      <ul className="mt-14 flex flex-wrap justify-center gap-x-10 gap-y-3 px-4 text-[13.5px] text-studio-muted">
+        <li>Payments by Stripe</li>
+        <li>Prices in USD, billed monthly</li>
+        <li>Cancel anytime</li>
+        <li>Credits back on cancelled renders</li>
+      </ul>
+    </section>
+  );
+}
+
 export default function BillingPage() {
+  const router = useRouter();
+  const { isAuthenticated, isLoading } = useAuth();
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [plans, setPlans] = useState<BillingPlan[] | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [canceled, setCanceled] = useState(false);
+  const [network, setNetwork] = useState(NETWORKS[0]);
+  const [founder, setFounder] = useState(true);
+  const [compare, setCompare] = useState(false);
 
   useEffect(() => {
-    Promise.all([billingApi.getSummary(), billingApi.getPlans()])
-      .then(([s, p]) => {
+    if (isLoading) return;
+    // Visitors see the public plans; a signed-in merchant also gets their balance and offer.
+    Promise.all([billingApi.getPlans(), isAuthenticated ? billingApi.getSummary() : null])
+      .then(([p, s]) => {
         setCanceled(new URLSearchParams(window.location.search).get('canceled') === '1');
-        setSummary(s);
         setPlans(p);
+        setSummary(s);
+        if (s) setFounder(s.founder_offer && !isSubscribed(s));
       })
       .catch((e: unknown) =>
         setLoadError(e instanceof Error ? e.message : 'Billing could not be loaded.'),
       );
-  }, []);
+  }, [isAuthenticated, isLoading]);
 
   const go = async (key: string, call: () => Promise<{ url: string }>) => {
     setBusy(key);
@@ -316,217 +419,310 @@ export default function BillingPage() {
       setBusy(null);
     }
   };
-  const choose = (id: PlanId) => void go(id, () => billingApi.checkout(id));
+  const choose = (id: PlanId) => {
+    if (!isAuthenticated) return goToLogin(router, '/billing');
+    void go(id, () => billingApi.checkout(id));
+  };
   const manage = () => void go('portal', () => billingApi.portal());
 
-  const spc = summary?.seconds_per_credit ?? 15;
+  const spc = summary?.seconds_per_credit ?? SPC_DEFAULT;
+  const offerOpen = !summary || (summary.founder_offer && !isSubscribed(summary));
   const renews =
     summary?.current_period_end &&
     new Date(summary.current_period_end).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
     });
+  const actions = { summary, busy, onChoose: choose, onManage: manage };
 
   return (
-    <ProtectedRoute>
-      <main className="text-ink">
-        {/* Hero: the credit is pictured as the 15 s of ad it pays for. */}
-        <section
-          aria-labelledby="hero-title"
-          className="mx-auto flex max-w-[1440px] flex-col justify-center lg:min-h-[calc(100svh-64px)] px-4 py-16 sm:px-7"
-        >
-          <h1
-            id="hero-title"
-            className="font-editorial text-[15vw] leading-[0.95] tracking-[-0.03em] sm:text-[9vw] 2xl:text-[136px]"
-          >
-            <span className="flex flex-wrap items-center sm:flex-nowrap">
-              <span className="rise shrink-0">One credit,</span>
-              <CreditStrip />
-            </span>
-            <span className="rise block sm:text-right" style={rise(120)}>
-              fifteen seconds
-            </span>
+    <main className="text-studio-text">
+      {/* Hero band with the networks the plans are counted for. */}
+      <section className="bg-[linear-gradient(180deg,rgb(255_107_26/0.10),rgb(255_107_26/0.03))] pt-14">
+        <div className="mx-auto max-w-[1180px] px-4 text-center">
+          <h1 className="text-[34px] leading-tight font-bold tracking-[-0.02em] sm:text-[46px]">
+            Choose your plan
           </h1>
-          <p
-            className="rise mt-10 max-w-[44ch] text-[17px] leading-relaxed sm:text-[22px]"
-            style={rise(240)}
-          >
-            {summary ? (
-              <>
-                You are on {PLAN_LABEL[summary.plan]} with {creditsText(summary.credits)} left:{' '}
-                {videoTime(summary.credits, spc)} of finished video.
-                {isSubscribed(summary) && renews ? ` Credits renew on ${renews}.` : ''}
-              </>
-            ) : (
-              'TrendED plans are counted in finished video, never in tries.'
-            )}
+          <p className="mt-3 text-[15.5px] text-studio-muted sm:text-[17px]">
+            One credit is 15 seconds of finished ad. Analysis and storyboards are free. Cancel any
+            time.
           </p>
+          {summary && (
+            <p className="mt-3 text-[14.5px] text-studio-text">
+              You are on {PLAN_LABEL[summary.plan]} with {creditsText(summary.credits)} left (
+              {videoTime(summary.credits, spc)} of video).
+              {isSubscribed(summary) && renews ? ` Credits renew on ${renews}.` : ''}
+            </p>
+          )}
           {summary?.subscription_status === 'past_due' && (
-            <p className="mt-3 text-[17px] text-danger">
+            <p className="mt-2 text-[14.5px] text-danger">
               Your last payment failed. Update your card to keep your plan.
             </p>
           )}
-          <a
-            href="#plans"
-            className={`rise mt-8 self-start ${button} bg-ink text-on-accent hover:bg-white`}
-            style={rise(360)}
+          <div
+            role="tablist"
+            aria-label="Network the ads run on"
+            className="mx-auto mt-9 flex max-w-[720px] overflow-x-auto [scrollbar-width:none]"
           >
-            Find your plan
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </a>
-        </section>
-
-        {/* Pricing: the offer is one sentence, and it changes with the plan picked. */}
-        <section
-          id="plans"
-          aria-labelledby="plans-title"
-          className="flex min-h-[80svh] scroll-mt-4 flex-col justify-center bg-cream py-24 sm:py-32"
-        >
-          <div className="mx-auto w-full max-w-[1440px] px-4 sm:px-7">
-            {canceled && (
-              <p role="status" className="mb-8 text-[17px]">
-                Checkout canceled. Nothing was charged.
-              </p>
-            )}
-            {(loadError || actionError) && (
-              <p role="alert" className="mb-8 text-[17px] text-danger">
-                {loadError || actionError}
-              </p>
-            )}
-            {summary && plans ? (
-              <PlanOffer
-                plans={plans}
-                summary={summary}
-                busy={busy}
-                onChoose={choose}
-                onManage={manage}
-              />
-            ) : (
-              !loadError && (
-                <h2
-                  id="plans-title"
-                  aria-busy="true"
-                  className="font-editorial text-[11vw] leading-[1] text-ink-soft sm:text-[8vw] xl:text-[116px]"
+            {NETWORKS.map((n) => {
+              const on = n.id === network.id;
+              return (
+                <button
+                  key={n.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setNetwork(n)}
+                  className={`flex h-14 min-w-[150px] flex-1 items-center justify-center gap-2.5 border-t-2 text-[15px] font-semibold transition ${focus} ${
+                    on
+                      ? 'border-trend-orange bg-studio-ground text-studio-text'
+                      : 'border-transparent text-studio-muted hover:text-studio-text'
+                  }`}
                 >
-                  Loading plans
-                </h2>
-              )
-            )}
+                  <SocialIcon name={n.id} />
+                  {n.label}
+                </button>
+              );
+            })}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* How it works: the strip from the headline, opened to the full width. */}
-        <section
-          aria-labelledby="credit-title"
-          className="mx-auto max-w-[1440px] px-4 py-32 sm:px-7 sm:py-48"
-        >
-          <h2
-            id="credit-title"
-            className="reveal font-editorial text-[11vw] leading-[1] tracking-[-0.02em] sm:text-[6.4vw] 2xl:text-[104px]"
+      <section id="plans" aria-label="Plans" className="mx-auto max-w-[1180px] px-4 pt-10">
+        <div className="flex justify-end">
+          <div
+            role="radiogroup"
+            aria-label="Price shown"
+            className="flex items-center gap-1 text-[12.5px]"
           >
-            Where one credit goes
-          </h2>
-          <ol data-ui className="mt-16 flex flex-col gap-[6px] sm:flex-row">
-            {BEATS.map((b, i) => (
-              <li
-                key={b.beat}
-                style={{ flexGrow: b.s, '--reveal-end': `${40 + i * 8}%` } as CSSProperties}
-                className="reveal flex basis-0 flex-col"
-              >
-                <div
-                  style={{ minHeight: `max(72px, ${b.s * 4.5}svh)` }}
-                  className={`flex flex-col justify-between gap-3 p-5 sm:h-[22vh] ${b.tone}`}
+            {offerOpen && (
+              <>
+                <button
+                  type="button"
+                  role="radio"
+                  aria-checked={founder}
+                  onClick={() => setFounder(true)}
+                  className={`rounded px-1 ${focus} ${founder ? 'font-semibold text-trend-orange' : 'text-studio-muted hover:text-studio-text'}`}
                 >
-                  <span className="text-[22px] leading-tight sm:text-[clamp(20px,2vw,30px)]">
-                    {b.words}
-                  </span>
-                  <span className="text-[15px] font-medium">{b.beat}</span>
-                </div>
-                <p className="max-w-[22ch] pt-3 text-[16px] leading-snug sm:pt-4 sm:text-[17px]">
-                  {b.clause}
-                </p>
-              </li>
-            ))}
-          </ol>
-          <p className="reveal mt-14 max-w-[60ch] text-[17px] leading-relaxed">
-            That is one 15 s ad, one credit. A 30 s ad runs the same five beats over twice the time
-            and uses two.
-          </p>
-        </section>
+                  Founder (-25% for 3 months)
+                </button>
+                <span aria-hidden className="text-studio-meta">
+                  |
+                </span>
+              </>
+            )}
+            <button
+              type="button"
+              role="radio"
+              aria-checked={!founder || !offerOpen}
+              onClick={() => setFounder(false)}
+              className={`rounded px-1 ${focus} ${!founder || !offerOpen ? 'font-semibold text-trend-orange' : 'text-studio-muted hover:text-studio-text'}`}
+            >
+              Monthly
+            </button>
+          </div>
+        </div>
 
-        <section
-          aria-labelledby="faq-title"
-          className="mx-auto max-w-[1440px] px-4 pb-32 sm:px-7 sm:pb-48"
+        {canceled && (
+          <p role="status" className="mt-4 text-[14.5px]">
+            Checkout canceled. Nothing was charged.
+          </p>
+        )}
+        {(loadError || actionError) && (
+          <p role="alert" className="mt-4 text-[14.5px] text-danger">
+            {loadError || actionError}
+          </p>
+        )}
+
+        {plans ? (
+          <ul className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {plans.map((p) => (
+              <PlanCard
+                key={p.id}
+                plan={p}
+                founder={founder && offerOpen}
+                network={network}
+                spc={spc}
+                {...actions}
+              />
+            ))}
+          </ul>
+        ) : (
+          !loadError && (
+            <ul
+              aria-busy="true"
+              aria-label="Loading plans"
+              className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4"
+            >
+              {[0, 1, 2, 3].map((i) => (
+                <li key={i} className="h-[440px] animate-pulse rounded-[14px] bg-studio-surface" />
+              ))}
+            </ul>
+          )
+        )}
+
+        {summary?.has_billing_account && (
+          <p className="mt-5 text-center">
+            <button
+              type="button"
+              onClick={manage}
+              disabled={busy !== null}
+              className={`text-[14px] text-studio-muted underline underline-offset-4 hover:text-studio-text ${focus}`}
+            >
+              Manage billing and invoices
+            </button>
+          </p>
+        )}
+
+        {plans && (
+          <div className="mt-10 text-center">
+            <button
+              type="button"
+              aria-expanded={compare}
+              onClick={() => setCompare((v) => !v)}
+              className={`inline-flex items-center gap-1.5 rounded text-[14.5px] font-semibold text-trend-orange hover:text-trend-orange-strong ${focus}`}
+            >
+              Compare all features
+              <ChevronDown
+                className={`size-4 transition-transform ${compare ? 'rotate-180' : ''}`}
+                aria-hidden
+              />
+            </button>
+            {compare && <CompareTable plans={plans} spc={spc} />}
+          </div>
+        )}
+      </section>
+
+      <Beats />
+
+      {/* Included in every plan: the parts that never use credits. */}
+      <section aria-labelledby="included-title" className="mx-auto max-w-[1180px] px-4 pb-24">
+        <h2
+          id="included-title"
+          className="text-center text-[30px] leading-tight font-bold tracking-[-0.02em] sm:text-[38px]"
         >
+          Included in every plan
+        </h2>
+        <p className="mt-3 text-center text-[15.5px] text-studio-muted">
+          Everything before the render is free, on every plan.
+        </p>
+        <ul className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          {INCLUDED.map(({ Icon, title, text, points }) => (
+            <li
+              key={title}
+              className="rounded-[14px] border border-studio-rule bg-studio-surface p-6"
+            >
+              <span className="flex size-11 items-center justify-center rounded-[10px] bg-trend-orange/15 text-trend-orange">
+                <Icon className="size-5" aria-hidden />
+              </span>
+              <p className="mt-5 text-[15.5px] font-semibold">{title}</p>
+              <p className="mt-0.5 text-[15px] font-bold tabular-nums">
+                0 credits{' '}
+                <span className="text-[12.5px] font-normal text-studio-muted">on every plan</span>
+              </p>
+              <p className="mt-4 text-[13px] font-semibold">{text}</p>
+              <ul className="mt-2.5 space-y-1.5">
+                {points.map((pt) => (
+                  <li key={pt} className="flex gap-2 text-[12.5px] text-studio-muted">
+                    <Check className="mt-0.5 size-3 shrink-0 text-trend-orange" aria-hidden />
+                    {pt}
+                  </li>
+                ))}
+              </ul>
+            </li>
+          ))}
+        </ul>
+        <div className="mt-10 flex flex-col items-center gap-3">
+          <a href="#plans" className={`${ctaMain} px-7`}>
+            Get started
+            <ArrowRight className="size-4" aria-hidden />
+          </a>
+          <p className="text-[13px] text-studio-muted">1 free credit at sign-up · Cancel anytime</p>
+        </div>
+      </section>
+
+      <section aria-labelledby="faq-title" className="bg-studio-surface/60 py-24">
+        <div className="mx-auto max-w-[1180px] px-4">
           <h2
             id="faq-title"
-            className="reveal font-editorial text-[10vw] leading-[1] tracking-[-0.02em] sm:text-[5.5vw] 2xl:text-[84px]"
+            className="text-center text-[30px] leading-tight font-bold tracking-[-0.02em] sm:text-[38px]"
           >
-            Questions about credits
+            Frequently asked questions
           </h2>
-          <div className="mt-20 md:ml-[33.333%]">
+          <div className="mt-12 grid gap-4 md:grid-cols-2">
             {FAQ.map(({ q, a }) => (
               <details
                 key={q}
-                className="reveal group -mx-4 mb-7 px-4 py-3 open:bg-cream sm:-mx-6 sm:px-6 sm:py-5"
+                className="group h-fit rounded-[12px] border border-studio-rule bg-studio-ground px-5"
               >
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-6 text-[19px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-ink sm:text-[23px] [&::-webkit-details-marker]:hidden">
+                <summary
+                  className={`flex min-h-14 cursor-pointer list-none items-center justify-between gap-4 text-[14.5px] font-semibold [&::-webkit-details-marker]:hidden ${focus}`}
+                >
                   {q}
-                  <span
+                  <ChevronDown
+                    className="size-4 shrink-0 -rotate-90 text-trend-orange transition-transform group-open:rotate-0"
                     aria-hidden
-                    className="relative h-3 w-4 shrink-0 transition-transform duration-300 group-open:rotate-180 motion-reduce:transition-none"
-                  >
-                    <span className="absolute top-[5px] left-0 h-[2px] w-[10px] rotate-45 bg-ink" />
-                    <span className="absolute top-[5px] right-0 h-[2px] w-[10px] -rotate-45 bg-ink" />
-                  </span>
+                  />
                 </summary>
-                <p className="mt-3 max-w-[48ch] text-[16px] leading-relaxed sm:text-[17px]">{a}</p>
+                <p className="pb-5 text-[14px] leading-relaxed text-studio-muted">{a}</p>
               </details>
             ))}
           </div>
-        </section>
+        </div>
+      </section>
 
-        {/* Close: the way back is the display line. */}
-        <footer className="flex min-h-[520px] flex-col justify-between gap-24 bg-trend-orange lg:min-h-[90svh] px-4 py-10 text-on-accent sm:px-7">
-          <div className="mx-auto flex w-full max-w-[1440px] flex-col justify-between gap-4 text-[15px] sm:flex-row">
-            <div className="flex flex-col gap-1 sm:flex-row sm:gap-10">
-              <p>TrendED plans and credits</p>
-              <p>Payments by Stripe</p>
-              <p>Prices in USD, billed monthly</p>
-            </div>
-            <a
-              href="#hero-title"
-              className="inline-flex min-h-11 items-center gap-1.5 self-start underline-offset-4 hover:underline sm:self-auto"
-            >
-              Back to top
-              <ArrowUp className="h-4 w-4" aria-hidden />
-            </a>
-          </div>
-          <div className="mx-auto w-full max-w-[1440px]">
-            <Link
-              href="/dashboard"
-              className="group block font-editorial text-[17vw] leading-[0.95] tracking-[-0.03em] focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-white sm:text-[11vw] 2xl:text-[168px]"
-            >
-              <span className="inline-block transition-transform duration-300 group-hover:-translate-x-2 motion-reduce:transition-none">
-                Back to Studio
-              </span>
+      <section className="mx-auto max-w-[1180px] px-4 py-24">
+        <div className="relative overflow-hidden rounded-[18px] bg-[linear-gradient(135deg,#2a1206,#0f0a07_60%)] px-6 py-16 text-center ring-1 ring-trend-orange/25">
+          {/* Confetti marks, decoration only. */}
+          {[
+            'left-[10%] top-[18%] bg-trend-orange',
+            'right-[14%] top-[22%] bg-trend-gold',
+            'left-[18%] bottom-[22%] bg-studio-meta',
+            'right-[22%] bottom-[26%] bg-trend-orange',
+            'left-[6%] top-[58%] bg-trend-gold',
+            'right-[8%] top-[60%] bg-studio-meta',
+          ].map((c) => (
+            <span
+              key={c}
+              aria-hidden
+              className={`absolute hidden h-1.5 w-4 rounded-full sm:block ${c}`}
+            />
+          ))}
+          <h2 className="relative text-[28px] leading-tight font-bold tracking-[-0.02em] sm:text-[36px]">
+            Make your first ad today
+          </h2>
+          <p className="relative mt-3 text-[15.5px] text-studio-muted sm:text-[17px]">
+            Paste a product link and get a ready-to-post video ad.
+          </p>
+          <Link href="/dashboard" className={`relative mx-auto mt-8 ${ctaMain} px-7`}>
+            Get started
+            <ArrowRight className="size-4" aria-hidden />
+          </Link>
+          <p className="relative mt-3 text-[13px] text-studio-muted">
+            1 free credit at sign-up · Cancel anytime
+          </p>
+        </div>
+      </section>
+
+      <footer className="border-t border-studio-rule">
+        <div className="mx-auto flex max-w-[1180px] flex-col gap-3 px-4 py-8 text-[13px] text-studio-muted sm:flex-row sm:items-center sm:justify-between">
+          <nav aria-label="Footer" className="flex flex-wrap gap-x-6 gap-y-2">
+            <Link href="/dashboard" className="hover:text-studio-text">
+              Studio
             </Link>
-            <div className="mt-10 flex flex-col gap-1 text-[14px] sm:flex-row sm:justify-between">
-              <span>
-                <a href="#plans" className="underline-offset-4 hover:underline">
-                  Plans
-                </a>
-                {' · '}
-                <a href="#faq-title" className="underline-offset-4 hover:underline">
-                  Questions
-                </a>
-              </span>
-              <span>One credit, fifteen seconds of finished video</span>
-              <span>TrendED, 2026</span>
-            </div>
-          </div>
-        </footer>
-      </main>
-    </ProtectedRoute>
+            <a href="#plans" className="hover:text-studio-text">
+              Plans
+            </a>
+            <a href="#faq-title" className="hover:text-studio-text">
+              Questions
+            </a>
+            <Link href="/settings" className="hover:text-studio-text">
+              Settings
+            </Link>
+          </nav>
+          <p>TrendED, 2026 · Payments by Stripe</p>
+        </div>
+      </footer>
+    </main>
   );
 }
