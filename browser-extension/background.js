@@ -1,7 +1,7 @@
 // Reads the product page in the user's own browser (their IP, their session, any captcha
 // they already passed), then hands it to TrendED's product-input page. No server fetch.
-// shortcut: dev origin only; add the production app origin here and in manifest host_permissions at deploy.
-const APP_ORIGIN = 'http://localhost:3001';
+// shortcut: local Docker app only; set the production origin here and in manifest host_permissions at deploy.
+const APP_ORIGIN = 'http://localhost:3000';
 
 async function sendTab(tab) {
   if (!tab.id || !/^https?:\/\//.test(tab.url || '')) return;

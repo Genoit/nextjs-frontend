@@ -225,6 +225,12 @@ export function ImportPanel({
                     <div className="space-y-2">
                       <p className="font-semibold text-ink">Import failed</p>
                       <p className="text-ink">{extract.error}</p>
+                      {/robot check/i.test(extract.error) && (
+                        <p className="text-ink">
+                          Our server is blocked there, your browser is not: open the product page,
+                          pass the check if asked, then click the Send to TrendED extension icon.
+                        </p>
+                      )}
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
