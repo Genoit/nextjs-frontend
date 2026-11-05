@@ -118,8 +118,11 @@ export function useProductDraft() {
       return [item, ...copy];
     });
 
-  /** Imports the product page; `link` reads a link not yet in state (dashboard hand-off). */
-  const runExtract = async (link?: string) => {
+  /**
+   * Imports the product page; `link` reads a link not yet in state (dashboard hand-off),
+   * `html` is the page the browser extension already loaded (no server fetch).
+   */
+  const runExtract = async (link?: string, html?: string) => {
     const target = (link ?? url).trim();
     if (!isValidEcommerceUrl(target)) {
       setUrlError('Paste a full link that starts with https://');
@@ -128,7 +131,9 @@ export function useProductDraft() {
     setUrlError(null);
     setExtract({ state: 'busy' });
     try {
-      const p = await productApi.extractFromUrl(target);
+      const p = html
+        ? await productApi.extractFromHtml(target, html)
+        : await productApi.extractFromUrl(target);
       setPreview(p);
       const next: Partial<Record<TextField, string>> = {
         title: p.title || undefined,

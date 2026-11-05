@@ -14,6 +14,7 @@ import { useProductDraft } from '../../components/product-input/use-product-draf
 import { nextStepHref } from '../../lib/product-input-rules.mjs';
 import { tempting } from '../fonts';
 import { takePendingPhotos } from '../../lib/pending-photos';
+import { CAPTURE_EVENT, takeExtensionCapture } from '../../lib/extension-capture';
 
 const focusField = (id: string) => document.getElementById(id)?.focus();
 
@@ -35,7 +36,18 @@ export default function ProductInputPage() {
     const params = new URLSearchParams(window.location.search);
     const pasted = params.get('url');
     const mode = params.get('mode');
-    if (pasted) {
+    if (params.get('from') === 'extension') {
+      setMode('url');
+      const importCapture = () => {
+        const c = takeExtensionCapture();
+        if (!c) return false;
+        setUrl(c.url);
+        void runExtract(c.url, c.html);
+        return true;
+      };
+      // The extension may write the page before or after this effect runs.
+      if (!importCapture()) window.addEventListener(CAPTURE_EVENT, importCapture, { once: true });
+    } else if (pasted) {
       setMode('url');
       setUrl(pasted);
       void runExtract(pasted);
