@@ -10,7 +10,6 @@ import {
   X,
   CreditCard,
   User as UserIcon,
-  ChevronLeft,
   ChevronRight,
   SlidersHorizontal,
 } from 'lucide-react';
@@ -20,6 +19,7 @@ import {
   AdminTransactionDetail,
   AdminTransactionsResponse,
 } from '../../../lib/types/admin';
+import { AdminPagination } from '../../../components/admin/AdminPagination';
 
 export default function AdminTransactionsPage() {
   const [data, setData] = useState<AdminTransactionsResponse | null>(null);
@@ -27,11 +27,11 @@ export default function AdminTransactionsPage() {
   const [statusFilter, setStatusFilter] = useState('All Status');
   const [providerFilter, setProviderFilter] = useState('All Providers');
   const [typeFilter, setTypeFilter] = useState('All Transaction Types');
-  const [selectedTrxId, setSelectedTrxId] = useState<string | null>('TRX-2025-0616-00123');
+  const [selectedTrxId, setSelectedTrxId] = useState<string | null>(null);
   const [trxDetail, setTrxDetail] = useState<AdminTransactionDetail | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRows, setSelectedRows] = useState<string[]>(['trx-1']);
+  const [selectedRows, setSelectedRows] = useState<string[]>([]);
 
   useEffect(() => {
     async function loadData() {
@@ -77,7 +77,7 @@ export default function AdminTransactionsPage() {
   const transactions = data?.transactions || [];
 
   const handleRowClick = (trx: AdminTransactionItem) => {
-    setSelectedTrxId(trx.transaction_id);
+    setSelectedTrxId(trx.id);
     setDrawerOpen(true);
   };
 
@@ -196,7 +196,7 @@ export default function AdminTransactionsPage() {
             className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-line text-xs font-medium text-ink-soft hover:bg-studio-surface"
           >
             <Calendar className="w-3.5 h-3.5 text-ink-muted" />
-            <span>May 18, 2025 - Jun 16, 2025</span>
+            <span>All time</span>
             <ChevronDown className="w-3.5 h-3.5 text-ink-muted" />
           </button>
 
@@ -209,8 +209,6 @@ export default function AdminTransactionsPage() {
             >
               <option value="All Status">All Status</option>
               <option value="Succeeded">Succeeded</option>
-              <option value="Pending">Pending</option>
-              <option value="Failed">Failed</option>
               <option value="Refunded">Refunded</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
@@ -225,8 +223,7 @@ export default function AdminTransactionsPage() {
             >
               <option value="All Providers">All Providers</option>
               <option value="Stripe">Stripe</option>
-              <option value="PayPal">PayPal</option>
-              <option value="Checkout.com">Checkout.com</option>
+              <option value="Credits">Credits</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
           </div>
@@ -240,8 +237,9 @@ export default function AdminTransactionsPage() {
             >
               <option value="All Transaction Types">All Transaction Types</option>
               <option value="Subscription Payment">Subscription Payment</option>
-              <option value="One-time Top-up">One-time Top-up</option>
-              <option value="Plan Upgrade">Plan Upgrade</option>
+              <option value="Signup bonus">Signup bonus</option>
+              <option value="Video render">Video render</option>
+              <option value="Refund">Refund</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
           </div>
@@ -298,15 +296,12 @@ export default function AdminTransactionsPage() {
                   </tr>
                 ) : (
                   transactions.map((trx) => {
-                    const isSelected = selectedTrxId === trx.transaction_id && drawerOpen;
+                    const isSelected = selectedTrxId === trx.id && drawerOpen;
                     const isChecked = selectedRows.includes(trx.id);
 
-                    let providerBadge = <span className="font-semibold text-ink-soft">stripe</span>;
-                    if (trx.payment_provider.toLowerCase() === 'paypal') {
-                      providerBadge = <span className="font-bold text-ink-soft">PayPal</span>;
-                    } else if (trx.payment_provider.toLowerCase().includes('checkout')) {
-                      providerBadge = <span className="font-medium text-ink">checkout.com</span>;
-                    }
+                    const providerBadge = (
+                      <span className="font-semibold text-ink-soft">{trx.payment_provider}</span>
+                    );
 
                     return (
                       <tr
@@ -388,71 +383,13 @@ export default function AdminTransactionsPage() {
 
           {/* Pagination */}
           <div className="px-4 py-3 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-ink-muted">
-            <div>Showing 1 to 10 of 5,231 results</div>
-
-            <div className="flex items-center gap-1 self-center">
-              <button
-                type="button"
-                disabled={currentPage <= 1}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentPage(1)}
-                className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                  currentPage === 1
-                    ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                    : 'text-ink-soft hover:bg-studio-surface'
-                }`}
-              >
-                1
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentPage(2)}
-                className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                  currentPage === 2
-                    ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                    : 'text-ink-soft hover:bg-studio-surface'
-                }`}
-              >
-                2
-              </button>
-              <button
-                type="button"
-                onClick={() => setCurrentPage(3)}
-                className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                  currentPage === 3
-                    ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                    : 'text-ink-soft hover:bg-studio-surface'
-                }`}
-              >
-                3
-              </button>
-              <span className="px-1 text-ink-muted">...</span>
-              <button
-                type="button"
-                onClick={() => setCurrentPage(524)}
-                className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                  currentPage === 524
-                    ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                    : 'text-ink-soft hover:bg-studio-surface'
-                }`}
-              >
-                524
-              </button>
-              <button
-                type="button"
-                disabled={currentPage >= 524}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <AdminPagination
+              page={currentPage}
+              pageSize={data?.page_size ?? 10}
+              total={data?.total ?? 0}
+              noun="results"
+              onPage={setCurrentPage}
+            />
           </div>
         </div>
 

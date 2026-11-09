@@ -18,13 +18,12 @@ import {
   Layers,
   FileCode,
   Code2,
-  ChevronLeft,
-  ChevronRight,
   CheckCircle2,
   XCircle,
 } from 'lucide-react';
 import { fetchAdminSystemLogs, fetchAdminLogDetail } from '../../../lib/api/admin';
 import { AdminLogItem, AdminLogDetail, AdminLogsResponse } from '../../../lib/types/admin';
+import { AdminPagination } from '../../../components/admin/AdminPagination';
 
 export default function AdminSystemLogsPage() {
   const [data, setData] = useState<AdminLogsResponse | null>(null);
@@ -32,9 +31,9 @@ export default function AdminSystemLogsPage() {
   const [severityFilter, setSeverityFilter] = useState('All Severities');
   const [serviceFilter, setServiceFilter] = useState('All Services');
   const [statusFilter, setStatusFilter] = useState('All Statuses');
-  const [selectedLogId, setSelectedLogId] = useState<string | null>('log-1');
+  const [selectedLogId, setSelectedLogId] = useState<string | null>(null);
   const [logDetail, setLogDetail] = useState<AdminLogDetail | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [copiedCode, setCopiedCode] = useState(false);
 
@@ -98,7 +97,7 @@ export default function AdminSystemLogsPage() {
   };
 
   const logs = data?.logs || [];
-  const total = data?.total || 1248;
+  const total = data?.total ?? 0;
 
   const getServiceIcon = (service: string) => {
     switch (service) {
@@ -201,11 +200,6 @@ export default function AdminSystemLogsPage() {
               >
                 <option value="All Services">All Services</option>
                 <option value="AI Generation">AI Generation</option>
-                <option value="Product Intelligence">Product Intelligence</option>
-                <option value="Store Integration">Store Integration</option>
-                <option value="Authentication">Authentication</option>
-                <option value="Payments">Payments</option>
-                <option value="Notifications">Notifications</option>
               </select>
               <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
             </div>
@@ -220,7 +214,7 @@ export default function AdminSystemLogsPage() {
             >
               <div className="flex items-center gap-2">
                 <Calendar className="w-3.5 h-3.5 text-ink-muted" />
-                <span>May 16, 2025 - May 23, 2025</span>
+                <span>All time</span>
               </div>
             </button>
           </div>
@@ -368,47 +362,13 @@ export default function AdminSystemLogsPage() {
 
           {/* Pagination */}
           <div className="px-4 py-3 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-ink-muted">
-            <div>Showing 1 to 10 of 1,248 logs</div>
-
-            <div className="flex items-center gap-1 self-center">
-              <button
-                type="button"
-                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              <button
-                type="button"
-                className="w-7 h-7 rounded-lg text-xs font-semibold bg-cream text-trend-orange border border-trend-orange/20"
-              >
-                1
-              </button>
-              <button
-                type="button"
-                className="w-7 h-7 rounded-lg text-xs font-semibold text-ink-soft hover:bg-studio-surface"
-              >
-                2
-              </button>
-              <button
-                type="button"
-                className="w-7 h-7 rounded-lg text-xs font-semibold text-ink-soft hover:bg-studio-surface"
-              >
-                3
-              </button>
-              <span className="px-1 text-ink-muted">...</span>
-              <button
-                type="button"
-                className="w-7 h-7 rounded-lg text-xs font-semibold text-ink-soft hover:bg-studio-surface"
-              >
-                125
-              </button>
-              <button
-                type="button"
-                className="p-1.5 rounded-lg border border-line hover:bg-studio-surface"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <AdminPagination
+              page={currentPage}
+              pageSize={data?.page_size ?? 10}
+              total={data?.total ?? 0}
+              noun="logs"
+              onPage={setCurrentPage}
+            />
           </div>
         </div>
 
@@ -496,28 +456,7 @@ export default function AdminSystemLogsPage() {
               {/* Dark Code block matching Figma design */}
               <div className="bg-[#18181B] rounded-xl p-3.5 overflow-x-auto text-[11px] font-mono text-zinc-300 leading-relaxed shadow-inner">
                 <pre className="text-zinc-300">
-                  <code>
-                    {`1  {
-2    "timestamp": "2025-05-23T10:42:31.123Z",
-3    "request_id": "req_7f3a9c2e1b8d4f91",
-4    "service": "ai_generation",
-5    "event": "image_generation_completed",
-6    "user": "system",
-7    "status": "success",
-8    "duration_ms": 2847,
-9    "product_id": "87241",
-10   "prompt_id": "prm_9d1b2f7c",
-11   "model": "dall-e-3",
-12   "resolution": "1024x1024",
-13   "file_url": "https://cdn.trended.io/ai/87241/3f2a9c1d-7b8e-4c1f-93d2.jpg",
-14   "size_kb": 512,
-15   "metadata": {
-16     "seed": 123456789,
-17     "steps": 30,
-18     "guidance_scale": 7.5
-19   }
-20 }`}
-                  </code>
+                  <code>{JSON.stringify(logDetail.technical_details, null, 2)}</code>
                 </pre>
               </div>
             </div>

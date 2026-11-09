@@ -68,6 +68,8 @@ export function goToLogin(router: { push: (href: string) => void }, path: string
 }
 
 export function getPostAuthenticationPath(user: User): string {
+  // Admins skip the merchant onboarding and land on the admin dashboard.
+  if (user.is_admin) return takeReturnTo() ?? '/admin';
   if (!user.onboarding_completed) return '/onboarding';
   return takeReturnTo() ?? '/dashboard';
 }

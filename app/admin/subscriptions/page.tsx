@@ -16,13 +16,12 @@ import {
   Search,
   Filter,
   MoreHorizontal,
-  ChevronLeft,
-  ChevronRight,
   ChevronRight as ArrowRightIcon,
   AlertCircle,
 } from 'lucide-react';
 import { fetchAdminSubscriptions } from '../../../lib/api/admin';
 import { AdminSubscriptionsResponse } from '../../../lib/types/admin';
+import { AdminPagination } from '../../../components/admin/AdminPagination';
 
 export default function AdminSubscriptionsPage() {
   const [data, setData] = useState<AdminSubscriptionsResponse | null>(null);
@@ -63,21 +62,13 @@ export default function AdminSubscriptionsPage() {
   const distribution = data?.distribution || [];
   const alerts = data?.alerts || [];
   const subscriptions = data?.subscriptions || [];
-  const counts = data?.counts_by_tab || {
-    all: 2842,
-    starter: 1152,
-    growth: 1032,
-    scale: 488,
-    trial: 320,
-    cancelled: 98,
-    'past due': 74,
-  };
+  const counts = data?.counts_by_tab || {};
 
   const tabs = [
     { id: 'all', label: 'All', count: counts.all },
     { id: 'starter', label: 'Starter', count: counts.starter },
-    { id: 'growth', label: 'Growth', count: counts.growth },
-    { id: 'scale', label: 'Scale', count: counts.scale },
+    { id: 'pro', label: 'Pro', count: counts.pro },
+    { id: 'business', label: 'Business', count: counts.business },
     { id: 'trial', label: 'Trial', count: counts.trial },
     { id: 'cancelled', label: 'Cancelled', count: counts.cancelled },
     { id: 'past due', label: 'Past due', count: counts['past due'] },
@@ -119,7 +110,7 @@ export default function AdminSubscriptionsPage() {
             className="flex items-center gap-2 px-3.5 py-2 bg-studio-ground rounded-xl border border-line/90 shadow-2xs hover:bg-studio-surface text-xs font-medium text-ink-soft transition"
           >
             <Calendar className="w-3.5 h-3.5 text-ink-muted" />
-            <span>May 12 - Jun 12, 2025</span>
+            <span>Current period</span>
             <ChevronDown className="w-3.5 h-3.5 text-ink-muted ml-1" />
           </button>
 
@@ -283,53 +274,33 @@ export default function AdminSubscriptionsPage() {
             {/* SVG Donut */}
             <div className="relative w-40 h-40 shrink-0 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                {/* Starter (40.5%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="var(--color-trend-orange)"
-                  strokeWidth="14"
-                  strokeDasharray="97 142"
-                  strokeDashoffset="0"
-                />
-                {/* Growth (36.3%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="var(--color-trend-gold)"
-                  strokeWidth="14"
-                  strokeDasharray="87 152"
-                  strokeDashoffset="-97"
-                />
-                {/* Scale (17.5%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="#FCD34D"
-                  strokeWidth="14"
-                  strokeDasharray="42 197"
-                  strokeDashoffset="-184"
-                />
-                {/* Trial (11.3%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="#93C5FD"
-                  strokeWidth="14"
-                  strokeDasharray="27 212"
-                  strokeDashoffset="-226"
-                />
+                {(() => {
+                  const total = distribution.reduce((sum, d) => sum + d.count, 0);
+                  const c = 2 * Math.PI * 38;
+                  const lens = distribution.map((d) => (total ? (d.count / total) * c : 0));
+                  return distribution.map((d, i) => {
+                    const len = lens[i];
+                    const offset = lens.slice(0, i).reduce((a, b) => a + b, 0);
+                    return (
+                      <circle
+                        key={d.plan}
+                        cx="50"
+                        cy="50"
+                        r="38"
+                        fill="transparent"
+                        stroke={d.color}
+                        strokeWidth="14"
+                        strokeDasharray={`${len} ${c - len}`}
+                        strokeDashoffset={-offset}
+                      />
+                    );
+                  });
+                })()}
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                <span className="text-base font-bold text-ink">2,842</span>
+                <span className="text-base font-bold text-ink">
+                  {distribution.reduce((sum, d) => sum + d.count, 0).toLocaleString()}
+                </span>
                 <span className="text-[10px] text-ink-muted uppercase font-semibold">Total</span>
               </div>
             </div>
@@ -565,79 +536,13 @@ export default function AdminSubscriptionsPage() {
 
         {/* Table Pagination */}
         <div className="px-4 py-3 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-ink-muted">
-          <div>Showing 1 to 10 of 2,842 results</div>
-
-          <div className="flex items-center gap-1 self-center">
-            <button
-              type="button"
-              disabled={currentPage <= 1}
-              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-              className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-            >
-              <ChevronLeft className="w-3.5 h-3.5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(1)}
-              className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                currentPage === 1
-                  ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                  : 'text-ink-soft hover:bg-studio-surface'
-              }`}
-            >
-              1
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(2)}
-              className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                currentPage === 2
-                  ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                  : 'text-ink-soft hover:bg-studio-surface'
-              }`}
-            >
-              2
-            </button>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(3)}
-              className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                currentPage === 3
-                  ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                  : 'text-ink-soft hover:bg-studio-surface'
-              }`}
-            >
-              3
-            </button>
-            <span className="px-1 text-ink-muted">...</span>
-            <button
-              type="button"
-              onClick={() => setCurrentPage(285)}
-              className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                currentPage === 285
-                  ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                  : 'text-ink-soft hover:bg-studio-surface'
-              }`}
-            >
-              285
-            </button>
-            <button
-              type="button"
-              disabled={currentPage >= 285}
-              onClick={() => setCurrentPage((p) => p + 1)}
-              className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-            >
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <select className="border border-line rounded-lg px-2 py-1 text-xs bg-studio-ground">
-              <option value="10">10 per page</option>
-              <option value="25">25 per page</option>
-              <option value="50">50 per page</option>
-            </select>
-          </div>
+          <AdminPagination
+            page={currentPage}
+            pageSize={data?.page_size ?? 10}
+            total={data?.total ?? 0}
+            noun="results"
+            onPage={setCurrentPage}
+          />
         </div>
       </div>
     </div>

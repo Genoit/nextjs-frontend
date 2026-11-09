@@ -4,6 +4,14 @@
   color-scheme: dark;
   --background: #0a0a0b;
   --foreground: #edefef;
+  /* Chart series, fixed order (dataviz palette, CVD-validated on dark and light).
+     Kept out of @theme: Tailwind drops theme vars no utility class uses. */
+  --color-series-1: #3987e5;
+  --color-series-2: #d95926;
+  --color-series-3: #199e70;
+  --color-series-4: #c98500;
+  --color-series-5: #d55181;
+  --color-series-6: #008300;
 }
 
 @theme inline {
@@ -95,6 +103,12 @@
    auth and onboarding, and on the studio shells (DashShell, AppShell). */
 [data-theme='light'] {
   color-scheme: light;
+  --color-series-1: #2a78d6;
+  --color-series-2: #eb6834;
+  --color-series-3: #1baf7a;
+  --color-series-4: #eda100;
+  --color-series-5: #e87ba4;
+  --color-series-6: #008300;
   --color-trend-orange-strong: #e85a0c;
   --color-trend-gold: #a16207;
   --color-cream: #f4f1ed;

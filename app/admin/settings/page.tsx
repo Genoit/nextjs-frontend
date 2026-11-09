@@ -196,9 +196,8 @@ export default function AdminSettingsPage() {
                     onChange={(e) => updateSetting('default_ai_model', e.target.value)}
                     className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
-                    <option value="OpenAI GPT-4o">OpenAI GPT-4o</option>
-                    <option value="OpenAI GPT-4-turbo">OpenAI GPT-4-turbo</option>
-                    <option value="Anthropic Claude 3.5 Sonnet">Anthropic Claude 3.5 Sonnet</option>
+                    <option value="gemini-flash-latest">Gemini Flash (latest)</option>
+                    <option value="gemini-3-flash-preview">Gemini 3 Flash (preview)</option>
                   </select>
                   <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
                 </div>
@@ -212,9 +211,8 @@ export default function AdminSettingsPage() {
                     onChange={(e) => updateSetting('fallback_model', e.target.value)}
                     className="w-full appearance-none bg-studio-ground border border-line rounded-xl px-3 py-2 pr-8 text-xs font-medium text-ink"
                   >
-                    <option value="Anthropic Claude 3.5 Sonnet">Anthropic Claude 3.5 Sonnet</option>
-                    <option value="OpenAI GPT-4o-mini">OpenAI GPT-4o-mini</option>
-                    <option value="Google Gemini 1.5 Pro">Google Gemini 1.5 Pro</option>
+                    <option value="deterministic">Deterministic rules (no API call)</option>
+                    <option value="gemini-flash-latest">Gemini Flash (latest)</option>
                   </select>
                   <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
                 </div>
