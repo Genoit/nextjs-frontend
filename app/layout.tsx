@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '../lib/auth';
 import { ThemeSync } from '../components/ThemeToggle';
+import { InlineScript } from '../components/InlineScript';
 import { inter, playfair, instrumentSerif, caveat } from './fonts';
 
 export const metadata: Metadata = {
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   description:
     'AI-powered E-commerce and Dropshipping video generation platform. Create high-converting UGC advertising videos in minutes.',
   icons: {
-    icon: '/symbol.png',
+    icon: '/brand/favicon.png',
   },
 };
 
@@ -29,7 +30,7 @@ export default function RootLayout({
       className={`h-full antialiased ${inter.className} ${inter.variable} ${playfair.variable} ${instrumentSerif.variable} ${caveat.variable}`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+        <InlineScript html={THEME_BOOT} />
       </head>
       <body className="min-h-full flex flex-col bg-studio-ground text-ink font-sans">
         <AuthProvider>

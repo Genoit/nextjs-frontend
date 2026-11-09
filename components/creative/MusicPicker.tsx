@@ -56,7 +56,7 @@ export function MusicPicker({ value, onChange }: Props) {
         if (!cancelled) setTracks(list);
       })
       .catch(() => {
-        if (!cancelled) setLoadError('Impossible de charger les musiques.');
+        if (!cancelled) setLoadError('Could not load the music tracks.');
       });
     return () => {
       cancelled = true;
@@ -79,8 +79,8 @@ export function MusicPicker({ value, onChange }: Props) {
   const upload = async () => {
     const err = musicFileError(file);
     if (err || !file) return setUploadError(err);
-    if (!title.trim()) return setUploadError('Donnez un titre au morceau.');
-    if (!rights) return setUploadError("Confirmez que vous détenez les droits d'utilisation.");
+    if (!title.trim()) return setUploadError('Give the track a title.');
+    if (!rights) return setUploadError('Confirm you own the rights to use this track.');
     setUploading(true);
     setUploadError(null);
     try {
@@ -92,10 +92,10 @@ export function MusicPicker({ value, onChange }: Props) {
       setMoods('');
       setRights(false);
       if (fileRef.current) fileRef.current.value = '';
-      setStatus(`Morceau « ${track.title} » ajouté et sélectionné.`);
+      setStatus(`Track “${track.title}” added and selected.`);
     } catch (e: unknown) {
       const detail = e instanceof Error && e.message ? ` ${e.message}` : '';
-      setUploadError(`Le morceau n'a pas pu être envoyé.${detail}`);
+      setUploadError(`The track could not be uploaded.${detail}`);
     } finally {
       setUploading(false);
     }
@@ -109,11 +109,11 @@ export function MusicPicker({ value, onChange }: Props) {
       setTracks((prev) => (prev ?? []).filter((t) => t.id !== track.id));
       if (value === track.id) onChange(MUSIC_AUTO);
       delete deleteTriggers.current[track.id];
-      setStatus(`Morceau « ${track.title} » supprimé.`);
+      setStatus(`Track “${track.title}” deleted.`);
       setConfirmDelete(null);
     } catch (e: unknown) {
       const detail = e instanceof Error && e.message ? ` ${e.message}` : '';
-      setDeleteError(`Suppression impossible.${detail}`);
+      setDeleteError(`Could not delete the track.${detail}`);
     } finally {
       setDeleting(false);
     }
@@ -148,7 +148,7 @@ export function MusicPicker({ value, onChange }: Props) {
       <fieldset ref={listRef} tabIndex={-1} className={`space-y-1 ${focusRing}`}>
         <legend className="flex items-center gap-1.5 text-xs font-bold text-ink-soft mb-1">
           <Music className="size-3.5" aria-hidden />
-          Musique de fond
+          Background music
         </legend>
         {loadError && (
           <p role="alert" className="text-sm text-danger">
@@ -157,27 +157,27 @@ export function MusicPicker({ value, onChange }: Props) {
         )}
         {tracks === null && !loadError && (
           <p className="text-sm text-ink-muted" role="status">
-            Chargement des musiques…
+            Loading music…
           </p>
         )}
         <ul className="divide-y divide-line">
-          {option(MUSIC_AUTO, "Automatique : un morceau de la bibliothèque selon l'ambiance")}
-          {option(MUSIC_NONE, 'Sans musique')}
+          {option(MUSIC_AUTO, 'Automatic: a library track that fits the mood')}
+          {option(MUSIC_NONE, 'No music')}
           {(tracks ?? []).map((t) =>
             option(
               t.id,
               <>
                 <span className="font-semibold">{t.title}</span>
                 <span className="block text-xs text-ink-muted">
-                  {t.is_library ? 'Bibliothèque' : 'Votre morceau'} · {trackDuration(t.duration_s)}
-                  {t.mood.length > 0 && ` · ${t.mood.join(', ')}`} · licence {t.licence}
+                  {t.is_library ? 'Library' : 'Your track'} · {trackDuration(t.duration_s)}
+                  {t.mood.length > 0 && ` · ${t.mood.join(', ')}`} · license {t.licence}
                 </span>
               </>,
               !t.is_library &&
                 (confirmDelete === t.id ? (
                   <span role="group" aria-labelledby={`del-${t.id}`} className="space-y-2">
                     <span id={`del-${t.id}`} className="block text-sm font-semibold text-ink">
-                      Supprimer « {t.title} » ?
+                      Delete “{t.title}”?
                     </span>
                     <span className="flex flex-wrap gap-2">
                       <button
@@ -187,7 +187,7 @@ export function MusicPicker({ value, onChange }: Props) {
                         aria-busy={deleting}
                         className={dangerClass}
                       >
-                        Supprimer
+                        Delete
                       </button>
                       <button
                         ref={cancelRef}
@@ -196,7 +196,7 @@ export function MusicPicker({ value, onChange }: Props) {
                         disabled={deleting}
                         className={secondaryClass}
                       >
-                        Annuler
+                        Cancel
                       </button>
                     </span>
                     {deleteError && (
@@ -215,11 +215,11 @@ export function MusicPicker({ value, onChange }: Props) {
                       setDeleteError(null);
                       setConfirmDelete(t.id);
                     }}
-                    aria-label={`Supprimer le morceau ${t.title}`}
+                    aria-label={`Delete track ${t.title}`}
                     className={secondaryClass}
                   >
                     <Trash2 className="size-4" aria-hidden />
-                    Supprimer…
+                    Delete…
                   </button>
                 )),
             ),
@@ -228,7 +228,7 @@ export function MusicPicker({ value, onChange }: Props) {
         {missing && (
           <p className="flex items-start gap-1.5 text-sm text-warning">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
-            Le morceau choisi n&apos;existe plus : choisissez-en un autre.
+            The chosen track no longer exists: pick another one.
           </p>
         )}
       </fieldset>
@@ -238,12 +238,12 @@ export function MusicPicker({ value, onChange }: Props) {
           className={`inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold text-ink ${focusRing}`}
         >
           <Upload className="size-4" aria-hidden />
-          Ajouter votre morceau
+          Add your own track
         </summary>
         <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
           <div className="sm:col-span-2">
             <label htmlFor="music-file" className="block text-xs font-bold text-ink-soft mb-1">
-              Fichier (MP3, WAV ou M4A, {MUSIC_MAX_MB} Mo max.)
+              File (MP3, WAV or M4A, {MUSIC_MAX_MB} MB max.)
             </label>
             <input
               ref={fileRef}
@@ -266,7 +266,7 @@ export function MusicPicker({ value, onChange }: Props) {
           </div>
           <div>
             <label htmlFor="music-title" className="block text-xs font-bold text-ink-soft mb-1">
-              Titre
+              Title
             </label>
             <input
               id="music-title"
@@ -278,14 +278,14 @@ export function MusicPicker({ value, onChange }: Props) {
           </div>
           <div>
             <label htmlFor="music-moods" className="block text-xs font-bold text-ink-soft mb-1">
-              Ambiances (séparées par des virgules)
+              Moods (comma separated)
             </label>
             <input
               id="music-moods"
               type="text"
               value={moods}
               onChange={(e) => setMoods(e.target.value)}
-              placeholder="Ex : upbeat, calm"
+              placeholder="e.g. upbeat, calm"
               className={inputClass}
             />
           </div>
@@ -296,7 +296,7 @@ export function MusicPicker({ value, onChange }: Props) {
               onChange={(e) => setRights(e.target.checked)}
               className="mt-1 accent-trend-orange"
             />
-            <span>Je détiens les droits d&apos;utilisation de ce morceau</span>
+            <span>I own the rights to use this track</span>
           </label>
           <div className="sm:col-span-2 flex flex-wrap items-center gap-3">
             <button
@@ -307,7 +307,7 @@ export function MusicPicker({ value, onChange }: Props) {
               className={secondaryClass}
             >
               <Upload className="size-4" aria-hidden />
-              {uploading ? 'Envoi…' : 'Envoyer le morceau'}
+              {uploading ? 'Uploading…' : 'Upload track'}
             </button>
             {uploadError && (
               <p role="alert" className="text-sm text-danger">

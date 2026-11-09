@@ -115,39 +115,88 @@ export function GoogleIcon({ className = 'h-5 w-5' }: { className?: string }) {
   );
 }
 
-export function TrendedBrandLogo({ className = '' }: { className?: string }) {
+/** Full logo: dark lettering on the light theme, white lettering on the dark one. Size it with a height class. */
+export function BrandLogo({
+  className = 'h-8',
+  priority = false,
+}: {
+  className?: string;
+  priority?: boolean;
+}) {
+  const img = `${className} w-auto object-contain`;
+  return (
+    <>
+      <Image
+        src="/brand/logo-light.webp"
+        alt="TrendED"
+        width={960}
+        height={217}
+        priority={priority}
+        className={`on-light ${img}`}
+      />
+      <Image
+        src="/brand/logo-dark.webp"
+        alt="TrendED"
+        width={960}
+        height={212}
+        priority={priority}
+        className={`on-dark ${img}`}
+      />
+    </>
+  );
+}
+
+/** One-colour logo for footers: white on the dark theme, black on the light one. */
+export function BrandFooterLogo({ className = 'h-10' }: { className?: string }) {
+  const img = `${className} w-auto object-contain`;
+  return (
+    <>
+      <Image
+        src="/brand/logo-mono-black.webp"
+        alt="TrendED"
+        width={960}
+        height={205}
+        className={`on-light ${img}`}
+      />
+      <Image
+        src="/brand/logo-mono-white.webp"
+        alt="TrendED"
+        width={960}
+        height={205}
+        className={`on-dark ${img}`}
+      />
+    </>
+  );
+}
+
+/** The cube alone, for places that show the brand without its name. */
+export function BrandSymbol({
+  className = 'h-8 w-8',
+  priority = false,
+}: {
+  className?: string;
+  priority?: boolean;
+}) {
+  return (
+    <Image
+      src="/brand/symbol.webp"
+      alt="TrendED"
+      width={256}
+      height={247}
+      priority={priority}
+      className={`${className} object-contain`}
+    />
+  );
+}
+
+export function TrendedBrandLogo({ className = 'items-start' }: { className?: string }) {
   return (
     <div className={`inline-flex flex-col select-none ${className}`}>
-      <div className="flex items-center">
-        {/* logo.png has black lettering, unreadable on the dark theme: symbol + live text instead. */}
-        <Image
-          src="/symbol.png"
-          alt=""
-          width={40}
-          height={40}
-          className="h-9 w-9 sm:h-10 sm:w-10 object-contain"
-          priority
-        />
-        <span className="ml-2 text-[28px] sm:text-[32px] font-extrabold leading-none tracking-[-.04em] text-ink">
-          Trend<span className="text-trend-orange">ED</span>
-        </span>
-      </div>
+      <BrandLogo className="h-9 sm:h-10" priority />
       <span className="text-[10px] sm:text-[11px] tracking-wider uppercase font-semibold text-ink-muted mt-1">
         E-commerce · Dropshipping · Growth
       </span>
     </div>
-  );
-}
-
-export function TrendedSymbol({ className = 'h-8 w-8' }: { className?: string }) {
-  return (
-    <Image
-      src="/symbol.png"
-      alt="TrendED Symbol"
-      width={64}
-      height={64}
-      className={`${className} object-contain`}
-    />
   );
 }
 

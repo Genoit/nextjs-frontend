@@ -1,190 +1,198 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowRight, Lightbulb, RotateCw, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Check, RotateCw, Sparkles } from 'lucide-react';
 import { CreativeStrategy } from '../../lib/types/creative';
-import { GenerationMeta, HeuristicBadge } from './CreativeStatus';
+import { HeuristicBadge } from './CreativeStatus';
 
 interface Props {
   strategy: CreativeStrategy;
-  onGenerateStoryboard: (angleId: string) => Promise<void>;
+  /** Picks the angle; the script, visuals and video follow without another screen. */
+  onChooseAngle: (angleId: string) => Promise<void>;
   onRegenerate: () => Promise<void>;
-  isGeneratingStoryboard?: boolean;
+  isProducing?: boolean;
   isRegenerating?: boolean;
 }
 
+const focus =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
+
+// Archetype labels from Creative Intelligence, simplified.
+const ARCHETYPE: Record<string, string> = {
+  problem_solution: 'Problem → Solution',
+  product_demo: 'Product demo',
+  before_after: 'Before / After',
+  social_proof: 'UGC social proof',
+  unboxing: 'Unboxing',
+  sensory_focus: 'Sensory close-up',
+  cinematic_storytelling: 'Cinematic story',
+  founder_story: 'Founder story',
+  comparative_challenge: 'Side-by-side test',
+  myth_busting: 'Myth busting',
+};
+
+const archetypeLabel = (id: string) => ARCHETYPE[id] ?? id.replace(/_/g, ' ');
+
+/**
+ * Modern minimalist angle selection view.
+ * Combines horizontal and vertical spatial design in a 2-column comparison grid,
+ * enabling merchants to evaluate creative angles side-by-side without endless vertical scrolling.
+ */
 export function StrategyPreview({
   strategy,
-  onGenerateStoryboard,
+  onChooseAngle,
   onRegenerate,
-  isGeneratingStoryboard = false,
+  isProducing = false,
   isRegenerating = false,
 }: Props) {
   const [angleId, setAngleId] = useState<string | null>(
     strategy.chosen_angle_id ?? strategy.angles[0]?.id ?? null,
   );
-  const brief = strategy.brief;
+  const busy = isProducing || isRegenerating;
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="rounded-2xl bg-gradient-to-r from-cream to-studio-ground border border-trend-orange/30 p-6 shadow-2xs space-y-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="px-2.5 py-1 rounded-full bg-trend-orange text-on-accent text-xs font-bold uppercase tracking-wider">
-            Brief & angles
-          </span>
-          <HeuristicBadge entity={strategy} />
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-success-soft text-success text-xs font-semibold">
-            <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
-            Zéro faux avis, uniquement des faits sourcés
+    <div className="w-full space-y-6">
+      {/* Header */}
+      <div className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="text-xl font-bold tracking-[-0.01em] text-white">Pick your ad angle</h2>
+            <HeuristicBadge entity={strategy} />
+          </div>
+          <span className="text-xs font-semibold text-studio-muted">
+            {strategy.angles.length} angles
           </span>
         </div>
-        <h3 className="text-lg font-semibold text-ink">Choisissez un angle publicitaire</h3>
-        <p className="text-xs text-ink-soft">
-          Chaque angle s&apos;appuie sur la fiche produit. Les éléments marqués « à valider » sont
-          des hypothèses, pas des faits.
+        <p className="text-xs sm:text-sm leading-relaxed text-studio-muted">
+          Each angle stages this product a different way
+          {strategy.brief?.audience ? ` for ${strategy.brief.audience}` : ''}. Only real product
+          facts are used, never fake reviews.
         </p>
-        <GenerationMeta meta={strategy} />
       </div>
 
-      {brief && (
-        <section
-          aria-labelledby="brief-title"
-          className="bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs space-y-3 text-xs"
-        >
-          <h4 id="brief-title" className="text-sm font-bold text-ink">
-            Brief créatif
-          </h4>
-          <dl className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div>
-              <dt className="font-semibold text-ink-muted">Audience</dt>
-              <dd className="text-ink">{brief.audience}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-ink-muted">Plateforme</dt>
-              <dd className="text-ink">{brief.platform}</dd>
-            </div>
-            <div>
-              <dt className="font-semibold text-ink-muted">Durée cible</dt>
-              <dd className="text-ink">{brief.target_duration} s</dd>
-            </div>
-          </dl>
-          {(brief.needs_validation ?? []).length > 0 && (
-            <div className="p-3 rounded-xl bg-warning-soft/60 border border-warning/30 space-y-1">
-              <p className="font-bold text-warning">Hypothèses à valider</p>
-              <ul className="list-disc pl-4 text-ink-soft">
-                {brief.needs_validation.map((h, i) => (
-                  <li key={i}>{h}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {(brief.forbidden_claims ?? []).length > 0 && (
-            <div className="space-y-1">
-              <p className="font-bold text-ink-soft">Allégations interdites</p>
-              <ul className="list-disc pl-4 text-ink-soft">
-                {brief.forbidden_claims.map((c, i) => (
-                  <li key={i}>{c}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </section>
-      )}
+      {/* Accessible radio group with modern 2-column side-by-side grid */}
+      <fieldset disabled={busy} className="m-0 p-0 border-0">
+        <legend className="sr-only">Available ad angles</legend>
 
-      {/* Native radio group: arrow keys move between angles, Space selects. */}
-      <fieldset className="space-y-3">
-        <legend className="text-xs font-bold uppercase tracking-wider text-ink-soft flex items-center gap-2 mb-3">
-          <Lightbulb className="w-4 h-4 text-trend-orange" aria-hidden />
-          <span>Angles proposés ({strategy.angles.length})</span>
-        </legend>
-        {strategy.angles.map((angle) => {
-          const checked = angleId === angle.id;
-          return (
-            <label
-              key={angle.id}
-              className={`block p-4 rounded-2xl border bg-studio-ground cursor-pointer transition has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-trend-orange ${
-                checked
-                  ? 'border-trend-orange ring-1 ring-trend-orange'
-                  : 'border-line hover:border-line'
-              }`}
-            >
-              <div className="flex items-start gap-3">
+        <div
+          className={`grid gap-4 sm:gap-5 lg:gap-6 items-stretch ${
+            strategy.angles.length <= 2
+              ? 'grid-cols-1 md:grid-cols-2'
+              : strategy.angles.length === 3
+                ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
+                : 'grid-cols-1 md:grid-cols-2 xl:grid-cols-4'
+          }`}
+        >
+          {strategy.angles.map((angle, idx) => {
+            const checked = angleId === angle.id;
+
+            return (
+              <label
+                key={angle.id}
+                className={`group relative flex flex-col justify-between cursor-pointer rounded-3xl border p-5 sm:p-6 transition-all duration-200 has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-trend-orange ${
+                  checked
+                    ? 'border-trend-orange bg-trend-orange/[0.05] shadow-[0_4px_30px_-5px_rgba(255,98,45,0.22)] ring-1 ring-trend-orange/40'
+                    : 'border-white/[0.08] bg-white/[0.02] hover:border-white/20 hover:bg-white/[0.04]'
+                }`}
+              >
+                {/* Native accessible radio input */}
                 <input
                   type="radio"
                   name="creative-angle"
                   value={angle.id}
                   checked={checked}
                   onChange={() => setAngleId(angle.id)}
-                  className="mt-1 accent-trend-orange"
+                  className="sr-only"
                 />
-                <div className="space-y-1.5 text-xs min-w-0">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-bold text-ink">{angle.title}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-studio-raised text-ink-soft text-[10px] font-semibold">
-                      {angle.archetype}
-                    </span>
-                    {checked && (
-                      <span className="text-[10px] font-bold text-trend-orange">Sélectionné</span>
-                    )}
+
+                <div>
+                  {/* Top bar: Badge, archetype chip, custom indicator */}
+                  <div className="flex items-center justify-between gap-2 mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-lg bg-white/5 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wider text-studio-muted">
+                        Angle {idx + 1}
+                      </span>
+                      <span className="rounded-lg border border-white/10 bg-white/[0.03] px-2.5 py-1 text-xs font-medium text-studio-muted">
+                        {archetypeLabel(angle.archetype)}
+                      </span>
+                    </div>
+
+                    <div
+                      className={`flex size-5 items-center justify-center rounded-full border transition-all duration-200 ${
+                        checked
+                          ? 'border-trend-orange bg-trend-orange text-black'
+                          : 'border-white/30 bg-transparent group-hover:border-white/60'
+                      }`}
+                    >
+                      {checked && <Check className="size-3 stroke-[3]" />}
+                    </div>
                   </div>
-                  <p>
-                    <span className="font-semibold text-ink-muted">Promesse : </span>
-                    {angle.promise}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-ink-muted">Problème : </span>
-                    {angle.problem}
-                  </p>
-                  <p>
-                    <span className="font-semibold text-ink-muted">Émotion : </span>
-                    {angle.emotion}
-                  </p>
-                  {(angle.persuasion_principles ?? []).length > 0 && (
-                    <p className="flex flex-wrap items-center gap-1">
-                      <span className="font-semibold text-ink-muted">Principes : </span>
-                      {angle.persuasion_principles.map((code) => (
-                        <span
-                          key={code}
-                          className="px-1.5 py-0.5 rounded bg-cream text-trend-orange font-mono text-[10px]"
-                        >
-                          {code}
-                        </span>
-                      ))}
+
+                  {/* Title & Promise */}
+                  <div>
+                    <h3 className="text-base font-bold text-white tracking-[-0.01em]">
+                      {angle.title}
+                    </h3>
+                    <p className="mt-2 text-xs font-medium text-dash-soft leading-relaxed">
+                      {angle.promise}
                     </p>
-                  )}
-                  {(angle.risks ?? []).length > 0 && (
-                    <p className="text-warning">
-                      <span className="font-semibold">Risques : </span>
-                      {angle.risks.join(' · ')}
-                    </p>
-                  )}
+                  </div>
                 </div>
-              </div>
-            </label>
-          );
-        })}
+
+                {/* Hook callout */}
+                <div className="mt-5 rounded-2xl border border-white/[0.06] bg-black/25 px-3.5 py-2.5 text-xs text-studio-muted">
+                  <span className="font-semibold text-white/90">Hook: </span>
+                  <span className="italic">
+                    “{angle.problem.charAt(0).toUpperCase() + angle.problem.slice(1)}”
+                  </span>
+                </div>
+
+                {checked && (
+                  <span className="absolute -top-2.5 right-6 flex items-center gap-1 rounded-full bg-gradient-to-r from-trend-orange to-ember-text px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-black shadow-sm">
+                    <Sparkles className="size-3" />
+                    Selected
+                  </span>
+                )}
+              </label>
+            );
+          })}
+        </div>
       </fieldset>
 
-      <div className="flex flex-wrap justify-end gap-3">
+      {/* Action buttons footer */}
+      <div className="flex flex-col-reverse sm:flex-row items-center justify-between gap-3 pt-3">
         <button
           type="button"
           onClick={onRegenerate}
-          disabled={isRegenerating || isGeneratingStoryboard}
+          disabled={busy}
           aria-busy={isRegenerating}
-          className="px-4 py-2.5 rounded-xl border border-line bg-studio-ground hover:bg-studio-surface text-ink text-xs font-bold transition flex items-center gap-2 disabled:opacity-60"
+          className={`inline-flex h-11 items-center gap-2 rounded-xl border border-white/10 px-4 text-xs font-semibold text-studio-muted transition hover:border-white/20 hover:bg-white/5 hover:text-white disabled:opacity-50 ${focus}`}
         >
-          <RotateCw className={`w-4 h-4 ${isRegenerating ? 'animate-spin' : ''}`} aria-hidden />
-          <span>{isRegenerating ? 'Régénération…' : 'Régénérer les angles'}</span>
+          <RotateCw className={`size-3.5 ${isRegenerating ? 'animate-spin' : ''}`} aria-hidden />
+          <span>{isRegenerating ? 'Generating new angles…' : 'Suggest other angles'}</span>
         </button>
+
         <button
           type="button"
-          onClick={() => angleId && onGenerateStoryboard(angleId)}
-          disabled={!angleId || isGeneratingStoryboard || isRegenerating}
-          aria-busy={isGeneratingStoryboard}
-          className="px-5 py-2.5 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-xs font-semibold transition flex items-center gap-2"
+          onClick={() => angleId && onChooseAngle(angleId)}
+          disabled={!angleId || busy}
+          aria-busy={isProducing}
+          className={`group inline-flex h-12 w-full sm:w-auto items-center justify-center gap-2.5 rounded-2xl bg-gradient-to-r from-trend-orange to-ember-text px-8 text-sm font-bold text-black shadow-[0_10px_30px_-10px_rgba(255,98,45,0.6)] transition-all duration-200 hover:brightness-110 active:scale-[0.99] disabled:opacity-60 ${focus}`}
         >
-          <span>{isGeneratingStoryboard ? 'Création…' : 'Générer le storyboard de cet angle'}</span>
-          <ArrowRight className="w-4 h-4" aria-hidden />
+          {isProducing ? (
+            <>
+              <span className="size-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
+              <span>Starting your ad…</span>
+            </>
+          ) : (
+            <>
+              <span>Generate my ad</span>
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-1"
+                aria-hidden
+              />
+            </>
+          )}
         </button>
       </div>
     </div>

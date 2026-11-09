@@ -139,10 +139,10 @@ describe('music', () => {
   it('pre-checks type and size', () => {
     assert.strictEqual(musicFileError({ name: 'a.MP3', size: 1000 }), null);
     assert.strictEqual(musicFileError({ name: 'a.m4a', size: 15 * 1024 * 1024 }), null);
-    assert.match(musicFileError({ name: 'a.ogg', size: 10 }), /MP3, WAV ou M4A/);
-    assert.match(musicFileError({ name: 'a.wav', size: 15 * 1024 * 1024 + 1 }), /15 Mo/);
-    assert.match(musicFileError({ name: 'a.wav', size: 0 }), /vide/);
-    assert.match(musicFileError(null), /Choisissez/);
+    assert.match(musicFileError({ name: 'a.ogg', size: 10 }), /MP3, WAV or M4A/);
+    assert.match(musicFileError({ name: 'a.wav', size: 15 * 1024 * 1024 + 1 }), /15 MB/);
+    assert.match(musicFileError({ name: 'a.wav', size: 0 }), /empty/);
+    assert.match(musicFileError(null), /Choose/);
   });
 
   it('formats durations and moods', () => {

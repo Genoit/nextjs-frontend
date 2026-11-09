@@ -2,6 +2,9 @@
 
 :root {
   color-scheme: dark;
+  /* Brand logos: the nearest data-theme picks which variant shows (see BrandLogo). */
+  --show-on-dark: inline-block;
+  --show-on-light: none;
   --background: #0a0a0b;
   --foreground: #edefef;
   /* Chart series, fixed order (dataviz palette, CVD-validated on dark and light).
@@ -103,6 +106,8 @@
    auth and onboarding, and on the studio shells (DashShell, AppShell). */
 [data-theme='light'] {
   color-scheme: light;
+  --show-on-dark: none;
+  --show-on-light: inline-block;
   --color-series-1: #2a78d6;
   --color-series-2: #eb6834;
   --color-series-3: #1baf7a;
@@ -166,6 +171,8 @@
 /* Dark again inside a light shell (the theme previews on /settings). Generated from @theme above; keep in sync. */
 [data-theme='dark'] {
   color-scheme: dark;
+  --show-on-dark: inline-block;
+  --show-on-light: none;
   --color-white: #fff;
   --color-black: #000;
   --color-trend-orange-strong: #ff8a47;
@@ -421,4 +428,29 @@ body {
   .glow-orbit {
     display: none;
   }
+}
+
+/* /generate: a render in progress reads as a blurred film still slowly moving, with a light sweep. */
+@keyframes render-drift {
+  from {
+    transform: scale(1.35) translate3d(-4%, -3%, 0);
+  }
+  to {
+    transform: scale(1.5) translate3d(4%, 3%, 0);
+  }
+}
+@keyframes render-sweep {
+  from {
+    transform: translateX(-120%);
+  }
+  to {
+    transform: translateX(220%);
+  }
+}
+
+.on-dark {
+  display: var(--show-on-dark);
+}
+.on-light {
+  display: var(--show-on-light);
 }

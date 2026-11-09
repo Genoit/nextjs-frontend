@@ -11,50 +11,68 @@ export function ActionBar({ draft, onContinue }: { draft: ProductDraft; onContin
   const busy = save.state === 'busy' || save.state === 'done';
   const ready = check.blocking.length === 0;
 
-  let message: string;
-  if (save.state === 'busy') message = 'Saving the product…';
-  else if (save.state === 'done') message = 'Product saved. Opening the analysis…';
-  else if (missing.length) message = `To continue, add ${listText(missing)}.`;
-  else if (uploading) message = 'Photos are still uploading, one moment.';
-  else if (check.recommended.length)
-    message = `Ready. For a stronger ad, also add ${listText(check.recommended)}.`;
-  else message = 'Sheet complete, ready for the analysis.';
+  let statusText = '';
+  if (save.state === 'busy') statusText = 'Saving product…';
+  else if (save.state === 'done') statusText = 'Opening analysis…';
+  else if (missing.length) statusText = `Required: ${listText(missing)}`;
+  else if (uploading) statusText = 'Uploading photos…';
+  else statusText = 'Ready for analysis';
 
   return (
-    <div className="sticky bottom-0 z-30 border-t border-studio-rule bg-studio-ground px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-6">
-      <div className="mx-auto flex max-w-[1100px] flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="min-w-0 space-y-1">
-          <p
-            id="continue-status"
-            aria-live="polite"
-            className={`text-sm ${ready ? 'text-studio-text' : 'text-studio-muted'}`}
-          >
-            {message}
-          </p>
+    <div className="sticky bottom-0 z-30 border-t border-white/10 bg-studio-ground/90 px-4 py-3 backdrop-blur-md sm:px-6">
+      <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-4">
+        {/* Status indicator */}
+        <div className="min-w-0">
+          <div className="flex items-center gap-2">
+            {ready && !busy ? (
+              <span className="flex size-2 rounded-full bg-emerald-400" aria-hidden />
+            ) : busy ? (
+              <span className="flex size-2 animate-ping rounded-full bg-trend-orange" aria-hidden />
+            ) : (
+              <span className="flex size-2 rounded-full bg-white/30" aria-hidden />
+            )}
+            <p
+              id="continue-status"
+              aria-live="polite"
+              className={`truncate text-sm ${
+                ready ? 'text-studio-text font-medium' : 'text-studio-muted'
+              }`}
+            >
+              {statusText}
+            </p>
+          </div>
           {save.state === 'error' && (
-            <p role="alert" className="text-sm text-danger">
+            <p role="alert" className="mt-0.5 text-sm text-red-400">
               {save.error}
             </p>
           )}
         </div>
 
-        <div className="flex shrink-0 gap-2">
-          <Link href="/dashboard" className={secondaryButton}>
-            Back
+        {/* Action buttons */}
+        <div className="flex shrink-0 items-center gap-2.5">
+          <Link href="/dashboard" className={`${secondaryButton} h-9 px-4 text-sm font-medium`}>
+            Cancel
           </Link>
-          {/* Stays clickable when incomplete: a click shows each field's error and focuses it. */}
+
           <button
             type="button"
             onClick={onContinue}
+            disabled={busy}
             aria-disabled={busy}
             aria-describedby="continue-status"
-            className={`flex-1 md:flex-none ${primaryButton}`}
+            className={`${primaryButton} h-9 px-5 text-sm font-semibold`}
           >
             {busy ? (
-              <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden />
-            ) : null}
-            Continue to analysis
-            {!busy && <ArrowRight className="size-4" aria-hidden />}
+              <>
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+                <span>Saving…</span>
+              </>
+            ) : (
+              <>
+                <span>Continue to analysis</span>
+                <ArrowRight className="size-3.5" aria-hidden />
+              </>
+            )}
           </button>
         </div>
       </div>

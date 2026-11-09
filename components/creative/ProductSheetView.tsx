@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   AlertTriangle,
   Ban,
@@ -25,6 +25,8 @@ import {
 interface Props {
   productId: string;
   onProceedToSetup?: () => void;
+  /** Run the analysis on arrival when the product has none (product-input flow). */
+  autoStart?: boolean;
 }
 
 const SOURCE_LABELS: Record<SourceKind, string> = {
@@ -215,14 +217,29 @@ function AnalysisHeader({
   );
 }
 
-export function ProductSheetView({ productId, onProceedToSetup }: Props) {
+export function ProductSheetView({ productId, onProceedToSetup, autoStart = false }: Props) {
   const { analysis, isLoading, isAnalyzing, error, analyze } = useProductAnalysis(productId);
 
-  if (isLoading) {
+  // Once per mount: a failure shows its error and the retry button, it does not loop.
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autoStart || autoStarted.current || isLoading || analysis || isAnalyzing) return;
+    autoStarted.current = true;
+    void analyze(false);
+  }, [autoStart, isLoading, analysis, isAnalyzing, analyze]);
+
+  if (isLoading || (isAnalyzing && !analysis)) {
     return (
       <div className="p-12 text-center space-y-3" role="status">
         <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" aria-hidden />
-        <p className="text-sm font-semibold text-ink-soft">Chargement de la fiche produit…</p>
+        <p className="text-sm font-semibold text-ink-soft">
+          {isAnalyzing ? 'Analyzing your product…' : 'Chargement de la fiche produit…'}
+        </p>
+        {isAnalyzing && (
+          <p className="text-sm text-studio-muted">
+            Facts and marketing hypotheses are kept apart; you review the result next.
+          </p>
+        )}
       </div>
     );
   }

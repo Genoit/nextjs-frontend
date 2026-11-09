@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
-import Image from 'next/image';
+import { BrandLogo } from './Icons';
 import Link from 'next/link';
 import { Clapperboard, LogOut, Menu, Package, Plus, X, Zap } from 'lucide-react';
 import { useAuth } from '../lib/auth';
@@ -49,8 +49,7 @@ function Wordmark({ onNavigate }: { onNavigate?: () => void }) {
       onClick={onNavigate}
       className="flex shrink-0 items-center gap-2 rounded-[10px] px-1 transition-opacity hover:opacity-80 focus-visible:outline-2 focus-visible:outline-trend-orange"
     >
-      <Image src="/symbol.png" alt="" width={24} height={24} className="object-contain" />
-      <span className="text-[15px] font-semibold tracking-tight text-studio-text">TrendED</span>
+      <BrandLogo className="h-6" />
     </Link>
   );
 }

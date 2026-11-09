@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 
 import {
@@ -28,6 +27,7 @@ import {
 } from 'lucide-react';
 
 import ProtectedRoute from '../../components/ProtectedRoute';
+import { BrandLogo } from '../../components/Icons';
 import { useAuth } from '../../lib/auth';
 import { fetchAdminAlerts } from '../../lib/api/admin';
 
@@ -145,18 +145,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     onClick={() => setMobileMenuOpen(false)}
                     className="flex items-center gap-2"
                   >
-                    <span className="flex items-center gap-2">
-                      <Image
-                        src="/symbol.png"
-                        alt=""
-                        width={26}
-                        height={26}
-                        className="object-contain"
-                      />
-                      <span className="text-[17px] font-semibold tracking-tight text-ink">
-                        TrendED
-                      </span>
-                    </span>
+                    <BrandLogo className="h-7" />
                   </Link>
                   <button
                     type="button"
@@ -220,16 +209,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             {/* Logo & Baseline */}
             <div className="px-1 pt-1">
               <Link href="/admin/overview" className="block">
-                <span className="flex items-center gap-2">
-                  <Image
-                    src="/symbol.png"
-                    alt=""
-                    width={26}
-                    height={26}
-                    className="object-contain"
-                  />
-                  <span className="text-[17px] font-semibold tracking-tight text-ink">TrendED</span>
-                </span>
+                <BrandLogo className="h-8" />
               </Link>
               <p className="text-[10px] text-ink-muted mt-1 pl-1 tracking-tight">
                 E-commerce · Dropshipping · Growth

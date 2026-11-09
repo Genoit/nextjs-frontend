@@ -1,6 +1,12 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { anyActive, creationHref, creations } from '../lib/generate-rules.mjs';
+import {
+  anyActive,
+  creationHref,
+  creations,
+  etaSeconds,
+  formatEta,
+} from '../lib/generate-rules.mjs';
 
 const entries = [
   {
@@ -42,6 +48,23 @@ describe('anyActive and creationHref', () => {
     assert.ok(!anyActive(creations(entries, { productId: 'p3' })));
     const [rendering, , done] = creations(entries);
     assert.strictEqual(creationHref(done), '/studio/a');
-    assert.strictEqual(creationHref(rendering), '/products/p1/creative');
+    assert.strictEqual(creationHref(rendering), '/generate?job=b');
+  });
+});
+
+describe('etaSeconds and formatEta', () => {
+  const now = new Date('2026-11-06T10:00:00Z');
+  it('guesses from the shot count before any progress', () => {
+    const job = { created_at: '2026-11-06T09:59:00Z', progress_percentage: 0, shots: [1, 2, 3] };
+    assert.strictEqual(etaSeconds(job, now), 60 + 120 - 60);
+  });
+  it('extrapolates from progress once it moves', () => {
+    const job = { created_at: '2026-11-06T09:58:00Z', progress_percentage: 40 };
+    assert.strictEqual(etaSeconds(job, now), 180);
+  });
+  it('never goes below zero and formats m:ss', () => {
+    assert.strictEqual(etaSeconds({ created_at: '2026-11-06T08:00:00Z' }, now), 0);
+    assert.strictEqual(formatEta(125), '2:05');
+    assert.strictEqual(formatEta(0), null);
   });
 });

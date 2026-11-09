@@ -44,8 +44,6 @@ const BEAT_FILL: Record<string, string> = {
   resolution: 'bg-[#626262]',
   cta: 'bg-coin',
 };
-// Read by CreativeConfigForm as the default aspect ratio of a new product.
-const FORMAT_KEY = 'trended.outputFormat';
 
 /** The template's scenes on a time line, sized by their seconds. */
 function Timeline({ t }: { t: Template }) {
@@ -83,7 +81,6 @@ function UseTemplate({ t, products }: { t: Template; products: Product[] | null 
   const pick = (productId: string | null) => {
     try {
       sessionStorage.setItem(TEMPLATE_KEY, templateHandoff(t.id, productId));
-      if (!productId) sessionStorage.setItem(FORMAT_KEY, t.aspect_ratio);
     } catch {
       // storage blocked: the setup form opens with its defaults
     }

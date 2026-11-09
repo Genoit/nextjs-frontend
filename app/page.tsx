@@ -30,7 +30,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { useAuth } from '../lib/auth';
-import { SparkleIcon, TrendedBrandLogo } from '../components/Icons';
+import { BrandFooterLogo, SparkleIcon, TrendedBrandLogo } from '../components/Icons';
 import Navbar from '../components/Navbar';
 import { tempting } from './fonts';
 
@@ -1885,18 +1885,7 @@ export default function LandingPage() {
             {/* Brand column */}
             <div className="md:col-span-4 space-y-4 text-left">
               <Link href="/" className="inline-flex flex-col items-start">
-                <span className="flex items-center gap-3">
-                  <Image
-                    src="/symbol.png"
-                    alt=""
-                    width={56}
-                    height={56}
-                    className="h-12 w-12 sm:h-14 sm:w-14 object-contain"
-                  />
-                  <span className="text-[40px] sm:text-[52px] font-extrabold leading-none tracking-[-.04em] text-ink">
-                    Trend<span className="text-trend-orange">ED</span>
-                  </span>
-                </span>
+                <BrandFooterLogo className="h-12 sm:h-14" />
                 <span className="mt-2 block text-sm font-bold uppercase tracking-wider text-ink-soft">
                   E-commerce · Dropshipping · Growth
                 </span>

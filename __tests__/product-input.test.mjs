@@ -79,6 +79,6 @@ describe('product input rules', () => {
   it('formats lists and the next-step link', () => {
     assert.strictEqual(listText(['a', 'b', 'c']), 'a, b and c');
     assert.strictEqual(listText(['a']), 'a');
-    assert.strictEqual(nextStepHref('p 1'), '/products/p%201/creative');
+    assert.strictEqual(nextStepHref('p 1'), '/product-input?product=p%201');
   });
 });

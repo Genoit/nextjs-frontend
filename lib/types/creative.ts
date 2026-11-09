@@ -89,7 +89,7 @@ export interface CreativeConfig {
   primary_emotion: string;
   creative_angle: string;
   video_style: VideoStyle;
-  target_duration: 15 | 30 | 45 | 60;
+  target_duration: number;
   platform: TargetPlatform;
   language: string;
   aspect_ratio: string;
@@ -105,17 +105,19 @@ export interface CreativeConfig {
 export interface CreativeConfigCreatePayload {
   product_id: string;
   concept_type?: CreativeConceptType | string;
-  objective: CampaignObjective;
-  target_audience: string;
-  target_motivation: string;
-  primary_emotion: string;
-  creative_angle: string;
+  // The selling strategy below is chosen by Creative Intelligence: the app omits it.
+  objective?: CampaignObjective;
+  target_audience?: string;
+  target_motivation?: string;
+  primary_emotion?: string;
+  creative_angle?: string;
   video_style?: VideoStyle;
-  target_duration?: 15 | 30 | 45 | 60;
+  /** Seconds, 10 to 60. */
+  target_duration?: number;
   platform?: TargetPlatform;
   language?: string;
   aspect_ratio?: string;
-  call_to_action: string;
+  call_to_action?: string;
   voice_preferences?: Record<string, unknown>;
   music_preferences?: Record<string, unknown>;
   user_constraints?: string;
@@ -130,7 +132,7 @@ export interface CreativeConfigUpdatePayload {
   primary_emotion?: string;
   creative_angle?: string;
   video_style?: VideoStyle;
-  target_duration?: 15 | 30 | 45 | 60;
+  target_duration?: number;
   platform?: TargetPlatform;
   language?: string;
   aspect_ratio?: string;
@@ -189,6 +191,8 @@ export interface CreativeAngle {
   promise: string;
   problem: string;
   emotion: string;
+  motivation?: string | null;
+  video_style?: VideoStyle | null;
   proof_basis: string[];
   persuasion_principles: string[];
   risks: string[];

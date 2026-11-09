@@ -1,27 +1,24 @@
 'use client';
 
 import React, { useState } from 'react';
+import { ArrowRight, Check, ChevronDown, Sparkles, Volume2 } from 'lucide-react';
 import { MusicPicker } from './MusicPicker';
-import {
-  MUSIC_AUTO,
-  MUSIC_NONE,
-  musicChoiceOf,
-  musicPreferences,
-} from '../../lib/finishing-rules.mjs';
+import { Flag, type FlagCode } from '../Flag';
+import { MUSIC_NONE, musicChoiceOf, musicPreferences } from '../../lib/finishing-rules.mjs';
 import { pickedTemplate, TEMPLATE_KEY } from '../../lib/template-rules.mjs';
 import {
-  Sparkles,
-  Sliders,
-  Target,
-  Clock,
-  Smartphone,
-  Volume2,
-  Tv,
-  AlertCircle,
-} from 'lucide-react';
+  clampSeconds,
+  DEFAULT_SECONDS,
+  FORMATS,
+  formatSeconds,
+  LANGUAGES,
+  MAX_SECONDS,
+  MIN_SECONDS,
+  PLATFORMS,
+  platformOf,
+  SECONDS_STEP,
+} from '../../lib/ad-settings-rules.mjs';
 import {
-  CampaignObjective,
-  VideoStyle,
   TargetPlatform,
   CreativeConfig,
   CreativeConfigCreatePayload,
@@ -34,165 +31,55 @@ interface Props {
   isLoading?: boolean;
 }
 
-const SUGGESTED_ANGLES = [
-  'Démonstration concrète en situation réelle',
-  'Avant / Après sans artifice',
-  'Problème du quotidien résolu en 3 secondes',
-  'Expérience utilisateur et déballage immersif',
-  'Comparatif honnête avec alternatives génériques',
+const focus =
+  'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
+
+const DURATION_PRESETS = [
+  { seconds: 15, label: '15s', desc: 'Short & punchy' },
+  { seconds: 30, label: '30s', desc: 'Best for UGC', popular: true },
+  { seconds: 60, label: '60s', desc: 'Full demo' },
 ];
 
-const PREDEFINED_AUDIENCES = [
-  'Télétravailleurs et professionnels nomades',
-  'Créateurs de contenu et gamers',
-  'Passionnés de fitness et bien-être',
-  'Parents actifs et familles organisées',
-  'Étudiants et jeunes actifs urbains',
-];
-
-export const CONCEPT_FAMILIES = [
-  {
-    id: 'founder_story',
-    label: 'Histoire Fondateur',
-    desc: 'Genèse, vision & valeurs artisanales',
-    icon: '🎙️',
-  },
-  {
-    id: 'cinematic_storytelling',
-    label: 'Cinématique Premium',
-    desc: 'Élégance, studio & ambiance léchée',
-    icon: '🎬',
-  },
-  {
-    id: 'sensory_focus',
-    label: 'Publicité Sensorielle',
-    desc: 'ASMR, textures & détails tactiles',
-    icon: '✨',
-  },
-  {
-    id: 'product_demo',
-    label: 'Démonstration Produit',
-    desc: 'Efficacité concrète en action directe',
-    icon: '🔍',
-  },
-  {
-    id: 'problem_solution',
-    label: 'Problème / Solution',
-    desc: 'Douleur quotidienne -> remède immédiat',
-    icon: '💡',
-  },
-  {
-    id: 'before_after',
-    label: 'Avant / Après',
-    desc: 'Transformation nette et contraste visuel',
-    icon: '⚡',
-  },
-  {
-    id: 'social_proof',
-    label: 'Preuve Sociale',
-    desc: 'Témoignage authentique & retours clients',
-    icon: '⭐',
-  },
-  {
-    id: 'unboxing',
-    label: 'Expérience Unboxing',
-    desc: 'Déballage immersif & première impression',
-    icon: '📦',
-  },
-  {
-    id: 'comparative_challenge',
-    label: 'Défi Comparatif',
-    desc: 'Face-à-face loyal avec les génériques',
-    icon: '⚔️',
-  },
-  {
-    id: 'myth_busting',
-    label: 'Démystification',
-    desc: 'Idées reçues brisées avec pédagogie',
-    icon: '🛡️',
-  },
-];
-
+/**
+ * Modern minimalist ad delivery & style configuration form.
+ * Combines horizontal and vertical layouts for an ergonomic, zero-fatigue experience:
+ * - Left column: Visual format picker (2x2 ratio cards)
+ * - Right column: Duration presets + Language & Platform controls
+ * - Bottom: Collapsible audio settings & primary CTA
+ */
 export function CreativeConfigForm({
   productId,
   initialConfig,
   onSubmit,
   isLoading = false,
 }: Props) {
-  // A template picked on the Templates page presets the form (see pickedTemplate for when).
-  // This form only renders client-side, so reading storage here cannot mismatch server HTML.
   const [preset] = useState(() => {
     try {
       return pickedTemplate(sessionStorage.getItem(TEMPLATE_KEY), productId, !!initialConfig);
     } catch {
-      return null; // storage blocked: no preset
+      return null;
     }
   });
-  const [conceptType, setConceptType] = useState<string>(
-    preset?.concept_type || initialConfig?.concept_type || 'product_demo',
+
+  const [aspectRatio, setAspectRatio] = useState<string>(
+    preset?.aspect_ratio || initialConfig?.aspect_ratio || '9:16',
   );
-  const [objective, setObjective] = useState<CampaignObjective>(
-    initialConfig?.objective || 'sales',
-  );
-  const [targetAudience, setTargetAudience] = useState(
-    initialConfig?.target_audience || 'Professionnels et jeunes actifs',
-  );
-  const [targetMotivation, setTargetMotivation] = useState(
-    initialConfig?.target_motivation || 'Gagner du temps et simplifier mon quotidien',
-  );
-  const [primaryEmotion, setPrimaryEmotion] = useState(
-    preset?.primary_emotion || initialConfig?.primary_emotion || 'confiance',
-  );
-  const [creativeAngle, setCreativeAngle] = useState(
-    preset?.creative_angle ||
-      initialConfig?.creative_angle ||
-      'Démonstration concrète en situation réelle',
-  );
-  const [videoStyle, setVideoStyle] = useState<VideoStyle>(
-    (preset?.video_style as VideoStyle) || initialConfig?.video_style || 'hybrid',
-  );
-  const [targetDuration, setTargetDuration] = useState<15 | 30 | 45 | 60>(
-    preset?.target_duration || initialConfig?.target_duration || 30,
+  const [seconds, setSeconds] = useState<number>(() =>
+    clampSeconds(preset?.target_duration || initialConfig?.target_duration || DEFAULT_SECONDS),
   );
   const [platform, setPlatform] = useState<TargetPlatform>(
-    (preset?.platform as TargetPlatform) || initialConfig?.platform || 'tiktok',
+    (preset?.platform as TargetPlatform) ||
+      initialConfig?.platform ||
+      (platformOf(aspectRatio) as TargetPlatform),
   );
-  // A new config starts from the video language picked on the dashboard composer.
-  const [language, setLanguage] = useState(() => {
-    if (initialConfig?.language) return initialConfig.language;
-    try {
-      const picked = sessionStorage.getItem('trended.videoLanguage');
-      if (picked && ['fr', 'en', 'es', 'de'].includes(picked)) return picked;
-    } catch {
-      // storage blocked: keep French
-    }
-    return 'fr';
-  });
-  // A new config starts from the output format picked on the dashboard. This form only renders
-  // client-side after its data loads, so reading storage here cannot mismatch server HTML.
-  const [aspectRatio, setAspectRatio] = useState(() => {
-    if (preset) return preset.aspect_ratio;
-    if (initialConfig?.aspect_ratio) return initialConfig.aspect_ratio;
-    try {
-      const picked = sessionStorage.getItem('trended.outputFormat');
-      if (picked && ['9:16', '1:1', '16:9'].includes(picked)) return picked;
-    } catch {
-      // storage blocked: keep 9:16
-    }
-    return '9:16';
-  });
-  const [callToAction, setCallToAction] = useState(
-    preset?.call_to_action ||
-      initialConfig?.call_to_action ||
-      'Profitez de notre offre exclusive aujourd’hui',
+  const [language, setLanguage] = useState(initialConfig?.language || 'fr');
+  const [voiceGender, setVoiceGender] = useState(
+    (initialConfig?.voice_preferences?.gender as string) || 'female',
   );
   const [voiceTone, setVoiceTone] = useState(
     preset?.voice_tone ||
       (initialConfig?.voice_preferences?.tone as string) ||
-      'naturel et dynamique',
-  );
-  const [voiceGender, setVoiceGender] = useState(
-    (initialConfig?.voice_preferences?.gender as string) || 'female',
+      'natural and enthusiastic',
   );
   const storedMood = initialConfig?.music_preferences?.mood as string | undefined;
   const [musicMood, setMusicMood] = useState(
@@ -201,525 +88,350 @@ export function CreativeConfigForm({
   const [musicChoice, setMusicChoice] = useState(() =>
     musicChoiceOf(initialConfig?.music_preferences),
   );
-  const [userConstraints, setUserConstraints] = useState(initialConfig?.user_constraints || '');
 
-  const [formError, setFormError] = useState<string | null>(null);
+  const pickFormat = (value: string) => {
+    setAspectRatio(value);
+    setPlatform(platformOf(value) as TargetPlatform);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setFormError(null);
-
-    if (!targetAudience.trim()) {
-      setFormError('Veuillez préciser l’audience cible.');
-      return;
-    }
-    if (!targetMotivation.trim()) {
-      setFormError('Veuillez préciser la motivation visée.');
-      return;
-    }
-    if (!callToAction.trim()) {
-      setFormError('Veuillez renseigner un appel à l’action (CTA).');
-      return;
-    }
-
-    const payload: CreativeConfigCreatePayload = {
+    await onSubmit({
       product_id: productId,
-      concept_type: conceptType,
-      objective,
-      target_audience: targetAudience.trim(),
-      target_motivation: targetMotivation.trim(),
-      primary_emotion: primaryEmotion.trim(),
-      creative_angle: creativeAngle.trim(),
-      video_style: videoStyle,
-      target_duration: targetDuration,
+      target_duration: seconds,
       platform,
       language,
       aspect_ratio: aspectRatio,
-      call_to_action: callToAction.trim(),
-      voice_preferences: {
-        tone: voiceTone,
-        gender: voiceGender,
-      },
+      voice_preferences: { tone: voiceTone.trim(), gender: voiceGender },
       music_preferences: musicPreferences(musicChoice, musicMood),
-      user_constraints: userConstraints.trim() || undefined,
-    };
-
-    await onSubmit(payload);
+    });
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-4xl">
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
       {preset && (
-        <p
+        <div
           role="status"
-          className="rounded-xl border border-trend-orange/40 bg-trend-orange/10 px-4 py-3 text-sm text-ink"
+          className="flex items-center gap-3 rounded-2xl border border-trend-orange/30 bg-trend-orange/[0.08] px-4 py-3 text-sm text-white backdrop-blur-sm"
         >
-          Modèle « {preset.name} » appliqué : vérifiez les champs puis enregistrez la configuration.
-        </p>
-      )}
-      {/* Header card */}
-      <div className="rounded-2xl bg-studio-ground border border-line/80 p-6 shadow-2xs space-y-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-trend-orange">
-            <Sliders className="w-5 h-5" />
-            <span className="text-xs font-bold uppercase tracking-wider">
-              Configuration créative
-            </span>
-          </div>
-          <span className="text-xs text-ink-muted">Étape 2 / 5</span>
-        </div>
-        <h3 className="text-lg font-semibold text-ink">
-          Configuration créative et contraintes de génération
-        </h3>
-        <p className="text-xs text-ink-muted">
-          Définissez la stratégie de contenu. Toutes les données sont enregistrées pour pouvoir
-          modifier la campagne ultérieurement.
-        </p>
-      </div>
-
-      {formError && (
-        <div className="p-4 rounded-xl bg-danger-soft border border-danger/30 flex items-center gap-3 text-xs text-danger">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{formError}</span>
+          <Sparkles className="size-4 shrink-0 text-trend-orange" aria-hidden />
+          <span>
+            Template applied: <strong className="font-semibold">{preset.name}</strong>. Check the
+            options, then continue.
+          </span>
         </div>
       )}
 
-      {/* Section 1: Objectif & Audience */}
-      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
-        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
-          <Target className="w-4 h-4 text-trend-orange" />
-          <span>1. Objectif de campagne & Audience cible</span>
-        </h4>
-
-        {/* Objective selection */}
-        <div>
-          <p id="cfg-objective-label" className="block text-xs font-bold text-ink-soft mb-2">
-            Objectif commercial
-          </p>
-          <div
-            role="group"
-            aria-labelledby="cfg-objective-label"
-            className="grid grid-cols-2 sm:grid-cols-4 gap-3"
-          >
-            {[
-              { id: 'sales', label: 'Ventes directes', desc: 'Conversion e-commerce' },
-              { id: 'traffic', label: 'Trafic', desc: 'Clics vers la boutique' },
-              { id: 'awareness', label: 'Notoriété', desc: 'Visibilité et mémorisation' },
-              { id: 'retargeting', label: 'Retargeting', desc: 'Lever les hésitations' },
-            ].map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                onClick={() => setObjective(item.id as CampaignObjective)}
-                aria-pressed={objective === item.id}
-                className={`p-3.5 rounded-xl border text-left transition ${
-                  objective === item.id
-                    ? 'border-trend-orange bg-cream ring-1 ring-trend-orange'
-                    : 'border-line hover:border-line bg-studio-ground'
-                }`}
-              >
-                <div className="font-bold text-xs text-ink">{item.label}</div>
-                <div className="text-[11px] text-ink-muted mt-0.5">{item.desc}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Audience */}
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label htmlFor="cfg-targetAudience" className="text-xs font-bold text-ink-soft">
-              Audience cible
-            </label>
-            <span className="text-[11px] text-ink-muted">Cliquez pour suggérer</span>
-          </div>
-          <input
-            id="cfg-targetAudience"
-            type="text"
-            value={targetAudience}
-            onChange={(e) => setTargetAudience(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
-            placeholder="Ex : Télétravailleurs cherchant du confort sonore"
-            required
-          />
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {PREDEFINED_AUDIENCES.map((aud, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setTargetAudience(aud)}
-                className="text-[11px] px-2.5 py-1 rounded-lg bg-studio-raised hover:bg-studio-rule text-ink-soft transition"
-              >
-                + {aud}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Motivation */}
-        <div>
-          <label
-            htmlFor="cfg-targetMotivation"
-            className="block text-xs font-bold text-ink-soft mb-2"
-          >
-            Motivation ou besoin visé
-          </label>
-          <input
-            id="cfg-targetMotivation"
-            type="text"
-            value={targetMotivation}
-            onChange={(e) => setTargetMotivation(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
-            placeholder="Ex : Supprimer les bruits de fond pour se concentrer sans fatigue"
-            required
-          />
-        </div>
-      </div>
-
-      {/* Section 2: Angle créatif & Émotion */}
-      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
-        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-trend-orange" />
-          <span>2. Famille de Concept & Angle Publicitaire</span>
-        </h4>
-
-        {/* 10 Concept Archetypes Selector */}
-        <div>
-          <p id="cfg-concept-label" className="block text-xs font-bold text-ink-soft mb-1">
-            Archétype de Concept Publicitaire (10 Familles)
-          </p>
-          <p className="text-[11px] text-ink-muted mb-3">
-            Sélectionnez la structure narrative optimale pour convertir votre audience cible.
-          </p>
-          <div
-            role="group"
-            aria-labelledby="cfg-concept-label"
-            className="grid grid-cols-2 sm:grid-cols-5 gap-2.5"
-          >
-            {CONCEPT_FAMILIES.map((fam) => (
-              <button
-                key={fam.id}
-                type="button"
-                onClick={() => setConceptType(fam.id)}
-                aria-pressed={conceptType === fam.id}
-                className={`p-2.5 rounded-xl border text-left transition flex flex-col justify-between ${
-                  conceptType === fam.id
-                    ? 'border-trend-orange bg-cream ring-2 ring-trend-orange/20 shadow-2xs'
-                    : 'border-line hover:border-line bg-studio-ground'
-                }`}
-              >
-                <div>
-                  <span className="text-base">{fam.icon}</span>
-                  <div className="font-bold text-xs text-ink mt-1">{fam.label}</div>
-                </div>
-                <div className="text-[10px] text-ink-muted mt-1 line-clamp-2">{fam.desc}</div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <div className="flex items-center justify-between mb-2">
-            <label htmlFor="cfg-creativeAngle" className="text-xs font-bold text-ink-soft">
-              Angle créatif recommandé
-            </label>
-            <button
-              type="button"
-              onClick={() => {
-                const next =
-                  SUGGESTED_ANGLES[
-                    (SUGGESTED_ANGLES.indexOf(creativeAngle) + 1) % SUGGESTED_ANGLES.length
-                  ];
-                setCreativeAngle(next);
-              }}
-              className="text-xs text-trend-orange hover:underline font-semibold flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3" />
-              Suggérer un autre angle
-            </button>
-          </div>
-          <input
-            id="cfg-creativeAngle"
-            type="text"
-            value={creativeAngle}
-            onChange={(e) => setCreativeAngle(e.target.value)}
-            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
-            required
-          />
-          <div className="flex flex-wrap gap-1.5 mt-2">
-            {SUGGESTED_ANGLES.map((ang, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setCreativeAngle(ang)}
-                className={`text-[11px] px-2.5 py-1 rounded-lg transition ${
-                  creativeAngle === ang
-                    ? 'bg-trend-orange text-on-accent font-medium'
-                    : 'bg-studio-raised hover:bg-studio-rule text-ink-soft'
-                }`}
-              >
-                {ang}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      {/* Balanced 2-column layout combining horizontal and vertical spatial design */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 items-stretch">
+        {/* Left Column: Visual Format Picker (7 cols on desktop) */}
+        <div className="lg:col-span-7 flex flex-col justify-between rounded-3xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 backdrop-blur-sm">
           <div>
-            <label
-              htmlFor="cfg-primaryEmotion"
-              className="block text-xs font-bold text-ink-soft mb-2"
-            >
-              Émotion principale
-            </label>
-            <select
-              id="cfg-primaryEmotion"
-              value={primaryEmotion}
-              onChange={(e) => setPrimaryEmotion(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="confiance">Confiance & Réassurance</option>
-              <option value="enthousiasme">Enthousiasme & Excitation</option>
-              <option value="soulagement">Soulagement & Sérénité</option>
-              <option value="curiosité">Curiosité & Surprise</option>
-              <option value="fierté">Fierté & Statut social</option>
-            </select>
-          </div>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-white">1. Video format</h2>
+                <p className="text-xs text-studio-muted">Pick the main aspect ratio.</p>
+              </div>
+              <span className="rounded-full border border-trend-orange/30 bg-trend-orange/10 px-2.5 py-1 text-xs font-bold text-trend-orange tabular-nums">
+                {aspectRatio}
+              </span>
+            </div>
 
-          <div>
-            <label htmlFor="cfg-videoStyle" className="block text-xs font-bold text-ink-soft mb-2">
-              Style de vidéo
-            </label>
-            <select
-              id="cfg-videoStyle"
-              value={videoStyle}
-              onChange={(e) => setVideoStyle(e.target.value as VideoStyle)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="hybrid">Hybride (Créateur UGC + Focus Produit)</option>
-              <option value="ugc_natural">100% UGC Naturel (Format selfie casual)</option>
-              <option value="cinematic">Cinématographique (Éclairage et plans soignés)</option>
-            </select>
-          </div>
-        </div>
-      </div>
+            {/* 2x2 grid of formats */}
+            <div className="mt-4 grid grid-cols-2 gap-3">
+              {FORMATS.map((f) => {
+                const on = aspectRatio === f.value;
+                const is916 = f.value === '9:16';
+                const scale = 36 / Math.max(f.w, f.h);
 
-      {/* Section 3: Format, Durée & Plateforme */}
-      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
-        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
-          <Smartphone className="w-4 h-4 text-trend-orange" />
-          <span>3. Format, Durée & Diffusion</span>
-        </h4>
+                return (
+                  <button
+                    key={f.value}
+                    type="button"
+                    aria-pressed={on}
+                    onClick={() => pickFormat(f.value)}
+                    className={`group relative flex flex-col items-center justify-between rounded-2xl border p-4 text-center transition-all duration-200 ${focus} ${
+                      on
+                        ? 'border-trend-orange bg-trend-orange/[0.08] text-white shadow-[0_0_25px_-5px_rgba(255,98,45,0.25)]'
+                        : 'border-white/[0.08] bg-white/[0.01] text-studio-muted hover:border-white/20 hover:bg-white/[0.04] hover:text-white'
+                    }`}
+                  >
+                    {is916 && (
+                      <span className="absolute -top-2.5 right-2 rounded-full bg-gradient-to-r from-trend-orange to-ember-text px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-black shadow-sm">
+                        Recommended
+                      </span>
+                    )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          {/* Duration */}
-          <div>
-            <p
-              id="cfg-duration-label"
-              className="block text-xs font-bold text-ink-soft mb-2 flex items-center gap-1.5"
-            >
-              <Clock className="w-3.5 h-3.5 text-ink-muted" aria-hidden />
-              <span>Durée cible</span>
-            </p>
-            <div
-              role="group"
-              aria-labelledby="cfg-duration-label"
-              className="grid grid-cols-4 gap-1.5"
-            >
-              {[15, 30, 45, 60].map((sec) => (
-                <button
-                  key={sec}
-                  type="button"
-                  onClick={() => setTargetDuration(sec as 15 | 30 | 45 | 60)}
-                  aria-pressed={targetDuration === sec}
-                  className={`py-2 rounded-xl text-xs font-bold border transition ${
-                    targetDuration === sec
-                      ? 'border-trend-orange bg-cream text-trend-orange'
-                      : 'border-line text-ink-soft hover:border-line'
-                  }`}
-                >
-                  {sec}s
-                </button>
-              ))}
+                    {/* Proportional wireframe frame */}
+                    <div className="flex h-12 items-center justify-center py-1" aria-hidden>
+                      <div
+                        className={`rounded-[5px] border-2 transition-colors ${
+                          on
+                            ? 'border-trend-orange bg-trend-orange/20'
+                            : 'border-white/20 group-hover:border-white/40'
+                        }`}
+                        style={{ width: Math.round(f.w * scale), height: Math.round(f.h * scale) }}
+                      />
+                    </div>
+
+                    <div className="mt-2 w-full">
+                      <div className="flex items-center justify-center gap-1.5">
+                        <span className="text-xs font-bold text-white tabular-nums">{f.value}</span>
+                        <span className="text-[11px] text-studio-muted font-normal">{f.label}</span>
+                      </div>
+                      <span className="mt-0.5 block truncate text-[10px] text-studio-muted/70">
+                        {f.where}
+                      </span>
+                    </div>
+
+                    {on && (
+                      <span className="absolute top-2 left-2 flex size-4 items-center justify-center rounded-full bg-trend-orange text-black">
+                        <Check className="size-2.5 stroke-[3]" />
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          {/* Platform */}
-          <div>
-            <label htmlFor="cfg-platform" className="block text-xs font-bold text-ink-soft mb-2">
-              Plateforme principale
-            </label>
-            <select
-              id="cfg-platform"
-              value={platform}
-              onChange={(e) => setPlatform(e.target.value as TargetPlatform)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="tiktok">TikTok Ads</option>
-              <option value="instagram_reels">Instagram Reels</option>
-              <option value="facebook">Facebook Ads</option>
-              <option value="youtube">YouTube Shorts</option>
-            </select>
-          </div>
-
-          {/* Aspect Ratio */}
-          <div>
-            <label
-              htmlFor="cfg-aspectRatio"
-              className="block text-xs font-bold text-ink-soft mb-2 flex items-center gap-1.5"
-            >
-              <Tv className="w-3.5 h-3.5 text-ink-muted" />
-              <span>Format d&apos;image</span>
-            </label>
-            <select
-              id="cfg-aspectRatio"
-              value={aspectRatio}
-              onChange={(e) => setAspectRatio(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="9:16">9:16 (Vertical TikTok/Reels)</option>
-              <option value="1:1">1:1 (Carré Feed)</option>
-              <option value="16:9">16:9 (Paysage)</option>
-            </select>
-          </div>
+          <p className="mt-4 text-[11px] text-studio-muted/80">
+            9:16 gets the most engagement on TikTok, Reels and Shorts.
+          </p>
         </div>
 
-        {/* Call to action & Language */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div className="sm:col-span-2">
-            <label
-              htmlFor="cfg-callToAction"
-              className="block text-xs font-bold text-ink-soft mb-2"
-            >
-              Appel à l&apos;action (CTA)
-            </label>
-            <input
-              id="cfg-callToAction"
-              type="text"
-              value={callToAction}
-              onChange={(e) => setCallToAction(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
-              placeholder="Ex : Commandez aujourd'hui avec 20% de remise"
-              required
-            />
+        {/* Right Column: Duration + Language & Platform (5 cols on desktop) */}
+        <div className="lg:col-span-5 flex flex-col justify-between gap-5">
+          {/* Card 2: Target duration */}
+          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 backdrop-blur-sm">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-bold text-white">2. Length</h2>
+                <p className="text-xs text-studio-muted">Pacing and retention.</p>
+              </div>
+              <span className="rounded-full border border-trend-orange/30 bg-trend-orange/10 px-2.5 py-0.5 text-xs font-bold text-trend-orange tabular-nums">
+                {formatSeconds(seconds)}
+              </span>
+            </div>
+
+            {/* Quick preset chips */}
+            <div className="mt-3.5 grid grid-cols-3 gap-2">
+              {DURATION_PRESETS.map((p) => {
+                const isSelected = seconds === p.seconds;
+                return (
+                  <button
+                    key={p.seconds}
+                    type="button"
+                    onClick={() => setSeconds(p.seconds)}
+                    className={`flex flex-col items-center justify-center rounded-xl border py-2 px-1 text-center transition-all ${focus} ${
+                      isSelected
+                        ? 'border-trend-orange bg-trend-orange/[0.08] text-white shadow-[0_0_15px_-4px_rgba(255,98,45,0.2)]'
+                        : 'border-white/[0.08] bg-white/[0.01] text-studio-muted hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    <span className="text-xs font-bold text-white">{p.label}</span>
+                    <span className="text-[10px] text-studio-muted truncate max-w-full">
+                      {p.desc}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Range slider */}
+            <div className="mt-3.5 space-y-1">
+              <input
+                id="cfg-duration"
+                type="range"
+                min={MIN_SECONDS}
+                max={MAX_SECONDS}
+                step={SECONDS_STEP}
+                value={seconds}
+                onChange={(e) => setSeconds(clampSeconds(e.target.value))}
+                aria-label="Exact length in seconds"
+                className={`h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-white/10 accent-trend-orange ${focus}`}
+              />
+              <div
+                className="flex justify-between text-[10px] text-studio-muted/70 tabular-nums"
+                aria-hidden
+              >
+                <span>{formatSeconds(MIN_SECONDS)}</span>
+                <span>5 s steps</span>
+                <span>{formatSeconds(MAX_SECONDS)}</span>
+              </div>
+            </div>
           </div>
 
-          <div>
-            <label htmlFor="cfg-language" className="block text-xs font-bold text-ink-soft mb-2">
-              Langue audio/sous-titres
-            </label>
-            <select
-              id="cfg-language"
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="fr">Français (FR)</option>
-              <option value="en">English (US)</option>
-              <option value="es">Español (ES)</option>
-              <option value="de">Deutsch (DE)</option>
-            </select>
+          {/* Card 3: Language & platform */}
+          <div className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 backdrop-blur-sm">
+            <div>
+              <h2 className="text-base font-bold text-white">3. Ad language</h2>
+              <p className="text-xs text-studio-muted">Voice-over and captions.</p>
+            </div>
+
+            {/* Language grid */}
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              {LANGUAGES.map((l) => {
+                const isSelected = language === l.value;
+                return (
+                  <button
+                    key={l.value}
+                    type="button"
+                    aria-pressed={isSelected}
+                    onClick={() => setLanguage(l.value)}
+                    className={`flex h-9 items-center justify-center gap-2 rounded-xl border px-2.5 text-xs font-medium transition-all ${focus} ${
+                      isSelected
+                        ? 'border-trend-orange bg-trend-orange/[0.08] font-semibold text-white shadow-[0_0_12px_-3px_rgba(255,98,45,0.2)]'
+                        : 'border-white/[0.08] bg-white/[0.01] text-studio-muted hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    <Flag code={l.flag as FlagCode} />
+                    <span className="truncate">{l.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Synchronized Platform selector */}
+            <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-2 text-xs">
+              <label htmlFor="cfg-platform" className="text-studio-muted font-medium truncate">
+                Optimized for:
+              </label>
+              <select
+                id="cfg-platform"
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value as TargetPlatform)}
+                className={`h-8 rounded-lg border border-white/10 bg-studio-ground px-2.5 text-xs text-white transition hover:border-white/20 ${focus}`}
+              >
+                {PLATFORMS.map((p) => (
+                  <option key={p.value} value={p.value}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* Section 4: Voix, Ambiance & Contraintes */}
-      <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-6">
-        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
-          <Volume2 className="w-4 h-4 text-trend-orange" />
-          <span>4. Voix-off, Ambiance sonore & Contraintes spécifiques</span>
-        </h4>
-
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label htmlFor="cfg-voiceGender" className="block text-xs font-bold text-ink-soft mb-2">
-              Type de voix
-            </label>
-            <select
-              id="cfg-voiceGender"
-              value={voiceGender}
-              onChange={(e) => setVoiceGender(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="female">Voix Féminine</option>
-              <option value="male">Voix Masculine</option>
-            </select>
-          </div>
-
-          <div>
-            <label htmlFor="cfg-voiceTone" className="block text-xs font-bold text-ink-soft mb-2">
-              Tonalité de la voix
-            </label>
-            <input
-              id="cfg-voiceTone"
-              type="text"
-              value={voiceTone}
-              onChange={(e) => setVoiceTone(e.target.value)}
-              className="w-full px-4 py-2.5 rounded-xl border border-line text-sm text-ink focus:outline-none focus:border-trend-orange"
-              placeholder="Ex : chaleureux, complice, énergique"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="cfg-musicMood" className="block text-xs font-bold text-ink-soft mb-2">
-              Ambiance musicale
-            </label>
-            <select
-              id="cfg-musicMood"
-              value={musicMood}
-              onChange={(e) => setMusicMood(e.target.value)}
-              disabled={musicChoice === MUSIC_NONE}
-              aria-describedby="cfg-musicMood-hint"
-              className="w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange"
-            >
-              <option value="upbeat">Rythmée & Énergique (Trendy TikTok)</option>
-              <option value="calm">Calme & Apaisante (Acoustique / Lo-Fi)</option>
-              <option value="corporate">Inspirante & Moderne (Tech)</option>
-              <option value="dramatic">Impactante & Cinématique</option>
-            </select>
-            <p id="cfg-musicMood-hint" className="mt-1 text-xs text-ink-muted">
-              {musicChoice === MUSIC_AUTO
-                ? 'Choisit le morceau de la bibliothèque.'
-                : musicChoice === MUSIC_NONE
-                  ? 'Sans musique : ambiance ignorée.'
-                  : 'Morceau choisi ci-dessous.'}
-            </p>
-          </div>
-
-          <MusicPicker value={musicChoice} onChange={setMusicChoice} />
-        </div>
-
-        <div>
-          <label
-            htmlFor="cfg-userConstraints"
-            className="block text-xs font-bold text-ink-soft mb-2"
-          >
-            Directives ou contraintes supplémentaires (Optionnel)
-          </label>
-          <textarea
-            id="cfg-userConstraints"
-            value={userConstraints}
-            onChange={(e) => setUserConstraints(e.target.value)}
-            rows={3}
-            className="w-full px-4 py-2.5 rounded-xl border border-line focus:outline-none focus:ring-2 focus:ring-trend-orange/20 focus:border-trend-orange text-sm text-ink"
-            placeholder="Ex : Mettre l'accent sur l'autonomie de la batterie. Ne pas mentionner de comparaison directe avec une marque concurrente."
-          />
         </div>
       </div>
 
-      {/* Submit Button */}
-      <div className="flex items-center justify-end gap-4 pt-4">
+      {/* Advanced Audio & Music Settings (Collapsible progressive disclosure) */}
+      <details className="group rounded-3xl border border-white/[0.08] bg-white/[0.02] p-5 sm:p-6 backdrop-blur-sm transition-all hover:border-white/[0.15]">
+        <summary className="flex cursor-pointer list-none items-center justify-between select-none">
+          <div className="flex items-center gap-3">
+            <div className="flex size-8 items-center justify-center rounded-xl bg-trend-orange/10 text-trend-orange">
+              <Volume2 className="size-4" aria-hidden />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-semibold text-white">Voice & music</span>
+                <span className="rounded-full bg-white/5 px-2 py-0.5 text-[10px] font-medium text-studio-muted">
+                  Optional
+                </span>
+              </div>
+              <p className="text-xs text-studio-muted">
+                Tune the voice-over and music (you can change them later).
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="hidden text-xs text-studio-muted group-open:hidden md:inline-block">
+              {voiceGender === 'female' ? 'Female voice' : 'Male voice'} · {musicMood}
+            </span>
+            <span className="flex size-7 items-center justify-center rounded-full bg-white/5 text-studio-muted transition-transform duration-200 group-open:rotate-180">
+              <ChevronDown className="size-4" />
+            </span>
+          </div>
+        </summary>
+
+        <div className="mt-6 space-y-6 border-t border-white/[0.08] pt-6">
+          <div className="grid gap-5 sm:grid-cols-3">
+            {/* Voice gender */}
+            <fieldset>
+              <legend className="text-xs font-semibold text-white">Voice</legend>
+              <div className="mt-2.5 grid grid-cols-2 gap-2">
+                {[
+                  { value: 'female', label: 'Female' },
+                  { value: 'male', label: 'Male' },
+                ].map((v) => (
+                  <button
+                    key={v.value}
+                    type="button"
+                    aria-pressed={voiceGender === v.value}
+                    onClick={() => setVoiceGender(v.value)}
+                    className={`h-10 rounded-xl border text-xs font-medium transition ${focus} ${
+                      voiceGender === v.value
+                        ? 'border-trend-orange bg-trend-orange/10 text-white font-semibold'
+                        : 'border-white/10 bg-white/[0.02] text-studio-muted hover:border-white/20 hover:text-white'
+                    }`}
+                  >
+                    {v.label}
+                  </button>
+                ))}
+              </div>
+            </fieldset>
+
+            {/* Voice tone */}
+            <div>
+              <label htmlFor="cfg-voiceTone" className="block text-xs font-semibold text-white">
+                Voice tone
+              </label>
+              <input
+                id="cfg-voiceTone"
+                type="text"
+                value={voiceTone}
+                onChange={(e) => setVoiceTone(e.target.value)}
+                maxLength={100}
+                placeholder="e.g. lively, warm, persuasive"
+                className={`mt-2.5 h-10 w-full rounded-xl border border-white/10 bg-studio-ground px-3 text-xs text-white placeholder:text-studio-muted/50 transition hover:border-white/20 ${focus}`}
+              />
+            </div>
+
+            {/* Music mood */}
+            <div>
+              <label htmlFor="cfg-musicMood" className="block text-xs font-semibold text-white">
+                Music mood
+              </label>
+              <select
+                id="cfg-musicMood"
+                value={musicMood}
+                onChange={(e) => setMusicMood(e.target.value)}
+                disabled={musicChoice === MUSIC_NONE}
+                className={`mt-2.5 h-10 w-full rounded-xl border border-white/10 bg-studio-ground px-3 text-xs text-white transition hover:border-white/20 disabled:opacity-40 ${focus}`}
+              >
+                <option value="upbeat">Upbeat</option>
+                <option value="calm">Calm</option>
+                <option value="corporate">Modern / Business</option>
+                <option value="dramatic">Emotional / Storytelling</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <MusicPicker value={musicChoice} onChange={setMusicChoice} />
+          </div>
+        </div>
+      </details>
+
+      {/* Primary CTA button */}
+      <div className="flex justify-end pt-2">
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong disabled:opacity-50 text-on-accent text-sm font-semibold transition flex items-center gap-2"
+          aria-busy={isLoading}
+          className={`group inline-flex h-13 w-full sm:w-auto items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-trend-orange to-ember-text px-8 text-sm font-bold text-black shadow-[0_10px_30px_-10px_rgba(255,98,45,0.6)] transition-all duration-200 hover:brightness-110 active:scale-[0.99] disabled:opacity-60 ${focus}`}
         >
           {isLoading ? (
-            <span>Sauvegarde en cours...</span>
+            <>
+              <span className="size-4 animate-spin rounded-full border-2 border-black border-t-transparent" />
+              <span>Finding angles…</span>
+            </>
           ) : (
             <>
-              <span>Sauvegarder & Générer la stratégie créative</span>
-              <span>→</span>
+              <span>Find the best ad angles</span>
+              <ArrowRight
+                className="size-4 transition-transform group-hover:translate-x-1"
+                aria-hidden
+              />
             </>
           )}
         </button>

@@ -1,13 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { ExternalLink, Play, Star } from 'lucide-react';
+import Image from 'next/image';
+import { CheckCircle2, ChevronDown, ExternalLink, Play, Star } from 'lucide-react';
 import { ProductPreview } from '../../lib/types/product';
-import { listText } from '../../lib/product-input-rules.mjs';
 import { CustomerReviewItem } from './types';
-
-const linkButton =
-  'min-h-11 text-sm font-semibold text-trend-orange hover:text-trend-orange-strong focus-visible:outline-2 focus-visible:outline-trend-orange rounded';
 
 const PLATFORM_NAMES: Record<string, string> = {
   amazon: 'Amazon',
@@ -17,9 +14,9 @@ const PLATFORM_NAMES: Record<string, string> = {
   ebay: 'eBay',
   etsy: 'Etsy',
   walmart: 'Walmart',
-  generic: 'the page',
-  unknown: 'the page',
-  other: 'the page',
+  generic: 'Website',
+  unknown: 'Website',
+  other: 'Website',
 };
 
 export function ExtractionPreview({
@@ -40,178 +37,143 @@ export function ExtractionPreview({
   const reviews = (
     Array.isArray(raw.customer_reviews) ? raw.customer_reviews : []
   ) as CustomerReviewItem[];
-  const [video, setVideo] = useState<string | null>(videos[0] ?? null);
-  const [showReviews, setShowReviews] = useState(false);
-  const [showDesc, setShowDesc] = useState(false);
+
+  const [expanded, setExpanded] = useState(false);
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(videos[0] ?? null);
 
   const platform =
-    PLATFORM_NAMES[preview.source_platform?.toLowerCase()] ?? preview.source_platform ?? 'the page';
-  const found = [
-    preview.title && 'name',
-    preview.description && 'description',
-    preview.price !== null && preview.price !== undefined && 'price',
-    imageCount > 0 && `${imageCount} photo${imageCount > 1 ? 's' : ''}`,
-  ].filter(Boolean) as string[];
-  const missing = [
-    !preview.title && 'the name',
-    !preview.description && 'the description',
-    imageCount === 0 && 'the photos',
-  ].filter(Boolean) as string[];
-  const partial = missing.length > 0 || preview.extraction_status === 'partial';
-  const desc = preview.description ?? '';
+    PLATFORM_NAMES[preview.source_platform?.toLowerCase()] ?? preview.source_platform ?? 'Store';
 
   return (
-    <div className="animate-rise space-y-4 rounded-xl bg-cream p-4 motion-reduce:animate-none">
-      <div role="status" className="space-y-1">
-        <p className="text-[15px] font-semibold text-ink">
-          {partial ? 'Partial import' : 'Imported'} from {platform}
-        </p>
-        <p className="text-sm text-ink">
-          {found.length > 0 ? `Prefilled: ${listText(found)}. ` : ''}
-          Review the fields marked “Imported” in the sheet.
-        </p>
-        {missing.length > 0 && (
-          <p className="text-sm text-ink">
-            Not found on the page: {listText(missing)}. Fill it in by hand.
+    <div className="rounded-xl border border-white/10 bg-white/[0.02] p-4 transition-all">
+      <div className="flex items-start gap-3.5">
+        {poster ? (
+          <div className="relative size-14 shrink-0 overflow-hidden rounded-lg border border-white/10 bg-studio-ground">
+            <Image src={poster} alt="" fill unoptimized className="object-cover" />
+          </div>
+        ) : null}
+
+        <div className="min-w-0 flex-1 space-y-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-sm font-medium text-emerald-400">
+              <CheckCircle2 className="size-3" aria-hidden />
+              Imported from {platform}
+            </span>
+
+            {preview.price !== null && preview.price !== undefined && (
+              <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-sm font-semibold tabular-nums text-white">
+                {Number(preview.price).toLocaleString('en-US')} {preview.currency ?? 'EUR'}
+              </span>
+            )}
+
+            {preview.rating !== null && preview.rating !== undefined && (
+              <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-sm font-medium text-amber-300">
+                <Star className="size-2.5 fill-current" aria-hidden />
+                {Number(preview.rating).toFixed(1)}
+              </span>
+            )}
+
+            {imageCount > 0 && (
+              <span className="rounded-md bg-white/5 px-1.5 py-0.5 text-sm text-studio-muted">
+                {imageCount} photo{imageCount > 1 ? 's' : ''}
+              </span>
+            )}
+          </div>
+
+          <p className="line-clamp-1 text-sm font-medium text-white">
+            {preview.title || 'Product found'}
           </p>
+
+          <p className="text-sm text-studio-muted">
+            Information prefilled in the form below. Review or edit anytime.
+          </p>
+        </div>
+
+        {preview.source_url && (
+          <a
+            href={preview.source_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg text-studio-muted hover:bg-white/5 hover:text-white"
+            title="Open original page"
+          >
+            <ExternalLink className="size-4" aria-hidden />
+          </a>
         )}
-        <button type="button" onClick={onReview} className={linkButton}>
-          Review the sheet
-        </button>
       </div>
 
-      <dl className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-        {preview.price !== null && preview.price !== undefined && (
-          <div>
-            <dt className="text-ink-muted">Listed price</dt>
-            <dd className="font-semibold tabular-nums text-ink">
-              {Number(preview.price).toLocaleString('en-US')} {preview.currency ?? ''}
-            </dd>
-          </div>
-        )}
-        {preview.rating !== null && preview.rating !== undefined && (
-          <div>
-            <dt className="text-ink-muted">Rating</dt>
-            <dd className="flex items-center gap-1 font-semibold tabular-nums text-ink">
-              <Star className="size-3.5 fill-trend-gold text-trend-gold" aria-hidden />
-              {Number(preview.rating).toFixed(1)}
-              {preview.reviews_count ? (
-                <span className="font-normal text-ink-muted">
-                  ({preview.reviews_count.toLocaleString('en-US')} reviews)
-                </span>
-              ) : null}
-            </dd>
-          </div>
-        )}
-        {preview.availability && preview.availability !== 'unknown' && (
-          <div>
-            <dt className="text-ink-muted">Availability</dt>
-            <dd className="font-semibold text-ink">
-              {preview.availability === 'in_stock' ? 'In stock' : preview.availability}
-            </dd>
-          </div>
-        )}
-      </dl>
-
-      {desc && (
-        <div className="space-y-1">
-          <p
-            className={`whitespace-pre-line text-sm leading-relaxed text-ink ${
-              showDesc ? '' : 'line-clamp-3'
-            }`}
+      {(videos.length > 0 || reviews.length > 0) && (
+        <div className="mt-3 border-t border-white/5 pt-2">
+          <button
+            type="button"
+            onClick={() => setExpanded(!expanded)}
+            className="flex w-full items-center justify-between text-sm text-studio-muted hover:text-white"
           >
-            {desc}
-          </p>
-          {desc.length > 220 && (
-            <button type="button" onClick={() => setShowDesc((v) => !v)} className={linkButton}>
-              {showDesc ? 'Show less' : 'Read the full description'}
-            </button>
-          )}
-        </div>
-      )}
-
-      {videos.length > 0 && (
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-ink">
-            Videos found{' '}
-            <span className="font-normal tabular-nums text-ink-muted">({videos.length})</span>
-          </p>
-          {video && (
-            <video
-              key={video}
-              src={video}
-              controls
-              preload="metadata"
-              poster={poster}
-              className="aspect-video w-full rounded-lg bg-ink"
+            <span>
+              {videos.length > 0 && `${videos.length} video${videos.length > 1 ? 's' : ''}`}
+              {videos.length > 0 && reviews.length > 0 && ' · '}
+              {reviews.length > 0 && `${reviews.length} reviews`}
+            </span>
+            <ChevronDown
+              className={`size-3.5 transition-transform ${expanded ? 'rotate-180' : ''}`}
+              aria-hidden
             />
-          )}
-          {videos.length > 1 && (
-            <div className="flex gap-2 overflow-x-auto pb-1">
-              {videos.slice(0, 8).map((v, i) => (
-                <button
-                  key={v}
-                  type="button"
-                  onClick={() => setVideo(v)}
-                  aria-pressed={v === video}
-                  className={`inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-sm focus-visible:outline-2 focus-visible:outline-trend-orange ${
-                    v === video
-                      ? 'border-ink bg-ink text-on-accent'
-                      : 'border-line bg-studio-ground text-ink hover:border-ink'
-                  }`}
-                >
-                  <Play className="size-3 fill-current" aria-hidden />
-                  Video {i + 1}
-                </button>
-              ))}
+          </button>
+
+          {expanded && (
+            <div className="mt-3 space-y-3 pt-1">
+              {videos.length > 0 && (
+                <div className="space-y-2">
+                  {selectedVideo && (
+                    <video
+                      key={selectedVideo}
+                      src={selectedVideo}
+                      controls
+                      preload="metadata"
+                      poster={poster}
+                      className="aspect-video max-h-48 w-full rounded-lg bg-black"
+                    />
+                  )}
+                  {videos.length > 1 && (
+                    <div className="flex gap-1.5 overflow-x-auto pb-1">
+                      {videos.map((v, i) => (
+                        <button
+                          key={v}
+                          type="button"
+                          onClick={() => setSelectedVideo(v)}
+                          className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-sm ${
+                            v === selectedVideo
+                              ? 'bg-white/10 text-white'
+                              : 'text-studio-muted hover:bg-white/5'
+                          }`}
+                        >
+                          <Play className="size-2.5 fill-current" aria-hidden />
+                          Video {i + 1}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {reviews.length > 0 && (
+                <div className="max-h-48 space-y-2 overflow-y-auto pr-1">
+                  {reviews.slice(0, 5).map((r, i) => (
+                    <div key={i} className="rounded-lg bg-white/[0.02] p-2.5 text-sm">
+                      <div className="flex items-center justify-between text-studio-muted">
+                        <span className="font-medium text-white">{r.author || 'Client'}</span>
+                        {r.rating && <span>{r.rating} / 5</span>}
+                      </div>
+                      {r.comment && (
+                        <p className="mt-1 line-clamp-2 text-studio-muted">{r.comment}</p>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>
-      )}
-
-      {reviews.length > 0 && (
-        <div className="space-y-2">
-          <button
-            type="button"
-            aria-expanded={showReviews}
-            aria-controls="extracted-reviews"
-            onClick={() => setShowReviews((v) => !v)}
-            className={linkButton}
-          >
-            {showReviews ? 'Hide reviews' : `Read customer reviews (${reviews.length})`}
-          </button>
-          {showReviews && (
-            <ul id="extracted-reviews" className="max-h-72 space-y-2 overflow-y-auto pr-1">
-              {reviews.map((r, i) => (
-                <li key={i} className="rounded-lg bg-studio-ground p-3 text-sm">
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="font-semibold text-ink">{r.author || 'Customer'}</span>
-                    {typeof r.rating === 'number' && (
-                      <span className="tabular-nums text-ink-muted">
-                        {Math.min(5, Math.max(0, r.rating)).toFixed(1)} / 5
-                      </span>
-                    )}
-                  </div>
-                  {r.title && <p className="mt-1 font-medium text-ink">{r.title}</p>}
-                  {r.comment && <p className="mt-1 line-clamp-3 text-ink">{r.comment}</p>}
-                  {r.date && <p className="mt-1 text-xs text-ink-muted">{r.date}</p>}
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-
-      {preview.source_url && (
-        <a
-          href={preview.source_url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex min-h-11 items-center gap-1.5 text-sm text-ink-muted hover:text-ink"
-        >
-          View the source page
-          <ExternalLink className="size-3.5" aria-hidden />
-        </a>
       )}
     </div>
   );

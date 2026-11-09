@@ -1,405 +1,271 @@
 'use client';
 
-import React, { useState } from 'react';
-import {
-  Sparkles,
-  Sliders,
-  Lightbulb,
-  Film,
-  Images,
-  Play,
-  RotateCw,
-  AlertCircle,
-} from 'lucide-react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { AlertCircle, RotateCw } from 'lucide-react';
 import { useCreative } from '../../hooks/use-creative';
-import { useAssets } from '../../hooks/use-assets';
-import { AssetBoard } from '../assets/AssetBoard';
-import { ProductSheetView } from './ProductSheetView';
+import { useProductAnalysis } from '../../hooks/use-product-analysis';
 import { CreativeConfigForm } from './CreativeConfigForm';
 import { StrategyPreview } from './StrategyPreview';
-import { StoryboardEditor } from './StoryboardEditor';
-import { VideoGenerationTracker } from './VideoGenerationTracker';
 import { VideoHistory } from './VideoHistory';
-import {
-  CreativeConfigCreatePayload,
-  QualityTier,
-  StoryboardSceneCreatePayload,
-} from '../../lib/types/creative';
-import { QUALITY_TIERS } from '../../lib/render-rules.mjs';
-
-// Prefix of the backend 409 detail when no product analysis exists yet.
-const ANALYSIS_MISSING = "Lancez d'abord l'analyse produit";
+import { CreativeConfigCreatePayload, Storyboard, TargetPlatform } from '../../lib/types/creative';
+import { AD_SETTINGS_KEY, parseAdSettings } from '../../lib/ad-settings-rules.mjs';
 
 interface Props {
   productId: string;
-  initialStep?: Step;
   openSetup?: boolean;
+  /** Controlled mode (/product-input): the page's stepper picks the step. */
+  selectedStep?: Step | null;
+  onSelectStep?: (step: Step) => void;
+  onStepChange?: (step: Step) => void;
+  /** Start the product analysis on arrival so it is ready when the setup is saved. */
+  autoAnalyze?: boolean;
 }
 
-type Step = 1 | 2 | 3 | 4 | 5 | 6;
+/**
+ * 2 setup, 3 angles, 6 video. The product analysis (1), storyboard (4) and product visuals (5)
+ * run without a screen: the merchant picks the delivery settings and an angle, nothing else.
+ */
+export type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
-export function CreativeAdWorkflow({ productId, initialStep = 1, openSetup = false }: Props) {
-  // openSetup (Templates page) shows the creative setup even when one is already saved.
-  const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(openSetup ? 2 : null);
-  const [qualityTier, setQualityTier] = useState<QualityTier>('standard');
+const SHOWN: ReadonlySet<Step> = new Set<Step>([2, 3, 6]);
+const USABLE_ANALYSIS = new Set(['completed', 'partial']);
+// The first storyboard plus one forced rewrite, as Autopilot does.
+const STORYBOARD_ATTEMPTS = 2;
+
+const sellable = (sb: Storyboard) =>
+  sb.generation_status === 'completed' && !sb.violations?.some((v) => v.severity === 'block');
+
+function Working({ title, detail }: { title: string; detail: string }) {
+  return (
+    <div className="mx-auto max-w-lg space-y-4 py-20 text-center" role="status" aria-live="polite">
+      <div className="relative mx-auto flex size-14 items-center justify-center">
+        <span className="absolute inline-flex size-full animate-ping rounded-full bg-trend-orange/20" />
+        <span className="relative flex size-12 items-center justify-center rounded-2xl border border-trend-orange/30 bg-trend-orange/10 shadow-[0_0_30px_-5px_rgba(255,98,45,0.3)]">
+          <RotateCw className="size-5 animate-spin text-trend-orange" aria-hidden />
+        </span>
+      </div>
+      <div className="space-y-1.5">
+        <p className="text-base font-bold text-white tracking-[-0.01em]">{title}</p>
+        <p className="mx-auto max-w-sm text-xs leading-relaxed text-studio-muted">{detail}</p>
+      </div>
+    </div>
+  );
+}
+
+export function CreativeAdWorkflow({
+  productId,
+  openSetup = false,
+  selectedStep,
+  onSelectStep,
+  onStepChange,
+  autoAnalyze = false,
+}: Props) {
+  // openSetup (Templates page) shows the setup even when one is already saved.
+  const [localStep, setLocalStep] = useState<Step | null>(openSetup ? 2 : null);
+  const picked = selectedStep !== undefined ? selectedStep : localStep;
+  const setPicked = onSelectStep ?? setLocalStep;
+  const [producing, setProducing] = useState<'script' | 'video' | null>(null);
+  const [autoSetup, setAutoSetup] = useState(false);
+  const [chainError, setChainError] = useState<string | null>(null);
+  const router = useRouter();
 
   const {
+    configLoaded,
     creativeConfig,
     strategy,
-    storyboard,
-    storyboardVersions,
-    cost,
     activeJob,
     isSavingConfig,
     isGeneratingStrategy,
-    isGeneratingStoryboard,
-    isUpdatingStoryboard,
-    isAcceptingStoryboard,
-    isStartingJob,
     error,
-    errorStatus,
     saveCreativeConfig,
     generateStrategy,
     generateStoryboardForAngle,
-    loadStoryboard,
-    updateStoryboard,
     acceptStoryboard,
     startVideoGeneration,
-    cancelVideoGeneration,
-    retryVideoGeneration,
-    rerenderShot,
-    acceptShot,
     openVideoJob,
-    jobLiveMessage,
     resetError,
   } = useCreative(productId);
 
-  // Derive current step automatically from loaded/completed resources if user hasn't manually selected a step
-  const currentStep: Step =
-    userSelectedStep ??
-    (activeJob
-      ? 6
-      : storyboard?.accepted
-        ? 5
-        : storyboard
-          ? 4
-          : strategy
-            ? 3
-            : creativeConfig
-              ? 2
-              : initialStep);
+  // The product sheet is for the system only: it is prepared silently, never shown.
+  const productAnalysis = useProductAnalysis(productId);
+  const { analysis, isLoading: analysisLoading, isAnalyzing, analyze } = productAnalysis;
+  const pendingAnalysis = useRef<ReturnType<typeof analyze> | null>(null);
+  const ensureAnalysis = useCallback(() => {
+    if (analysis && USABLE_ANALYSIS.has(analysis.status)) return Promise.resolve(analysis);
+    pendingAnalysis.current ??= analyze(false).finally(() => {
+      pendingAnalysis.current = null;
+    });
+    return pendingAnalysis.current;
+  }, [analysis, analyze]);
 
-  // Visuals belong to one accepted storyboard; a new (non-accepted) version falls back to the gate.
-  const assets = useAssets(storyboard?.accepted ? storyboard.id : null);
-  const bannerError = error ?? assets.error;
+  const preloaded = useRef(false);
+  useEffect(() => {
+    if (!autoAnalyze || preloaded.current || analysisLoading || analysis || isAnalyzing) return;
+    preloaded.current = true;
+    void ensureAnalysis();
+  }, [autoAnalyze, analysisLoading, analysis, isAnalyzing, ensureAnalysis]);
 
-  // Same gate as the storyboard step (backend: sum(duration_s) == target ± 0.5), plus any
-  // asset operation in flight.
-  const launchDisabledReason = (() => {
-    if (!storyboard) return null;
-    const total = storyboard.scenes.reduce((acc, sc) => acc + Number(sc.duration_seconds || 0), 0);
-    const target = storyboard.spec?.target_duration ?? storyboard.target_duration;
-    if (Math.abs(total - target) > 0.5) {
-      return 'La durée totale des plans ne correspond pas à la durée cible : ajustez le storyboard.';
-    }
-    if (assets.isLoading) return 'Chargement des visuels…';
-    if (assets.isPreparing || assets.busyPlanId) return 'Une opération est en cours.';
-    return null;
-  })();
-  const dismissError = () => {
-    resetError();
-    assets.resetError();
-  };
+  const derived: Step = activeJob ? 6 : strategy ? 3 : 2;
+  const currentStep: Step = picked && SHOWN.has(picked) ? picked : derived;
 
-  const handleConfigSubmit = async (payload: CreativeConfigCreatePayload) => {
-    const saved = await saveCreativeConfig(payload);
-    if (saved) {
-      const strat = await generateStrategy(productId, { configId: saved.id });
-      if (strat) {
-        setUserSelectedStep(3);
+  useEffect(() => {
+    onStepChange?.(currentStep);
+  }, [currentStep, onStepChange]);
+
+  const handleConfigSubmit = useCallback(
+    async (payload: CreativeConfigCreatePayload) => {
+      setChainError(null);
+      const ready = await ensureAnalysis();
+      if (!ready || !USABLE_ANALYSIS.has(ready.status)) {
+        setChainError(
+          'We could not read this product. Check its title and description, then try again.',
+        );
+        return;
       }
+      const saved = await saveCreativeConfig(payload);
+      if (!saved) return;
+      const strat = await generateStrategy(productId, { configId: saved.id });
+      if (strat) setPicked(3);
+    },
+    [ensureAnalysis, saveCreativeConfig, generateStrategy, productId, setPicked],
+  );
+
+  // Format, length and language already picked in the dashboard composer: skip the setup.
+  const skipChecked = useRef(false);
+  useEffect(() => {
+    if (skipChecked.current || !configLoaded || creativeConfig || strategy || openSetup) return;
+    skipChecked.current = true;
+    let raw: string | null = null;
+    try {
+      raw = sessionStorage.getItem(AD_SETTINGS_KEY);
+      sessionStorage.removeItem(AD_SETTINGS_KEY); // one hand-off, one product
+    } catch {
+      // storage blocked: the setup step shows
     }
-  };
+    const settings = parseAdSettings(raw);
+    if (!settings) return;
+    setAutoSetup(true);
+    void handleConfigSubmit({
+      product_id: productId,
+      ...settings,
+      platform: settings.platform as TargetPlatform,
+    }).finally(() => setAutoSetup(false));
+  }, [configLoaded, creativeConfig, strategy, openSetup, productId, handleConfigSubmit]);
 
-  const handleRegenerateStrategy = async () => {
-    await generateStrategy(productId, { configId: creativeConfig?.id, force: true });
-  };
-
-  const handleGenerateStoryboard = async (angleId: string, force = false) => {
+  const handleChooseAngle = async (angleId: string) => {
     if (!strategy) return;
-    const sb = await generateStoryboardForAngle(strategy.id, angleId, force);
-    if (sb) {
-      setUserSelectedStep(4);
+    setChainError(null);
+    setProducing('script');
+    try {
+      let storyboard: Storyboard | null = null;
+      for (let attempt = 0; attempt < STORYBOARD_ATTEMPTS && !storyboard; attempt++) {
+        const sb = await generateStoryboardForAngle(strategy.id, angleId, attempt > 0);
+        if (!sb) return; // the error banner says why
+        if (sellable(sb)) storyboard = sb;
+      }
+      if (!storyboard) {
+        setChainError('This angle could not be turned into a compliant ad. Pick another angle.');
+        return;
+      }
+      setProducing('video');
+      const accepted = storyboard.accepted ? storyboard : await acceptStoryboard(storyboard.id);
+      if (!accepted) return;
+      const job = await startVideoGeneration(productId, accepted.id, 'standard');
+      // The merchant follows the render on /generate; checks and finishing stay out of sight.
+      if (job) router.push(`/generate?job=${encodeURIComponent(job.id)}`);
+    } finally {
+      setProducing(null);
     }
   };
 
-  const handleSaveStoryboard = async (scenes: StoryboardSceneCreatePayload[], title: string) => {
-    if (!storyboard) return;
-    await updateStoryboard(storyboard.id, { scenes, title });
-  };
-
-  const handleLaunchVideo = async () => {
-    if (!storyboard) return;
-    const job = await startVideoGeneration(productId, storyboard.id, qualityTier);
-    if (job) {
-      setUserSelectedStep(6);
-    } else {
-      // e.g. 409 "Préparation des visuels en cours": refresh what the board shows.
-      void assets.reload();
-    }
+  const banner = chainError ?? error ?? (isAnalyzing ? null : productAnalysis.error);
+  const dismiss = () => {
+    setChainError(null);
+    resetError();
   };
 
   return (
     <div className="space-y-8">
-      {/* Step Navigation Header */}
-      <div className="studio-bar mx-auto w-fit max-w-full rounded-[15px] p-[5px]">
-        <div className="relative flex items-center gap-0.5 overflow-x-auto">
-          {[
-            { num: 1, label: 'Intelligence', icon: Sparkles },
-            { num: 2, label: 'Configuration créative', icon: Sliders },
-            { num: 3, label: 'Stratégie', icon: Lightbulb },
-            { num: 4, label: 'Storyboard', icon: Film },
-            { num: 5, label: 'Visuels produit', icon: Images },
-            { num: 6, label: 'Génération', icon: Play },
-          ].map((s) => {
-            const Icon = s.icon;
-            const isActive = currentStep === s.num;
-            const isPassed = currentStep > s.num;
-
-            return (
-              <button
-                key={s.num}
-                type="button"
-                onClick={() => setUserSelectedStep(s.num as Step)}
-                aria-current={isActive ? 'step' : undefined}
-                className={`studio-tab focus-visible:outline-2 focus-visible:outline-trend-orange ${
-                  isPassed ? '!text-studio-text' : ''
-                }`}
-              >
-                <div
-                  className={`flex size-[18px] items-center justify-center rounded-full text-[10px] font-semibold tabular-nums ${
-                    isActive
-                      ? 'bg-trend-orange text-on-accent'
-                      : isPassed
-                        ? 'bg-accent-soft text-trend-orange'
-                        : 'bg-white/[0.07] text-studio-meta'
-                  }`}
-                >
-                  <span aria-hidden>{isPassed ? '✓' : s.num}</span>
-                  {isPassed && <span className="sr-only">Étape terminée :</span>}
-                </div>
-                <Icon className="w-3.5 h-3.5" aria-hidden />
-                <span>{s.label}</span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
-      {/* Global Error Banner (409 = precondition such as a missing product analysis) */}
-      {bannerError && (
+      {banner && (
         <div
           role="alert"
-          className="p-4 rounded-xl bg-danger-soft border border-danger/30 flex flex-wrap items-center justify-between gap-3 text-xs text-danger"
+          className="flex w-full flex-wrap items-center justify-between gap-3 rounded-2xl border border-danger/30 bg-danger-soft/40 backdrop-blur-sm px-4 py-3 text-sm text-danger"
         >
-          <div className="flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" aria-hidden />
-            <span>{bannerError}</span>
-          </div>
-          <div className="flex items-center gap-3">
-            {errorStatus === 409 && currentStep !== 1 && error?.startsWith(ANALYSIS_MISSING) && (
-              <button
-                type="button"
-                onClick={() => {
-                  resetError();
-                  setUserSelectedStep(1);
-                }}
-                className="px-3 py-1.5 rounded-lg bg-studio-ground border border-danger/30 text-danger font-bold hover:bg-danger-soft"
-              >
-                Aller à l&apos;analyse produit
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={dismissError}
-              className="text-danger hover:text-danger font-bold"
-            >
-              Fermer
-            </button>
-          </div>
+          <span className="flex items-center gap-2">
+            <AlertCircle className="size-4 shrink-0" aria-hidden />
+            {banner}
+          </span>
+          <button
+            type="button"
+            onClick={dismiss}
+            className="rounded-md px-2 py-1 font-semibold hover:bg-danger/10 focus-visible:outline-2 focus-visible:outline-danger"
+          >
+            Dismiss
+          </button>
         </div>
       )}
 
-      {/* STEP 1: Product Intelligence */}
-      {currentStep === 1 && (
-        <ProductSheetView productId={productId} onProceedToSetup={() => setUserSelectedStep(2)} />
-      )}
-
-      {/* STEP 2: Creative configuration */}
-      {currentStep === 2 && (
-        <CreativeConfigForm
-          // Remount once when the saved config arrives (useState initialisers), not on every save.
-          key={`${productId}:${creativeConfig ? 'saved' : 'new'}`}
-          productId={productId}
-          initialConfig={creativeConfig}
-          onSubmit={handleConfigSubmit}
-          isLoading={isSavingConfig || isGeneratingStrategy || isGeneratingStoryboard}
-        />
-      )}
-
-      {/* STEP 3: Brief + angle picker */}
-      {currentStep === 3 && (
-        <>
-          {isGeneratingStrategy && !strategy && (
-            <div className="p-12 text-center space-y-3" role="status">
-              <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" aria-hidden />
-              <p className="text-sm font-semibold text-ink-soft">
-                Génération du brief et des angles en cours…
-              </p>
-            </div>
-          )}
-          {strategy && (
-            <StrategyPreview
-              key={strategy.id}
-              strategy={strategy}
-              onGenerateStoryboard={handleGenerateStoryboard}
-              onRegenerate={handleRegenerateStrategy}
-              isGeneratingStoryboard={isGeneratingStoryboard}
-              isRegenerating={isGeneratingStrategy}
-            />
-          )}
-          {!isGeneratingStrategy && !strategy && (
-            <p className="p-12 text-center text-sm text-ink-muted">
-              Aucune stratégie : enregistrez d&apos;abord la configuration créative.
-            </p>
-          )}
-        </>
-      )}
-
-      {/* STEP 4: Storyboard editor + versions */}
-      {currentStep === 4 && (
-        <>
-          {storyboard ? (
-            <StoryboardEditor
-              key={storyboard.id}
-              storyboard={storyboard}
-              versions={storyboardVersions}
-              cost={cost}
-              onSave={handleSaveStoryboard}
-              onAccept={async () => {
-                if (await acceptStoryboard(storyboard.id)) setUserSelectedStep(5);
-              }}
-              onSelectVersion={async (id) => {
-                await loadStoryboard(id);
-              }}
-              onRegenerate={async () => {
-                if (strategy?.chosen_angle_id) {
-                  await handleGenerateStoryboard(strategy.chosen_angle_id, true);
-                }
-              }}
-              onPrepareAssets={() => setUserSelectedStep(5)}
-              isUpdating={isUpdatingStoryboard}
-              isAccepting={isAcceptingStoryboard}
-              isGenerating={isGeneratingStoryboard}
-            />
-          ) : isGeneratingStoryboard ? (
-            <div className="p-12 text-center space-y-3" role="status">
-              <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" aria-hidden />
-              <p className="text-sm font-semibold text-ink-soft">
-                Scénarisation et découpage des plans en cours…
-              </p>
-            </div>
-          ) : (
-            <p className="p-12 text-center text-sm text-ink-muted">
-              Aucun storyboard : choisissez d&apos;abord un angle.
-            </p>
-          )}
-        </>
-      )}
-
-      {/* STEP 5: Product visuals (asset pipeline) */}
-      {currentStep === 5 &&
-        (storyboard?.accepted ? (
-          <AssetBoard
-            storyboard={storyboard}
-            board={assets.board}
-            launchDisabledReason={launchDisabledReason}
-            isLoading={assets.isLoading}
-            loadError={assets.loadError}
-            isPreparing={assets.isPreparing}
-            isLaunching={isStartingJob}
-            busyPlanId={assets.busyPlanId}
-            liveMessage={assets.liveMessage}
-            productId={productId}
-            onPrepare={() => void assets.prepare()}
-            onReload={() => void assets.reload()}
-            onOverride={assets.setSourceMode}
-            onRetry={assets.retry}
-            onLaunchVideo={() => void handleLaunchVideo()}
-            launchOptions={
-              <div className="flex items-center gap-2">
-                <label htmlFor="quality-tier" className="text-sm font-semibold text-ink">
-                  Qualité
-                </label>
-                <select
-                  id="quality-tier"
-                  value={qualityTier}
-                  onChange={(e) => setQualityTier(e.target.value as QualityTier)}
-                  disabled={isStartingJob}
-                  className="min-h-11 rounded-lg border border-line bg-studio-ground px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
-                >
-                  {QUALITY_TIERS.map((t) => (
-                    <option key={t.value} value={t.value}>
-                      {t.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            }
+      {currentStep === 2 &&
+        (autoSetup || (!configLoaded && !openSetup) ? (
+          <Working
+            title="Finding the angles that sell this product…"
+            detail="Using the format, length and language you picked."
           />
         ) : (
-          <div className="space-y-3 p-12 text-center">
-            <p className="text-sm text-ink-muted">
-              Acceptez une version du storyboard pour préparer les visuels produit.
-            </p>
-            <button
-              type="button"
-              onClick={() => setUserSelectedStep(4)}
-              className="inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-semibold text-trend-orange hover:text-trend-orange-strong focus-visible:outline-2 focus-visible:outline-trend-orange"
-            >
-              Retour au storyboard
-            </button>
-          </div>
+          <CreativeConfigForm
+            // Remount once when the saved config arrives (useState initialisers), not on every save.
+            key={`${productId}:${creativeConfig ? 'saved' : 'new'}`}
+            productId={productId}
+            initialConfig={creativeConfig}
+            onSubmit={handleConfigSubmit}
+            isLoading={isSavingConfig || isGeneratingStrategy}
+          />
         ))}
 
-      {/* STEP 6: Video Generation Job Tracker */}
+      {currentStep === 3 &&
+        (producing ? (
+          <Working
+            title={producing === 'script' ? 'Writing the script…' : 'Starting your video…'}
+            detail={
+              producing === 'script'
+                ? 'Scenes, voice-over and on-screen text for the angle you picked.'
+                : 'Each shot is generated and checked before the final cut.'
+            }
+          />
+        ) : isGeneratingStrategy && !strategy ? (
+          <Working
+            title="Finding the angles that sell this product…"
+            detail="Audience, hook and style are chosen for the sale."
+          />
+        ) : strategy ? (
+          <StrategyPreview
+            key={strategy.id}
+            strategy={strategy}
+            onChooseAngle={handleChooseAngle}
+            onRegenerate={async () => {
+              await generateStrategy(productId, { configId: creativeConfig?.id, force: true });
+            }}
+            isProducing={producing !== null}
+            isRegenerating={isGeneratingStrategy}
+          />
+        ) : (
+          <p className="py-16 text-sm text-studio-muted">Save the format and length first.</p>
+        ))}
+
       {currentStep === 6 && (
-        <>
-          {isStartingJob && (
-            <div className="p-12 text-center space-y-3">
-              <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" />
-              <p className="text-sm font-semibold text-ink-soft">
-                Initialisation du job de génération vidéo...
-              </p>
-            </div>
-          )}
-          {!isStartingJob && activeJob && (
-            <VideoGenerationTracker
-              job={activeJob}
-              onCancel={cancelVideoGeneration}
-              onRetry={() => retryVideoGeneration(activeJob.id)}
-              onRerender={rerenderShot}
-              onAccept={acceptShot}
-              liveMessage={jobLiveMessage}
-            />
-          )}
-          {!isStartingJob && !activeJob && (
-            <p className="p-12 text-center text-sm text-ink-muted">
-              Aucune génération en cours : lancez la vidéo depuis l&apos;étape Visuels produit.
-            </p>
-          )}
-        </>
+        <div className="max-w-3xl py-16">
+          <p className="text-base font-semibold text-white">Your ad is being made.</p>
+          <Link
+            href={activeJob ? `/generate?job=${encodeURIComponent(activeJob.id)}` : '/generate'}
+            className="mt-2 inline-flex text-sm font-semibold text-ember-text hover:underline focus-visible:outline-2 focus-visible:outline-ember-text"
+          >
+            Follow it on Generate
+          </Link>
+        </div>
       )}
+
       {/* Video history: the studio's right rail on every step (a list on phones). */}
       <VideoHistory
         productId={productId}

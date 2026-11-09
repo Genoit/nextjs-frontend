@@ -1,6 +1,6 @@
 'use client';
 
-import { Fragment, useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -18,6 +18,8 @@ import {
   MoreHorizontal,
   MoreVertical,
   Package,
+  PanelLeftClose,
+  PanelLeftOpen,
   Plus,
   Settings,
   Sparkles,
@@ -27,6 +29,7 @@ import {
 import ProtectedRoute from '../ProtectedRoute';
 import { rememberReturnTo, useAuth } from '../../lib/auth';
 import { useStudioTheme } from '../../lib/theme';
+import { BrandSymbol } from '../Icons';
 import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
 import { billingApi, type BillingPlan, type BillingSummary } from '../../lib/api/billing';
@@ -120,12 +123,15 @@ export function Popover({
   button,
   className,
   buttonClassName = '',
+  fixed = false,
   children,
 }: {
   label: string;
   button: ReactNode;
   className: string;
   buttonClassName?: string;
+  /** Viewport-positioned, so a scrolling ancestor (the rail) cannot clip it. */
+  fixed?: boolean;
   children: (close: () => void) => ReactNode;
 }) {
   const [open, setOpen] = useState(false);
@@ -154,7 +160,7 @@ export function Popover({
       </button>
       {open && (
         <div
-          className={`absolute z-50 rounded-xl border border-dash-line bg-dash-raised p-1.5 shadow-menu ${className}`}
+          className={`${fixed ? 'fixed' : 'absolute'} z-50 rounded-xl border border-dash-line bg-dash-raised p-1.5 shadow-menu ${className}`}
         >
           {children(() => setOpen(false))}
         </div>
@@ -201,10 +207,6 @@ const NAV: { label: string; Icon: typeof House; href: string }[] = [
 ];
 
 const isActive = (href: string, path: string) => path === href || path.startsWith(`${href}/`);
-
-function BrandSymbol({ className }: { className: string }) {
-  return <Image src="/symbol.png" alt="" width={56} height={55} priority className={className} />;
-}
 
 function RailItem({ item, onNavigate }: { item: (typeof NAV)[number]; onNavigate?: () => void }) {
   const { label, Icon, href } = item;
@@ -272,7 +274,8 @@ function MoreMenu() {
   return (
     <Popover
       label="More"
-      className="bottom-0 left-12 w-52"
+      fixed
+      className="bottom-4 left-[88px] w-52"
       buttonClassName="h-8 w-12 text-studio-muted"
       button={<MoreHorizontal className="size-6" aria-hidden />}
     >
@@ -315,7 +318,7 @@ function Rail({
   return (
     <div className="pointer-events-auto flex min-h-full w-[93px] flex-col items-center pt-6 pb-4 pl-[5px]">
       <Link href="/dashboard" aria-label="TrendED home" className={`rounded-lg ${focusRing}`}>
-        <BrandSymbol className="h-[55px] w-[56px]" />
+        <BrandSymbol priority className="h-[55px] w-[56px]" />
       </Link>
       <nav aria-label="Main" className="mt-[90px] flex flex-col items-center gap-[7px]">
         {NAV.map((item) => (
@@ -400,7 +403,16 @@ function AccountMenu() {
   );
 }
 
-function Header({ onMenu }: { onMenu: () => void }) {
+function Header({
+  onMenu,
+  railHidden,
+  onToggleRail,
+}: {
+  onMenu: () => void;
+  railHidden: boolean;
+  onToggleRail: () => void;
+}) {
+  const RailIcon = railHidden ? PanelLeftOpen : PanelLeftClose;
   return (
     <header className="relative z-30 flex h-[100px] items-center gap-4 px-5 md:pl-3 lg:pr-9">
       <button
@@ -411,8 +423,17 @@ function Header({ onMenu }: { onMenu: () => void }) {
       >
         <Menu className="size-5" aria-hidden />
       </button>
+      <button
+        type="button"
+        onClick={onToggleRail}
+        aria-label={railHidden ? 'Show sidebar' : 'Hide sidebar'}
+        title={railHidden ? 'Show sidebar' : 'Hide sidebar'}
+        className={`hidden size-10 shrink-0 items-center justify-center rounded-lg text-studio-muted transition hover:bg-white/[0.05] hover:text-white md:flex ${focusRing}`}
+      >
+        <RailIcon className="size-5" strokeWidth={1.6} aria-hidden />
+      </button>
       <Link href="/dashboard" className={`flex items-center gap-3 rounded-md ${focusRing}`}>
-        <BrandSymbol className="h-[34px] w-[35px] md:hidden" />
+        <BrandSymbol priority className="h-[34px] w-[35px] md:hidden" />
         <span>
           <span className="block text-[24px] leading-none font-semibold tracking-[-0.01em] text-white">
             TrendED
@@ -441,6 +462,46 @@ function Header({ onMenu }: { onMenu: () => void }) {
 
 export type Billing = { summary: BillingSummary | null; total: number | null };
 
+// Desktop rail hidden or shown; the choice follows the user across studio pages.
+const RAIL_KEY = 'trended:rail';
+const RAIL_EVENT = 'trended-rail';
+let railOverride: boolean | null = null; // storage blocked: the choice lasts until reload
+
+function readRailHidden(): boolean {
+  try {
+    return localStorage.getItem(RAIL_KEY) === 'hidden';
+  } catch {
+    return false;
+  }
+}
+
+function subscribeRail(onChange: () => void): () => void {
+  window.addEventListener(RAIL_EVENT, onChange);
+  window.addEventListener('storage', onChange);
+  return () => {
+    window.removeEventListener(RAIL_EVENT, onChange);
+    window.removeEventListener('storage', onChange);
+  };
+}
+
+function useRailHidden(): [boolean, () => void] {
+  const hidden = useSyncExternalStore(
+    subscribeRail,
+    () => railOverride ?? readRailHidden(),
+    () => false,
+  );
+  const toggle = () => {
+    railOverride = !hidden;
+    try {
+      localStorage.setItem(RAIL_KEY, railOverride ? 'hidden' : 'shown');
+    } catch {
+      /* kept in railOverride */
+    }
+    window.dispatchEvent(new Event(RAIL_EVENT));
+  };
+  return [hidden, toggle];
+}
+
 /**
  * Icon rail + header of the studio pages. `children` may read the billing summary it loads.
  * `backdrop` paints behind the header too (the dashboard's orange glow).
@@ -459,6 +520,7 @@ export function DashShell({
   const [summary, setSummary] = useState<BillingSummary | null>(null);
   const [plans, setPlans] = useState<BillingPlan[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [railHidden, toggleRail] = useRailHidden();
 
   useEffect(() => {
     let alive = true;
@@ -498,7 +560,9 @@ export function DashShell({
         {backdrop}
         {/* Scrolls when the window is short (100 % zoom). 140px wide with -36px margin so the
             plan card that spills past the rail is not clipped; the extra strip lets clicks through. */}
-        <aside className="pointer-events-none sticky top-0 z-20 -mr-[36px] hidden h-dvh w-[140px] shrink-0 overflow-y-auto overscroll-contain [scrollbar-width:none] md:block">
+        <aside
+          className={`pointer-events-none sticky top-0 z-20 -mr-[36px] hidden h-dvh w-[140px] shrink-0 overflow-y-auto overscroll-contain [scrollbar-width:none] ${railHidden ? '' : 'md:block'}`}
+        >
           <Rail billing={billing} />
         </aside>
 
@@ -529,8 +593,15 @@ export function DashShell({
           </div>
         )}
 
-        <div className="relative z-10 flex min-w-0 flex-1 flex-col">
-          <Header onMenu={() => setMenuOpen(true)} />
+        {/* Without the rail, pages keep the same breathing room as on the right. */}
+        <div
+          className={`relative z-10 flex min-w-0 flex-1 flex-col ${railHidden ? 'md:pl-6' : ''}`}
+        >
+          <Header
+            onMenu={() => setMenuOpen(true)}
+            railHidden={railHidden}
+            onToggleRail={toggleRail}
+          />
           {typeof children === 'function' ? children({ summary, total }) : children}
         </div>
       </div>

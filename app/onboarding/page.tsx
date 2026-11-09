@@ -1,1547 +1,707 @@
 'use client';
 
-import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Check,
+  Flame,
+  Globe,
+  Play,
+  ShieldCheck,
+  Sparkles,
+} from 'lucide-react';
 import { takeReturnTo, useAuth } from '../../lib/auth';
 import { api, ApiRequestError } from '../../lib/api/core';
 import ThemeToggle from '../../components/ThemeToggle';
-import {
-  OnboardingBusinessType,
-  OnboardingCategory,
-  OnboardingExperience,
-  OnboardingGoal,
-  OnboardingProfile,
-} from '../../lib/types';
+import { BrandLogo } from '../../components/Icons';
+import { AD_SETTINGS_KEY } from '../../lib/ad-settings-rules.mjs';
 
-type GlyphProps = { className?: string; strokeWidth?: number };
-
-function Glyph({ name, className = 'h-5 w-5', strokeWidth = 1.75 }: GlyphProps & { name: string }) {
-  const paths: Record<string, React.ReactNode> = {
-    'arrow-left': <path d="M19 12H5m6-6-6 6 6 6" />,
-    'arrow-right': <path d="M5 12h14m-6-6 6 6-6 6" />,
-    chart: (
-      <>
-        <path d="M4 20V10m6 10V4m6 16v-7m4 7H2" />
-      </>
-    ),
-    box: (
-      <>
-        <path d="m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7m-9 4v10" />
-      </>
-    ),
-    check: <path d="m5 12 4 4L19 6" />,
-    chevron: <path d="m6 9 6 6 6-6" />,
-    clock: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M12 6v6h4.5" />
-      </>
-    ),
-    help: (
-      <>
-        <circle cx="12" cy="12" r="9" />
-        <path d="M9.5 9a2.6 2.6 0 1 1 4.7 1.5c-1.3 1.4-2.2 1.7-2.2 3.2m0 3h.01" />
-      </>
-    ),
-    user: (
-      <>
-        <circle cx="12" cy="8" r="3" />
-        <path d="M5 21a7 7 0 0 1 14 0" />
-      </>
-    ),
-    gem: <path d="m12 3 8 6-8 12L4 9l8-6Zm-8 6h16M8 3l4 6 4-6" />,
-    home: (
-      <>
-        <path d="m3 11 9-8 9 8v9H3v-9Z" />
-        <path d="M9 20v-6h6v6" />
-      </>
-    ),
-    lock: (
-      <>
-        <rect x="5" y="10" width="14" height="11" rx="2" />
-        <path d="M8 10V7a4 4 0 0 1 8 0v3m-4 4v3" />
-      </>
-    ),
-    package: (
-      <>
-        <path d="m3 7 9-4 9 4-9 4-9-4Zm0 0v10l9 4 9-4V7m-9 4v10" />
-      </>
-    ),
-    pencil: (
-      <>
-        <path d="m4 20 4-1 10-10-3-3L5 16l-1 4Zm9-13 3 3" />
-        <path d="M4 4h6m-6 4h3" />
-      </>
-    ),
-    rocket: (
-      <>
-        <path d="M14 4c4-2 6 0 6 0s2 2 0 6l-7 7-6-6 7-7Z" />
-        <path d="m7 11-4 1 3 3m5 1-1 4 3-3" />
-        <circle cx="15" cy="9" r="1.3" />
-      </>
-    ),
-    search: (
-      <>
-        <circle cx="10.5" cy="10.5" r="5.5" />
-        <path d="m15 15 5 5" />
-      </>
-    ),
-    bag: (
-      <>
-        <path d="M5 8h14l-1 12H6L5 8Z" />
-        <path d="M9 9V6a3 3 0 0 1 6 0v3" />
-      </>
-    ),
-    cart: (
-      <>
-        <path d="M3 4h2l2 11h10l2-8H7" />
-        <circle cx="9" cy="20" r="1" />
-        <circle cx="17" cy="20" r="1" />
-      </>
-    ),
-    sparkles: (
-      <>
-        <path d="m12 3 1.5 5.5L19 10l-5.5 1.5L12 17l-1.5-5.5L5 10l5.5-1.5L12 3Z" />
-        <path d="m19 16 .7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7L19 16Z" />
-      </>
-    ),
-    store: (
-      <>
-        <path d="M4 10v10h16V10" />
-        <path d="M3 5h18l1 5c-2 2-4 2-6 0-2 2-4 2-6 0-2 2-4 2-6 0L3 5Z" />
-        <path d="M9 20v-6h6v6" />
-      </>
-    ),
-    target: (
-      <>
-        <circle cx="12" cy="12" r="8" />
-        <circle cx="12" cy="12" r="3" />
-        <path d="m16 8 5-5m-1 0h-4m4 0v4" />
-      </>
-    ),
-    trending: (
-      <>
-        <path d="M4 18 10 12l4 4 7-8" />
-        <path d="M16 8h5v5" />
-      </>
-    ),
-  };
-  return (
-    <svg
-      className={className}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      {paths[name] ?? paths.box}
-    </svg>
-  );
-}
-
-const makeIcon = (name: string) => {
-  const Icon = (props: GlyphProps) => <Glyph name={name} {...props} />;
-  Icon.displayName = `${name}Icon`;
-  return Icon;
-};
-const ArrowLeft = makeIcon('arrow-left');
-const ArrowRight = makeIcon('arrow-right');
-const BarChart3 = makeIcon('chart');
-const Check = makeIcon('check');
-const ChevronDown = makeIcon('chevron');
-const CircleHelp = makeIcon('help');
-const Search = makeIcon('search');
-const Sparkles = makeIcon('sparkles');
-
-type ReferenceIconName =
-  | 'starting'
-  | 'selling'
-  | 'dropshipper'
-  | 'scaling'
-  | 'products'
-  | 'ads'
-  | 'sales'
-  | 'rocket'
-  | 'performance'
-  | 'business'
-  | 'world'
-  | 'dropshipping'
-  | 'dtc'
-  | 'marketplace'
-  | 'other'
-  | 'fashion'
-  | 'beauty'
-  | 'home'
-  | 'electronics'
-  | 'fitness'
-  | 'pets'
-  | 'experience';
-
-const profileIconSources = {
-  starting: '/logos/onboarding/profile-store.svg',
-  selling: '/logos/onboarding/profile-cart.svg',
-  dropshipper: '/logos/onboarding/profile-shipping-box.svg',
-  scaling: '/logos/onboarding/profile-growth.svg',
-} as const;
-
-function SvgAssetIcon({ src, className = 'h-8 w-8' }: { src: string; className?: string }) {
-  const mask = `url(${src})`;
-
-  return (
-    <span
-      aria-hidden="true"
-      className={`inline-block ${className} bg-current`}
-      style={{
-        maskImage: mask,
-        maskPosition: 'center',
-        maskRepeat: 'no-repeat',
-        maskSize: 'contain',
-        WebkitMaskImage: mask,
-        WebkitMaskPosition: 'center',
-        WebkitMaskRepeat: 'no-repeat',
-        WebkitMaskSize: 'contain',
-      }}
-    />
-  );
-}
-
-function ReferenceIcon({
-  name,
-  className = 'h-6 w-6',
-}: {
-  name: ReferenceIconName;
-  className?: string;
-}) {
-  const stroke = {
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 2,
-    strokeLinecap: 'round' as const,
-    strokeLinejoin: 'round' as const,
-  };
-  const icons: Record<ReferenceIconName, React.ReactNode> = {
-    starting: (
-      <>
-        <path {...stroke} d="M13 9V5a3 3 0 0 0-6 0v4M3 9h14l-1 10H4L3 9Z" />
-        <path {...stroke} d="M2 5h16l1 4c-2 2-4 2-6 0-2 2-4 2-6 0-2 2-4 2-6 0l1-4Z" />
-        <path {...stroke} d="M7 19v-5h4v5" />
-      </>
-    ),
-    selling: (
-      <>
-        <path {...stroke} d="M2 4h3l2 11h9l2-7H7" />
-        <path {...stroke} d="M8 9h10" />
-        <circle cx="9" cy="20" r="1.4" fill="currentColor" />
-        <circle cx="16" cy="20" r="1.4" fill="currentColor" />
-      </>
-    ),
-    dropshipper: (
-      <>
-        <path {...stroke} d="m10 2 8 4v9l-8 5-8-5V6l8-4Z" />
-        <path {...stroke} d="m2 6 8 5 8-5M10 11v9" />
-        <path {...stroke} d="m7 3 8 5" />
-      </>
-    ),
-    scaling: (
-      <>
-        <path {...stroke} d="M3 20v-5m5 5V11m5 9V7m5 13V3" />
-        <path {...stroke} d="m13 7 3-3 3 3m-3-3v8" />
-      </>
-    ),
-    products: (
-      <>
-        <path d="M5 7.5 10 5l5 2.5v5L10 15l-5-2.5v-5Z" fill="#f2b937" />
-        <path d="m5 7.5 5 2.5 5-2.5M10 10v5" fill="none" stroke="#d48811" strokeWidth="1.4" />
-        <circle cx="10" cy="10" r="6.5" fill="none" stroke="currentColor" strokeWidth="2" />
-        <path {...stroke} d="m14.5 14.5 4 4" />
-      </>
-    ),
-    ads: (
-      <>
-        <path
-          d="m7 3 1.4 4.2L13 8.5 8.4 9.8 7 14l-1.4-4.2L1 8.5l4.6-1.3L7 3Z"
-          fill="currentColor"
-        />
-        <path d="M10 10h10v9H10z" fill="none" stroke="currentColor" strokeWidth="1.7" />
-        <circle cx="14" cy="13" r="1.4" fill="currentColor" />
-        <path
-          d="m11 18 3.4-3 2.3 2 1.7-1.5L20 18"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.5"
-        />
-      </>
-    ),
-    sales: (
-      <>
-        <path {...stroke} d="M2 5h3l2 10h9l2-7H7" />
-        <path
-          d="m14.5 3 .9 2.5L18 6.4l-2.6.9-.9 2.5-.9-2.5-2.6-.9 2.6-.9.9-2.5Z"
-          fill="currentColor"
-        />
-        <circle cx="9" cy="20" r="1.3" fill="currentColor" />
-        <circle cx="16" cy="20" r="1.3" fill="currentColor" />
-      </>
-    ),
-    rocket: (
-      <>
-        <path
-          d="M12.5 3c4.7-2.5 6.8-.4 6.8-.4s2.1 2.1-.4 6.8l-6.8 6.8-6-6L12.5 3Z"
-          fill="currentColor"
-          opacity=".95"
-        />
-        <circle cx="14.7" cy="7.3" r="1.6" fill="#fff7df" />
-        <path {...stroke} d="m6.1 10.2-3.4.8 3 3m6.5 1.3-.9 3.5-2.8-2.8" />
-      </>
-    ),
-    performance: (
-      <>
-        <rect x="3" y="12" width="3.4" height="7" rx=".7" fill="currentColor" />
-        <rect x="8.3" y="8" width="3.4" height="11" rx=".7" fill="currentColor" />
-        <rect x="13.6" y="4" width="3.4" height="15" rx=".7" fill="currentColor" />
-      </>
-    ),
-    business: (
-      <>
-        <rect x="5" y="4" width="11" height="15" rx="1.5" {...stroke} />
-        <path {...stroke} d="M8 4V2h5v2M8 9h5m-5 3h5m-5 3h3" />
-        <path
-          d="m13 14 1.3 1.3L17 12.6"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </>
-    ),
-    world: (
-      <>
-        <circle cx="10" cy="11" r="7" {...stroke} />
-        <path {...stroke} d="M3 11h14M10 4c2 2 3 4.4 3 7s-1 5-3 7c-2-2-3-4.4-3-7s1-5 3-7Z" />
-      </>
-    ),
-    dropshipping: (
-      <>
-        <path {...stroke} d="M5 7h8v9H5z" />
-        <path {...stroke} d="m8 5 4 2m-8 2 5 3 5-3M9 12v4" />
-        <path {...stroke} d="M16 5v8m-2-6 2-2 2 2" />
-      </>
-    ),
-    dtc: <path {...stroke} d="m10 3 7 7-7 7-7-7 7-7Z" />,
-    marketplace: (
-      <>
-        <path {...stroke} d="M4 9v9h12V9" />
-        <path {...stroke} d="M3 5h14l1 4c-2 1.8-4 1.8-6 0-2 1.8-4 1.8-6 0-1 1-2 1.4-3 1.1L3 5Z" />
-        <path {...stroke} d="M8 18v-5h4v5" />
-      </>
-    ),
-    other: (
-      <>
-        <circle cx="5" cy="10" r="1.3" fill="currentColor" />
-        <circle cx="10" cy="10" r="1.3" fill="currentColor" />
-        <circle cx="15" cy="10" r="1.3" fill="currentColor" />
-      </>
-    ),
-    fashion: <path {...stroke} d="m6 5 3 2h2l3-2 3 3-2.5 2V18H5.5v-8L3 8l3-3Z" />,
-    beauty: (
-      <>
-        <path {...stroke} d="M8 6h4v2H8zM7 8h6v10H7z" />
-        <path {...stroke} d="M10 3v3" />
-      </>
-    ),
-    home: (
-      <>
-        <path {...stroke} d="m2.5 10 7.5-6 7.5 6v8H2.5v-8Z" />
-        <path {...stroke} d="M8 18v-5h4v5" />
-      </>
-    ),
-    electronics: (
-      <>
-        <rect x="6" y="3" width="8" height="16" rx="1.4" {...stroke} />
-        <path {...stroke} d="M9 16h2" />
-      </>
-    ),
-    fitness: (
-      <>
-        <path {...stroke} d="M4 8v8m3-10v12m6-12v12m3-10v8M7 12h10" />
-      </>
-    ),
-    pets: (
-      <>
-        <circle cx="7" cy="7" r="2" fill="currentColor" />
-        <circle cx="13" cy="5.5" r="2" fill="currentColor" />
-        <circle cx="17" cy="9" r="2" fill="currentColor" />
-        <path
-          d="M7.5 17c0-3 2-5 4.5-5s4.5 2 4.5 5c0 1.6-1.3 2-2.3 1.4-.8-.5-1.6-.5-2.4 0-1 .6-2.3.2-2.3-1.4Z"
-          fill="currentColor"
-        />
-      </>
-    ),
-    experience: (
-      <>
-        <path {...stroke} d="M4 18v-4m5 4V9m5 9V5" />
-        <path {...stroke} d="M3 20h14" />
-      </>
-    ),
-  };
-  return (
-    <svg className={className} viewBox="0 0 20 22" fill="none" aria-hidden="true">
-      {icons[name]}
-    </svg>
-  );
-}
-
-type ConnectionMethod = 'shopify' | 'woocommerce' | 'manual' | null;
-type BusinessType = 'Dropshipping' | 'DTC brand' | 'Marketplace seller' | 'Other';
-type Category = 'Fashion' | 'Beauty' | 'Home' | 'Electronics' | 'Fitness' | 'Pets' | 'Other';
-type Experience = 'Beginner' | 'Intermediate' | 'Advanced';
-type IconType = (props: GlyphProps) => React.ReactNode;
-
-const businessTypeToApi: Record<BusinessType, OnboardingBusinessType> = {
-  Dropshipping: 'dropshipping',
-  'DTC brand': 'dtc_brand',
-  'Marketplace seller': 'marketplace_seller',
-  Other: 'other',
-};
-const businessTypeFromApi: Record<OnboardingBusinessType, BusinessType> = {
-  dropshipping: 'Dropshipping',
-  dtc_brand: 'DTC brand',
-  marketplace_seller: 'Marketplace seller',
-  other: 'Other',
-};
-const categoryToApi: Record<Category, OnboardingCategory> = {
-  Fashion: 'fashion',
-  Beauty: 'beauty',
-  Home: 'home',
-  Electronics: 'electronics',
-  Fitness: 'fitness',
-  Pets: 'pets',
-  Other: 'other',
-};
-const categoryFromApi: Record<OnboardingCategory, Category> = {
-  fashion: 'Fashion',
-  beauty: 'Beauty',
-  home: 'Home',
-  electronics: 'Electronics',
-  fitness: 'Fitness',
-  pets: 'Pets',
-  other: 'Other',
-};
-const experienceToApi: Record<Experience, OnboardingExperience> = {
-  Beginner: 'beginner',
-  Intermediate: 'intermediate',
-  Advanced: 'advanced',
-};
-const experienceFromApi: Record<OnboardingExperience, Experience> = {
-  beginner: 'Beginner',
-  intermediate: 'Intermediate',
-  advanced: 'Advanced',
-};
-
-const goalOptions: {
-  id: OnboardingGoal;
-  title: string;
-  description: string;
-  icon: ReferenceIconName;
-  assetIcon: string;
-}[] = [
+// Pre-configured winning products for users who don't have an active store link yet
+const DEMO_PRODUCTS = [
   {
-    id: 'products',
-    title: 'Find winning products',
-    description: 'Discover products with growth potential.',
-    icon: 'products',
-    assetIcon: '/logos/onboarding/goal-search.svg',
+    id: 'posture',
+    title: 'Correcteur de Posture Ergonomique Pro',
+    category: 'fitness' as const,
+    categoryLabel: 'Santé & Bien-être',
+    badge: '🔥 +140k ventes en ads',
+    tag: 'Best-Seller',
+    price: '29.99 €',
+    problem: 'Douleurs de dos et mauvaise posture assise prolongée',
+    description:
+      'Dispositif discret et respirant qui redresse la colonne et soulage les tensions cervicales.',
+    icon: '🩺',
+    url: 'https://demo.trended.ai/products/posture-corrector-pro',
+    hooks: [
+      {
+        id: 'problem',
+        title: 'Le Problème Choc (Scroll-Stopper)',
+        tag: 'Rétention Maximale',
+        hookText:
+          '« Si tu passes plus de 4 heures assis par jour, arrête tout. Regarde ce qui arrive à ton dos... »',
+        description:
+          'Attaque frontale de la douleur quotidienne avec démonstration percutante dès la 2e seconde.',
+        badgeColor: 'border-danger/40 bg-danger/10 text-danger',
+      },
+      {
+        id: 'viral',
+        title: 'La Démo Virale TikTok',
+        tag: 'Tendance Virale',
+        hookText:
+          '« J’ai commandé ce gadget viral dont tout le monde parle pour voir si c’était vraiment efficace... »',
+        description: 'Style unboxing et test spontané avec réaction immédiate face caméra.',
+        badgeColor: 'border-trend-orange/40 bg-trend-orange/10 text-trend-orange',
+      },
+      {
+        id: 'review',
+        title: 'Le Témoignage Spontané UGC',
+        tag: 'Preuve Sociale Forte',
+        hookText:
+          '« Honnêtement, j’étais ultra sceptique au début... mais après 7 jours, impossible de m’en passer. »',
+        description:
+          'Confiance maximale, format selfie authentique recommandé pour les flux Meta et TikTok.',
+        badgeColor: 'border-dash-green/40 bg-dash-green/10 text-dash-green',
+      },
+    ],
   },
   {
-    id: 'ads',
-    title: 'Create better ads',
-    description: 'Generate high-performing creative concepts.',
-    icon: 'ads',
-    assetIcon: '/logos/onboarding/goal-ads.svg',
+    id: 'thermos',
+    title: 'Gourde Thermos Intelligente avec Écran LED',
+    category: 'home' as const,
+    categoryLabel: 'Maison & Gadgets',
+    badge: '⚡ Tendance TikTok Viral',
+    tag: 'Viral Gadget',
+    price: '34.90 €',
+    problem: 'Boissons tièdes et brûlures imprévues au bureau ou en voyage',
+    description:
+      'Gourde isotherme en inox avec capteur tactile qui affiche la température exacte en temps réel.',
+    icon: '☕',
+    url: 'https://demo.trended.ai/products/smart-led-thermos',
+    hooks: [
+      {
+        id: 'problem',
+        title: 'Le Piège Quotidien',
+        tag: 'Effet Curiosité',
+        hookText:
+          '« Combien de fois tu t’es brûlé la langue avec un café trop chaud sans savoir à quelle température il était ? »',
+        description: 'Mise en scène d’un moment frustrant que tout le monde a déjà vécu.',
+        badgeColor: 'border-danger/40 bg-danger/10 text-danger',
+      },
+      {
+        id: 'viral',
+        title: 'La Fonction Magique',
+        tag: 'High CTR',
+        hookText:
+          '« Ce détail à 30 secondes a fait exploser mes vues TikTok... regarde juste l’écran tactile. »',
+        description: 'Gros plan sur l’écran tactile LED qui s’allume, effet hypnotique immédiat.',
+        badgeColor: 'border-trend-orange/40 bg-trend-orange/10 text-trend-orange',
+      },
+      {
+        id: 'review',
+        title: 'L’Indispensable du Bureau',
+        tag: 'UGC Lifestyle',
+        hookText:
+          '« Le seul objet que j’emporte partout avec moi depuis 2 semaines. Tout le monde me demande où je l’ai trouvé. »',
+        description: 'Positionnement lifestyle premium qui donne envie d’avoir le même accessoire.',
+        badgeColor: 'border-dash-green/40 bg-dash-green/10 text-dash-green',
+      },
+    ],
   },
   {
-    id: 'sales',
-    title: 'Increase sales',
-    description: 'Identify opportunities to improve conversion.',
-    icon: 'sales',
-    assetIcon: '/logos/onboarding/goal-sales.svg',
-  },
-  {
-    id: 'scale',
-    title: 'Scale my store',
-    description: 'Understand what is driving profitable growth.',
-    icon: 'rocket',
-    assetIcon: '/logos/onboarding/goal-scale.svg',
-  },
-  {
-    id: 'performance',
-    title: 'Track performance',
-    description: 'Monitor revenue, profit and advertising performance.',
-    icon: 'performance',
-    assetIcon: '/logos/onboarding/goal-performance.svg',
+    id: 'beauty',
+    title: 'Nettoyant Visage Ultrasonique Pro',
+    category: 'beauty' as const,
+    categoryLabel: 'Beauté & Soins',
+    badge: '💄 94% de conversion UGC',
+    tag: 'Haute Marge',
+    price: '39.99 €',
+    problem: 'Points noirs tenaces et soins esthétiques coûteux en institut',
+    description:
+      'Appareil exfoliant à micro-vibrations soniques qui élimine les impuretés en 3 minutes.',
+    icon: '✨',
+    url: 'https://demo.trended.ai/products/ultrasonic-skin-scrubber',
+    hooks: [
+      {
+        id: 'problem',
+        title: 'L’Erreur de Routine',
+        tag: 'Choc Visuel',
+        hookText:
+          '« Si tu nettoies encore ta peau avec tes doigts, regarde la quantité de saletés qui reste bloquée... »',
+        description: 'Démonstration visuelle saisissante de l’extraction des impuretés.',
+        badgeColor: 'border-danger/40 bg-danger/10 text-danger',
+      },
+      {
+        id: 'viral',
+        title: 'L’Effet Avant / Après',
+        tag: 'Preuve Directe',
+        hookText:
+          '« J’ai remplacé mes séances d’institut à 80€ par cet appareil à la maison... résultat en 3 minutes. »',
+        description: 'Comparaison économique percutante et démonstration des résultats immédiats.',
+        badgeColor: 'border-trend-orange/40 bg-trend-orange/10 text-trend-orange',
+      },
+      {
+        id: 'review',
+        title: 'Le Re-stock d’Urgence',
+        tag: 'UGC Facecam',
+        hookText:
+          '« Ma dermato m’a demandé ce que j’avais changé dans ma routine... voici mon secret numéro un. »',
+        description: 'Recommandation personnelle valorisante qui crée un fort sentiment d’urgence.',
+        badgeColor: 'border-dash-green/40 bg-dash-green/10 text-dash-green',
+      },
+    ],
   },
 ];
 
-const connectionOptions = [
-  {
-    id: 'shopify' as const,
-    name: 'Shopify',
-    description: 'Import your products, orders, and customers in one click.',
-    buttonLabel: 'Connect Shopify',
-  },
-  {
-    id: 'woocommerce' as const,
-    name: 'WooCommerce',
-    description: 'Sync your store data and unlock powerful insights.',
-    buttonLabel: 'Connect WooCommerce',
-  },
-  {
-    id: 'manual' as const,
-    name: 'Manual setup',
-    description: 'Add your store details manually. You can connect it later.',
-    buttonLabel: 'Set up later',
-  },
+const TARGET_MARKETS = [
+  { code: 'France', label: 'France 🇫🇷', lang: 'fr', voice: 'Français (Voix UGC Naturelle)' },
+  { code: 'United States', label: 'États-Unis 🇺🇸', lang: 'en', voice: 'English (US Native UGC)' },
+  { code: 'United Kingdom', label: 'Royaume-Uni 🇬🇧', lang: 'en', voice: 'English (UK Accent)' },
+  { code: 'Germany', label: 'Allemagne 🇩🇪', lang: 'de', voice: 'Deutsch (Native)' },
+  { code: 'Spain', label: 'Espagne 🇪🇸', lang: 'es', voice: 'Español (Dinámico)' },
 ];
-
-function Brand({ className = '' }: { className?: string }) {
-  return (
-    <div className={`select-none ${className}`}>
-      <ThemeToggle className="fixed right-4 top-4 z-50 sm:right-6 sm:top-6" />
-      <div className="flex items-center gap-2">
-        <svg
-          className="h-[37px] w-[42px] shrink-0"
-          viewBox="0 0 54 43"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="m3 35 15.7-10.8 8.6 5.4L42.8 9.2H37V3h14v14h-5.1v-3.2L28 35.1 18.2 29 6.3 38.6 3 35Z"
-            fill="#d94808"
-          />
-          <path
-            d="m5.7 30.8 13-9 8.6 5.4 14.5-16.7H37V5h14v14h-5.1v-3.6L28 36.7 18.2 30.6 7.1 38.1 5.7 30.8Z"
-            fill="#f59e0b"
-            opacity=".72"
-          />
-        </svg>
-        <span className="-translate-y-px text-[39px] font-extrabold leading-none tracking-[-.055em] text-ink">
-          Trend<span className="text-trend-orange">ED</span>
-        </span>
-      </div>
-      <p className="ml-[4px] mt-1 text-[12px] font-medium leading-none text-ink">
-        E-commerce . Dropshipping . Growth
-      </p>
-    </div>
-  );
-}
-
-function SelectionDot({ selected, compact = false }: { selected: boolean; compact?: boolean }) {
-  return (
-    <span
-      className={`flex items-center justify-center rounded-full border ${compact ? 'h-4 w-4' : 'h-[18px] w-[18px]'} ${selected ? 'border-trend-gold bg-trend-gold' : 'border-line bg-studio-ground'}`}
-      aria-hidden="true"
-    >
-      {selected && (
-        <Check className={`${compact ? 'h-3 w-3' : 'h-3.5 w-3.5'} stroke-[3] text-white`} />
-      )}
-    </span>
-  );
-}
-
-function SecurityShield({
-  className = 'h-6 w-6',
-  detailed = false,
-}: {
-  className?: string;
-  detailed?: boolean;
-}) {
-  return (
-    <svg className={className} viewBox="0 0 48 52" fill="none" aria-hidden="true">
-      <path
-        d="M24 3 42 10v13c0 12-7.6 21.1-18 26C13.6 44.1 6 35 6 23V10L24 3Z"
-        fill={detailed ? '#fffaf0' : 'currentColor'}
-        fillOpacity={detailed ? 1 : 0.14}
-        stroke="currentColor"
-        strokeWidth="2.2"
-      />
-      <rect
-        x="15"
-        y="23"
-        width="18"
-        height="15"
-        rx="2.3"
-        fill={detailed ? '#f4b52a' : 'none'}
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <path d="M19 23v-4a5 5 0 0 1 10 0v4" stroke="currentColor" strokeWidth="2" />
-      {detailed && <circle cx="24" cy="30" r="1.6" fill="#fff8e7" />}
-    </svg>
-  );
-}
-
-function ManualSetupClock() {
-  return (
-    <svg
-      className="h-4 w-4 text-trend-gold"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      aria-hidden="true"
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0a9 9 0 0 1 18 0Z"
-      />
-    </svg>
-  );
-}
-
-function StepTracker({ active }: { active: number }) {
-  return (
-    <ol className="flex items-center" aria-label="Onboarding progress">
-      {[1, 2, 3, 4].map((item, index) => (
-        <li key={item} className="flex items-center">
-          <span
-            className={`flex h-[27px] w-[27px] items-center justify-center rounded-full border text-[13px] font-medium ${item === active ? 'border-trend-orange bg-trend-orange text-on-accent shadow-[0_2px_5px_rgba(215,77,12,.28)]' : 'border-line bg-studio-ground text-ink-muted'}`}
-          >
-            {item}
-          </span>
-          {index < 3 && <span className="h-px w-[85px] bg-studio-raised" />}
-        </li>
-      ))}
-    </ol>
-  );
-}
-
-function FooterButton({
-  children,
-  primary = false,
-  wide = false,
-  compact = false,
-  onClick,
-  disabled = false,
-}: {
-  children: React.ReactNode;
-  primary?: boolean;
-  wide?: boolean;
-  compact?: boolean;
-  onClick: () => void;
-  disabled?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      className={`flex h-[46px] items-center justify-center gap-2 rounded-[6px] px-7 text-[15px] font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:opacity-60 ${primary ? `${compact ? 'min-w-[170px]' : wide ? 'min-w-[246px]' : 'min-w-[225px]'} bg-trend-orange text-on-accent shadow-[0_4px_10px_rgba(217,72,8,.18)] hover:bg-[#bd3e05]` : compact ? 'min-w-[115px] border border-line bg-studio-ground text-ink-soft hover:bg-studio-surface' : 'min-w-[184px] border border-line bg-studio-ground text-ink-soft hover:bg-studio-surface'}`}
-    >
-      {children}
-    </button>
-  );
-}
-
-function DashboardDecoration() {
-  return (
-    <div
-      className="pointer-events-none absolute right-[-18px] top-0 hidden h-[145px] w-[330px] origin-top-right scale-[1.35] lg:block"
-      aria-hidden="true"
-    >
-      <div className="absolute inset-x-0 top-0 h-[121px] rounded-[54px] bg-cream" />
-      <svg
-        className="absolute right-[-1px] top-0 h-[42px] w-[67px]"
-        viewBox="0 0 67 42"
-        fill="none"
-        aria-hidden="true"
-      >
-        {[7, 19, 31, 43, 55].map((cx) => (
-          <circle key={`first-${cx}`} cx={cx} cy="7" r="1.15" fill="#dfbd58" opacity=".72" />
-        ))}
-        {[7, 19, 31, 43, 55].map((cx) => (
-          <circle key={`second-${cx}`} cx={cx} cy="18" r="1.15" fill="#dfbd58" opacity=".72" />
-        ))}
-        {[7, 19, 31, 43, 55].map((cx) => (
-          <circle key={`third-${cx}`} cx={cx} cy="29" r="1.15" fill="#dfbd58" opacity=".72" />
-        ))}
-      </svg>
-      <div className="absolute left-0 top-[8px] h-[104px] w-[156px] rounded-[5px] border border-cream bg-studio-ground px-3 py-3 shadow-[0_6px_16px_rgba(94,68,37,.07)]">
-        <p className="text-[7px] font-medium text-ink-muted">Total Revenue</p>
-        <p className="mt-0.5 text-[12px] font-bold leading-none text-ink">
-          $24,680 <span className="ml-0.5 text-[7px] font-medium text-ink-muted">▲ 18.6%</span>
-        </p>
-        <svg className="mt-3 h-[49px] w-full" viewBox="0 0 132 49" fill="none">
-          <path d="M0 8h132M0 24h132M0 40h132" stroke="#f4f0e9" strokeWidth=".8" />
-          <path
-            d="m2 40 13-11 11 6 14-19 12 12 15-5 12 7 15-17 13 15 10-4"
-            stroke="#d6b15b"
-            strokeWidth="1.35"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-      <div className="absolute left-[151px] top-[29px] h-[116px] w-[157px] rotate-[2deg] rounded-[6px] border border-cream bg-studio-ground px-4 py-4 shadow-[0_7px_18px_rgba(94,68,37,.08)]">
-        <div className="flex items-center gap-3">
-          <span className="h-10 w-10 shrink-0 rounded-full border-[8px] border-[#d98715] border-r-[#faedce]" />
-          <div>
-            <p className="text-[7px] font-semibold leading-none text-ink-muted">Products</p>
-            <p className="mt-1 text-[6px] text-ink-muted">Top sellers</p>
-          </div>
-        </div>
-        <div className="mt-3 flex items-end justify-between">
-          <span className="text-[7px] font-medium text-[#c9962a]">$24.6k</span>
-          <Image
-            src="/headphones-product.png"
-            alt=""
-            width={43}
-            height={43}
-            className="h-[43px] w-[43px] rounded-sm object-cover opacity-55"
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function AsideBenefit({
-  icon: Icon,
-  iconSrc,
-  title,
-  text,
-}: {
-  icon: IconType;
-  iconSrc?: string;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="flex gap-3">
-      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-cream text-[#d47a29]">
-        {iconSrc ? (
-          <SvgAssetIcon src={iconSrc} className="h-[17px] w-[17px]" />
-        ) : (
-          <Icon className="h-[17px] w-[17px]" strokeWidth={1.7} />
-        )}
-      </span>
-      <div>
-        <p className="text-[12px] font-bold leading-4 text-ink">{title}</p>
-        <p className="text-[12px] leading-4 text-ink-muted">{text}</p>
-      </div>
-    </div>
-  );
-}
-
-function BusinessIllustration() {
-  return (
-    <div className="-mx-[32px] mt-2 h-[180px] w-[300px] overflow-hidden" aria-hidden="true">
-      <Image
-        src="/onboarding/business-growth-illustration.png"
-        alt=""
-        width={1550}
-        height={1024}
-        className="-mt-5 h-auto w-[300px] max-w-none"
-      />
-    </div>
-  );
-}
-
-function WelcomeAside() {
-  return (
-    <aside className="hidden w-[365px] shrink-0 overflow-hidden border-r border-line bg-cream px-[51px] py-[66px] lg:block">
-      <Brand />
-      <div className="mt-[69px] max-w-[243px]">
-        <h2 className="font-editorial text-[31px] leading-[1.16] text-ink">
-          All-in-one platform <em className="font-normal text-[#bf561d]">to build, grow</em> and
-          scale your e-commerce business.
-        </h2>
-        <span className="mt-5 block h-px w-7 bg-[#c75b25]" />
-        <div className="mt-5 space-y-5">
-          <AsideBenefit
-            icon={Search}
-            iconSrc="/logos/onboarding/boxicons--search-big.svg"
-            title="Discover winning products"
-            text="Find trending products with data-backed demand."
-          />
-          <AsideBenefit
-            icon={Sparkles}
-            iconSrc="/logos/onboarding/akar-icons--sparkles.svg"
-            title="Create high-converting ads"
-            text="Generate AI ad creatives that convert and scale."
-          />
-          <AsideBenefit
-            icon={BarChart3}
-            iconSrc="/logos/onboarding/bi--bar-chart-line.svg"
-            title="Track & grow your business"
-            text="Monitor performance and make smarter growth decisions."
-          />
-        </div>
-      </div>
-      <BusinessIllustration />
-    </aside>
-  );
-}
-
-function IntroArt() {
-  return (
-    <div className="relative mx-auto h-[206px] w-[238px] opacity-90" aria-hidden="true">
-      <div className="absolute left-3 top-0 h-[177px] w-[182px] rotate-[-3deg] rounded-[6px] border border-line bg-studio-ground/75 p-3 shadow-[0_11px_22px_rgba(120,93,55,.08)]">
-        <div className="flex gap-1">
-          <span className="h-1.5 w-1.5 rounded-full bg-[#df8054]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#e7bb5f]" />
-          <span className="h-1.5 w-1.5 rounded-full bg-[#c7d28d]" />
-        </div>
-        <div className="mt-5 flex gap-3">
-          <div className="flex h-16 w-[65px] items-center justify-center overflow-hidden rounded bg-cream">
-            <Image
-              src="/headphones-product.png"
-              alt=""
-              width={65}
-              height={64}
-              className="h-[52px] w-[52px] object-contain"
-            />
-          </div>
-          <div className="flex h-16 flex-1 items-center justify-center rounded bg-cream">
-            <svg className="h-10 w-7 opacity-35" viewBox="0 0 28 40" fill="none">
-              <path d="M9 7h10l2 7v20H7V14l2-7Z" fill="#d9d1c4" />
-              <path d="M11 7V4h6v3" stroke="#bdb4a6" strokeWidth="1.3" />
-              <rect x="9" y="17" width="10" height="9" rx="2" fill="#eee9e1" />
-            </svg>
-          </div>
-        </div>
-        <p className="mt-2 text-[11px] text-ink-muted">$28.45</p>
-        <svg className="mt-1 h-12 w-full" viewBox="0 0 150 48" fill="none">
-          <path d="m2 37 21-7 15 4 22-23 19 14 28-6 15-15 24 6" stroke="#e5ad43" strokeWidth="2" />
-        </svg>
-      </div>
-      <div className="absolute right-0 top-[61px] z-20 w-[105px] rounded-[5px] bg-studio-ground/95 px-3 py-2 shadow-[0_7px_18px_rgba(121,82,33,.1)]">
-        <p className="text-[7px] text-ink-muted">Winning Potential</p>
-        <p className="mt-1 text-[13px] font-semibold text-[#5d9b67]">High</p>
-        <svg className="absolute bottom-[11px] right-3 h-4 w-5" viewBox="0 0 20 16" fill="none">
-          <path
-            d="m1 13 5-4 3 2 6-7"
-            stroke="#6fa979"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M12 4h3v3"
-            stroke="#6fa979"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </div>
-      <div className="absolute bottom-0 right-0 z-10 h-[102px] w-[101px] rotate-[3deg] rounded-[5px] bg-studio-ground p-3 shadow-[0_7px_18px_rgba(121,82,33,.12)]">
-        <div className="flex h-full items-end justify-between gap-1">
-          <span className="h-[31%] w-4 bg-[#f6ca72]" />
-          <span className="h-[51%] w-4 bg-[#e8a737]" />
-          <span className="h-[72%] w-4 bg-[#f6c45e]" />
-          <span className="h-full w-4 bg-[#e29a1e]" />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function GoalsAside() {
-  return (
-    <aside className="hidden w-[323px] shrink-0 bg-cream px-[54px] py-[66px] lg:block">
-      <Brand />
-      <div className="mt-[139px]">
-        <IntroArt />
-      </div>
-      <div className="-ml-[22px] mt-[72px] w-[250px] rounded-[7px] bg-studio-ground p-4 shadow-[0_8px_20px_rgba(107,76,36,.09)]">
-        <div className="flex items-center gap-2">
-          <Image
-            src="/login-profile.jpg"
-            alt=""
-            width={36}
-            height={36}
-            className="h-9 w-9 rounded-full object-cover"
-          />
-          <span className="text-[15px] tracking-[2px] text-[#e7ab21]">*****</span>
-        </div>
-        <p className="mt-2 text-[11px] leading-[17px] text-ink">
-          &quot;TrendED helped me go from zero to six figures. The product insights and ad creator
-          are absolute game changers.&quot;
-        </p>
-        <p className="mt-3 text-[11px] font-bold text-ink">- Alex R.</p>
-        <p className="text-[10px] text-ink-muted">7-Figure Dropshipper</p>
-      </div>
-    </aside>
-  );
-}
-
-function ConnectionMark({ id }: { id: Exclude<ConnectionMethod, null> }) {
-  if (id === 'shopify')
-    return (
-      <Image
-        src="/logos/shopify.jpeg"
-        alt=""
-        width={49}
-        height={56}
-        className="h-14 w-[49px] object-contain"
-        aria-hidden="true"
-      />
-    );
-  if (id === 'woocommerce')
-    return (
-      <Image
-        src="/logos/woocommerce-transparent.png"
-        alt=""
-        width={64}
-        height={64}
-        className="-mt-1 h-16 w-16 object-contain"
-        aria-hidden="true"
-      />
-    );
-  return (
-    <span className="text-[#f5b82e]" aria-hidden="true">
-      <SvgAssetIcon src="/logos/onboarding/manual-store.svg" className="h-14 w-14" />
-    </span>
-  );
-}
-
-function ConnectionSidebar({ active }: { active: number }) {
-  const items = [
-    ['Welcome', "Let's get started"],
-    ['Business details', 'Tell us about your business'],
-    ['Connect your store', 'Bring in your data'],
-    ['Your goals', 'Help us personalize your experience'],
-  ];
-  return (
-    <aside className="hidden border-r border-line bg-cream px-7 pb-[49px] pt-[42px] lg:flex lg:w-[285px] lg:shrink-0 lg:flex-col">
-      <Brand />
-      <ol className="ml-1.5 mt-[68px] space-y-9" aria-label="Onboarding progress">
-        {items.map(([title, description], index) => {
-          const number = index + 1;
-          const completed = number < active;
-          const current = number === active;
-          return (
-            <li key={title} className="flex items-start gap-2.5">
-              <span
-                className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full border text-sm font-medium ${current ? 'border-trend-gold bg-cream text-[#b7791f]' : completed ? 'border-ink-muted text-ink-muted' : 'border-line text-ink-muted'}`}
-              >
-                {completed ? <Check className="h-4 w-4" /> : number}
-              </span>
-              <span className="pt-0.5">
-                <span
-                  className={`block text-[15px] font-medium ${current ? 'text-[#b64a17]' : 'text-ink-muted'}`}
-                >
-                  {title}
-                </span>
-                <span className="mt-1 block max-w-[180px] text-[13px] leading-5 text-ink-muted">
-                  {description}
-                </span>
-              </span>
-            </li>
-          );
-        })}
-      </ol>
-      <div className="mt-auto h-[130px] rounded-sm bg-cream px-5 py-4">
-        <div className="flex items-start gap-2">
-          <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#fff0be] text-[#e7ad21]">
-            <SecurityShield className="h-5 w-5" />
-          </span>
-          <div>
-            <p className="text-[13px] font-semibold text-ink">Your data is safe with us</p>
-            <p className="mt-2 text-[13px] leading-[23px] text-ink-muted">
-              We use enterprise-grade security to protect your store information.
-            </p>
-          </div>
-        </div>
-      </div>
-    </aside>
-  );
-}
-
-function OptionGroup<T extends string>({
-  label,
-  options,
-  value,
-  onChange,
-  icons,
-  assetIcons,
-  columns,
-  compact = false,
-}: {
-  label: string;
-  options: T[];
-  value: T;
-  onChange: (value: T) => void;
-  icons: ReferenceIconName[];
-  assetIcons?: string[];
-  columns: string;
-  compact?: boolean;
-}) {
-  return (
-    <div>
-      <p className="mb-3 text-[15px] font-semibold">{label}</p>
-      <div className={`grid gap-3 ${columns}`}>
-        {options.map((option, index) => {
-          const selected = value === option;
-          const icon = icons[index];
-          return (
-            <button
-              type="button"
-              key={option}
-              onClick={() => onChange(option)}
-              className={`flex h-[54px] min-w-0 items-center rounded-[6px] border text-left transition ${compact ? 'gap-1.5 px-2 text-[12px]' : 'gap-3 px-3 text-[14px]'} ${selected ? 'border-[#cf9a70] bg-cream shadow-[inset_0_0_0_1px_#f5e3d7]' : 'border-line bg-studio-ground hover:border-[#cf9a70]'}`}
-            >
-              {assetIcons ? (
-                <span className="shrink-0 text-[#c58452]">
-                  <SvgAssetIcon
-                    src={assetIcons[index]}
-                    className={compact ? 'h-[18px] w-[18px]' : 'h-5 w-5'}
-                  />
-                </span>
-              ) : (
-                <ReferenceIcon
-                  name={icon}
-                  className={`${compact ? 'h-[18px] w-[18px]' : 'h-5 w-5'} shrink-0 text-[#c58452]`}
-                />
-              )}
-              <span className={`min-w-0 font-medium ${compact ? 'whitespace-nowrap' : 'truncate'}`}>
-                {option}
-              </span>
-              <span className="ml-auto shrink-0">
-                <SelectionDot selected={selected} compact={compact} />
-              </span>
-            </button>
-          );
-        })}
-      </div>
-    </div>
-  );
-}
 
 export default function OnboardingPage() {
   const router = useRouter();
-  const { user, token, isLoading: isAuthLoading } = useAuth();
-  const [step, setStep] = useState(1);
-  const [profile, setProfile] = useState<OnboardingProfile>('scaling');
-  const [businessType, setBusinessType] = useState<BusinessType>('Dropshipping');
-  const [category, setCategory] = useState<Category>('Fashion');
-  const [experience, setExperience] = useState<Experience>('Beginner');
-  const [targetMarket, setTargetMarket] = useState('');
-  const [connection, setConnection] = useState<ConnectionMethod>(null);
-  const [goals, setGoals] = useState<OnboardingGoal[]>(goalOptions.map((goal) => goal.id));
-  const [isProgressLoading, setIsProgressLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saveError, setSaveError] = useState<string | null>(null);
-  const displayName = user ? `${user.first_name} ${user.last_name}` : 'John Doe';
-  const initials = user
-    ? `${user.first_name.charAt(0)}${user.last_name.charAt(0)}`.toUpperCase()
-    : 'JD';
+  const { token, isLoading: isAuthLoading } = useAuth();
+
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [selectedDemoProduct, setSelectedDemoProduct] = useState<(typeof DEMO_PRODUCTS)[0]>(
+    DEMO_PRODUCTS[0],
+  );
+  const [customUrl, setCustomUrl] = useState('');
+  const [targetMarket, setTargetMarket] = useState('France');
+  const [selectedHookIndex, setSelectedHookIndex] = useState(0);
+  const [businessType, setBusinessType] = useState<
+    'dropshipping' | 'dtc_brand' | 'marketplace_seller'
+  >('dropshipping');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSimulatingAnalysis, setIsSimulatingAnalysis] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  // Security redirect if not logged in
   useEffect(() => {
-    if (isAuthLoading) return;
-    if (!token) {
+    if (!isAuthLoading && !token) {
       router.replace('/login');
-      return;
     }
+  }, [isAuthLoading, token, router]);
 
-    let active = true;
-    const loadProgress = async () => {
-      try {
-        const progress = await api.getOnboarding(token);
-        if (!active) return;
-        if (progress.is_completed) {
-          router.replace(takeReturnTo() ?? '/dashboard');
-          return;
-        }
+  // When step 2 is entered, simulate a 1.2s AI analysis to give that satisfying "IA thinking" feel
+  const handleProceedToStep2 = () => {
+    setError(null);
+    setIsSimulatingAnalysis(true);
+    setStep(2);
+    setTimeout(() => {
+      setIsSimulatingAnalysis(false);
+    }, 1200);
+  };
 
-        setStep(progress.current_step);
-        if (progress.profile) setProfile(progress.profile);
-        if (progress.business_type) setBusinessType(businessTypeFromApi[progress.business_type]);
-        if (progress.main_category) setCategory(categoryFromApi[progress.main_category]);
-        if (progress.target_market) setTargetMarket(progress.target_market);
-        if (progress.experience_level) setExperience(experienceFromApi[progress.experience_level]);
-        if (progress.store_connection) setConnection(progress.store_connection);
-        if (progress.goals.length) setGoals(progress.goals);
-      } catch (error) {
-        if (error instanceof ApiRequestError && error.status === 401) {
-          router.replace('/login');
-        } else if (active) {
-          setSaveError('Unable to load your onboarding progress. Please try again.');
-        }
-      } finally {
-        if (active) setIsProgressLoading(false);
-      }
-    };
+  const handleLaunchFirstAd = async () => {
+    if (!token) return;
+    setIsSubmitting(true);
+    setError(null);
 
-    loadProgress();
-    return () => {
-      active = false;
-    };
-  }, [isAuthLoading, router, token]);
+    const chosenProductTitle = customUrl.trim() ? customUrl.trim() : selectedDemoProduct.title;
+    const chosenProductUrl = customUrl.trim() ? customUrl.trim() : selectedDemoProduct.url;
+    const marketObj = TARGET_MARKETS.find((m) => m.code === targetMarket) ?? TARGET_MARKETS[0];
 
-  const back = () => (step === 1 ? router.back() : setStep((current) => current - 1));
-  const next = async () => {
-    if (!token || isSaving) return;
-    if (step === 2 && !targetMarket.trim()) {
-      setSaveError('Please select your target market before continuing.');
-      return;
-    }
-    if (step === 3 && !connection) {
-      setSaveError('Please choose how you want to connect your store.');
-      return;
-    }
-    if (step === 4 && goals.length === 0) {
-      setSaveError('Choose at least one goal to continue.');
-      return;
-    }
-
-    setSaveError(null);
-    setIsSaving(true);
     try {
-      if (step === 1) {
-        await api.saveOnboardingStep1(token, profile);
-      } else if (step === 2) {
-        await api.saveOnboardingStep2(token, {
-          business_type: businessTypeToApi[businessType],
-          main_category: categoryToApi[category],
-          target_market: targetMarket.trim(),
-          experience_level: experienceToApi[experience],
-        });
-      } else if (step === 3 && connection) {
-        await api.saveOnboardingStep3(token, connection);
-      } else {
-        await api.saveOnboardingStep4(token, goals);
-        await api.completeOnboarding(token);
-        router.push(takeReturnTo() ?? '/dashboard');
-        return;
+      // 1. Save ad preferences into sessionStorage for instant pickup by the Studio
+      try {
+        sessionStorage.setItem(
+          AD_SETTINGS_KEY,
+          JSON.stringify({
+            format: '9:16',
+            language: marketObj.lang,
+            duration: 15,
+            hookAngle: selectedDemoProduct.hooks[selectedHookIndex]?.id,
+          }),
+        );
+      } catch {
+        /* storage blocked */
       }
-      setStep((current) => current + 1);
-    } catch (error) {
-      if (error instanceof ApiRequestError && error.status === 401) {
-        router.replace('/login');
-      } else if (error instanceof ApiRequestError) {
-        setSaveError(error.message);
+
+      // 2. Persist backend onboarding steps so user.onboarding_completed becomes true
+      await api.saveOnboardingStep1(token, 'dropshipper');
+      await api.saveOnboardingStep2(token, {
+        business_type: businessType,
+        main_category: selectedDemoProduct.category,
+        target_market: targetMarket,
+        experience_level: 'intermediate',
+      });
+      await api.saveOnboardingStep3(token, 'manual');
+      await api.saveOnboardingStep4(token, ['ads', 'sales']);
+      await api.completeOnboarding(token);
+
+      // 3. Forward the user directly into the product creation workflow!
+      const destination = `/product-input?url=${encodeURIComponent(chosenProductUrl)}&describe=${encodeURIComponent(
+        chosenProductTitle,
+      )}`;
+
+      const returnTo = takeReturnTo();
+      router.push(returnTo && returnTo !== '/dashboard' ? returnTo : destination);
+    } catch (err) {
+      if (err instanceof ApiRequestError) {
+        setError(err.message);
       } else {
-        setSaveError('Unable to save your progress. Please try again.');
+        setError('Impossible d’initialiser votre studio publicitaire. Veuillez réessayer.');
       }
-    } finally {
-      setIsSaving(false);
+      setIsSubmitting(false);
     }
   };
 
-  if (isAuthLoading || isProgressLoading) {
-    return <div className="min-h-screen bg-cream" aria-busy="true" />;
+  if (isAuthLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-studio-ground text-ink">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-trend-orange border-t-transparent" />
+      </div>
+    );
   }
 
-  if (step === 1)
-    return (
-      <div className="min-h-[100dvh] overflow-hidden bg-cream text-ink">
-        <div className="relative mx-auto min-h-[100dvh] max-w-[1440px] px-8 pb-10 pt-[57px] lg:px-[84px]">
-          <Brand />
-          <DashboardDecoration />
-          <section className="mx-auto mt-[34px] flex w-full max-w-[1028px] flex-col items-center lg:mt-[28px]">
-            <StepTracker active={1} />
-            <p className="mt-8 text-[13px] font-semibold text-[#bf5d29]">STEP 1 OF 4</p>
-            <h1 className="mt-4 text-center text-[34px] font-bold leading-[1.14] sm:text-[41px]">
-              Let&apos;s build your
-              <br />
-              <em className="font-editorial font-normal text-trend-orange">
-                e-commerce growth system.
-              </em>
-            </h1>
-            <p className="mt-4 text-center text-[16px] text-ink-muted">
-              Tell us a little about your business so TrendED can personalize your experience.
-            </p>
-            <h2 className="mt-7 text-center text-[20px] font-bold">What best describes you?</h2>
-            <div className="mt-6 grid w-full max-w-[996px] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {[
-                ['starting', "I'm starting", 'my first store'],
-                ['selling', 'I already', 'sell online'],
-                ['dropshipper', "I'm a", 'dropshipper'],
-                ['scaling', "I'm scaling", 'an existing brand'],
-              ].map(([id, title, description]) => {
-                const selected = profile === id;
-                return (
-                  <button
-                    type="button"
-                    key={id}
-                    onClick={() => setProfile(id as OnboardingProfile)}
-                    className={`relative flex h-[188px] flex-col items-center justify-center rounded-[7px] border text-center transition ${selected ? 'border-trend-gold bg-cream shadow-[inset_0_0_0_1px_#f1e3bb]' : 'border-line bg-studio-ground hover:border-trend-gold'}`}
-                  >
-                    <span
-                      className={`mb-4 flex h-[67px] w-[67px] items-center justify-center rounded-full ${selected ? 'bg-cream text-[#e0a400]' : 'bg-cream text-[#c76a3a]'}`}
-                    >
-                      <SvgAssetIcon
-                        src={profileIconSources[id as keyof typeof profileIconSources]}
-                      />
-                    </span>
-                    <span className="text-[17px] font-bold leading-5">{title as string}</span>
-                    <span className="mt-1 text-[16px] leading-5 text-ink-muted">
-                      {description as string}
-                    </span>
-                    {selected && (
-                      <span className="absolute right-[10px] top-[10px] flex h-[26px] w-[26px] items-center justify-center rounded-[5px] bg-[#efaa00] text-white">
-                        <Check className="h-4 w-4" strokeWidth={3} />
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </section>
-          {saveError && (
-            <p className="mx-auto mt-5 w-full max-w-[1028px] text-sm text-danger" role="alert">
-              {saveError}
-            </p>
-          )}
-          <footer className="mx-auto mt-10 flex w-full max-w-[1028px] items-center justify-between lg:mt-[40px]">
-            <FooterButton onClick={back}>Back</FooterButton>
-            <FooterButton primary onClick={next} disabled={isSaving}>
-              {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-5 w-5" />
-            </FooterButton>
-          </footer>
-        </div>
-      </div>
-    );
-
-  if (step === 2)
-    return (
-      <div className="min-h-[100dvh] bg-cream/40 text-ink">
-        <div className="flex min-h-[100dvh] flex-col lg:flex-row">
-          <WelcomeAside />
-          <main className="flex flex-1 items-center justify-center px-5 py-8 lg:items-start lg:justify-start lg:py-6 lg:pl-0 lg:pr-0">
-            <section className="flex min-h-[720px] w-full max-w-[956px] flex-col rounded-[8px] border border-line bg-studio-ground shadow-[0_7px_20px_rgba(65,48,24,.04)] lg:max-w-none lg:rounded-r-none">
-              <div className="px-7 pt-[46px] sm:px-10 lg:px-[54px]">
-                <span className="flex h-[55px] w-[55px] items-center justify-center rounded-full bg-cream text-[#d77c46]">
-                  <SvgAssetIcon
-                    src="/logos/onboarding/fluent--clipboard-text-edit-32-regular.svg"
-                    className="h-7 w-7"
-                  />
-                </span>
-                <h1 className="mt-4 text-[34px] font-bold leading-none sm:text-[39px]">
-                  Tell us about your business.
-                </h1>
-                <p className="mt-4 text-[16px] text-ink-muted">
-                  This helps TrendED surface more relevant products, insights and recommendations.
-                </p>
-                <div className="mt-8 space-y-6">
-                  <OptionGroup
-                    label="Business type"
-                    options={
-                      ['Dropshipping', 'DTC brand', 'Marketplace seller', 'Other'] as BusinessType[]
-                    }
-                    value={businessType}
-                    onChange={setBusinessType}
-                    icons={['dropshipping', 'dtc', 'marketplace', 'other']}
-                    assetIcons={[
-                      '/logos/onboarding/la--parachute-box.svg',
-                      '/logos/onboarding/streamline-ultimate--delivery-package-person.svg',
-                      '/logos/onboarding/fluent--building-shop-24-regular.svg',
-                      '/logos/onboarding/fluent--more-circle-16-regular.svg',
-                    ]}
-                    columns="grid-cols-1 sm:grid-cols-2 xl:grid-cols-4"
-                  />
-                  <OptionGroup
-                    label="Main category"
-                    options={
-                      [
-                        'Fashion',
-                        'Beauty',
-                        'Home',
-                        'Electronics',
-                        'Fitness',
-                        'Pets',
-                        'Other',
-                      ] as Category[]
-                    }
-                    value={category}
-                    onChange={setCategory}
-                    icons={['fashion', 'beauty', 'home', 'electronics', 'fitness', 'pets', 'other']}
-                    assetIcons={[
-                      '/logos/onboarding/keyline-icons--shirt.svg',
-                      '/logos/onboarding/streamline-pixel--beauty-cosmatic-brush-set.svg',
-                      '/logos/onboarding/ant-design--home-outlined.svg',
-                      '/logos/onboarding/gravity-ui--smartphone.svg',
-                      '/logos/onboarding/circum--dumbbell.svg',
-                      '/logos/onboarding/ph--paw-print-light.svg',
-                      '/logos/onboarding/fluent--more-circle-16-regular.svg',
-                    ]}
-                    columns="grid-cols-2 sm:grid-cols-4 xl:grid-cols-7"
-                    compact
-                  />
-                  <div>
-                    <p className="mb-3 text-[15px] font-semibold">Target market</p>
-                    <label className="flex h-[52px] w-full items-center justify-between rounded-[5px] border border-line px-4 text-[15px] text-ink-muted">
-                      <span className="flex items-center gap-3">
-                        <span className="text-ink-muted">
-                          <SvgAssetIcon
-                            src="/logos/onboarding/fluent-mdl2--globe.svg"
-                            className="h-5 w-5"
-                          />
-                        </span>
-                        <select
-                          value={targetMarket}
-                          onChange={(event) => setTargetMarket(event.target.value)}
-                          className="min-w-0 appearance-none bg-transparent pr-8 text-[15px] outline-none"
-                          aria-label="Target market"
-                        >
-                          <option value="">Select country / region</option>
-                          <option value="France">France</option>
-                          <option value="United States">United States</option>
-                          <option value="United Kingdom">United Kingdom</option>
-                          <option value="Canada">Canada</option>
-                          <option value="Worldwide">Worldwide</option>
-                        </select>
-                      </span>
-                      <ChevronDown className="h-5 w-5 text-ink" />
-                    </label>
-                  </div>
-                  <OptionGroup
-                    label="Experience level"
-                    options={['Beginner', 'Intermediate', 'Advanced'] as Experience[]}
-                    value={experience}
-                    onChange={setExperience}
-                    icons={['experience', 'experience', 'experience']}
-                    assetIcons={[
-                      '/logos/onboarding/bi--bar-chart.svg',
-                      '/logos/onboarding/bi--bar-chart.svg',
-                      '/logos/onboarding/bi--bar-chart.svg',
-                    ]}
-                    columns="grid-cols-1 sm:grid-cols-3"
-                  />
-                </div>
-              </div>
-              {saveError && (
-                <p className="px-7 pt-4 text-sm text-danger sm:px-10 lg:px-[54px]" role="alert">
-                  {saveError}
-                </p>
-              )}
-              <footer className="mt-auto flex items-center justify-between border-t border-line px-7 py-5 sm:px-10 lg:px-[54px]">
-                <FooterButton onClick={back}>Back</FooterButton>
-                <div className="hidden items-center gap-4 lg:flex">
-                  <span className="h-3 w-3 rounded-full bg-line" />
-                  <span className="h-3 w-3 rounded-full bg-[#e36920]" />
-                  <span className="h-3 w-3 rounded-full bg-line" />
-                  <span className="h-3 w-3 rounded-full bg-line" />
-                </div>
-                <FooterButton primary onClick={next} disabled={isSaving}>
-                  {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-5 w-5" />
-                </FooterButton>
-              </footer>
-            </section>
-          </main>
-        </div>
-      </div>
-    );
-
-  if (step === 3)
-    return (
-      <div className="min-h-[100dvh] bg-cream text-ink">
-        <div className="flex min-h-[100dvh]">
-          <ConnectionSidebar active={3} />
-          <main className="flex min-w-0 flex-1 flex-col px-6 py-7 sm:px-10 lg:pl-[61px] lg:pr-[48px]">
-            <header className="flex items-center justify-between lg:justify-end">
-              <div className="lg:hidden">
-                <Brand />
-              </div>
-              <div className="flex items-center gap-6 text-ink">
-                <button
-                  type="button"
-                  className="flex h-6 w-6 items-center justify-center rounded-full border border-studio-raised text-[13px] font-semibold"
-                  aria-label="Get help"
-                >
-                  ?
-                </button>
-                <button type="button" className="flex items-center gap-2 text-sm font-semibold">
-                  <span className="flex h-[34px] w-[34px] items-center justify-center rounded-full bg-cream text-[13px] font-bold text-ink">
-                    {initials}
-                  </span>
-                  <span className="hidden sm:inline">{displayName}</span>
-                  <ChevronDown className="h-3 w-3" />
-                </button>
-              </div>
-            </header>
-            <section className="flex w-full max-w-[916px] flex-1 flex-col justify-center pb-7 pt-8 lg:translate-y-[13px] lg:pb-0 lg:pt-0">
-              <div className="mb-4 inline-flex w-fit rounded-[4px] bg-cream px-2 py-0 text-[12px] font-medium leading-[18px] text-[#bd8420]">
-                3 of 4
-              </div>
-              <h1 className="font-editorial text-[42px] leading-[1.12] sm:text-[56px]">
-                Connect <em className="font-normal text-trend-orange">your store.</em>
-              </h1>
-              <p className="mt-3 text-[16px] text-ink-muted">
-                Bring your products and sales data into TrendED.
-              </p>
-              <div className="mt-[34px] grid grid-cols-1 gap-[18px] md:grid-cols-3">
-                {connectionOptions.map((option) => {
-                  const selected = connection === option.id;
-                  const manual = option.id === 'manual';
-                  return (
-                    <article
-                      key={option.id}
-                      className={`flex h-[304px] flex-col rounded-[8px] border bg-studio-ground px-[22px] pb-[23px] pt-5 ${selected ? 'border-trend-orange ring-1 ring-trend-orange' : 'border-line'}`}
-                    >
-                      <ConnectionMark id={option.id} />
-                      <h2 className="mt-[17px] text-[19px] font-bold">{option.name}</h2>
-                      <p className="mt-[10px] text-[14px] leading-5 text-ink-muted">
-                        {option.description}
-                      </p>
-                      <div
-                        className={`mt-[23px] inline-flex w-fit items-center gap-1.5 rounded-sm px-1.5 py-0.5 text-[12px] font-medium ${manual ? 'bg-cream text-[#b98822]' : 'bg-cream text-ink-muted'}`}
-                      >
-                        <span
-                          className={`flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] text-white ${manual ? 'text-trend-gold' : 'bg-[#55a153]'}`}
-                        >
-                          {manual ? <ManualSetupClock /> : <Check className="h-3 w-3" />}
-                        </span>
-                        {selected
-                          ? manual
-                            ? 'Will set up later'
-                            : 'Selected'
-                          : manual
-                            ? 'Not set up'
-                            : 'Not connected'}
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setConnection(option.id)}
-                        className="mt-auto h-10 w-full rounded-[4px] bg-trend-orange px-3 text-sm font-semibold text-on-accent transition hover:bg-[#a83a0a]"
-                      >
-                        {selected ? 'Selected' : option.buttonLabel}
-                      </button>
-                    </article>
-                  );
-                })}
-              </div>
-              <div className="relative mt-[21px] min-h-[76px] overflow-hidden rounded-[5px] border border-line bg-cream px-6 py-3.5">
-                <div className="flex items-start gap-[18px]">
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream text-trend-gold">
-                    <SecurityShield className="h-[18px] w-[18px]" />
-                  </span>
-                  <div>
-                    <p className="text-[14px] font-semibold text-ink">
-                      Your credentials are securely handled.
-                    </p>
-                    <p className="mt-1 text-[13px] text-ink-muted">
-                      We use industry-standard encryption and never store your password.
-                    </p>
-                  </div>
-                </div>
-                <span className="absolute right-10 top-2 text-[#e5d8b8]">
-                  <SecurityShield className="h-[66px] w-[61px]" detailed />
-                </span>
-                <span className="absolute right-[106px] top-[19px] text-[22px] text-[#f2cf72]">
-                  ✦
-                </span>
-              </div>
-              {saveError && (
-                <p className="mt-3 text-sm text-danger" role="alert">
-                  {saveError}
-                </p>
-              )}
-              <div className="mt-[10px] flex items-center justify-between border-t border-line pt-[25px]">
-                <FooterButton compact onClick={back}>
-                  <ArrowLeft className="h-4 w-4" /> Back
-                </FooterButton>
-                <FooterButton compact primary onClick={next} disabled={isSaving}>
-                  {isSaving ? 'Saving...' : 'Continue'} <ArrowRight className="h-4 w-4" />
-                </FooterButton>
-              </div>
-            </section>
-          </main>
-        </div>
-      </div>
-    );
-
   return (
-    <div className="min-h-[100dvh] bg-cream text-ink">
-      <div className="flex min-h-[100dvh]">
-        <GoalsAside />
-        <main className="flex min-w-0 flex-1 flex-col px-6 py-8 sm:px-12 lg:pl-[71px] lg:pr-[70px]">
-          <header className="flex items-center justify-between lg:justify-end">
-            <div className="lg:hidden">
-              <Brand />
+    <div className="min-h-screen bg-studio-ground text-ink selection:bg-trend-orange selection:text-white">
+      {/* Header bar */}
+      <header className="sticky top-0 z-40 border-b border-line bg-studio-ground/80 px-6 py-4 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between">
+          <div className="flex items-center gap-3">
+            <BrandLogo className="h-8" priority />
+            <span className="ml-2 hidden rounded-full border border-line bg-cream px-2.5 py-0.5 text-[11px] font-semibold text-ink-muted sm:inline-block">
+              Studio Quickstart
+            </span>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden items-center gap-2 text-xs font-medium text-ink-muted sm:flex">
+              <span
+                className={`size-2 rounded-full ${step >= 1 ? 'bg-trend-orange' : 'bg-line'}`}
+              />
+              <span>1. Produit</span>
+              <span className="text-line">/</span>
+              <span
+                className={`size-2 rounded-full ${step >= 2 ? 'bg-trend-orange' : 'bg-line'}`}
+              />
+              <span>2. Angle UGC</span>
+              <span className="text-line">/</span>
+              <span
+                className={`size-2 rounded-full ${step >= 3 ? 'bg-trend-orange' : 'bg-line'}`}
+              />
+              <span>3. Lancement</span>
             </div>
-            <button
-              type="button"
-              className="flex items-center gap-2 text-[13px] font-medium text-ink"
-            >
-              <CircleHelp className="h-5 w-5" />
-              Need help?
-            </button>
-          </header>
-          <section className="flex w-full max-w-[902px] flex-1 flex-col justify-center pb-7 lg:translate-y-[-12px]">
-            <h1 className="font-editorial text-[51px] leading-[1.05] sm:text-[59px]">
-              What do you want to <em className="font-normal text-trend-orange">achieve?</em>
-            </h1>
-            <p className="mt-4 text-[16px] text-ink-muted">
-              Choose your main goals so TrendED can prioritize what matters.
-            </p>
-            <div className="mt-9 grid max-w-[890px] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {goalOptions.map((goal) => {
-                const selected = goals.includes(goal.id);
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content Area */}
+      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:py-12">
+        {/* ========================================================================= */}
+        {/* STEP 1: LE PRODUIT                                                        */}
+        {/* ========================================================================= */}
+        {step === 1 && (
+          <div className="animate-in fade-in slide-in-from-bottom-3 duration-300">
+            <div className="text-center">
+              <div className="inline-flex items-center gap-2 rounded-full border border-trend-orange/30 bg-trend-orange/10 px-3.5 py-1 text-xs font-semibold text-trend-orange">
+                <Flame className="size-3.5" />
+                <span>Étape 1 sur 3 · Objectif : Ta 1ère vidéo en 60 secondes</span>
+              </div>
+              <h1 className="mt-4 text-[32px] font-extrabold tracking-tight sm:text-[42px]">
+                Quel produit veux-tu <span className="text-trend-orange">faire exploser</span> ?
+              </h1>
+              <p className="mx-auto mt-2 max-w-xl text-[15px] text-ink-muted sm:text-[16px]">
+                Colle le lien de ton produit, ou choisis l’un de nos 3 produits gagnants du moment
+                pour tester la puissance de l’IA.
+              </p>
+            </div>
+
+            {/* Option A: Input URL */}
+            <div className="mt-8 rounded-2xl border border-line bg-cream/60 p-5 shadow-sm backdrop-blur-xl sm:p-7">
+              <label htmlFor="product-url-input" className="block text-sm font-bold text-ink">
+                Colle l’URL de ton produit (Shopify, Amazon, AliExpress...) :
+              </label>
+              <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                <div className="relative flex-1">
+                  <input
+                    id="product-url-input"
+                    type="url"
+                    value={customUrl}
+                    onChange={(e) => setCustomUrl(e.target.value)}
+                    placeholder="https://ma-boutique.com/products/mon-produit-phare..."
+                    className="h-12 w-full rounded-xl border border-line bg-studio-ground px-4 text-sm text-ink placeholder:text-ink-muted/50 focus:border-trend-orange focus:outline-none focus:ring-2 focus:ring-trend-orange/20"
+                  />
+                  {customUrl && (
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-trend-orange">
+                      Lien détecté ✓
+                    </span>
+                  )}
+                </div>
+
+                {/* Country / Market selector */}
+                <div className="relative shrink-0 sm:w-48">
+                  <select
+                    value={targetMarket}
+                    onChange={(e) => setTargetMarket(e.target.value)}
+                    aria-label="Marché cible"
+                    className="h-12 w-full cursor-pointer appearance-none rounded-xl border border-line bg-studio-ground px-3.5 text-xs font-semibold text-ink focus:border-trend-orange focus:outline-none"
+                  >
+                    {TARGET_MARKETS.map((m) => (
+                      <option key={m.code} value={m.code}>
+                        {m.label}
+                      </option>
+                    ))}
+                  </select>
+                  <Globe className="pointer-events-none absolute right-3.5 top-1/2 size-4 -translate-y-1/2 text-ink-muted" />
+                </div>
+              </div>
+            </div>
+
+            {/* Separator */}
+            <div className="my-8 flex items-center justify-center gap-4">
+              <div className="h-px flex-1 bg-line" />
+              <span className="text-xs font-bold uppercase tracking-wider text-ink-muted">
+                OU CHOISIS UN WINNING PRODUCT TEST
+              </span>
+              <div className="h-px flex-1 bg-line" />
+            </div>
+
+            {/* Option B: 3 Demo Winning Products */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              {DEMO_PRODUCTS.map((prod) => {
+                const isSelected = selectedDemoProduct.id === prod.id && !customUrl.trim();
                 return (
                   <button
+                    key={prod.id}
                     type="button"
-                    key={goal.id}
-                    onClick={() =>
-                      setGoals((current) =>
-                        selected ? current.filter((id) => id !== goal.id) : [...current, goal.id],
-                      )
-                    }
-                    className={`relative h-[188px] rounded-[8px] border p-7 text-left transition ${selected ? 'border-[#c98652] bg-cream shadow-[inset_0_0_0_1px_#f0ddc9]' : 'border-line bg-cream hover:border-[#c98652]'}`}
+                    onClick={() => {
+                      setCustomUrl('');
+                      setSelectedDemoProduct(prod);
+                    }}
+                    className={`group relative flex flex-col justify-between rounded-2xl border p-5 text-left transition-all duration-200 ${
+                      isSelected
+                        ? 'border-trend-orange bg-cream shadow-md ring-2 ring-trend-orange/20'
+                        : 'border-line bg-cream/40 hover:border-trend-orange/60 hover:bg-cream/80'
+                    }`}
                   >
-                    <span className="flex h-12 w-12 items-center justify-center rounded-full bg-cream text-[#d9820b]">
-                      <SvgAssetIcon src={goal.assetIcon} className="h-7 w-7" />
-                    </span>
-                    <h2 className="mt-4 text-[17px] font-bold">{goal.title}</h2>
-                    <p className="mt-2 max-w-[200px] text-[14px] leading-5 text-ink-muted">
-                      {goal.description}
-                    </p>
-                    {selected && (
-                      <span className="absolute right-[16px] top-[16px] flex h-[25px] w-[25px] items-center justify-center rounded-[5px] bg-[#e74912] text-white">
-                        <Check className="h-4 w-4" strokeWidth={3} />
+                    <div>
+                      <div className="flex items-center justify-between">
+                        <span className="flex size-11 items-center justify-center rounded-xl bg-studio-ground text-2xl shadow-sm">
+                          {prod.icon}
+                        </span>
+                        <span className="rounded-full border border-line bg-studio-ground px-2.5 py-0.5 text-[11px] font-bold text-trend-orange">
+                          {prod.tag}
+                        </span>
+                      </div>
+
+                      <h3 className="mt-4 text-[16px] font-bold text-ink group-hover:text-trend-orange transition-colors">
+                        {prod.title}
+                      </h3>
+                      <p className="mt-1 text-xs text-ink-muted line-clamp-2">{prod.problem}</p>
+                    </div>
+
+                    <div className="mt-6 border-t border-line/60 pt-3 flex items-center justify-between text-xs">
+                      <span className="font-semibold text-ink-muted">{prod.categoryLabel}</span>
+                      <span className="font-bold text-ink">{prod.price}</span>
+                    </div>
+
+                    {isSelected && (
+                      <span className="absolute right-3.5 top-3.5 flex size-5 items-center justify-center rounded-full bg-trend-orange text-white">
+                        <Check className="size-3" strokeWidth={3} />
                       </span>
                     )}
                   </button>
                 );
               })}
             </div>
-            {saveError && (
-              <p className="mt-4 text-sm text-danger" role="alert">
-                {saveError}
-              </p>
-            )}
-            <footer className="mt-[66px] flex items-end justify-between">
-              <div>
-                <div className="flex items-center gap-3">
+
+            {/* Action continue button */}
+            <div className="mt-10 flex items-center justify-end">
+              <button
+                type="button"
+                onClick={handleProceedToStep2}
+                className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-cta-top to-cta-bottom px-8 text-sm font-semibold text-on-ember shadow-md transition hover:brightness-110 active:scale-[0.98]"
+              >
+                <span>Analyser & Découvrir les Hooks UGC</span>
+                <ArrowRight className="size-4" />
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* STEP 2: L'ANGLE CRÉATIF (HOOKS UGC)                                      */}
+        {/* ========================================================================= */}
+        {step === 2 && (
+          <div className="animate-in fade-in slide-in-from-bottom-3 duration-300">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink transition"
+              >
+                <ArrowLeft className="size-4" />
+                <span>Retour au choix du produit</span>
+              </button>
+              <span className="text-xs font-bold text-trend-orange">
+                Étape 2 sur 3 · Stratégie de Conversion
+              </span>
+            </div>
+
+            {isSimulatingAnalysis ? (
+              <div className="my-16 flex flex-col items-center justify-center text-center">
+                <div className="relative flex size-20 items-center justify-center rounded-full bg-trend-orange/10">
+                  <Sparkles className="size-9 text-trend-orange animate-spin" />
+                  <div className="absolute inset-0 rounded-full border-2 border-trend-orange border-t-transparent animate-spin" />
+                </div>
+                <h2 className="mt-6 text-xl font-bold">
+                  L’IA analyse le produit & génère 3 angles UGC...
+                </h2>
+                <p className="mt-1 text-sm text-ink-muted">
+                  Extraction des objections clients, scénarisation des 3 premières secondes
+                  scroll-stopping.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="mt-6 text-center">
+                  <h1 className="text-[30px] font-extrabold tracking-tight sm:text-[38px]">
+                    Choisis ton <span className="text-trend-orange">Hook publicitaire</span>
+                  </h1>
+                  <p className="mx-auto mt-2 max-w-xl text-sm text-ink-muted">
+                    L’accroche des 3 premières secondes détermine 80% du succès d’une vidéo sur
+                    TikTok et Instagram. Lequel de ces 3 angles préfères-tu tester en premier ?
+                  </p>
+                </div>
+
+                {/* The 3 generated angles */}
+                <div className="mt-8 space-y-4">
+                  {selectedDemoProduct.hooks.map((hook, idx) => {
+                    const isSelected = selectedHookIndex === idx;
+                    return (
+                      <button
+                        key={hook.id}
+                        type="button"
+                        onClick={() => setSelectedHookIndex(idx)}
+                        className={`group relative flex w-full flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border p-5 text-left transition-all ${
+                          isSelected
+                            ? 'border-trend-orange bg-cream shadow-md ring-2 ring-trend-orange/20'
+                            : 'border-line bg-cream/50 hover:border-trend-orange/60 hover:bg-cream'
+                        }`}
+                      >
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2.5">
+                            <span
+                              className={`rounded-full border px-2.5 py-0.5 text-[11px] font-bold ${hook.badgeColor}`}
+                            >
+                              {hook.tag}
+                            </span>
+                            <span className="text-xs font-semibold text-ink-muted">
+                              Angle #{idx + 1} : {hook.title}
+                            </span>
+                          </div>
+
+                          <p className="mt-2.5 text-[15px] font-bold text-ink sm:text-[16px] leading-snug">
+                            {hook.hookText}
+                          </p>
+                          <p className="mt-1 text-xs text-ink-muted">{hook.description}</p>
+                        </div>
+
+                        <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
+                          <span
+                            className={`flex size-6 items-center justify-center rounded-full border transition ${
+                              isSelected
+                                ? 'border-trend-orange bg-trend-orange text-white'
+                                : 'border-line bg-studio-ground text-transparent group-hover:border-trend-orange/40'
+                            }`}
+                          >
+                            <Check className="size-3.5" strokeWidth={3} />
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-10 flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs text-ink-muted">
+                    <ShieldCheck className="size-4 text-trend-orange" />
+                    <span>Scénarisation certifiée conforme aux algorithmes publicitaires 2026</span>
+                  </div>
+
                   <button
                     type="button"
-                    onClick={back}
-                    title="Back to previous step"
-                    className="flex items-center gap-1 rounded-[4px] px-1 py-1 text-[13px] font-medium text-ink transition hover:bg-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                    onClick={() => setStep(3)}
+                    className="inline-flex h-12 items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-cta-top to-cta-bottom px-8 text-sm font-semibold text-on-ember shadow-md transition hover:brightness-110 active:scale-[0.98]"
                   >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back
+                    <span>Valider & Prévisualiser la Création</span>
+                    <ArrowRight className="size-4" />
                   </button>
-                  <span className="text-[13px] font-semibold text-ink-muted">4 of 4</span>
                 </div>
-                <div className="mt-2 flex gap-1.5">
-                  <span className="h-[7px] w-[103px] rounded-full bg-trend-orange" />
-                  <span className="h-[7px] w-[103px] rounded-full bg-trend-orange" />
-                  <span className="h-[7px] w-[103px] rounded-full bg-trend-orange" />
+              </>
+            )}
+          </div>
+        )}
+
+        {/* ========================================================================= */}
+        {/* STEP 3: L'APERÇU & LANCEMENT                                             */}
+        {/* ========================================================================= */}
+        {step === 3 && (
+          <div className="animate-in fade-in slide-in-from-bottom-3 duration-300">
+            <div className="flex items-center justify-between">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="inline-flex items-center gap-1.5 text-xs font-semibold text-ink-muted hover:text-ink transition"
+              >
+                <ArrowLeft className="size-4" />
+                <span>Modifier le hook</span>
+              </button>
+              <span className="text-xs font-bold text-trend-orange">
+                Étape 3 sur 3 · Prêt pour le Studio
+              </span>
+            </div>
+
+            <div className="mt-6 text-center">
+              <h1 className="text-[30px] font-extrabold tracking-tight sm:text-[38px]">
+                Ta première publicité est{' '}
+                <span className="text-trend-orange">prête à être tournée</span> !
+              </h1>
+              <p className="mx-auto mt-2 max-w-xl text-sm text-ink-muted">
+                TrendED a configuré les scènes, la voix off IA et l’habillage vertical. Voici la
+                fiche récapitulative :
+              </p>
+            </div>
+
+            <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-12">
+              {/* Left Column: Visual Video Mockup */}
+              <div className="lg:col-span-5 flex flex-col items-center">
+                <div className="relative aspect-[9/16] w-full max-w-[280px] overflow-hidden rounded-3xl border-2 border-trend-orange/40 bg-black shadow-2xl">
+                  {/* Background ambient gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/90" />
+
+                  {/* Video badge */}
+                  <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                    <span className="rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-bold text-white backdrop-blur-md">
+                      Format 9:16 Vertical
+                    </span>
+                    <span className="flex size-7 items-center justify-center rounded-full bg-trend-orange text-white">
+                      <Play className="size-3.5 fill-current ml-0.5" />
+                    </span>
+                  </div>
+
+                  {/* Product Icon & Title in video simulation */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
+                    <span className="text-5xl">{selectedDemoProduct.icon}</span>
+                    <h4 className="mt-4 text-sm font-extrabold text-white line-clamp-2 drop-shadow">
+                      {customUrl.trim() ? customUrl.trim() : selectedDemoProduct.title}
+                    </h4>
+                    <span className="mt-2 rounded-md bg-trend-orange/90 px-2 py-0.5 text-xs font-bold text-white">
+                      {selectedDemoProduct.price}
+                    </span>
+                  </div>
+
+                  {/* Subtitle simulation at bottom */}
+                  <div className="absolute bottom-4 left-4 right-4 rounded-xl bg-black/80 p-3 backdrop-blur-md border border-white/10">
+                    <span className="text-[10px] font-semibold text-trend-orange block uppercase tracking-wider">
+                      Accroche (3s) :
+                    </span>
+                    <p className="mt-1 text-xs text-white font-medium line-clamp-2 leading-relaxed">
+                      {selectedDemoProduct.hooks[selectedHookIndex]?.hookText}
+                    </p>
+                  </div>
                 </div>
               </div>
-              <FooterButton primary wide onClick={next} disabled={isSaving}>
-                {isSaving ? 'Saving...' : 'Enter TrendED'} <ArrowRight className="h-5 w-5" />
-              </FooterButton>
-            </footer>
-          </section>
-        </main>
-      </div>
+
+              {/* Right Column: Parameters and final options */}
+              <div className="lg:col-span-7 flex flex-col justify-between rounded-2xl border border-line bg-cream/60 p-6 backdrop-blur-xl">
+                <div>
+                  <h3 className="text-lg font-bold text-ink">Spécifications de la campagne :</h3>
+
+                  <div className="mt-4 grid grid-cols-2 gap-3 text-xs">
+                    <div className="rounded-xl border border-line bg-studio-ground p-3">
+                      <span className="text-ink-muted block">Format Vidéo</span>
+                      <span className="mt-1 font-bold text-ink block">9:16 (TikTok & Reels)</span>
+                    </div>
+                    <div className="rounded-xl border border-line bg-studio-ground p-3">
+                      <span className="text-ink-muted block">Durée préconisée</span>
+                      <span className="mt-1 font-bold text-ink block">15 secondes</span>
+                    </div>
+                    <div className="rounded-xl border border-line bg-studio-ground p-3">
+                      <span className="text-ink-muted block">Marché / Langue</span>
+                      <span className="mt-1 font-bold text-ink block">{targetMarket}</span>
+                    </div>
+                    <div className="rounded-xl border border-line bg-studio-ground p-3">
+                      <span className="text-ink-muted block">Statut</span>
+                      <span className="mt-1 font-bold text-dash-green block">
+                        1ère Création Offerte
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Quick Profile Question (fills backend user business_type seamlessly) */}
+                  <div className="mt-6 border-t border-line/80 pt-5">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-ink-muted">
+                      Ton modèle de vente principal :
+                    </label>
+                    <div className="mt-2.5 grid grid-cols-3 gap-2">
+                      {[
+                        ['dropshipping', 'Dropshipping'],
+                        ['dtc_brand', 'Marque DTC'],
+                        ['marketplace_seller', 'Marketplace'],
+                      ].map(([val, label]) => (
+                        <button
+                          key={val}
+                          type="button"
+                          onClick={() => setBusinessType(val as typeof businessType)}
+                          className={`rounded-lg border px-3 py-2 text-xs font-semibold transition ${
+                            businessType === val
+                              ? 'border-trend-orange bg-trend-orange/10 text-trend-orange'
+                              : 'border-line bg-studio-ground text-ink hover:border-trend-orange/40'
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {error && (
+                  <p
+                    className="mt-4 rounded-lg bg-danger/10 p-3 text-xs font-semibold text-danger"
+                    role="alert"
+                  >
+                    {error}
+                  </p>
+                )}
+
+                <div className="mt-8 border-t border-line pt-5">
+                  <button
+                    type="button"
+                    onClick={handleLaunchFirstAd}
+                    disabled={isSubmitting}
+                    className="flex h-13 w-full items-center justify-center gap-2.5 rounded-xl bg-gradient-to-b from-cta-top to-cta-bottom px-6 text-base font-bold text-on-ember shadow-lg transition hover:brightness-110 active:scale-[0.99] disabled:opacity-60"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <div className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                        <span>Création de ton espace de travail...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="size-5 fill-current" />
+                        <span>Générer ma première vidéo dans le Studio</span>
+                        <ArrowRight className="size-5" />
+                      </>
+                    )}
+                  </button>
+                  <p className="mt-2 text-center text-[11px] text-ink-muted">
+                    Accès immédiat sans carte bancaire · Découvre ton script et storyboard complet
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+      </main>
     </div>
   );
 }

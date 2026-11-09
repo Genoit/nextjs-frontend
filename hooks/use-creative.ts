@@ -18,6 +18,7 @@ import { isTerminalJob, shotTransitionMessage } from '../lib/render-rules.mjs';
 
 export interface UseCreativeReturn {
   // State
+  configLoaded: boolean;
   creativeConfig: CreativeConfig | null;
   strategy: CreativeStrategy | null;
   storyboard: Storyboard | null;
@@ -81,6 +82,8 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
   const [cost, setCost] = useState<StrategyCost | null>(null);
   const [activeJob, setActiveJob] = useState<VideoGenerationJob | null>(null);
 
+  // False until the saved config (or its absence) is known: the setup step waits on it.
+  const [configLoaded, setConfigLoaded] = useState(false);
   const [isSavingConfig, setIsSavingConfig] = useState(false);
   const [isGeneratingStrategy, setIsGeneratingStrategy] = useState(false);
   const [isGeneratingStoryboard, setIsGeneratingStoryboard] = useState(false);
@@ -517,12 +520,14 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
       if (!initialProductId) return;
       const epoch = epochRef.current;
       const stale = () => isCancelled || epoch !== epochRef.current;
+      setConfigLoaded(false);
       try {
         const data = await creativeApi.getCreativeConfig(initialProductId);
         if (!isCancelled) setCreativeConfig(data);
       } catch (err: unknown) {
         if (!isCancelled) fail(err, 'Impossible de charger la configuration créative.');
       }
+      if (!isCancelled) setConfigLoaded(true);
       if (stale()) return;
       // Restore the work after a reload: latest strategy, then its accepted (else latest)
       // storyboard version through loadStoryboard, then versions + cost. Never blocks the page.
@@ -555,6 +560,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
   }, [initialProductId, fail, stopPolling, loadStoryboard, refreshStoryboardContext]);
 
   return {
+    configLoaded,
     creativeConfig,
     strategy,
     storyboard,

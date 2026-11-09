@@ -92,7 +92,7 @@ describe('Creative Video Ad Engine & Pipeline', () => {
     it('should declare allowed campaign objectives and platforms', () => {
       assert.ok(content.includes("'sales' | 'traffic' | 'awareness' | 'retargeting'"));
       assert.ok(content.includes("'tiktok' | 'instagram_reels' | 'facebook' | 'youtube'"));
-      assert.ok(content.includes('15 | 30 | 45 | 60'));
+      assert.ok(content.includes('Seconds, 10 to 60'), 'Length is a 10-60 s slider value');
     });
 
     it('should declare honesty and versioning fields of module 2', () => {
@@ -163,22 +163,23 @@ describe('Creative Video Ad Engine & Pipeline', () => {
       assert.ok(content.includes('Create the ad'), 'ProductDetail should have CTA button');
     });
 
-    it('product-input page should navigate to /creative upon product save', () => {
+    it('product-input page should stay on product-input with the workflow upon product save', () => {
       const inputPath = path.join(process.cwd(), 'app/product-input/page.tsx');
       const content = fs.readFileSync(inputPath, 'utf8');
       assert.ok(content.includes('nextStepHref'), 'product-input should navigate via nextStepHref');
       const rulesPath = path.join(process.cwd(), 'lib/product-input-rules.mjs');
       const rules = fs.readFileSync(rulesPath, 'utf8');
-      assert.ok(rules.includes('/creative'), 'nextStepHref should point to /creative');
+      assert.ok(rules.includes('/product-input?product='), 'nextStepHref should stay on product-input');
+      assert.ok(content.includes('CreativeAdWorkflow'), 'product-input should host the ad workflow');
     });
 
-    it('StrategyPreview should offer a keyboard-usable angle picker and show hypotheses', () => {
+    it('StrategyPreview should offer a keyboard-usable angle picker, angles only', () => {
       const strategyPath = path.join(process.cwd(), 'components/creative/StrategyPreview.tsx');
       const content = fs.readFileSync(strategyPath, 'utf8');
-      assert.ok(content.includes('Zéro faux avis'), 'Must clearly state zero fake reviews');
+      assert.ok(content.includes('never fake reviews'), 'Must clearly state no fake reviews');
       assert.ok(content.includes('type="radio"'), 'Angles must be a native radio group');
       assert.ok(content.includes('<fieldset'), 'Radio group must be a labelled fieldset');
-      assert.ok(content.includes('needs_validation'), 'Must distinguish hypotheses');
+      assert.ok(!content.includes('needs_validation'), 'Product sheet hypotheses stay hidden');
       assert.ok(content.includes('HeuristicBadge'), 'Must flag deterministic output');
     });
 
@@ -210,7 +211,7 @@ describe('Creative Video Ad Engine & Pipeline', () => {
     });
 
     it('labels heuristic output as a simulation, never as AI (fails closed)', () => {
-      assert.strictEqual(HEURISTIC_LABEL, 'Simulation — pas une génération IA');
+      assert.strictEqual(HEURISTIC_LABEL, 'Simulation — not AI-generated');
       assert.strictEqual(heuristicLabel({ is_heuristic: true }), HEURISTIC_LABEL);
       assert.strictEqual(heuristicLabel({ is_heuristic: false }), null);
       assert.strictEqual(heuristicLabel({}), HEURISTIC_LABEL);

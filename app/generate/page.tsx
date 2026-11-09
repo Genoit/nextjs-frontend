@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { AlertCircle, Clapperboard, LayoutGrid, List, Plus, Search } from 'lucide-react';
 import {
@@ -14,7 +15,13 @@ import {
 import { Composer } from '../../components/dashboard/Composer';
 import { useApiMediaUrl } from '../../hooks/use-assets';
 import { jobBadge, timeAgo } from '../../lib/dashboard-rules.mjs';
-import { anyActive, creationHref, creations } from '../../lib/generate-rules.mjs';
+import {
+  anyActive,
+  creationHref,
+  creations,
+  etaSeconds,
+  formatEta,
+} from '../../lib/generate-rules.mjs';
 import type { VideoGenerationJob } from '../../lib/types/creative';
 import type { Product } from '../../lib/types/product';
 
@@ -40,28 +47,53 @@ const TONE: Record<string, string> = {
   idle: 'bg-white/10 text-dash-soft',
 };
 
-function Card({ c, now }: { c: Creation; now: Date }) {
+/**
+ * A render in progress: the product photo blurred and drifting like a film still with a light
+ * sweep, and only the time left on top. The pipeline steps stay out of sight.
+ */
+function RenderSilhouette({ c, now }: { c: Creation; now: Date }) {
+  const left = formatEta(etaSeconds(c.job, now));
+  const photo = productImage(c.product);
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-[#141210]" role="status">
+      {photo ? (
+        <div className="absolute inset-0 animate-[render-drift_9s_ease-in-out_infinite_alternate] blur-2xl saturate-150 motion-reduce:animate-none">
+          <Thumb src={photo} className="size-full opacity-80" />
+        </div>
+      ) : (
+        <div className="absolute -inset-1/4 animate-[spin_14s_linear_infinite] bg-[conic-gradient(from_90deg,#3b2a6e,#1e4b5c,#4a3b1e,#a6441d,#3b2a6e)] opacity-70 blur-3xl motion-reduce:animate-none" />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0b0a09]/85 via-[#0b0a09]/20 to-[#0b0a09]/40" />
+      <div
+        className="absolute inset-y-0 w-1/3 animate-[render-sweep_2.8s_ease-in-out_infinite] bg-gradient-to-r from-transparent via-[#fff]/[0.09] to-transparent motion-reduce:hidden"
+        aria-hidden
+      />
+      <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
+        <span className="text-[34px] leading-none font-semibold text-[#fff] tabular-nums drop-shadow">
+          {left ?? 'Almost done'}
+        </span>
+        <span className="mt-2 text-[13px] text-[#fff]/75">
+          {left ? 'left · making your ad' : 'Finishing your ad'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function Card({ c, now, focused }: { c: Creation; now: Date; focused: boolean }) {
   const badge = jobBadge(c.job);
   const active = badge.tone === 'active';
   return (
     <Link
       href={creationHref(c)}
-      className={`group block overflow-hidden rounded-[16px] border border-white/[0.07] bg-dash-panel transition hover:border-white/20 ${focusRing}`}
+      aria-current={focused ? 'true' : undefined}
+      className={`group block overflow-hidden rounded-[16px] border bg-dash-panel transition hover:border-white/20 ${
+        focused ? 'border-ember-text/70 ring-2 ring-ember-text/40' : 'border-white/[0.07]'
+      } ${focusRing}`}
     >
       <div className="relative aspect-[4/5]">
         {active ? (
-          <div className="absolute inset-0 overflow-hidden bg-dash-raised">
-            {/* Slow colour drift while the ad renders, like a developing photo. */}
-            <div className="absolute -inset-1/4 animate-[spin_14s_linear_infinite] bg-[conic-gradient(from_90deg,#3b2a6e,#1e4b5c,#4a3b1e,#a6441d,#3b2a6e)] opacity-70 blur-3xl motion-reduce:animate-none" />
-            <div className="absolute inset-x-0 bottom-0 p-4">
-              <p className="text-[14px] font-medium text-white">{badge.label}</p>
-              {c.job.current_step && (
-                <p className="mt-0.5 line-clamp-2 text-[12.5px] text-white/75">
-                  {c.job.current_step}
-                </p>
-              )}
-            </div>
-          </div>
+          <RenderSilhouette c={c} now={now} />
         ) : (
           <JobThumb
             c={c}
@@ -106,7 +138,17 @@ function Row({ c, now }: { c: Creation; now: Date }) {
   );
 }
 
-export default function GeneratePage() {
+export default function GenerateRoute() {
+  return (
+    <Suspense>
+      <GeneratePage />
+    </Suspense>
+  );
+}
+
+function GeneratePage() {
+  // ?job= : the ad just started from the product flow, shown first and highlighted.
+  const focusJob = useSearchParams().get('job');
   const [load, setLoad] = useState<Load>({ state: 'loading' });
   const [productId, setProductId] = useState<string | null>(null);
   const [query, setQuery] = useState('');
@@ -134,7 +176,13 @@ export default function GeneratePage() {
     return () => window.clearInterval(timer);
   }, [rendering]);
 
-  const now = new Date();
+  // One tick a second while something renders: the countdowns move.
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    if (!rendering) return;
+    const timer = window.setInterval(() => setNow(new Date()), 1000);
+    return () => window.clearInterval(timer);
+  }, [rendering]);
   const groups = entries.filter((e) => (e.jobs ?? []).length > 0);
   const group = (active: boolean) =>
     `flex w-full items-center gap-3 rounded-[12px] px-2.5 py-2 text-left text-[14.5px] transition ${
@@ -299,7 +347,7 @@ export default function GeneratePage() {
                   <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
                     {shown.map((c) => (
                       <li key={c.job.id}>
-                        <Card c={c} now={now} />
+                        <Card c={c} now={now} focused={c.job.id === focusJob} />
                       </li>
                     ))}
                   </ul>
@@ -314,8 +362,12 @@ export default function GeneratePage() {
                 ))}
             </section>
 
-            <div className="z-20 mt-8 md:sticky md:bottom-4">
-              <Composer credits={summary?.credits ?? null} className="mx-auto max-w-[980px]" />
+            <div className="z-20 mt-6 md:sticky md:bottom-5 px-3">
+              <Composer
+                compact
+                credits={summary?.credits ?? null}
+                className="mx-auto max-w-[700px]"
+              />
             </div>
           </main>
         </div>
