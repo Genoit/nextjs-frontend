@@ -13,6 +13,7 @@ import {
   Package,
   Wand2,
   Sparkles,
+  Coins,
   Receipt,
   Share2,
   FileText,
@@ -95,6 +96,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/admin/ai-generations',
       icon: Sparkles,
       isActive: pathname.startsWith('/admin/ai-generations'),
+    },
+    {
+      name: 'AI Costs',
+      href: '/admin/ai-costs',
+      icon: Coins,
+      isActive: pathname.startsWith('/admin/ai-costs'),
     },
     {
       name: 'Transactions',

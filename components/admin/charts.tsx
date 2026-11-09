@@ -193,9 +193,11 @@ const shortDay = (d: string) =>
 export function LineChart({
   dates,
   series,
+  format = (n) => n.toLocaleString('en'),
 }: {
   dates: string[];
   series: { label: string; values: number[] }[];
+  format?: (n: number) => string;
 }) {
   const [active, setActive] = useState<number | null>(null);
   const [asTable, setAsTable] = useState(false);
@@ -214,7 +216,7 @@ export function LineChart({
               <span className="h-0.5 w-3.5 rounded-full" style={{ background: SERIES[i] }} />
               {s.label}
               <span className="font-semibold tabular-nums text-ink">
-                {s.values.reduce((a, b) => a + b, 0).toLocaleString('en')}
+                {format(s.values.reduce((a, b) => a + b, 0))}
               </span>
             </li>
           ))}
@@ -247,7 +249,7 @@ export function LineChart({
                     <td className="px-3 py-1.5 text-ink-soft">{shortDay(d)}</td>
                     {series.map((s) => (
                       <td key={s.label} className="px-3 py-1.5 text-right tabular-nums text-ink">
-                        {s.values[i]}
+                        {format(s.values[i])}
                       </td>
                     ))}
                   </tr>
@@ -328,7 +330,7 @@ export function LineChart({
                           style={{ background: SERIES[si] }}
                         />
                         <span className="font-semibold tabular-nums text-ink">
-                          {s.values[active]}
+                          {format(s.values[active])}
                         </span>
                         <span className="text-ink-muted">{s.label}</span>
                       </p>
@@ -342,7 +344,7 @@ export function LineChart({
                     key={d}
                     role="listitem"
                     tabIndex={0}
-                    aria-label={`${shortDay(d)}: ${series.map((s) => `${s.values[i]} ${s.label}`).join(', ')}`}
+                    aria-label={`${shortDay(d)}: ${series.map((s) => `${format(s.values[i])} ${s.label}`).join(', ')}`}
                     onMouseEnter={() => setActive(i)}
                     onFocus={() => setActive(i)}
                     onBlur={() => setActive(null)}

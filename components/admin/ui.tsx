@@ -164,3 +164,61 @@ export const cell = 'py-3 px-4 align-middle text-ink-soft';
 export function errorText(err: unknown, fallback: string): string {
   return err instanceof Error ? err.message : fallback;
 }
+
+export function Panel({
+  title,
+  subtitle,
+  children,
+  className = '',
+}: {
+  title: string;
+  subtitle?: string;
+  children: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section
+      className={`bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs ${className}`}
+    >
+      <h2 className="text-sm font-bold text-ink">{title}</h2>
+      {subtitle && <p className="mt-0.5 text-[11px] text-ink-muted">{subtitle}</p>}
+      <div className="mt-4">{children}</div>
+    </section>
+  );
+}
+
+export function SectionTitle({ children, hint }: { children: ReactNode; hint: string }) {
+  return (
+    <div className="pt-4">
+      <h2 className="text-base font-bold text-ink">{children}</h2>
+      <p className="text-xs text-ink-muted">{hint}</p>
+    </div>
+  );
+}
+
+const RANGES = [7, 30, 90, 365];
+
+export function PeriodPicker({ days, onChange }: { days: number; onChange: (d: number) => void }) {
+  return (
+    <div
+      role="radiogroup"
+      aria-label="Period"
+      className="inline-flex self-start rounded-full border border-line bg-studio-ground p-1"
+    >
+      {RANGES.map((d) => (
+        <button
+          key={d}
+          type="button"
+          role="radio"
+          aria-checked={days === d}
+          onClick={() => onChange(d)}
+          className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+            days === d ? 'bg-trend-orange text-on-accent' : 'text-ink-muted hover:text-ink'
+          }`}
+        >
+          {d === 365 ? '1y' : `${d}d`}
+        </button>
+      ))}
+    </div>
+  );
+}

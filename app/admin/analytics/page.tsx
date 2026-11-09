@@ -5,44 +5,21 @@ import Link from 'next/link';
 
 import { fetchAdminAnalytics } from '../../../lib/api/admin';
 import type { AdminAnalyticsResponse, AdminCount } from '../../../lib/types/admin';
-import { AdminHeader, AdminTable, Badge, Kpi, cell, errorText } from '../../../components/admin/ui';
+import {
+  AdminHeader,
+  AdminTable,
+  Badge,
+  Kpi,
+  Panel,
+  PeriodPicker,
+  SectionTitle,
+  cell,
+  errorText,
+} from '../../../components/admin/ui';
 import { BarList, ColumnChart, Donut, LineChart, money } from '../../../components/admin/charts';
-
-const RANGES = [7, 30, 90, 365];
 
 const bars = (rows: AdminCount[]) => rows.map((r) => ({ label: r.label, value: r.count }));
 const pct = (part: number, whole: number) => (whole ? `${Math.round((part / whole) * 100)}%` : '—');
-
-function Panel({
-  title,
-  subtitle,
-  children,
-  className = '',
-}: {
-  title: string;
-  subtitle?: string;
-  children: React.ReactNode;
-  className?: string;
-}) {
-  return (
-    <section
-      className={`bg-studio-ground rounded-2xl border border-line/80 p-5 shadow-2xs ${className}`}
-    >
-      <h2 className="text-sm font-bold text-ink">{title}</h2>
-      {subtitle && <p className="mt-0.5 text-[11px] text-ink-muted">{subtitle}</p>}
-      <div className="mt-4">{children}</div>
-    </section>
-  );
-}
-
-function SectionTitle({ children, hint }: { children: React.ReactNode; hint: string }) {
-  return (
-    <div className="pt-4">
-      <h2 className="text-base font-bold text-ink">{children}</h2>
-      <p className="text-xs text-ink-muted">{hint}</p>
-    </div>
-  );
-}
 
 function UserCell({ id, name, email }: { id: string; name: string; email: string }) {
   return (
@@ -86,26 +63,7 @@ export default function AdminAnalyticsPage() {
           title="User analytics"
           subtitle="Who pays, who abuses the free plan, and what people make. Live from the database."
         />
-        <div
-          role="radiogroup"
-          aria-label="Period"
-          className="inline-flex self-start rounded-full border border-line bg-studio-ground p-1"
-        >
-          {RANGES.map((d) => (
-            <button
-              key={d}
-              type="button"
-              role="radio"
-              aria-checked={days === d}
-              onClick={() => setDays(d)}
-              className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
-                days === d ? 'bg-trend-orange text-on-accent' : 'text-ink-muted hover:text-ink'
-              }`}
-            >
-              {d === 365 ? '1y' : `${d}d`}
-            </button>
-          ))}
-        </div>
+        <PeriodPicker days={days} onChange={setDays} />
       </div>
 
       {error && (

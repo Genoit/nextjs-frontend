@@ -528,3 +528,93 @@ export interface AdminAnalyticsResponse {
   renewals: AdminRenewalItem[];
   preferences: AdminPreferences;
 }
+
+// ---------------------------------------------------------------- AI costs
+export interface AdminAiCostKPIs {
+  total_cost_usd: number;
+  calls: number;
+  failed_calls: number;
+  input_tokens: number;
+  output_tokens: number;
+  gpu_seconds: number;
+  completed_ads: number;
+  cost_per_completed_ad_usd: number | null;
+  month_spend_usd: number;
+  month_hard_limit_usd: number | null;
+}
+
+export interface AdminAiCostGroup {
+  key: string;
+  provider: string | null;
+  model: string | null;
+  feature: string | null;
+  calls: number;
+  failed: number;
+  cost_usd: number;
+  input_tokens: number;
+  output_tokens: number;
+  avg_latency_ms: number | null;
+}
+
+export interface AdminBudgetPurchase {
+  id: string;
+  provider: string;
+  amount_usd: number;
+  credits: number | null;
+  note: string | null;
+  bought_at: string;
+  created_by: string | null;
+}
+
+export interface AdminProviderBudget {
+  provider: string;
+  bought_usd: number;
+  credits: number | null;
+  spent_usd: number;
+  remaining_usd: number;
+  burn_per_day_usd: number;
+  runs_out_on: string | null;
+  days_left: number | null;
+  purchases: AdminBudgetPurchase[];
+}
+
+export interface AdminRunPodLive {
+  configured: boolean;
+  balance_usd: number | null;
+  spend_per_hour_usd: number | null;
+  spend_limit_usd: number | null;
+  error: string | null;
+}
+
+export interface AdminAiCall {
+  id: string;
+  at: string;
+  feature: string;
+  provider: string;
+  model: string | null;
+  status: string | null;
+  cost_usd: number;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  latency_ms: number | null;
+}
+
+export interface AdminAiCostsResponse {
+  days: number;
+  kpis: AdminAiCostKPIs;
+  providers: AdminAiCostGroup[];
+  models: AdminAiCostGroup[];
+  features: AdminAiCostGroup[];
+  daily: { date: string; total_usd: number; by_provider: Record<string, number> }[];
+  budgets: AdminProviderBudget[];
+  runpod: AdminRunPodLive;
+  calls: AdminAiCall[];
+}
+
+export interface AdminBudgetCreate {
+  provider: string;
+  amount_usd: number;
+  credits?: number | null;
+  note?: string | null;
+  bought_at?: string | null;
+}

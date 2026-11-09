@@ -1,7 +1,9 @@
 import { fetchWithAuth } from './core';
 import {
   AdminAlertsResponse,
+  AdminAiCostsResponse,
   AdminAnalyticsResponse,
+  AdminBudgetCreate,
   AdminCreativesResponse,
   AdminGenerationsResponse,
   AdminIntegrationItem,
@@ -78,6 +80,22 @@ export function unbanAdminUser(userId: string): Promise<{ success: boolean }> {
 
 export function fetchAdminAnalytics(days: number): Promise<AdminAnalyticsResponse> {
   return get(withQuery('/admin/analytics', { days }));
+}
+
+export function fetchAdminAiCosts(params: {
+  days: number;
+  provider?: string;
+  model?: string;
+}): Promise<AdminAiCostsResponse> {
+  return get(withQuery('/admin/ai-costs', params));
+}
+
+export function addAdminBudget(body: AdminBudgetCreate): Promise<void> {
+  return fetchWithAuth('/admin/ai-costs/budgets', { method: 'POST', body: JSON.stringify(body) });
+}
+
+export function deleteAdminBudget(id: string): Promise<void> {
+  return fetchWithAuth(`/admin/ai-costs/budgets/${encodeURIComponent(id)}`, { method: 'DELETE' });
 }
 
 export function resetAdminUserAccess(
