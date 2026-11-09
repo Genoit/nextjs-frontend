@@ -19,6 +19,7 @@ import {
   Store,
   ExternalLink,
   ShieldAlert,
+  Ban,
   KeyRound,
   FileText,
   Sparkles,
@@ -30,8 +31,14 @@ import {
   fetchAdminUserDetail,
   updateAdminUserStatus,
   resetAdminUserAccess,
+  banAdminUser,
+  unbanAdminUser,
 } from '../../../../lib/api/admin';
+import { errorText } from '../../../../components/admin/ui';
 import { AdminUserDetail } from '../../../../lib/types/admin';
+
+// A 0 limit means no quota is tracked for that counter.
+const usagePct = (used: number, limit: number) => (limit ? Math.min(100, (used / limit) * 100) : 0);
 
 export default function AdminUserDetailPage() {
   const params = useParams();
@@ -41,6 +48,9 @@ export default function AdminUserDetailPage() {
   const [loading, setLoading] = useState(true);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [banOpen, setBanOpen] = useState(false);
+  const [banReason, setBanReason] = useState('');
+  const [banBusy, setBanBusy] = useState(false);
 
   useEffect(() => {
     async function loadData() {
@@ -70,8 +80,44 @@ export default function AdminUserDetailPage() {
       setUserDetail({ ...userDetail, status: newStatus });
       setActionMessage(`User account status updated to ${newStatus}`);
       setTimeout(() => setActionMessage(null), 3000);
-    } catch {
-      // ignore
+    } catch (err) {
+      flash(errorText(err, 'Could not update the status'));
+    }
+  };
+
+  const flash = (message: string) => {
+    setActionMessage(message);
+    setTimeout(() => setActionMessage(null), 4000);
+  };
+
+  const handleBan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!userDetail || banReason.trim().length < 3) return;
+    setBanBusy(true);
+    try {
+      await banAdminUser(userDetail.id, banReason.trim());
+      setUserDetail(await fetchAdminUserDetail(userDetail.id));
+      setBanReason('');
+      setBanOpen(false);
+      flash('User banned. Sessions revoked and sign-in blocked.');
+    } catch (err) {
+      flash(errorText(err, 'Could not ban this user'));
+    } finally {
+      setBanBusy(false);
+    }
+  };
+
+  const handleUnban = async () => {
+    if (!userDetail) return;
+    setBanBusy(true);
+    try {
+      await unbanAdminUser(userDetail.id);
+      setUserDetail(await fetchAdminUserDetail(userDetail.id));
+      flash('Ban lifted. The user can sign in again.');
+    } catch (err) {
+      flash(errorText(err, 'Could not lift the ban'));
+    } finally {
+      setBanBusy(false);
     }
   };
 
@@ -286,6 +332,10 @@ export default function AdminUserDetailPage() {
                 <span className="font-medium text-ink">{userDetail.renewal_date}</span>
               </div>
               <div className="flex justify-between">
+                <span className="text-ink-muted">Payment method</span>
+                <span className="font-medium text-ink">{userDetail.payment_method}</span>
+              </div>
+              <div className="flex justify-between">
                 <span className="text-ink-muted">Price</span>
                 <span className="font-bold text-ink">
                   ${userDetail.monthly_cost.toFixed(2)} / month
@@ -321,14 +371,17 @@ export default function AdminUserDetailPage() {
                 <div className="flex justify-between text-ink-soft mb-1">
                   <span>Product research</span>
                   <span className="font-medium text-ink">
-                    {userDetail.usage.product_searches} / {userDetail.usage.product_searches_limit}
+                    {userDetail.usage.product_searches}
+                    {userDetail.usage.product_searches_limit
+                      ? ` / ${userDetail.usage.product_searches_limit.toLocaleString()}`
+                      : ''}
                   </span>
                 </div>
                 <div className="w-full bg-studio-raised h-1.5 rounded-full overflow-hidden">
                   <div
                     className="bg-zinc-300 h-full rounded-full"
                     style={{
-                      width: `${(userDetail.usage.product_searches / userDetail.usage.product_searches_limit) * 100}%`,
+                      width: `${usagePct(userDetail.usage.product_searches, userDetail.usage.product_searches_limit)}%`,
                     }}
                   />
                 </div>
@@ -339,15 +392,17 @@ export default function AdminUserDetailPage() {
                 <div className="flex justify-between text-ink-soft mb-1">
                   <span>AI generations</span>
                   <span className="font-medium text-ink">
-                    {userDetail.usage.ai_credits.toLocaleString()} /{' '}
-                    {userDetail.usage.ai_credits_limit.toLocaleString()}
+                    {userDetail.usage.ai_credits.toLocaleString()}
+                    {userDetail.usage.ai_credits_limit
+                      ? ` / ${userDetail.usage.ai_credits_limit.toLocaleString()}`
+                      : ''}
                   </span>
                 </div>
                 <div className="w-full bg-studio-raised h-1.5 rounded-full overflow-hidden">
                   <div
                     className="bg-trend-orange h-full rounded-full"
                     style={{
-                      width: `${(userDetail.usage.ai_credits / userDetail.usage.ai_credits_limit) * 100}%`,
+                      width: `${usagePct(userDetail.usage.ai_credits, userDetail.usage.ai_credits_limit)}%`,
                     }}
                   />
                 </div>
@@ -358,14 +413,17 @@ export default function AdminUserDetailPage() {
                 <div className="flex justify-between text-ink-soft mb-1">
                   <span>Creative exports</span>
                   <span className="font-medium text-ink">
-                    {userDetail.usage.creative_exports} / {userDetail.usage.creative_exports_limit}
+                    {userDetail.usage.creative_exports}
+                    {userDetail.usage.creative_exports_limit
+                      ? ` / ${userDetail.usage.creative_exports_limit.toLocaleString()}`
+                      : ''}
                   </span>
                 </div>
                 <div className="w-full bg-studio-raised h-1.5 rounded-full overflow-hidden">
                   <div
                     className="bg-trend-orange h-full rounded-full"
                     style={{
-                      width: `${(userDetail.usage.creative_exports / userDetail.usage.creative_exports_limit) * 100}%`,
+                      width: `${usagePct(userDetail.usage.creative_exports, userDetail.usage.creative_exports_limit)}%`,
                     }}
                   />
                 </div>
@@ -376,15 +434,17 @@ export default function AdminUserDetailPage() {
                 <div className="flex justify-between text-ink-soft mb-1">
                   <span>API calls</span>
                   <span className="font-medium text-ink">
-                    {userDetail.usage.api_calls.toLocaleString()} /{' '}
-                    {userDetail.usage.api_calls_limit.toLocaleString()}
+                    {userDetail.usage.api_calls.toLocaleString()}
+                    {userDetail.usage.api_calls_limit
+                      ? ` / ${userDetail.usage.api_calls_limit.toLocaleString()}`
+                      : ''}
                   </span>
                 </div>
                 <div className="w-full bg-studio-raised h-1.5 rounded-full overflow-hidden">
                   <div
                     className="bg-trend-orange h-full rounded-full"
                     style={{
-                      width: `${(userDetail.usage.api_calls / userDetail.usage.api_calls_limit) * 100}%`,
+                      width: `${usagePct(userDetail.usage.api_calls, userDetail.usage.api_calls_limit)}%`,
                     }}
                   />
                 </div>
@@ -530,11 +590,87 @@ export default function AdminUserDetailPage() {
           </div>
 
           <div className="space-y-2.5">
+            {/* 0. Ban: blocks sign-in until lifted; a suspension is the softer toggle below */}
+            {userDetail.banned_at ? (
+              <div className="p-3.5 rounded-xl border border-danger/40 bg-danger-soft/60 space-y-2">
+                <p className="text-xs font-bold text-danger flex items-center gap-1.5">
+                  <Ban className="w-4 h-4" /> Banned {userDetail.banned_at}
+                </p>
+                <p className="text-[11px] text-ink-soft break-words">
+                  Reason: {userDetail.ban_reason}
+                  {userDetail.banned_by ? ` · by ${userDetail.banned_by}` : ''}
+                </p>
+                <button
+                  type="button"
+                  onClick={handleUnban}
+                  disabled={banBusy}
+                  className="w-full rounded-lg border border-line bg-studio-ground px-3 py-2 text-xs font-semibold text-ink hover:bg-studio-raised disabled:opacity-50"
+                >
+                  {banBusy ? 'Lifting…' : 'Lift ban'}
+                </button>
+              </div>
+            ) : banOpen ? (
+              <form
+                onSubmit={handleBan}
+                className="p-3.5 rounded-xl border border-danger/40 bg-danger-soft/40 space-y-2"
+              >
+                <label htmlFor="ban-reason" className="text-xs font-bold text-danger block">
+                  Why are you banning this user?
+                </label>
+                <textarea
+                  id="ban-reason"
+                  value={banReason}
+                  onChange={(e) => setBanReason(e.target.value)}
+                  maxLength={500}
+                  rows={3}
+                  autoFocus
+                  placeholder="e.g. Free-tier abuse with several linked accounts"
+                  className="w-full rounded-lg border border-line bg-studio-ground p-2 text-xs text-ink placeholder-ink-muted focus:border-danger focus:ring-1 focus:ring-danger"
+                />
+                <p className="text-[11px] text-ink-muted">
+                  Sign-in is blocked and every session is revoked. You can lift it later.
+                </p>
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={banBusy || banReason.trim().length < 3}
+                    className="flex-1 rounded-lg bg-danger px-3 py-2 text-xs font-semibold text-white hover:opacity-90 disabled:opacity-50"
+                  >
+                    {banBusy ? 'Banning…' : 'Ban user'}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setBanOpen(false)}
+                    className="rounded-lg border border-line px-3 py-2 text-xs font-medium text-ink-soft hover:bg-studio-raised"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setBanOpen(true)}
+                className="w-full text-left p-3.5 rounded-xl border border-danger/40 bg-danger-soft/50 hover:bg-danger-soft transition flex items-start gap-3"
+              >
+                <div className="w-7 h-7 rounded-lg bg-danger text-white flex items-center justify-center shrink-0">
+                  <Ban className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-danger">Ban user</p>
+                  <p className="text-[11px] text-danger/80 mt-0.5">
+                    Block sign-in for good, until an admin lifts it
+                  </p>
+                </div>
+              </button>
+            )}
+
             {/* 1. Suspend account */}
             <button
               type="button"
               onClick={handleStatusToggle}
-              className="w-full text-left p-3.5 rounded-xl border border-danger/30 bg-danger-soft/50 hover:bg-danger-soft transition flex items-start gap-3 group"
+              disabled={Boolean(userDetail.banned_at)}
+              className="w-full text-left p-3.5 rounded-xl border border-danger/30 bg-danger-soft/50 hover:bg-danger-soft transition flex items-start gap-3 group disabled:opacity-40 disabled:pointer-events-none"
             >
               <div className="w-7 h-7 rounded-lg bg-danger-soft text-danger flex items-center justify-center shrink-0">
                 <ShieldAlert className="w-4 h-4" />

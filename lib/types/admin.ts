@@ -72,7 +72,7 @@ export interface AdminUserItem {
   email: string;
   initials: string;
   plan: string;
-  status: 'Active' | 'Suspended' | 'Pending';
+  status: 'Active' | 'Suspended' | 'Pending' | 'Banned';
   store: string;
   store_url: string;
   last_activity: string;
@@ -142,6 +142,10 @@ export interface AdminUserDetail {
   stores: AdminUserStoreInfo[];
   usage: AdminUserUsageStats;
   recent_activity: AdminUserActivityItem[];
+  payment_method: string;
+  ban_reason: string | null;
+  banned_at: string | null;
+  banned_by: string | null;
 }
 
 // ----------------------------------------------------------------------------
@@ -344,4 +348,183 @@ export interface AdminSettingsData {
 export interface AdminSettingsResponse {
   settings: AdminSettingsData;
   message: string;
+}
+
+// ============================================================================
+// PRODUCTS, CREATIVES, AI GENERATIONS, INTEGRATIONS, ALERTS
+// ============================================================================
+
+export interface AdminPage {
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+}
+
+export interface AdminProductItem {
+  id: string;
+  title: string;
+  user_email: string;
+  source_platform: string;
+  price: number | null;
+  currency: string | null;
+  extraction_status: string;
+  image_url: string | null;
+  storyboards: number;
+  videos: number;
+  created_at: string;
+}
+
+export interface AdminProductsResponse extends AdminPage {
+  products: AdminProductItem[];
+  counts_by_status: Record<string, number>;
+}
+
+export interface AdminCreativeItem {
+  id: string;
+  title: string;
+  product_title: string;
+  user_email: string;
+  status: string;
+  generation_status: string;
+  provider: string;
+  model: string | null;
+  is_heuristic: boolean;
+  target_duration: number;
+  cost_usd: number | null;
+  created_at: string;
+}
+
+export interface AdminCreativesResponse extends AdminPage {
+  creatives: AdminCreativeItem[];
+  counts_by_provider: Record<string, number>;
+}
+
+export interface AdminGenerationProviderStat {
+  provider: string;
+  attempts: number;
+  succeeded: number;
+  failed: number;
+  cost_usd: number;
+  avg_latency_ms: number | null;
+}
+
+export interface AdminGenerationItem {
+  id: string;
+  provider: string;
+  model: string;
+  shot_class: string;
+  status: string;
+  is_mock: boolean;
+  latency_ms: number | null;
+  cost_usd: number | null;
+  error_code: string | null;
+  user_email: string;
+  created_at: string;
+}
+
+export interface AdminGenerationsResponse extends AdminPage {
+  kpis: {
+    attempts: number;
+    succeeded: number;
+    failed: number;
+    success_rate: number;
+    cost_usd: number;
+    avg_latency_ms: number | null;
+    period_label: string;
+  };
+  providers: AdminGenerationProviderStat[];
+  generations: AdminGenerationItem[];
+}
+
+export interface AdminIntegrationItem {
+  key: string;
+  name: string;
+  category: string;
+  status: 'Connected' | 'Not configured';
+  model: string | null;
+  calls_30d: number | null;
+  failures_30d: number | null;
+  last_used: string;
+}
+
+export interface AdminAlertsResponse {
+  alerts: AdminAlertItem[];
+}
+
+// ----------------------------------------------------------------------------
+// ANALYTICS
+// ----------------------------------------------------------------------------
+export interface AdminCount {
+  label: string;
+  count: number;
+}
+
+export interface AdminTopPayer {
+  user_id: string;
+  name: string;
+  email: string;
+  plan: string;
+  total_paid: number;
+  payments: number;
+  payment_method: string;
+  last_paid: string;
+}
+
+export interface AdminRevenueAnalytics {
+  currency: string;
+  total_paid: number;
+  paying_users: number;
+  payments: number;
+  daily: { date: string; amount: number }[];
+  top_payers: AdminTopPayer[];
+  methods: { label: string; users: number; amount: number }[];
+}
+
+export interface AdminAbuseItem {
+  user_id: string;
+  name: string;
+  email: string;
+  status: string;
+  score: number;
+  products: number;
+  jobs: number;
+  cancelled_jobs: number;
+  storyboards: number;
+  linked_accounts: number;
+  reasons: string[];
+}
+
+export interface AdminRenewalItem {
+  user_id: string;
+  name: string;
+  email: string;
+  plan: string;
+  grants: number;
+  min_gap_days: number;
+  last_grant: string;
+}
+
+export interface AdminPreferences {
+  platforms: AdminCount[];
+  languages: AdminCount[];
+  formats: AdminCount[];
+  durations: AdminCount[];
+  angles: AdminCount[];
+  objectives: AdminCount[];
+  sources: AdminCount[];
+  categories: AdminCount[];
+  job_outcomes: AdminCount[];
+  jobs: number;
+  completed_jobs: number;
+  exported_jobs: number;
+}
+
+export interface AdminAnalyticsResponse {
+  days: number;
+  activity: { date: string; signups: number; products: number; jobs: number }[];
+  revenue: AdminRevenueAnalytics;
+  abuse: AdminAbuseItem[];
+  renewals: AdminRenewalItem[];
+  preferences: AdminPreferences;
 }

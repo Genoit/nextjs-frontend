@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -8,6 +8,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
   Users,
+  BarChart3,
   CreditCard,
   Package,
   Wand2,
@@ -27,6 +28,7 @@ import {
 
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { useAuth } from '../../lib/auth';
+import { fetchAdminAlerts } from '../../lib/api/admin';
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -39,6 +41,17 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [alertCount, setAlertCount] = useState(0);
+
+  useEffect(() => {
+    fetchAdminAlerts()
+      .then((res) => setAlertCount(res.alerts.length))
+      .catch(() => setAlertCount(0)); // the badge just stays hidden
+  }, [pathname]);
+
+  const adminName = user ? `${user.first_name} ${user.last_name}`.trim() || user.email : 'Admin';
+  const adminInitials =
+    (user ? `${user.first_name[0] ?? ''}${user.last_name[0] ?? ''}` : '').toUpperCase() || 'AD';
 
   const navItems = [
     {
@@ -54,6 +67,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       isActive: pathname.startsWith('/admin/users'),
     },
     {
+      name: 'Analytics',
+      href: '/admin/analytics',
+      icon: BarChart3,
+      isActive: pathname.startsWith('/admin/analytics'),
+    },
+    {
       name: 'Subscriptions',
       href: '/admin/subscriptions',
       icon: CreditCard,
@@ -61,21 +80,21 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       name: 'Products',
-      href: '/products',
+      href: '/admin/products',
       icon: Package,
-      isActive: pathname.startsWith('/products'),
+      isActive: pathname.startsWith('/admin/products'),
     },
     {
       name: 'Creatives',
-      href: '#creatives',
+      href: '/admin/creatives',
       icon: Wand2,
-      isActive: pathname === '#creatives',
+      isActive: pathname.startsWith('/admin/creatives'),
     },
     {
       name: 'AI Generations',
-      href: '#ai-generations',
+      href: '/admin/ai-generations',
       icon: Sparkles,
-      isActive: pathname === '#ai-generations',
+      isActive: pathname.startsWith('/admin/ai-generations'),
     },
     {
       name: 'Transactions',
@@ -85,9 +104,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     {
       name: 'Integrations',
-      href: '#integrations',
+      href: '/admin/integrations',
       icon: Share2,
-      isActive: pathname === '#integrations',
+      isActive: pathname.startsWith('/admin/integrations'),
     },
     {
       name: 'System Logs',
@@ -173,11 +192,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <div className="pt-4 border-t border-line">
                 <div className="flex items-center gap-3 px-2 py-2">
                   <div className="w-8 h-8 rounded-full bg-cream text-trend-orange flex items-center justify-center font-bold text-xs shrink-0">
-                    AD
+                    {adminInitials}
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-ink truncate">Admin</p>
-                    <p className="text-[10px] text-ink-muted truncate">Super Administrator</p>
+                    <p className="text-xs font-bold text-ink truncate">{adminName}</p>
+                    <p className="text-[10px] text-ink-muted truncate">{user?.email}</p>
                   </div>
                 </div>
               </div>
@@ -246,11 +265,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               >
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div className="w-8 h-8 rounded-full bg-cream border border-trend-orange/20 text-trend-orange flex items-center justify-center font-bold text-xs shrink-0">
-                    AD
+                    {adminInitials}
                   </div>
                   <div className="text-left min-w-0">
-                    <p className="text-xs font-semibold text-ink truncate">Admin</p>
-                    <p className="text-[10px] text-ink-muted truncate">Super Administrator</p>
+                    <p className="text-xs font-semibold text-ink truncate">{adminName}</p>
+                    <p className="text-[10px] text-ink-muted truncate">{user?.email}</p>
                   </div>
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-ink-muted shrink-0 ml-1" />
@@ -294,7 +313,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             </div>
 
             <p className="text-[10px] text-ink-muted px-2 select-none">
-              © 2025 TrendED. All rights reserved.
+              © {new Date().getFullYear()} TrendED. All rights reserved.
             </p>
           </div>
         </aside>
@@ -343,16 +362,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <HelpCircle className="w-4.5 h-4.5" />
               </button>
 
-              {/* Notifications Bell with Badge 12 */}
+              {/* Notifications bell: count of current admin alerts */}
               <Link
                 href="/admin/overview#alerts"
                 className="relative p-2 text-ink-soft hover:text-ink rounded-full hover:bg-studio-raised transition"
                 aria-label="Notifications"
               >
                 <Bell className="w-4.5 h-4.5" />
-                <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-danger text-[9px] font-bold text-on-accent flex items-center justify-center leading-none">
-                  12
-                </span>
+                {alertCount > 0 && (
+                  <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-danger text-[9px] font-bold text-on-accent flex items-center justify-center leading-none">
+                    {alertCount > 9 ? '9+' : alertCount}
+                  </span>
+                )}
               </Link>
             </div>
           </header>

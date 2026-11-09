@@ -9,8 +9,6 @@ import {
   MoreHorizontal,
   X,
   Edit2,
-  ChevronLeft,
-  ChevronRight,
   ShieldAlert,
   KeyRound,
   Check,
@@ -22,10 +20,15 @@ import {
   resetAdminUserAccess,
 } from '../../../lib/api/admin';
 import { AdminUserItem, AdminUserDetail } from '../../../lib/types/admin';
+import { AdminPagination } from '../../../components/admin/AdminPagination';
+import { errorText } from '../../../components/admin/ui';
+
+// A 0 limit means no quota is tracked for that counter.
+const usagePct = (used: number, limit: number) => (limit ? Math.min(100, (used / limit) * 100) : 0);
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<AdminUserItem[]>([]);
-  const [totalUsers, setTotalUsers] = useState(42);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All status');
@@ -33,9 +36,9 @@ export default function AdminUsersPage() {
   const [pageSize, setPageSize] = useState(10);
 
   // Selected user for drawer
-  const [selectedUserId, setSelectedUserId] = useState<string | null>('usr_7hK2mL9q8Pz');
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [selectedUserDetail, setSelectedUserDetail] = useState<AdminUserDetail | null>(null);
-  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerTab, setDrawerTab] = useState<'overview' | 'activity' | 'security'>('overview');
   const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
   const [actionSuccessMsg, setActionSuccessMsg] = useState<string | null>(null);
@@ -98,10 +101,10 @@ export default function AdminUsersPage() {
         setSelectedUserDetail({ ...selectedUserDetail, status: newStatus });
       }
       setActionSuccessMsg(`Status updated to ${newStatus}`);
-      setTimeout(() => setActionSuccessMsg(null), 3000);
-    } catch {
-      // ignore
+    } catch (err) {
+      setActionSuccessMsg(errorText(err, 'Could not update the status'));
     }
+    setTimeout(() => setActionSuccessMsg(null), 3000);
   };
 
   const handleResetAccess = async (userId: string) => {
@@ -161,7 +164,7 @@ export default function AdminUsersPage() {
               <option value="All status">All status</option>
               <option value="Active">Active</option>
               <option value="Suspended">Suspended</option>
-              <option value="Pending">Pending</option>
+              <option value="Banned">Banned</option>
             </select>
             <ChevronDown className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-ink-muted" />
           </div>
@@ -249,7 +252,7 @@ export default function AdminUsersPage() {
                             className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ${
                               user.status === 'Active'
                                 ? 'bg-success-soft text-success'
-                                : user.status === 'Suspended'
+                                : user.status === 'Suspended' || user.status === 'Banned'
                                   ? 'bg-danger-soft text-danger'
                                   : 'bg-warning-soft text-warning'
                             }`}
@@ -258,7 +261,7 @@ export default function AdminUsersPage() {
                               className={`w-1.5 h-1.5 rounded-full ${
                                 user.status === 'Active'
                                   ? 'bg-success'
-                                  : user.status === 'Suspended'
+                                  : user.status === 'Suspended' || user.status === 'Banned'
                                     ? 'bg-danger'
                                     : 'bg-warning'
                               }`}
@@ -309,19 +312,23 @@ export default function AdminUsersPage() {
                               >
                                 View full details
                               </Link>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  handleStatusToggle(
-                                    user.id,
-                                    user.status === 'Active' ? 'Suspended' : 'Active',
-                                  );
-                                  setActiveMenuId(null);
-                                }}
-                                className="w-full px-3 py-1.5 text-xs text-ink-soft hover:bg-studio-surface text-left"
-                              >
-                                {user.status === 'Active' ? 'Suspend account' : 'Activate account'}
-                              </button>
+                              {user.status !== 'Banned' && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    handleStatusToggle(
+                                      user.id,
+                                      user.status === 'Active' ? 'Suspended' : 'Active',
+                                    );
+                                    setActiveMenuId(null);
+                                  }}
+                                  className="w-full px-3 py-1.5 text-xs text-ink-soft hover:bg-studio-surface text-left"
+                                >
+                                  {user.status === 'Active'
+                                    ? 'Suspend account'
+                                    : 'Activate account'}
+                                </button>
+                              )}
                               <button
                                 type="button"
                                 onClick={() => {
@@ -345,42 +352,13 @@ export default function AdminUsersPage() {
 
           {/* Table Pagination */}
           <div className="px-4 py-3 border-t border-line flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-xs text-ink-muted">
-            <div>
-              Showing 1 to {Math.min(pageSize, users.length)} of {totalUsers} users
-            </div>
-
-            <div className="flex items-center gap-1 self-center">
-              <button
-                type="button"
-                disabled={currentPage <= 1}
-                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-              >
-                <ChevronLeft className="w-3.5 h-3.5" />
-              </button>
-              {[1, 2, 3, 4, 5].map((pageNum) => (
-                <button
-                  key={pageNum}
-                  type="button"
-                  onClick={() => setCurrentPage(pageNum)}
-                  className={`w-7 h-7 rounded-lg text-xs font-semibold ${
-                    currentPage === pageNum
-                      ? 'bg-cream text-trend-orange border border-trend-orange/20'
-                      : 'text-ink-soft hover:bg-studio-surface'
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              ))}
-              <button
-                type="button"
-                disabled={currentPage >= 5}
-                onClick={() => setCurrentPage((p) => p + 1)}
-                className="p-1.5 rounded-lg border border-line disabled:opacity-40 hover:bg-studio-surface"
-              >
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <AdminPagination
+              page={currentPage}
+              pageSize={pageSize}
+              total={totalUsers}
+              noun="users"
+              onPage={setCurrentPage}
+            />
 
             <div className="flex items-center gap-1.5">
               <span>Rows per page</span>
@@ -594,15 +572,17 @@ export default function AdminUsersPage() {
                       <div className="flex justify-between text-ink-soft mb-1">
                         <span>Product searches</span>
                         <span className="font-medium text-ink">
-                          {selectedUserDetail.usage.product_searches.toLocaleString()} /{' '}
-                          {selectedUserDetail.usage.product_searches_limit.toLocaleString()}
+                          {selectedUserDetail.usage.product_searches.toLocaleString()}
+                          {selectedUserDetail.usage.product_searches_limit
+                            ? ` / ${selectedUserDetail.usage.product_searches_limit.toLocaleString()}`
+                            : ''}
                         </span>
                       </div>
                       <div className="w-full bg-studio-rule h-1.5 rounded-full overflow-hidden">
                         <div
                           className="bg-trend-orange h-full rounded-full"
                           style={{
-                            width: `${(selectedUserDetail.usage.product_searches / selectedUserDetail.usage.product_searches_limit) * 100}%`,
+                            width: `${usagePct(selectedUserDetail.usage.product_searches, selectedUserDetail.usage.product_searches_limit)}%`,
                           }}
                         />
                       </div>
@@ -612,15 +592,17 @@ export default function AdminUsersPage() {
                       <div className="flex justify-between text-ink-soft mb-1">
                         <span>AI credits</span>
                         <span className="font-medium text-ink">
-                          {selectedUserDetail.usage.ai_credits.toLocaleString()} /{' '}
-                          {selectedUserDetail.usage.ai_credits_limit.toLocaleString()}
+                          {selectedUserDetail.usage.ai_credits.toLocaleString()}
+                          {selectedUserDetail.usage.ai_credits_limit
+                            ? ` / ${selectedUserDetail.usage.ai_credits_limit.toLocaleString()}`
+                            : ''}
                         </span>
                       </div>
                       <div className="w-full bg-studio-rule h-1.5 rounded-full overflow-hidden">
                         <div
                           className="bg-trend-orange h-full rounded-full"
                           style={{
-                            width: `${(selectedUserDetail.usage.ai_credits / selectedUserDetail.usage.ai_credits_limit) * 100}%`,
+                            width: `${usagePct(selectedUserDetail.usage.ai_credits, selectedUserDetail.usage.ai_credits_limit)}%`,
                           }}
                         />
                       </div>
@@ -630,15 +612,17 @@ export default function AdminUsersPage() {
                       <div className="flex justify-between text-ink-soft mb-1">
                         <span>Ad generations</span>
                         <span className="font-medium text-ink">
-                          {selectedUserDetail.usage.ad_generations.toLocaleString()} /{' '}
-                          {selectedUserDetail.usage.ad_generations_limit.toLocaleString()}
+                          {selectedUserDetail.usage.ad_generations.toLocaleString()}
+                          {selectedUserDetail.usage.ad_generations_limit
+                            ? ` / ${selectedUserDetail.usage.ad_generations_limit.toLocaleString()}`
+                            : ''}
                         </span>
                       </div>
                       <div className="w-full bg-studio-rule h-1.5 rounded-full overflow-hidden">
                         <div
                           className="bg-trend-orange h-full rounded-full"
                           style={{
-                            width: `${(selectedUserDetail.usage.ad_generations / selectedUserDetail.usage.ad_generations_limit) * 100}%`,
+                            width: `${usagePct(selectedUserDetail.usage.ad_generations, selectedUserDetail.usage.ad_generations_limit)}%`,
                           }}
                         />
                       </div>

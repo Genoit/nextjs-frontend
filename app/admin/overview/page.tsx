@@ -15,10 +15,45 @@ import {
 import { fetchAdminOverview } from '../../../lib/api/admin';
 import { AdminOverviewResponse } from '../../../lib/types/admin';
 
+// Charts draw in a 260x120 viewBox: x from 10 to 250, y from 110 (zero) to 10 (max).
+const DONUT_CIRCUMFERENCE = 2 * Math.PI * 38;
+
+function niceMax(value: number): number {
+  if (value <= 0) return 4;
+  const step = 10 ** Math.floor(Math.log10(value));
+  return Math.ceil(value / step) * step;
+}
+
+function compact(n: number): string {
+  return Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 }).format(n);
+}
+
+function axisTicks(max: number): string[] {
+  return [4, 3, 2, 1, 0].map((i) => compact((max * i) / 4));
+}
+
+function point(values: number[], i: number, max: number) {
+  const x = values.length > 1 ? 10 + (240 * i) / (values.length - 1) : 250;
+  return { x, y: 110 - (values[i] / max) * 100 };
+}
+
+function linePath(values: number[], max: number): string {
+  return values
+    .map((_, i) => {
+      const { x, y } = point(values, i, max);
+      return `${i ? 'L' : 'M'} ${x} ${y}`;
+    })
+    .join(' ');
+}
+
+function lastPoint(values: number[], max: number) {
+  return point(values, values.length - 1, max);
+}
+
 export default function AdminOverviewPage() {
   const [data, setData] = useState<AdminOverviewResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [timeRange] = useState('May 11 - May 17, 2025');
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     async function loadData() {
@@ -26,13 +61,17 @@ export default function AdminOverviewPage() {
         const res = await fetchAdminOverview();
         setData(res);
       } catch (err) {
-        console.error('Failed to load overview data', err);
+        setError(err instanceof Error ? err.message : 'Failed to load overview data');
       } finally {
         setLoading(false);
       }
     }
     loadData();
   }, []);
+
+  if (!loading && !data) {
+    return <p className="py-16 text-center text-sm text-ink-muted">{error}</p>;
+  }
 
   if (loading || !data) {
     return (
@@ -42,7 +81,18 @@ export default function AdminOverviewPage() {
     );
   }
 
-  const { kpis, alerts, system_status } = data;
+  const { kpis, alerts, system_status, user_growth, mrr_evolution, subscription_distribution } =
+    data;
+  const timeRange = `${user_growth.labels[0]} - ${user_growth.labels[user_growth.labels.length - 1]}`;
+  const usersMax = niceMax(Math.max(...user_growth.total_users, ...user_growth.active_users));
+  const mrrMax = niceMax(Math.max(...mrr_evolution.values));
+  const mrrLine = linePath(mrr_evolution.values, mrrMax);
+  const mrrLast = lastPoint(mrr_evolution.values, mrrMax);
+  const usersLast = lastPoint(user_growth.total_users, usersMax);
+  const distTotal = subscription_distribution.reduce((sum, d) => sum + d.count, 0);
+  const donutLens = subscription_distribution.map((d) =>
+    distTotal ? (d.count / distTotal) * DONUT_CIRCUMFERENCE : 0,
+  );
 
   return (
     <div className="space-y-6">
@@ -200,7 +250,9 @@ export default function AdminOverviewPage() {
             </div>
 
             <div className="mt-3">
-              <p className="text-2xl font-bold text-ink tracking-tight">18,752</p>
+              <p className="text-2xl font-bold text-ink tracking-tight">
+                {kpis.total_users.toLocaleString()}
+              </p>
               <div className="flex items-center gap-4 mt-1 text-[11px] text-ink-muted">
                 <span className="flex items-center gap-1.5">
                   <span className="w-3 h-0.5 bg-trend-orange inline-block rounded-full" />
@@ -219,11 +271,9 @@ export default function AdminOverviewPage() {
             <div className="flex">
               {/* Y Axis labels */}
               <div className="flex flex-col justify-between text-[9px] text-ink-muted font-mono pr-2 h-36 select-none">
-                <span>20K</span>
-                <span>15K</span>
-                <span>10K</span>
-                <span>5K</span>
-                <span>0</span>
+                {axisTicks(usersMax).map((t, i) => (
+                  <span key={i}>{t}</span>
+                ))}
               </div>
 
               {/* Chart canvas */}
@@ -243,17 +293,22 @@ export default function AdminOverviewPage() {
                 >
                   {/* Total users line */}
                   <path
-                    d="M 10 75 L 50 68 L 90 60 L 130 52 L 170 45 L 210 38 L 250 25"
+                    d={linePath(user_growth.total_users, usersMax)}
                     fill="none"
                     stroke="var(--color-trend-orange)"
                     strokeWidth="2.2"
                     strokeLinecap="round"
                   />
-                  <circle cx="250" cy="25" r="3.5" fill="var(--color-trend-orange)" />
+                  <circle
+                    cx={usersLast.x}
+                    cy={usersLast.y}
+                    r="3.5"
+                    fill="var(--color-trend-orange)"
+                  />
 
                   {/* Active users dashed line */}
                   <path
-                    d="M 10 95 L 50 90 L 90 85 L 130 80 L 170 75 L 210 70 L 250 65"
+                    d={linePath(user_growth.active_users, usersMax)}
                     fill="none"
                     stroke="var(--color-trend-gold)"
                     strokeWidth="2"
@@ -266,13 +321,9 @@ export default function AdminOverviewPage() {
 
             {/* X Axis dates */}
             <div className="flex justify-between pl-6 pt-2 text-[9px] text-ink-muted font-mono">
-              <span>May 11</span>
-              <span>May 12</span>
-              <span>May 13</span>
-              <span>May 14</span>
-              <span>May 15</span>
-              <span>May 16</span>
-              <span>May 17</span>
+              {user_growth.labels.map((l) => (
+                <span key={l}>{l}</span>
+              ))}
             </div>
           </div>
         </div>
@@ -289,13 +340,15 @@ export default function AdminOverviewPage() {
                 type="button"
                 className="flex items-center gap-1 text-[11px] text-ink-muted bg-studio-surface px-2 py-1 rounded-lg border border-line/70"
               >
-                <span>Daily</span>
+                <span>Monthly</span>
                 <ChevronDown className="w-3 h-3" />
               </button>
             </div>
 
             <div className="mt-3">
-              <p className="text-2xl font-bold text-ink tracking-tight">$162,540</p>
+              <p className="text-2xl font-bold text-ink tracking-tight">
+                ${kpis.mrr.toLocaleString()}
+              </p>
             </div>
           </div>
 
@@ -304,11 +357,9 @@ export default function AdminOverviewPage() {
             <div className="flex">
               {/* Y Axis labels */}
               <div className="flex flex-col justify-between text-[9px] text-ink-muted font-mono pr-2 h-36 select-none">
-                <span>200K</span>
-                <span>150K</span>
-                <span>100K</span>
-                <span>50K</span>
-                <span>0</span>
+                {axisTicks(mrrMax).map((t, i) => (
+                  <span key={i}>{t}</span>
+                ))}
               </div>
 
               {/* Chart canvas */}
@@ -334,33 +385,26 @@ export default function AdminOverviewPage() {
                   </defs>
 
                   {/* Gradient Area */}
-                  <path
-                    d="M 10 70 Q 50 65, 90 55 T 170 42 T 250 28 L 250 120 L 10 120 Z"
-                    fill="url(#mrrGradient)"
-                  />
+                  <path d={`${mrrLine} L 250 110 L 10 110 Z`} fill="url(#mrrGradient)" />
 
                   {/* Top curve */}
                   <path
-                    d="M 10 70 Q 50 65, 90 55 T 170 42 T 250 28"
+                    d={mrrLine}
                     fill="none"
                     stroke="var(--color-trend-orange)"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                   />
-                  <circle cx="250" cy="28" r="3.5" fill="var(--color-trend-orange)" />
+                  <circle cx={mrrLast.x} cy={mrrLast.y} r="3.5" fill="var(--color-trend-orange)" />
                 </svg>
               </div>
             </div>
 
             {/* X Axis dates */}
             <div className="flex justify-between pl-7 pt-2 text-[9px] text-ink-muted font-mono">
-              <span>May 11</span>
-              <span>May 12</span>
-              <span>May 13</span>
-              <span>May 14</span>
-              <span>May 15</span>
-              <span>May 16</span>
-              <span>May 17</span>
+              {mrr_evolution.labels.map((l) => (
+                <span key={l}>{l}</span>
+              ))}
             </div>
           </div>
         </div>
@@ -386,108 +430,49 @@ export default function AdminOverviewPage() {
             {/* SVG Donut */}
             <div className="relative w-36 h-36 shrink-0 flex items-center justify-center">
               <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-                {/* Pro (45.7%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="var(--color-trend-orange)"
-                  strokeWidth="16"
-                  strokeDasharray="109 130"
-                  strokeDashoffset="0"
-                />
-                {/* Starter (28.1%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="var(--color-trend-gold)"
-                  strokeWidth="16"
-                  strokeDasharray="67 172"
-                  strokeDashoffset="-109"
-                />
-                {/* Enterprise (16.3%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="#FED7AA"
-                  strokeWidth="16"
-                  strokeDasharray="39 200"
-                  strokeDashoffset="-176"
-                />
-                {/* Free (9.9%) */}
-                <circle
-                  cx="50"
-                  cy="50"
-                  r="38"
-                  fill="transparent"
-                  stroke="var(--color-ink-muted)"
-                  strokeWidth="16"
-                  strokeDasharray="24 215"
-                  strokeDashoffset="-215"
-                />
+                {subscription_distribution.map((d, i) => {
+                  const len = donutLens[i];
+                  return (
+                    <circle
+                      key={d.plan}
+                      cx="50"
+                      cy="50"
+                      r="38"
+                      fill="transparent"
+                      stroke={d.color}
+                      strokeWidth="16"
+                      strokeDasharray={`${len} ${DONUT_CIRCUMFERENCE - len}`}
+                      strokeDashoffset={-donutLens.slice(0, i).reduce((a, b) => a + b, 0)}
+                    />
+                  );
+                })}
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
                 <span className="text-[10px] text-ink-muted uppercase font-semibold">Total</span>
-                <span className="text-sm font-bold text-ink">12,517</span>
+                <span className="text-sm font-bold text-ink">{distTotal.toLocaleString()}</span>
               </div>
             </div>
 
             {/* Legend & Percentages */}
             <div className="flex-1 space-y-2 text-xs">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-trend-orange" />
-                  <span className="font-medium text-ink">Pro</span>
+              {subscription_distribution.map((d) => (
+                <div key={d.plan} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2.5 h-2.5 rounded-sm" style={{ backgroundColor: d.color }} />
+                    <span className="font-medium text-ink">{d.plan}</span>
+                  </div>
+                  <div className="text-right">
+                    <span className="font-bold text-ink">{d.percentage}%</span>
+                    <p className="text-[10px] text-ink-muted">{d.count.toLocaleString()}</p>
+                  </div>
                 </div>
-                <div className="text-right">
-                  <span className="font-bold text-ink">45.7%</span>
-                  <p className="text-[10px] text-ink-muted">5,721</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-trend-gold" />
-                  <span className="font-medium text-ink">Starter</span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-ink">28.1%</span>
-                  <p className="text-[10px] text-ink-muted">3,517</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-trend-orange/30" />
-                  <span className="font-medium text-ink">Enterprise</span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-ink">16.3%</span>
-                  <p className="text-[10px] text-ink-muted">2,039</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-2.5 h-2.5 rounded-sm bg-ink-muted" />
-                  <span className="font-medium text-ink">Free</span>
-                </div>
-                <div className="text-right">
-                  <span className="font-bold text-ink">9.9%</span>
-                  <p className="text-[10px] text-ink-muted">1,240</p>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
 
           <div className="pt-2 border-t border-line flex justify-between text-xs">
-            <span className="font-semibold text-ink-soft">Total active subscribers</span>
-            <span className="font-bold text-ink">12,517</span>
+            <span className="font-semibold text-ink-soft">Total accounts</span>
+            <span className="font-bold text-ink">{distTotal.toLocaleString()}</span>
           </div>
         </div>
       </div>
@@ -516,6 +501,11 @@ export default function AdminOverviewPage() {
             </div>
 
             <div className="divide-y divide-line mt-1">
+              {alerts.length === 0 && (
+                <p className="py-8 text-center text-xs text-ink-muted">
+                  No alerts in the last 7 days.
+                </p>
+              )}
               {alerts.map((alert) => {
                 const isError = alert.severity === 'error';
                 return (
