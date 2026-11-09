@@ -160,7 +160,7 @@ describe('Creative Video Ad Engine & Pipeline', () => {
       const detailPath = path.join(process.cwd(), 'components/products/ProductDetail.tsx');
       const content = fs.readFileSync(detailPath, 'utf8');
       assert.ok(content.includes('/creative'), 'ProductDetail should link to creative route');
-      assert.ok(content.includes('Créer une vidéo UGC'), 'ProductDetail should have CTA button');
+      assert.ok(content.includes('Create the ad'), 'ProductDetail should have CTA button');
     });
 
     it('product-input page should navigate to /creative upon product save', () => {

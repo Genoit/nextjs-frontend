@@ -36,22 +36,22 @@ import { HeuristicBadge } from './CreativeStatus';
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-zinc-50 disabled:opacity-60 ${focusRing}`;
-const primaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-trend-orange px-4 text-sm font-semibold text-white hover:bg-trend-orange-strong disabled:opacity-60 ${focusRing}`;
+const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
+const primaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-trend-orange px-4 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong disabled:opacity-60 ${focusRing}`;
 const summaryClass = `inline-flex min-h-11 cursor-pointer items-center rounded-lg text-sm font-semibold text-ink ${focusRing}`;
 
 const PILL: Record<string, { className: string; Icon: typeof Check }> = {
-  pending: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: Clock },
-  routing: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: Loader2 },
+  pending: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Clock },
+  routing: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Loader2 },
   rendering: { className: 'border-line bg-cream text-ink', Icon: Loader2 },
   checking: { className: 'border-line bg-cream text-ink', Icon: Loader2 },
-  quality_review: { className: 'border-amber-300 bg-amber-100 text-amber-900', Icon: Eye },
-  completed: { className: 'border-emerald-200 bg-emerald-50 text-emerald-800', Icon: Check },
-  failed: { className: 'border-red-200 bg-red-50 text-red-800', Icon: AlertTriangle },
-  blocked: { className: 'border-red-200 bg-red-50 text-red-800', Icon: Ban },
-  needs_action: { className: 'border-amber-300 bg-amber-100 text-amber-900', Icon: Hand },
-  cancelled: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: CircleSlash },
-  unknown: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: HelpCircle },
+  quality_review: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: Eye },
+  completed: { className: 'border-success/30 bg-success-soft text-success', Icon: Check },
+  failed: { className: 'border-danger/30 bg-danger-soft text-danger', Icon: AlertTriangle },
+  blocked: { className: 'border-danger/30 bg-danger-soft text-danger', Icon: Ban },
+  needs_action: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: Hand },
+  cancelled: { className: 'border-line bg-studio-raised text-ink-soft', Icon: CircleSlash },
+  unknown: { className: 'border-line bg-studio-raised text-ink-soft', Icon: HelpCircle },
 };
 
 const ATTEMPT_STATUS: Record<string, string> = {
@@ -118,7 +118,7 @@ function ClipPreview({
           className="max-h-80 w-auto"
         />
         {simulated && (
-          <span className="absolute top-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="absolute top-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
             Simulation
           </span>
         )}
@@ -181,9 +181,9 @@ function RoutingDetails({ shot }: { shot: ShotRender }) {
                       <td className="py-2 pr-3">
                         <span className="inline-flex items-center gap-1">
                           {c.eligible ? (
-                            <Check className="size-3.5 text-emerald-800" aria-hidden />
+                            <Check className="size-3.5 text-success" aria-hidden />
                           ) : (
-                            <X className="size-3.5 text-red-800" aria-hidden />
+                            <X className="size-3.5 text-danger" aria-hidden />
                           )}
                           {c.eligible ? 'Oui' : 'Non'}
                         </span>
@@ -215,7 +215,7 @@ function RoutingDetails({ shot }: { shot: ShotRender }) {
 function AttemptItem({ attempt, simulated }: { attempt: RenderAttempt; simulated: boolean }) {
   const billed = isPossiblyBilled(attempt);
   return (
-    <li className="space-y-1 rounded-lg bg-zinc-50 p-3 text-sm">
+    <li className="space-y-1 rounded-lg bg-studio-surface p-3 text-sm">
       <p className="font-semibold text-ink">
         Essai {attempt.attempt_no} · {attempt.model || attempt.provider} ·{' '}
         {ATTEMPT_STATUS[attempt.status] ?? attempt.status}
@@ -224,9 +224,9 @@ function AttemptItem({ attempt, simulated }: { attempt: RenderAttempt; simulated
         Coût estimé {formatCost(attempt.estimated_cost_usd, simulated)} · réel{' '}
         {formatCost(attempt.actual_cost_usd, simulated)}
       </p>
-      {attempt.error_text && <p className="text-red-800">{attempt.error_text}</p>}
+      {attempt.error_text && <p className="text-danger">{attempt.error_text}</p>}
       {billed && (
-        <p className="flex items-start gap-1.5 font-semibold text-amber-900">
+        <p className="flex items-start gap-1.5 font-semibold text-warning">
           <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
           Possiblement facturé : le fournisseur n&apos;a pas confirmé l&apos;issue de cet essai.
         </p>
@@ -236,9 +236,9 @@ function AttemptItem({ attempt, simulated }: { attempt: RenderAttempt; simulated
 }
 
 const CHECK_TONE: Record<string, string> = {
-  fail: 'text-red-800',
-  warn: 'text-amber-900',
-  unavailable: 'text-amber-900',
+  fail: 'text-danger',
+  warn: 'text-warning',
+  unavailable: 'text-warning',
 };
 
 /** One check line (module 5 shots, module 6 final report); `label` overrides the name. */
@@ -272,10 +272,10 @@ function QualityPanel({ quality }: { quality: ShotQuality }) {
   if (!view) return null;
   const tone =
     view.decision === 'accept'
-      ? 'border-emerald-200 bg-emerald-50'
+      ? 'border-success/30 bg-success-soft'
       : view.decision === 'regenerate'
-        ? 'border-red-200 bg-red-50'
-        : 'border-amber-300 bg-amber-50';
+        ? 'border-danger/30 bg-danger-soft'
+        : 'border-warning/30 bg-warning-soft';
   return (
     <section
       aria-label="Contrôle qualité"
@@ -284,7 +284,7 @@ function QualityPanel({ quality }: { quality: ShotQuality }) {
       <p className="flex flex-wrap items-center gap-2">
         <span className="font-semibold text-ink">Contrôle qualité : {view.decisionLabel}</span>
         {view.simulated && (
-          <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
             Rendu simulé
           </span>
         )}
@@ -403,7 +403,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJo
   const rejected = (shot.routing?.candidates ?? []).filter((c) => !c.eligible);
 
   return (
-    <li className="space-y-3 rounded-xl border border-line bg-white p-4 sm:p-5">
+    <li className="space-y-3 rounded-xl border border-line bg-studio-ground p-4 sm:p-5">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <h4
@@ -447,7 +447,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJo
       </dl>
 
       {action?.kind === 'confirm_rerender' && (
-        <div className="space-y-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+        <div className="space-y-3 rounded-lg border border-warning/30 bg-warning-soft p-3 text-sm text-warning">
           <p className="flex items-start gap-1.5">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
             L&apos;issue du dernier essai est inconnue : il n&apos;est pas relancé automatiquement.
@@ -481,7 +481,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJo
       {shot.quality && <QualityPanel quality={shot.quality} />}
 
       {review && (
-        <div className="space-y-3 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+        <div className="space-y-3 rounded-lg border border-warning/30 bg-warning-soft p-3 text-sm text-warning">
           <p className="flex items-start gap-1.5">
             <Eye className="mt-0.5 size-4 shrink-0" aria-hidden />
             Ce plan n&apos;a pas passé le contrôle qualité : il n&apos;est pas utilisé tant que vous
@@ -542,7 +542,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJo
       )}
 
       {action?.kind === 'pick_engine' && (
-        <div className="space-y-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">
+        <div className="space-y-2 rounded-lg border border-danger/30 bg-danger-soft p-3 text-sm text-danger">
           <p className="font-semibold">Aucun moteur n&apos;a pu rendre ce plan.</p>
           {rejected.length > 0 && (
             <ul className="list-disc space-y-0.5 pl-5">
@@ -582,7 +582,7 @@ export function ShotRenderRow({ shot, jobStatus, onRerender, onAccept, onRetryJo
           <summary className={summaryClass}>
             Essais ({attempts.length})
             {attempts.some(isPossiblyBilled) && (
-              <span className="ml-2 font-normal text-amber-900">· possiblement facturé</span>
+              <span className="ml-2 font-normal text-warning">· possiblement facturé</span>
             )}
           </summary>
           <ol className="space-y-2 pt-1">

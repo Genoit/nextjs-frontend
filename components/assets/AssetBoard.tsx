@@ -9,7 +9,7 @@ import { ShotAssetRow, StatusPill, sceneMeta } from './ShotAssetRow';
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const primaryClass = `inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 text-sm font-semibold text-white hover:bg-trend-orange-strong disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto ${focusRing}`;
+const primaryClass = `inline-flex h-[38px] w-full items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent hover:bg-trend-orange-strong disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto ${focusRing}`;
 
 interface Props {
   storyboard: Storyboard;
@@ -65,12 +65,12 @@ export function AssetBoard({
   return (
     <section
       aria-labelledby="assets-title"
-      className="space-y-5 rounded-2xl border border-line bg-white p-4 sm:p-6"
+      className="space-y-5 rounded-[18px] border border-studio-rule bg-studio-surface p-4 sm:p-6"
     >
       {/* A. Title row */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0 space-y-1">
-          <h2 id="assets-title" className="text-xl font-semibold text-ink sm:text-2xl">
+          <h2 id="assets-title" className="text-lg font-semibold text-ink">
             Visuels produit
           </h2>
           <p className="text-sm text-ink-muted tabular-nums">
@@ -120,7 +120,7 @@ export function AssetBoard({
 
       {/* B. Simulation notice */}
       {board?.is_heuristic && (
-        <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+        <div className="flex gap-3 rounded-xl border border-warning/30 bg-warning-soft p-4 text-sm text-warning">
           <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden />
           <div className="space-y-1">
             <p className="font-semibold">Traitement simulé</p>
@@ -164,7 +164,7 @@ export function AssetBoard({
           <button
             type="button"
             onClick={onReload}
-            className={`min-h-11 rounded-lg border border-line px-4 font-semibold hover:bg-zinc-50 ${focusRing}`}
+            className={`min-h-11 rounded-lg border border-line px-4 font-semibold hover:bg-studio-surface ${focusRing}`}
           >
             Réessayer
           </button>
@@ -178,9 +178,9 @@ export function AssetBoard({
               aria-hidden
               className="flex items-center gap-4 rounded-xl border border-line p-5"
             >
-              <div className="h-4 w-20 rounded bg-zinc-100" />
-              <div className="size-22 rounded-lg bg-zinc-100" />
-              <div className="h-4 flex-1 rounded bg-zinc-100" />
+              <div className="h-4 w-20 rounded bg-studio-raised" />
+              <div className="size-22 rounded-lg bg-studio-raised" />
+              <div className="h-4 flex-1 rounded bg-studio-raised" />
             </div>
           ))}
         </div>

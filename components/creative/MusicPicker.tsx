@@ -15,10 +15,10 @@ import {
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-zinc-50 disabled:opacity-60 ${focusRing}`;
-const dangerClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-red-700 px-4 text-sm font-semibold text-white hover:bg-red-800 disabled:opacity-60 ${focusRing}`;
+const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
+const dangerClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-danger px-4 text-sm font-semibold text-on-accent hover:bg-danger disabled:opacity-60 ${focusRing}`;
 const inputClass =
-  'w-full px-3 py-2.5 rounded-xl border border-zinc-200 text-sm text-zinc-900 bg-white focus:outline-none focus:border-[#BA3807]';
+  'w-full px-3 py-2.5 rounded-xl border border-line text-sm text-ink bg-studio-ground focus:outline-none focus:border-trend-orange';
 
 interface Props {
   /** MUSIC_AUTO, MUSIC_NONE or a track id. */
@@ -135,7 +135,7 @@ export function MusicPicker({ value, onChange }: Props) {
           value={id}
           checked={value === id}
           onChange={() => onChange(id)}
-          className="mt-1 accent-[#BA3807]"
+          className="mt-1 accent-trend-orange"
         />
         <span>{label}</span>
       </label>
@@ -146,12 +146,12 @@ export function MusicPicker({ value, onChange }: Props) {
   return (
     <div className="space-y-4 sm:col-span-3">
       <fieldset ref={listRef} tabIndex={-1} className={`space-y-1 ${focusRing}`}>
-        <legend className="flex items-center gap-1.5 text-xs font-bold text-zinc-700 mb-1">
+        <legend className="flex items-center gap-1.5 text-xs font-bold text-ink-soft mb-1">
           <Music className="size-3.5" aria-hidden />
           Musique de fond
         </legend>
         {loadError && (
-          <p role="alert" className="text-sm text-red-800">
+          <p role="alert" className="text-sm text-danger">
             {loadError}
           </p>
         )}
@@ -200,7 +200,7 @@ export function MusicPicker({ value, onChange }: Props) {
                       </button>
                     </span>
                     {deleteError && (
-                      <span role="alert" className="block text-sm text-red-800">
+                      <span role="alert" className="block text-sm text-danger">
                         {deleteError}
                       </span>
                     )}
@@ -226,7 +226,7 @@ export function MusicPicker({ value, onChange }: Props) {
           )}
         </ul>
         {missing && (
-          <p className="flex items-start gap-1.5 text-sm text-amber-900">
+          <p className="flex items-start gap-1.5 text-sm text-warning">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
             Le morceau choisi n&apos;existe plus : choisissez-en un autre.
           </p>
@@ -242,7 +242,7 @@ export function MusicPicker({ value, onChange }: Props) {
         </summary>
         <div className="grid grid-cols-1 gap-3 pt-2 sm:grid-cols-2">
           <div className="sm:col-span-2">
-            <label htmlFor="music-file" className="block text-xs font-bold text-zinc-700 mb-1">
+            <label htmlFor="music-file" className="block text-xs font-bold text-ink-soft mb-1">
               Fichier (MP3, WAV ou M4A, {MUSIC_MAX_MB} Mo max.)
             </label>
             <input
@@ -256,16 +256,16 @@ export function MusicPicker({ value, onChange }: Props) {
               }}
               aria-describedby={fileError ? 'music-file-error' : undefined}
               aria-invalid={!!fileError}
-              className="block w-full text-sm text-ink file:mr-3 file:min-h-11 file:rounded-lg file:border file:border-line file:bg-white file:px-4 file:text-sm file:font-semibold"
+              className="block w-full text-sm text-ink file:mr-3 file:min-h-11 file:rounded-lg file:border file:border-line file:bg-studio-ground file:px-4 file:text-sm file:font-semibold"
             />
             {fileError && (
-              <p id="music-file-error" className="mt-1 text-sm text-red-800">
+              <p id="music-file-error" className="mt-1 text-sm text-danger">
                 {fileError}
               </p>
             )}
           </div>
           <div>
-            <label htmlFor="music-title" className="block text-xs font-bold text-zinc-700 mb-1">
+            <label htmlFor="music-title" className="block text-xs font-bold text-ink-soft mb-1">
               Titre
             </label>
             <input
@@ -277,7 +277,7 @@ export function MusicPicker({ value, onChange }: Props) {
             />
           </div>
           <div>
-            <label htmlFor="music-moods" className="block text-xs font-bold text-zinc-700 mb-1">
+            <label htmlFor="music-moods" className="block text-xs font-bold text-ink-soft mb-1">
               Ambiances (séparées par des virgules)
             </label>
             <input
@@ -294,7 +294,7 @@ export function MusicPicker({ value, onChange }: Props) {
               type="checkbox"
               checked={rights}
               onChange={(e) => setRights(e.target.checked)}
-              className="mt-1 accent-[#BA3807]"
+              className="mt-1 accent-trend-orange"
             />
             <span>Je détiens les droits d&apos;utilisation de ce morceau</span>
           </label>
@@ -310,7 +310,7 @@ export function MusicPicker({ value, onChange }: Props) {
               {uploading ? 'Envoi…' : 'Envoyer le morceau'}
             </button>
             {uploadError && (
-              <p role="alert" className="text-sm text-red-800">
+              <p role="alert" className="text-sm text-danger">
                 {uploadError}
               </p>
             )}

@@ -21,7 +21,7 @@ export function ImageGallery({
         </h3>
         {images.length > 1 && (
           <p className="text-sm text-ink-muted">
-            La première sert de couverture. Agrandissez une photo pour la changer.
+            The first one is the cover. Open a photo to change it.
           </p>
         )}
       </div>
@@ -34,7 +34,7 @@ export function ImageGallery({
             <button
               type="button"
               onClick={() => onOpen(i)}
-              aria-label={`Agrandir la photo ${i + 1}${i === 0 ? ' (couverture)' : ''}`}
+              aria-label={`Open photo ${i + 1}${i === 0 ? ' (cover)' : ''}`}
               className="group relative block size-full overflow-hidden rounded-lg bg-cream outline-offset-2 focus-visible:outline-2 focus-visible:outline-trend-orange"
             >
               <Image
@@ -46,27 +46,27 @@ export function ImageGallery({
                 className="object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none"
               />
               {i === 0 && (
-                <span className="absolute bottom-1.5 left-1.5 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
-                  Couverture
+                <span className="absolute bottom-1.5 left-1.5 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
+                  Cover
                 </span>
               )}
             </button>
             {img.uploading ? (
               <span
                 role="status"
-                className="absolute inset-0 flex items-center justify-center rounded-lg bg-white/70"
+                className="absolute inset-0 flex items-center justify-center rounded-lg bg-studio-ground/70"
               >
                 <span className="size-5 animate-spin rounded-full border-2 border-trend-orange border-t-transparent motion-reduce:animate-none" />
-                <span className="sr-only">Envoi de {img.alt}…</span>
+                <span className="sr-only">Uploading {img.alt}…</span>
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => onRemove(img.id)}
-                aria-label={`Retirer la photo ${i + 1}`}
+                aria-label={`Remove photo ${i + 1}`}
                 className="absolute right-0 top-0 flex size-11 items-start justify-end p-1.5 focus-visible:outline-none [&:focus-visible>span]:outline-2 [&:focus-visible>span]:outline-trend-orange"
               >
-                <span className="flex size-7 items-center justify-center rounded-full bg-white text-ink hover:bg-danger hover:text-white">
+                <span className="flex size-7 items-center justify-center rounded-full bg-studio-ground text-ink hover:bg-danger hover:text-on-accent">
                   <X className="size-4" aria-hidden />
                 </span>
               </button>
@@ -80,7 +80,7 @@ export function ImageGallery({
             className="flex size-full flex-col items-center justify-center gap-1 rounded-lg border border-dashed border-line text-sm text-ink-muted hover:border-trend-orange hover:text-trend-orange focus-visible:outline-2 focus-visible:outline-trend-orange"
           >
             <Plus className="size-5" aria-hidden />
-            Ajouter
+            Add
           </button>
         </li>
       </ul>

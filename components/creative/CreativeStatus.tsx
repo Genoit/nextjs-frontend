@@ -10,7 +10,7 @@ export function HeuristicBadge({ entity }: { entity: { is_heuristic?: boolean } 
   const label = heuristicLabel(entity);
   if (!label) return null;
   return (
-    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold">
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-warning-soft text-warning border border-warning/30 text-xs font-bold">
       <FlaskConical className="w-3.5 h-3.5" aria-hidden />
       {label}
     </span>
@@ -20,23 +20,23 @@ export function HeuristicBadge({ entity }: { entity: { is_heuristic?: boolean } 
 /** Provider, model and estimated/actual cost of one generation. */
 export function GenerationMeta({ meta }: { meta: CreativeGenerationMeta }) {
   return (
-    <dl className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-zinc-500">
+    <dl className="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-ink-muted">
       <div className="flex gap-1">
         <dt>Moteur :</dt>
-        <dd className="font-semibold text-zinc-700">
+        <dd className="font-semibold text-ink-soft">
           {meta.is_heuristic ? 'déterministe' : (meta.model ?? meta.provider)}
           {meta.edited_by_user && ' — puis modifié par vous'}
         </dd>
       </div>
       <div className="flex gap-1">
         <dt>Coût estimé :</dt>
-        <dd className="font-semibold text-zinc-700">
+        <dd className="font-semibold text-ink-soft">
           {formatCost(meta.estimated_cost_usd, meta.is_heuristic)}
         </dd>
       </div>
       <div className="flex gap-1">
         <dt>Coût réel :</dt>
-        <dd className="font-semibold text-zinc-700">
+        <dd className="font-semibold text-ink-soft">
           {formatCost(meta.actual_cost_usd, meta.is_heuristic)}
         </dd>
       </div>
@@ -54,12 +54,12 @@ const SEVERITY = {
   block: {
     label: 'Bloquant',
     Icon: Ban,
-    className: 'border-red-200 bg-red-50 text-red-800',
+    className: 'border-danger/30 bg-danger-soft text-danger',
   },
   warn: {
     label: 'Avertissement',
     Icon: AlertTriangle,
-    className: 'border-amber-200 bg-amber-50 text-amber-900',
+    className: 'border-warning/30 bg-warning-soft text-warning',
   },
 } as const;
 
@@ -71,13 +71,13 @@ export function ViolationsPanel({ violations }: { violations: ComplianceViolatio
   return (
     <section
       aria-labelledby="violations-title"
-      className="rounded-2xl bg-white border border-zinc-200/80 p-5 shadow-2xs space-y-3"
+      className="rounded-2xl bg-studio-ground border border-line/80 p-5 shadow-2xs space-y-3"
     >
-      <h4 id="violations-title" className="text-sm font-bold text-zinc-900">
+      <h4 id="violations-title" className="text-sm font-bold text-ink">
         Contrôle de persuasion & conformité
       </h4>
       {ordered.length === 0 ? (
-        <p className="text-xs text-zinc-600">Aucune violation détectée.</p>
+        <p className="text-xs text-ink-soft">Aucune violation détectée.</p>
       ) : (
         <ul className="space-y-2">
           {ordered.map((v, idx) => {

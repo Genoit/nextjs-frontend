@@ -639,10 +639,24 @@ export interface VideoExport {
   download_url: string | null;
   thumbnail_url: string | null;
   track_id: string | null;
+  /** Studio editor settings, non-default ones only ({} = the assembly's look). */
+  edits?: Partial<EditSettings>;
   cost_usd: string | null;
   error: string | null;
   created_at: string;
   updated_at: string;
+}
+
+/** Studio editor settings, rendered by FFmpeg/libass on the backend. */
+export interface EditSettings {
+  captions: boolean;
+  caption_style: 'bold' | 'box' | 'highlight' | 'minimal';
+  caption_position: 'bottom' | 'middle' | 'top';
+  caption_animation: 'pop' | 'fade' | 'karaoke' | 'none';
+  overlay_text: boolean;
+  effect: 'none' | 'bw' | 'warm' | 'cool' | 'vivid' | 'vignette';
+  /** null: the video's own music level. */
+  music_gain_db: number | null;
 }
 
 export interface MusicTrack {

@@ -66,19 +66,19 @@ export function VideoGenerationTracker({
   return (
     <div className="space-y-6 max-w-4xl">
       {/* Status & Progress Bar */}
-      <div className="rounded-2xl bg-white border border-zinc-200/80 p-6 shadow-2xs space-y-5">
+      <div className="rounded-2xl bg-studio-ground border border-line/80 p-6 shadow-2xs space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span
-                className="w-2.5 h-2.5 rounded-full bg-[#BA3807] animate-pulse motion-reduce:animate-none"
+                className="w-2.5 h-2.5 rounded-full bg-trend-orange animate-pulse motion-reduce:animate-none"
                 aria-hidden
               />
-              <span className="text-xs font-bold uppercase tracking-wider text-zinc-500">
+              <span className="text-xs font-bold uppercase tracking-wider text-ink-muted">
                 Pipeline de Génération Vidéo IA & Montage FFmpeg
               </span>
             </div>
-            <h3 className="text-xl font-bold text-zinc-900">
+            <h3 className="text-lg font-semibold text-ink">
               {isCompleted
                 ? simulated
                   ? 'Vidéo assemblée (rendu simulé)'
@@ -91,7 +91,7 @@ export function VideoGenerationTracker({
                     ? 'Génération annulée'
                     : 'Production de votre publicité en cours...'}
             </h3>
-            <p className="text-xs text-zinc-500">
+            <p className="text-xs text-ink-muted">
               {job.current_step || 'Traitement asynchrone des scènes et assemblage.'}
             </p>
           </div>
@@ -101,7 +101,7 @@ export function VideoGenerationTracker({
               <button
                 type="button"
                 onClick={() => onCancel(job.id)}
-                className="min-h-11 px-4 py-2 rounded-xl border border-zinc-300 text-zinc-600 hover:bg-zinc-50 text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                className="min-h-11 px-4 py-2 rounded-xl border border-line text-ink-soft hover:bg-studio-surface text-xs font-semibold transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
               >
                 Annuler
               </button>
@@ -111,7 +111,7 @@ export function VideoGenerationTracker({
               <button
                 type="button"
                 onClick={onRetry}
-                className="min-h-11 px-5 py-2.5 rounded-xl bg-[#BA3807] hover:bg-[#9A2D04] text-white text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                className="min-h-11 px-5 py-2.5 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-xs font-semibold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
               >
                 <RotateCw className="w-4 h-4" aria-hidden />
                 <span>Réessayer</span>
@@ -124,7 +124,7 @@ export function VideoGenerationTracker({
                 <a
                   href={finalVideo.url}
                   download={notReal ? 'trended-video-simulation.mp4' : 'trended-video.mp4'}
-                  className="min-h-11 px-5 py-2.5 rounded-xl bg-[#BA3807] hover:bg-[#9A2D04] text-white text-xs font-bold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                  className="min-h-11 px-5 py-2.5 rounded-[10px] bg-trend-orange hover:bg-trend-orange-strong text-on-accent text-xs font-semibold transition flex items-center gap-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
                 >
                   <Download className="w-4 h-4" aria-hidden />
                   <span>
@@ -133,7 +133,7 @@ export function VideoGenerationTracker({
                   </span>
                 </a>
               ) : (
-                <span className="text-xs text-zinc-500" role="status">
+                <span className="text-xs text-ink-muted" role="status">
                   {finalVideo.failed ? 'Vidéo indisponible' : 'Préparation du téléchargement…'}
                 </span>
               ))}
@@ -142,14 +142,14 @@ export function VideoGenerationTracker({
 
         {/* Progress Bar */}
         <div className="space-y-2">
-          <div className="flex items-center justify-between text-xs font-bold text-zinc-700">
+          <div className="flex items-center justify-between text-xs font-bold text-ink-soft">
             <span>Progression globale</span>
             <span>{job.progress_percentage}%</span>
           </div>
-          <div className="w-full h-3 rounded-full bg-zinc-100 overflow-hidden">
+          <div className="w-full h-3 rounded-full bg-studio-raised overflow-hidden">
             <div
               className={`h-full transition-all duration-500 ${
-                isCompleted ? 'bg-emerald-500' : isFailed ? 'bg-red-500' : 'bg-[#BA3807]'
+                isCompleted ? 'bg-success' : isFailed ? 'bg-danger' : 'bg-trend-orange'
               }`}
               style={{ width: `${Math.max(5, job.progress_percentage)}%` }}
             />
@@ -184,10 +184,10 @@ export function VideoGenerationTracker({
               key={idx}
               className={`p-2.5 rounded-xl border text-center text-xs font-semibold ${
                 item.done
-                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                  ? 'bg-success-soft border-success/30 text-success'
                   : item.active
-                    ? 'bg-[#FFF5ED] border-[#FED7AA] text-[#BA3807] animate-pulse motion-reduce:animate-none'
-                    : 'bg-zinc-50 border-zinc-200 text-zinc-400'
+                    ? 'bg-cream border-trend-orange/30 text-trend-orange animate-pulse motion-reduce:animate-none'
+                    : 'bg-studio-surface border-line text-ink-muted'
               }`}
             >
               {item.step}
@@ -215,7 +215,7 @@ export function VideoGenerationTracker({
             <p className="flex flex-wrap justify-between gap-2 text-sm">
               <span className="font-semibold text-ink">Budget du job</span>
               <span
-                className={`tabular-nums ${budget.over ? 'font-semibold text-red-800' : 'text-ink'}`}
+                className={`tabular-nums ${budget.over ? 'font-semibold text-danger' : 'text-ink'}`}
               >
                 {budget.over && (
                   <AlertCircle className="mr-1 inline size-4 align-text-bottom" aria-hidden />
@@ -223,16 +223,16 @@ export function VideoGenerationTracker({
                 {budget.label}
               </span>
             </p>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100" aria-hidden>
+            <div className="h-2 w-full overflow-hidden rounded-full bg-studio-raised" aria-hidden>
               <div
-                className={`h-full ${budget.over ? 'bg-red-700' : 'bg-ink'}`}
+                className={`h-full ${budget.over ? 'bg-danger' : 'bg-ink'}`}
                 style={{ width: `${budget.pct}%` }}
               />
             </div>
           </div>
         )}
         {simulated && (
-          <div className="flex gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+          <div className="flex gap-3 rounded-xl border border-warning/30 bg-warning-soft p-4 text-sm text-warning">
             <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden />
             <p>
               <span className="font-semibold">Rendu simulé. </span>
@@ -267,7 +267,7 @@ export function VideoGenerationTracker({
         </p>
 
         {job.error_message && (
-          <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-xs text-red-700 flex items-start gap-2.5">
+          <div className="p-4 rounded-xl bg-danger-soft border border-danger/30 text-xs text-danger flex items-start gap-2.5">
             <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
             <div>
               <span className="font-bold">Erreur : </span>
@@ -290,20 +290,20 @@ export function VideoGenerationTracker({
 
       {/* Legacy QA card (pre-module 6); the finishing report replaces it and has no score. */}
       {job.quality_report && !job.finishing_report && (
-        <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-4">
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-3">
+        <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-4">
+          <div className="flex items-center justify-between border-b border-line pb-3">
             <div className="flex items-center gap-2">
               <Award
-                className={`w-5 h-5 ${notReal ? 'text-zinc-400' : 'text-emerald-600'}`}
+                className={`w-5 h-5 ${notReal ? 'text-ink-muted' : 'text-success'}`}
                 aria-hidden
               />
-              <h4 className="text-sm font-bold text-zinc-900">Rapport de Contrôle Qualité (QA)</h4>
+              <h4 className="text-sm font-bold text-ink">Rapport de Contrôle Qualité (QA)</h4>
             </div>
             <div className="flex items-center gap-2">
-              <span className="text-xs text-zinc-500">Score global :</span>
+              <span className="text-xs text-ink-muted">Score global :</span>
               <span
                 className={`px-2.5 py-1 rounded-full text-xs font-bold ${
-                  notReal ? 'bg-zinc-100 text-zinc-700' : 'bg-emerald-100 text-emerald-800'
+                  notReal ? 'bg-studio-raised text-ink-soft' : 'bg-success-soft text-success'
                 }`}
               >
                 {job.quality_report.overall_score} / 100
@@ -312,7 +312,7 @@ export function VideoGenerationTracker({
             </div>
           </div>
           {notReal && (
-            <p className="flex items-start gap-1.5 text-sm text-amber-900">
+            <p className="flex items-start gap-1.5 text-sm text-warning">
               <FlaskConical className="mt-0.5 size-4 shrink-0" aria-hidden />
               {simulated
                 ? 'Rapport non représentatif : la vidéo assemble des plans simulés.'
@@ -322,57 +322,53 @@ export function VideoGenerationTracker({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 text-xs">
             {/* Duration check */}
-            <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 space-y-1">
-              <div className="text-zinc-500 flex items-center gap-1.5">
+            <div className="p-3 rounded-xl bg-studio-surface border border-line space-y-1">
+              <div className="text-ink-muted flex items-center gap-1.5">
                 <Clock className="w-3.5 h-3.5" />
                 <span>Durée</span>
               </div>
-              <div className="font-bold text-zinc-900">
+              <div className="font-bold text-ink">
                 {job.quality_report.duration_check.actual.toFixed(1)}s (Cible:{' '}
                 {job.quality_report.duration_check.target}s)
               </div>
-              {!notReal && (
-                <span className="text-[10px] text-emerald-600 font-bold">✓ Conforme</span>
-              )}
+              {!notReal && <span className="text-[10px] text-success font-bold">✓ Conforme</span>}
             </div>
 
             {/* Resolution check */}
-            <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 space-y-1">
-              <div className="text-zinc-500 flex items-center gap-1.5">
+            <div className="p-3 rounded-xl bg-studio-surface border border-line space-y-1">
+              <div className="text-ink-muted flex items-center gap-1.5">
                 <Tv className="w-3.5 h-3.5" />
                 <span>Résolution</span>
               </div>
-              <div className="font-bold text-zinc-900">
-                {job.quality_report.resolution_check.actual}
-              </div>
+              <div className="font-bold text-ink">{job.quality_report.resolution_check.actual}</div>
               {!notReal && (
-                <span className="text-[10px] text-emerald-600 font-bold">✓ 1080x1920 (9:16)</span>
+                <span className="text-[10px] text-success font-bold">✓ 1080x1920 (9:16)</span>
               )}
             </div>
 
             {/* Audio sync check */}
-            <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 space-y-1">
-              <div className="text-zinc-500 flex items-center gap-1.5">
+            <div className="p-3 rounded-xl bg-studio-surface border border-line space-y-1">
+              <div className="text-ink-muted flex items-center gap-1.5">
                 <Volume2 className="w-3.5 h-3.5" />
                 <span>Piste audio</span>
               </div>
-              <div className="font-bold text-zinc-900">
+              <div className="font-bold text-ink">
                 {job.quality_report.audio_sync_check.has_audio ? 'Audio actif' : 'Muet'}
               </div>
               {!notReal && (
-                <span className="text-[10px] text-emerald-600 font-bold">✓ Mixage réussi</span>
+                <span className="text-[10px] text-success font-bold">✓ Mixage réussi</span>
               )}
             </div>
 
             {/* Ethics check */}
-            <div className="p-3 rounded-xl bg-zinc-50 border border-zinc-200 space-y-1">
-              <div className="text-zinc-500 flex items-center gap-1.5">
+            <div className="p-3 rounded-xl bg-studio-surface border border-line space-y-1">
+              <div className="text-ink-muted flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5" />
                 <span>Éthique publicitaire</span>
               </div>
-              <div className="font-bold text-zinc-900">Zéro faux avis</div>
+              <div className="font-bold text-ink">Zéro faux avis</div>
               {!notReal && (
-                <span className="text-[10px] text-emerald-600 font-bold">✓ 100% Vérifié</span>
+                <span className="text-[10px] text-success font-bold">✓ 100% Vérifié</span>
               )}
             </div>
           </div>

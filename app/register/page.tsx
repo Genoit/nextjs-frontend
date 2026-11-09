@@ -22,6 +22,7 @@ import {
   UserIcon,
   VoiceoverIcon,
 } from '../../components/Icons';
+import ThemeToggle from '../../components/ThemeToggle';
 
 export default function RegisterPage() {
   const { register, loginWithGoogle, loginWithGoogleRedirect } = useAuth();
@@ -179,12 +180,12 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-white">
+    <div className="min-h-screen w-full grid grid-cols-1 lg:grid-cols-12 bg-studio-ground">
       {/* Left visual showcase panel - faithfully matching Figma Register_TrendED.jpg */}
-      <div className="hidden lg:flex lg:col-span-7 flex-col justify-start gap-8 bg-[#FAF7F0] p-8 xl:p-10 relative overflow-hidden border-r border-amber-950/5 min-h-screen">
+      <div className="hidden lg:flex lg:col-span-7 flex-col justify-start gap-8 bg-cream p-8 xl:p-10 relative overflow-hidden border-r border-amber-950/5 min-h-screen">
         {/* Ambient subtle background decorative arcs */}
-        <div className="absolute top-1/4 -right-16 h-[500px] w-[500px] rounded-full border border-amber-300/20 pointer-events-none" />
-        <div className="absolute top-1/3 -right-32 h-[700px] w-[700px] rounded-full border border-amber-200/15 pointer-events-none" />
+        <div className="absolute top-1/4 -right-16 h-[500px] w-[500px] rounded-full border border-warning/30 pointer-events-none" />
+        <div className="absolute top-1/3 -right-32 h-[700px] w-[700px] rounded-full border border-warning/30 pointer-events-none" />
 
         {/* Brand logo at top */}
         <div className="z-10">
@@ -195,10 +196,12 @@ export default function RegisterPage() {
         <div className="z-10 mt-2 space-y-5 xl:space-y-6">
           <div className="space-y-2">
             <h1
-              className={`${tempting.className} font-tempting text-4xl sm:text-5xl xl:text-6xl font-normal text-zinc-900 leading-[1.3] tracking-wide select-none space-y-2.5`}
+              className={`${tempting.className} font-tempting text-4xl sm:text-5xl xl:text-6xl font-normal text-ink leading-[1.3] tracking-wide select-none space-y-2.5`}
             >
               <span className="block">Your next</span>
-              <span className="block pl-8 sm:pl-12 xl:pl-16 text-[#DE4D18]">winning creative</span>
+              <span className="block pl-8 sm:pl-12 xl:pl-16 text-trend-orange">
+                winning creative
+              </span>
               <span className="block pl-16 sm:pl-24 xl:pl-32">starts here.</span>
             </h1>
 
@@ -212,7 +215,7 @@ export default function RegisterPage() {
               />
             </div>
 
-            <p className="text-sm xl:text-base text-zinc-600 font-normal leading-relaxed pt-2 max-w-sm">
+            <p className="text-sm xl:text-base text-ink-soft font-normal leading-relaxed pt-2 max-w-sm">
               Create professional UGC advertising videos faster with AI.
             </p>
           </div>
@@ -220,8 +223,8 @@ export default function RegisterPage() {
           {/* Pipeline visual diagram with Product + AI badge + features + Phone */}
           <div className="relative flex items-center justify-start gap-5 xl:gap-7 py-5 scale-[1.18] origin-left">
             {/* Step 1: Product card */}
-            <div className="flex flex-col items-center justify-between rounded-[1.7rem] bg-white p-4 xl:p-5 shadow-sm border border-zinc-100/90 w-40 sm:w-44 h-60 shrink-0">
-              <span className="text-[12px] font-semibold text-zinc-400">Product</span>
+            <div className="flex flex-col items-center justify-between rounded-[1.7rem] bg-studio-ground p-4 xl:p-5 shadow-sm border border-line/90 w-40 sm:w-44 h-60 shrink-0">
+              <span className="text-[12px] font-semibold text-ink-muted">Product</span>
               <div className="relative w-28 h-36 my-auto flex items-center justify-center">
                 <Image
                   src="/register-product-card.png"
@@ -235,14 +238,14 @@ export default function RegisterPage() {
 
             {/* Dotted line with arrow to Logo Symbol */}
             <div className="flex items-center shrink-0">
-              <div className="w-8 xl:w-12 border-t-[3px] border-dashed border-amber-300" />
+              <div className="w-8 xl:w-12 border-t-[3px] border-dashed border-warning/30" />
               <div className="w-0 h-0 border-y-[6px] border-y-transparent border-l-[8px] border-l-amber-400" />
             </div>
 
             {/* Step 2: Middle column with Logo Symbol badge & feature list */}
             <div className="flex flex-col items-center gap-3 shrink-0">
               {/* Logo symbol badge */}
-              <div className="flex items-center justify-center rounded-[1.6rem] bg-white p-3.5 shadow-sm border border-zinc-100/90">
+              <div className="flex items-center justify-center rounded-[1.6rem] bg-studio-ground p-3.5 shadow-sm border border-line/90">
                 <Image
                   src="/symbol.png"
                   alt="TrendED Logo Symbol"
@@ -254,30 +257,30 @@ export default function RegisterPage() {
               </div>
 
               {/* Vertical dotted line */}
-              <div className="h-5 border-l-[3px] border-dashed border-amber-300" />
+              <div className="h-5 border-l-[3px] border-dashed border-warning/30" />
 
               {/* Feature list card */}
-              <div className="rounded-[1.6rem] bg-white p-4 xl:p-5 shadow-sm border border-zinc-100/90 space-y-3 min-w-[190px] xl:min-w-[210px]">
-                <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-800">
-                  <span className="text-[#E0492A]">
+              <div className="rounded-[1.6rem] bg-studio-ground p-4 xl:p-5 shadow-sm border border-line/90 space-y-3 min-w-[190px] xl:min-w-[210px]">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-ink">
+                  <span className="text-trend-orange">
                     <ChatScriptIcon className="h-5 w-5" />
                   </span>
                   <span>AI Script</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-800">
-                  <span className="text-[#E0492A]">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-ink">
+                  <span className="text-trend-orange">
                     <CaptionsIcon className="h-5 w-5" />
                   </span>
                   <span>Auto Captions</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-800">
-                  <span className="text-[#E0492A]">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-ink">
+                  <span className="text-trend-orange">
                     <VoiceoverIcon className="h-5 w-5" />
                   </span>
                   <span>Voiceover</span>
                 </div>
-                <div className="flex items-center gap-2.5 text-sm font-medium text-zinc-800">
-                  <span className="text-[#E0492A]">
+                <div className="flex items-center gap-2.5 text-sm font-medium text-ink">
+                  <span className="text-trend-orange">
                     <MusicIcon className="h-5 w-5" />
                   </span>
                   <span>Music & SFX</span>
@@ -287,12 +290,12 @@ export default function RegisterPage() {
 
             {/* Dotted line with arrow to Phone */}
             <div className="flex items-center shrink-0">
-              <div className="w-8 xl:w-12 border-t-[3px] border-dashed border-amber-300" />
+              <div className="w-8 xl:w-12 border-t-[3px] border-dashed border-warning/30" />
               <div className="w-0 h-0 border-y-[6px] border-y-transparent border-l-[8px] border-l-amber-400" />
             </div>
 
             {/* Step 3: Creator phone preview */}
-            <div className="rounded-[2.1rem] border-[3px] border-[#1F2937] shadow-[0_35px_70px_-22px_rgba(15,23,42,0.55)] overflow-hidden w-48 sm:w-56 xl:w-64 shrink-0 translate-y-1">
+            <div className="rounded-[2.1rem] border-[3px] border-ink shadow-[0_35px_70px_-22px_rgba(15,23,42,0.55)] overflow-hidden w-48 sm:w-56 xl:w-64 shrink-0 translate-y-1">
               <Image
                 src="/register-phone-exact.jpg"
                 alt="Creator UGC Video"
@@ -305,13 +308,13 @@ export default function RegisterPage() {
           </div>
 
           {/* Bottom badge */}
-          <div className="inline-flex items-center gap-2.5 rounded-2xl bg-white p-3 pr-5 shadow-sm border border-amber-950/5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100/70 text-amber-500">
+          <div className="inline-flex items-center gap-2.5 rounded-2xl bg-studio-ground p-3 pr-5 shadow-sm border border-amber-950/5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-warning-soft/70 text-warning">
               <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
               </svg>
             </div>
-            <span className="text-sm font-medium text-zinc-700">
+            <span className="text-sm font-medium text-ink-soft">
               Generate scroll-stopping UGC videos in minutes.
             </span>
           </div>
@@ -322,7 +325,8 @@ export default function RegisterPage() {
       </div>
 
       {/* Right side form */}
-      <div className="lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
+      <div className="relative lg:col-span-5 flex flex-col justify-center items-center p-6 sm:p-12 lg:p-12 xl:p-16 min-h-screen">
+        <ThemeToggle className="absolute right-4 top-4 sm:right-6 sm:top-6" />
         <div className="w-full max-w-[430px] space-y-5">
           {/* Mobile logo when left panel is hidden */}
           <div className="lg:hidden mb-4 flex justify-center">
@@ -330,14 +334,14 @@ export default function RegisterPage() {
           </div>
 
           <div className="text-left space-y-1">
-            <h2 className="text-4xl font-bold tracking-tight text-zinc-900">Create your account</h2>
-            <p className="text-base text-zinc-500">Start creating with TrendED.</p>
+            <h2 className="text-4xl font-bold tracking-tight text-ink">Create your account</h2>
+            <p className="text-base text-ink-muted">Start creating with TrendED.</p>
           </div>
 
           {error && (
             <div
               role="alert"
-              className="rounded-xl bg-red-50 p-3.5 text-base text-red-700 border border-red-200 space-y-2"
+              className="rounded-xl bg-danger-soft p-3.5 text-base text-danger border border-danger/30 space-y-2"
             >
               <p>{error}</p>
               {(error.includes('popup') ||
@@ -347,7 +351,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={handleGoogleRedirect}
-                  className="text-sm font-semibold text-[#E0492A] hover:underline block"
+                  className="text-sm font-semibold text-trend-orange hover:underline block"
                 >
                   Retry with page redirect →
                 </button>
@@ -371,7 +375,7 @@ export default function RegisterPage() {
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value)}
                   disabled={isLoading}
-                  className="block w-full rounded-xl border border-zinc-200 px-3.5 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                  className="block w-full rounded-xl border border-line px-3.5 py-3.5 text-base text-ink placeholder:text-ink-muted focus:border-trend-orange focus:outline-none focus:ring-2 focus:ring-trend-orange/15 disabled:opacity-50 transition"
                   placeholder="First name"
                 />
               </div>
@@ -389,10 +393,10 @@ export default function RegisterPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   disabled={isLoading}
-                  className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-10 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                  className="block w-full rounded-xl border border-line pl-3.5 pr-10 py-3.5 text-base text-ink placeholder:text-ink-muted focus:border-trend-orange focus:outline-none focus:ring-2 focus:ring-trend-orange/15 disabled:opacity-50 transition"
                   placeholder="Last name"
                 />
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400">
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-ink-muted">
                   <UserIcon className="h-4 w-4" />
                 </div>
               </div>
@@ -412,10 +416,10 @@ export default function RegisterPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-10 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                className="block w-full rounded-xl border border-line pl-3.5 pr-10 py-3.5 text-base text-ink placeholder:text-ink-muted focus:border-trend-orange focus:outline-none focus:ring-2 focus:ring-trend-orange/15 disabled:opacity-50 transition"
                 placeholder="Email address"
               />
-              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-zinc-400">
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3.5 text-ink-muted">
                 <MailIcon className="h-4 w-4" />
               </div>
             </div>
@@ -435,15 +439,15 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-16 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                  className="block w-full rounded-xl border border-line pl-3.5 pr-16 py-3.5 text-base text-ink placeholder:text-ink-muted focus:border-trend-orange focus:outline-none focus:ring-2 focus:ring-trend-orange/15 disabled:opacity-50 transition"
                   placeholder="Password"
                 />
-                <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 gap-2 text-zinc-400">
+                <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 gap-2 text-ink-muted">
                   <LockIcon className="h-4 w-4" />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="hover:text-zinc-600 focus:outline-none"
+                    className="hover:text-ink-soft focus:outline-none"
                   >
                     {showPassword ? (
                       <EyeOffIcon className="h-4 w-4" />
@@ -463,14 +467,14 @@ export default function RegisterPage() {
                       className={`h-1 flex-1 rounded-full transition-colors ${
                         (password ? passwordStrength.score : 2) >= step
                           ? 'bg-amber-400'
-                          : 'bg-zinc-200'
+                          : 'bg-studio-rule'
                       }`}
                     />
                   ))}
                 </div>
                 <span
                   className={`text-xs font-normal ${
-                    passwordStrength.label === 'Strong' ? 'text-emerald-600' : 'text-zinc-400'
+                    passwordStrength.label === 'Strong' ? 'text-success' : 'text-ink-muted'
                   }`}
                 >
                   {password ? passwordStrength.label : 'Medium strength'}
@@ -483,13 +487,13 @@ export default function RegisterPage() {
                     <span
                       className={`inline-flex h-4 w-4 items-center justify-center rounded-full text-[10px] font-bold ${
                         check.ok
-                          ? 'bg-emerald-500 text-white'
-                          : 'bg-zinc-100 text-zinc-400 border border-zinc-200'
+                          ? 'bg-success text-on-accent'
+                          : 'bg-studio-raised text-ink-muted border border-line'
                       }`}
                     >
                       {check.ok ? '✓' : '•'}
                     </span>
-                    <span className={check.ok ? 'text-emerald-600' : 'text-zinc-500'}>
+                    <span className={check.ok ? 'text-success' : 'text-ink-muted'}>
                       {check.label}
                     </span>
                   </div>
@@ -511,15 +515,15 @@ export default function RegisterPage() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 disabled={isLoading}
-                className="block w-full rounded-xl border border-zinc-200 pl-3.5 pr-16 py-3.5 text-base text-zinc-900 placeholder:text-zinc-400 focus:border-[#E0492A] focus:outline-none focus:ring-2 focus:ring-[#E0492A]/15 disabled:opacity-50 transition"
+                className="block w-full rounded-xl border border-line pl-3.5 pr-16 py-3.5 text-base text-ink placeholder:text-ink-muted focus:border-trend-orange focus:outline-none focus:ring-2 focus:ring-trend-orange/15 disabled:opacity-50 transition"
                 placeholder="Confirm password"
               />
-              <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 gap-2 text-zinc-400">
+              <div className="absolute inset-y-0 right-0 flex items-center pr-3.5 gap-2 text-ink-muted">
                 <LockIcon className="h-4 w-4" />
                 <button
                   type="button"
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="hover:text-zinc-600 focus:outline-none"
+                  className="hover:text-ink-soft focus:outline-none"
                 >
                   {showConfirmPassword ? (
                     <EyeOffIcon className="h-4 w-4" />
@@ -532,21 +536,21 @@ export default function RegisterPage() {
 
             {/* Terms checkbox */}
             <div className="pt-1">
-              <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-zinc-600">
+              <label className="flex items-center gap-2 cursor-pointer select-none text-sm text-ink-soft">
                 <input
                   type="checkbox"
                   required
                   checked={agreeTerms}
                   onChange={(e) => setAgreeTerms(e.target.checked)}
-                  className="h-4 w-4 rounded border-zinc-300 text-[#E0492A] focus:ring-[#E0492A]"
+                  className="h-4 w-4 rounded border-line text-trend-orange focus:ring-trend-orange"
                 />
                 <span>
                   I agree to the{' '}
-                  <Link href="/terms" className="text-[#E0492A] hover:underline font-medium">
+                  <Link href="/terms" className="text-trend-orange hover:underline font-medium">
                     Terms of Service
                   </Link>{' '}
                   and{' '}
-                  <Link href="/privacy" className="text-[#E0492A] hover:underline font-medium">
+                  <Link href="/privacy" className="text-trend-orange hover:underline font-medium">
                     Privacy Policy
                   </Link>
                 </span>
@@ -556,7 +560,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="flex w-full justify-center items-center gap-2 rounded-xl bg-[#E0492A] px-4 py-3.5 text-base font-semibold text-white shadow-sm hover:bg-[#CF3E20] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#E0492A] disabled:opacity-50 transition mt-2"
+              className="flex w-full justify-center items-center gap-2 rounded-xl bg-trend-orange px-4 py-3.5 text-base font-semibold text-on-accent shadow-sm hover:bg-trend-orange-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange disabled:opacity-50 transition mt-2"
             >
               {isLoading ? (
                 <>
@@ -572,10 +576,12 @@ export default function RegisterPage() {
           {/* Divider */}
           <div className="relative my-4">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-zinc-200" />
+              <div className="w-full border-t border-line" />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-white px-3 text-zinc-400 font-medium tracking-wider">OR</span>
+              <span className="bg-studio-ground px-3 text-ink-muted font-medium tracking-wider">
+                OR
+              </span>
             </div>
           </div>
 
@@ -584,11 +590,11 @@ export default function RegisterPage() {
             type="button"
             onClick={handleGoogleLogin}
             disabled={isLoading || isGoogleLoading}
-            className="flex w-full items-center justify-center gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-2.5 text-base font-medium text-zinc-700 shadow-sm hover:bg-zinc-50 disabled:opacity-50 transition"
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-line bg-studio-ground px-4 py-2.5 text-base font-medium text-ink-soft shadow-sm hover:bg-studio-surface disabled:opacity-50 transition"
           >
             {isGoogleLoading ? (
               <>
-                <div className="h-4 w-4 animate-spin rounded-full border-2 border-zinc-400 border-t-transparent" />
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-ink-muted/50 border-t-transparent" />
                 <span>Connecting to Google...</span>
               </>
             ) : (
@@ -600,9 +606,9 @@ export default function RegisterPage() {
           </button>
 
           {/* Bottom link */}
-          <div className="text-center text-base text-zinc-600 pt-1">
+          <div className="text-center text-base text-ink-soft pt-1">
             Already have an account?{' '}
-            <Link href="/login" className="font-medium text-[#E0492A] hover:underline">
+            <Link href="/login" className="font-medium text-trend-orange hover:underline">
               Sign in
             </Link>
           </div>

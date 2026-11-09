@@ -28,10 +28,10 @@ import { CheckItem } from './ShotRenderRow';
 
 const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
-const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-zinc-50 disabled:opacity-60 ${focusRing}`;
+const secondaryClass = `inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-line bg-studio-ground px-4 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`;
 const summaryClass = `inline-flex min-h-11 cursor-pointer items-center rounded-lg text-sm font-semibold text-ink ${focusRing}`;
 const badgeClass =
-  'inline-flex items-center gap-1 rounded-full border border-amber-300 bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-900';
+  'inline-flex items-center gap-1 rounded-full border border-warning/30 bg-warning-soft px-2.5 py-0.5 text-xs font-semibold text-warning';
 
 const lookup = (map: Record<string, string>, key: string | null | undefined) =>
   key ? map[key] : undefined;
@@ -97,7 +97,7 @@ function DownloadButton({
         {busy ? 'Téléchargement…' : `Télécharger ${ratio}`}
       </button>
       {failed && (
-        <span role="alert" className="text-sm text-red-800">
+        <span role="alert" className="text-sm text-danger">
           Téléchargement impossible, réessayez.
         </span>
       )}
@@ -109,9 +109,9 @@ function ExportStatus({ exp }: { exp: VideoExport }) {
   const label = lookup(EXPORT_STATUS_LABELS, exp.status) ?? 'Statut inconnu';
   const tone =
     exp.status === 'completed'
-      ? 'border-emerald-200 bg-emerald-50 text-emerald-800'
+      ? 'border-success/30 bg-success-soft text-success'
       : exp.status === 'failed'
-        ? 'border-red-200 bg-red-50 text-red-800'
+        ? 'border-danger/30 bg-danger-soft text-danger'
         : 'border-line bg-cream text-ink';
   return (
     <span
@@ -141,7 +141,7 @@ function FinishingReportPanel({ report }: { report: FinishingReport }) {
     <section
       aria-labelledby="finishing-title"
       className={`space-y-3 rounded-xl border p-4 text-sm ${
-        view.passed ? 'border-emerald-200 bg-emerald-50' : 'border-amber-300 bg-amber-50'
+        view.passed ? 'border-success/30 bg-success-soft' : 'border-warning/30 bg-warning-soft'
       }`}
     >
       <div className="flex flex-wrap items-center gap-2">
@@ -227,18 +227,18 @@ export function FinalVideoPanel({ job, finalAsset, videoUrl, videoFailed, notRea
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-zinc-200/80 p-6 shadow-2xs space-y-5">
+    <div className="bg-studio-ground rounded-[13px] border border-studio-rule bg-studio-surface p-5 space-y-5">
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h4 className="text-sm font-bold text-zinc-900 flex items-center gap-2">
-          <Film className="w-4 h-4 text-[#BA3807]" aria-hidden />
+        <h4 className="text-sm font-bold text-ink flex items-center gap-2">
+          <Film className="w-4 h-4 text-trend-orange" aria-hidden />
           <span>Vidéo finale</span>
           {notRealLabel && (
-            <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+            <span className="rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
               {notRealLabel}
             </span>
           )}
         </h4>
-        <span className="text-xs text-zinc-500">
+        <span className="text-xs text-ink-muted">
           {primaryRatio
             ? `Format ${primaryRatio}${lookup(RATIO_DIMENSIONS, primaryRatio) ? ` (${lookup(RATIO_DIMENSIONS, primaryRatio)})` : ''}`
             : 'Format inconnu'}{' '}
@@ -331,7 +331,7 @@ export function FinalVideoPanel({ job, finalAsset, videoUrl, videoFailed, notRea
                   )}
                 </div>
                 {exp?.status === 'failed' && (
-                  <p className="w-full text-sm text-red-800">
+                  <p className="w-full text-sm text-danger">
                     {exp.error || "L'export a échoué sans message d'erreur."}
                   </p>
                 )}
@@ -340,7 +340,7 @@ export function FinalVideoPanel({ job, finalAsset, videoUrl, videoFailed, notRea
           })}
         </ul>
         {error && (
-          <p role="alert" className="flex items-start gap-1.5 text-sm text-red-800">
+          <p role="alert" className="flex items-start gap-1.5 text-sm text-danger">
             <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
             {error}
           </p>

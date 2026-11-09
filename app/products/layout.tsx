@@ -1,13 +1,8 @@
 'use client';
 
 import React from 'react';
-import Navbar from '../../components/Navbar';
+import { DashShell } from '../../components/dashboard/DashShell';
 
 export default function ProductsLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <>
-      <Navbar />
-      {children}
-    </>
-  );
+  return <DashShell>{children}</DashShell>;
 }

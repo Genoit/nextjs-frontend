@@ -82,6 +82,11 @@ async function handleResponse<T>(response: Response): Promise<T> {
 
         if (typeof d.detail === 'string') {
           errorMessage = d.detail;
+        } else if (d.detail && typeof d.detail === 'object' && !Array.isArray(d.detail)) {
+          // Structured detail, e.g. 402 { code: 'NOT_ENOUGH_CREDITS', message }.
+          const sd = d.detail as { code?: unknown; message?: unknown };
+          if (typeof sd.message === 'string') errorMessage = sd.message;
+          if (typeof sd.code === 'string') errorCode = sd.code;
         } else if (Array.isArray(d.detail)) {
           errorMessage = d.detail
             .map((item) =>
@@ -98,6 +103,15 @@ async function handleResponse<T>(response: Response): Promise<T> {
       // Non-JSON response
     }
 
+    // Out of credits wherever a paid action was tried: send the merchant to the plans.
+    if (
+      response.status === 402 &&
+      errorCode === 'NOT_ENOUGH_CREDITS' &&
+      typeof window !== 'undefined'
+    ) {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- no router outside React; a full load also refreshes the balance
+      window.location.assign('/billing');
+    }
     throw new ApiRequestError(errorMessage, response.status, errorData, errorCode);
   }
 

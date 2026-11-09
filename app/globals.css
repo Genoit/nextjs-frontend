@@ -1,8 +1,9 @@
 @import 'tailwindcss';
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  color-scheme: dark;
+  --background: #0a0a0b;
+  --foreground: #edefef;
 }
 
 @theme inline {
@@ -14,27 +15,269 @@
   --font-script: var(--font-caveat), cursive;
 }
 
-/* TrendED brand charter V2 (Professional). Use these tokens, not raw hex. */
+/* TrendED dark theme (2026-11-03, Higgsfield-like true-black). Token names kept from the light charter so
+   components did not change meaning: "ink" is the text colour, "cream" the raised section. Use tokens, not hex. */
 @theme {
-  --color-trend-orange: #c2410c; /* actions, CTA */
-  --color-trend-orange-strong: #9a3412; /* hover/pressed state of the orange */
-  --color-trend-gold: #eab308; /* opportunities, sparingly */
-  --color-cream: #fff7e6; /* surfaces, sections */
-  --color-ink: #171717; /* text */
-  --color-ink-muted: #6b7280; /* secondary text */
-  --color-line: #e5e7eb; /* borders */
-  --color-success: #16a34a;
-  --color-danger: #dc2626;
-  --color-info: #2563eb;
+  --color-trend-orange: #ff6b1a; /* the one accent: actions, CTA. Text on it is on-accent (dark). */
+  --color-trend-orange-strong: #ff8a47; /* hover/pressed: lighter on dark */
+  --color-on-accent: #0a0a0a; /* text on any solid accent or status fill */
+  --color-trend-gold: #facc15; /* opportunities, sparingly */
+  --color-cream: #151719; /* raised sections (was cream on light) */
+  --color-ink: #edefef; /* text */
+  --color-ink-muted: #a8aeaf; /* secondary text, 8:1 on ground */
+  --color-ink-soft: #c9cecf; /* small text on raised sections */
+  --color-line: rgb(255 255 255 / 0.11); /* borders */
 
-  /* Studio (app screens) on the charter's light ground: elevation by tone steps, no shadows on cards. */
-  --color-studio-ground: #ffffff;
-  --color-studio-surface: #fafaf9;
-  --color-studio-raised: #f4f4f5;
-  --color-studio-rule: #e5e7eb;
-  --color-studio-text: #171717;
-  --color-studio-muted: #4b5563;
-  --color-studio-meta: #6b7280;
+  /* Statuses. Never orange; always with an icon and a label. */
+  --color-success: #4ade80; /* ad ready */
+  --color-success-soft: #0d2116;
+  --color-warning: #fbbf24; /* in progress, waiting */
+  --color-warning-soft: #241a05;
+  --color-danger: #f87171; /* failed */
+  --color-danger-soft: #2a1010;
+  --color-info: #60a5fa;
+
+  /* Video frame around 9:16 previews: pure black, one step below the ground. */
+  --color-stage: #000000;
+  --color-stage-text: #e7e5e4;
+
+  /* Studio (app screens), 2026-11-03 restyle after the open-higgsfield studio: a near-black ground,
+     four graded grey surfaces, hairline rules, floating bars. Orange marks state and the one action only. */
+  --color-studio-ground: #0a0a0b;
+  --color-studio-rail: #101112;
+  --color-studio-surface: #151719;
+  --color-studio-raised: #1a1d1f;
+  --color-studio-raised-2: #222629;
+  --color-studio-hover: #2b3033;
+  --color-studio-rule: rgb(255 255 255 / 0.06);
+  --color-studio-rule-strong: rgb(255 255 255 / 0.11);
+  --color-studio-text: #edefef;
+  --color-studio-muted: #a8aeaf;
+  --color-studio-meta: #878e90;
+  --color-accent-soft: rgb(255 107 26 / 0.14); /* pressed chip, selected row */
+  --color-accent-line: rgb(255 107 26 / 0.32); /* focused composer, pressed chip edge */
+
+  /* Dashboard mockup (maquette Figma, 2026-11-03): burnt orange actions, deep ember for the active nav. */
+  --color-ember: #a6441d; /* Generate ad */
+  --color-ember-strong: #b9501f;
+  --color-ember-deep: #8e2704; /* hero CTA, active nav start */
+  --color-ember-text: #e0662e; /* View all, In progress, ED */
+  --color-coin: #e9a135; /* credits coin and bar */
+  --color-dash-ground: #0b0b0b;
+  --color-dash-panel: #131313;
+  --color-dash-raised: #181818;
+  --color-dash-line: #242424;
+  --color-dash-green: #5daf66; /* Ready / Completed */
+  --color-dash-edge: #2a2a2a; /* field and chip borders */
+  --color-dash-edge-strong: #333333; /* dashed drop zones, hover borders */
+  --color-dash-edge-hover: #555555;
+  --color-dash-field: #141414; /* inputs and selects */
+  --color-dash-soft: #d4d4d4; /* secondary text one step above muted */
+  --color-dash-nav: #e6e6e6; /* idle nav labels */
+  --color-dash-sidebar: #0c0c0c;
+  --color-dash-rail-line: #262626;
+  --color-ember-nav-end: #3f1c0e; /* active nav gradient end */
+  --color-ember-cta-start: #a2300a; /* hero CTA gradient start */
+  --color-on-ember: #ffffff; /* text on solid ember fills, both themes */
+  --color-cta-top: #ee6a1f; /* dashboard Generate button, both themes */
+  --color-cta-bottom: #c9480c;
+
+  /* Elevation: a top glint on surfaces, a real shadow only on what floats (bars, composer, menus). */
+  --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-float:
+    0 4px 12px rgb(0 0 0 / 0.3), 0 16px 40px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.045);
+  --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.4), 0 32px 88px rgb(0 0 0 / 0.52);
+  --ease-studio: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* Light theme from the user's preference: on <html> (ThemeSync, boot script in layout) for landing,
+   auth and onboarding, and on the studio shells (DashShell, AppShell). */
+[data-theme='light'] {
+  color-scheme: light;
+  --color-trend-orange-strong: #e85a0c;
+  --color-trend-gold: #a16207;
+  --color-cream: #f4f1ed;
+  --color-ink: #1c1917;
+  --color-ink-muted: #57534e;
+  --color-ink-soft: #44403c;
+  --color-line: rgb(0 0 0 / 0.1);
+  --color-success: #15803d;
+  --color-success-soft: #e7f6ec;
+  --color-warning: #a16207;
+  --color-warning-soft: #fdf3dc;
+  --color-danger: #b91c1c;
+  --color-danger-soft: #fdeaea;
+  --color-info: #1d4ed8;
+  --color-studio-ground: #f6f4f1;
+  --color-studio-rail: #efece8;
+  --color-studio-surface: #ffffff;
+  --color-studio-raised: #ffffff;
+  --color-studio-raised-2: #f1eeea;
+  --color-studio-hover: #e8e4df;
+  --color-studio-rule: rgb(0 0 0 / 0.07);
+  --color-studio-rule-strong: rgb(0 0 0 / 0.12);
+  --color-studio-text: #1c1917;
+  --color-studio-muted: #57534e;
+  --color-studio-meta: #6f6a64;
+  --color-ember-text: #b4471a;
+  --color-coin: #b7791f;
+  --color-dash-ground: #f6f4f1;
+  --color-dash-panel: #ffffff;
+  --color-dash-raised: #f4f1ed;
+  --color-dash-line: #e7e3de;
+  --color-dash-green: #2f855a;
+  --color-dash-edge: #ddd8d2;
+  --color-dash-edge-strong: #cfc9c2;
+  --color-dash-edge-hover: #b8b1a9;
+  --color-dash-field: #ffffff;
+  --color-dash-soft: #44403c;
+  --color-dash-nav: #292524;
+  --color-dash-sidebar: #ffffff;
+  --color-dash-rail-line: #e7e3de;
+  --color-ember-nav-end: #c2551f;
+  --color-ember-cta-start: #c2410c;
+  --shadow-glow: 0 1px 2px rgb(0 0 0 / 0.06);
+  --shadow-float: 0 4px 12px rgb(0 0 0 / 0.06), 0 16px 40px rgb(0 0 0 / 0.08);
+  --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.1), 0 32px 88px rgb(0 0 0 / 0.14);
+}
+
+/* Shells only: white/black are swapped so text-white, bg-white/5 and border-white/10 read as ink on paper.
+   Not on <html>: the public pages keep real white text on photos and video frames. */
+[data-theme='light']:not(html) {
+  --color-white: #1c1917;
+  --color-black: #ffffff;
+}
+
+/* Dark again inside a light shell (the theme previews on /settings). Generated from @theme above; keep in sync. */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --color-white: #fff;
+  --color-black: #000;
+  --color-trend-orange-strong: #ff8a47;
+  --color-trend-gold: #facc15;
+  --color-cream: #151719;
+  --color-ink: #edefef;
+  --color-ink-muted: #a8aeaf;
+  --color-ink-soft: #c9cecf;
+  --color-line: rgb(255 255 255 / 0.11);
+  --color-success: #4ade80;
+  --color-success-soft: #0d2116;
+  --color-warning: #fbbf24;
+  --color-warning-soft: #241a05;
+  --color-danger: #f87171;
+  --color-danger-soft: #2a1010;
+  --color-info: #60a5fa;
+  --color-studio-ground: #0a0a0b;
+  --color-studio-rail: #101112;
+  --color-studio-surface: #151719;
+  --color-studio-raised: #1a1d1f;
+  --color-studio-raised-2: #222629;
+  --color-studio-hover: #2b3033;
+  --color-studio-rule: rgb(255 255 255 / 0.06);
+  --color-studio-rule-strong: rgb(255 255 255 / 0.11);
+  --color-studio-text: #edefef;
+  --color-studio-muted: #a8aeaf;
+  --color-studio-meta: #878e90;
+  --color-ember-text: #e0662e;
+  --color-coin: #e9a135;
+  --color-dash-ground: #0b0b0b;
+  --color-dash-panel: #131313;
+  --color-dash-raised: #181818;
+  --color-dash-line: #242424;
+  --color-dash-green: #5daf66;
+  --color-dash-edge: #2a2a2a;
+  --color-dash-edge-strong: #333333;
+  --color-dash-edge-hover: #555555;
+  --color-dash-field: #141414;
+  --color-dash-soft: #d4d4d4;
+  --color-dash-nav: #e6e6e6;
+  --color-dash-sidebar: #0c0c0c;
+  --color-dash-rail-line: #262626;
+  --color-ember-nav-end: #3f1c0e;
+  --color-ember-cta-start: #a2300a;
+  --shadow-glow: inset 0 1px 0 rgb(255 255 255 / 0.045), 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-float:
+    0 4px 12px rgb(0 0 0 / 0.3), 0 16px 40px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(255 255 255 / 0.045);
+  --shadow-menu: 0 8px 24px rgb(0 0 0 / 0.4), 0 32px 88px rgb(0 0 0 / 0.52);
+}
+
+/* Floating bar: the nav pill, the account pill, the step rail, the composer. */
+@utility studio-bar {
+  background: var(--color-studio-raised);
+  border: 1px solid var(--color-studio-rule);
+  box-shadow: var(--shadow-float);
+}
+
+/* Tab inside a floating bar. Active: lifted plate, its icon in the accent. */
+@utility studio-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 550;
+  white-space: nowrap;
+  color: var(--color-studio-muted);
+  transition:
+    background 0.16s ease,
+    color 0.16s ease;
+  & svg {
+    color: var(--color-studio-meta);
+  }
+  &:hover {
+    color: var(--color-studio-text);
+    background: rgb(255 255 255 / 0.035);
+  }
+  &[aria-current='page'],
+  &[aria-current='step'],
+  &[aria-pressed='true'] {
+    color: var(--color-studio-text);
+    background: var(--color-studio-raised-2);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.05),
+      0 1px 2px rgb(0 0 0 / 0.4);
+  }
+  &[aria-current='page'] svg,
+  &[aria-current='step'] svg,
+  &[aria-pressed='true'] svg {
+    color: var(--color-trend-orange);
+  }
+}
+
+/* Setting chip (composer rail, filters). */
+@utility studio-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 36px;
+  padding: 0 13px;
+  border-radius: 10px;
+  font-size: 12.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--color-studio-muted);
+  background: var(--color-studio-surface);
+  border: 1px solid var(--color-studio-rule);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s var(--ease-studio);
+  &:hover {
+    background: var(--color-studio-raised-2);
+    color: var(--color-studio-text);
+  }
+  &:active {
+    transform: scale(0.96);
+  }
+  &[aria-pressed='true'] {
+    background: var(--color-accent-soft);
+    border-color: var(--color-accent-line);
+    color: var(--color-trend-orange);
+  }
 }
 
 @keyframes rise-in {
@@ -49,6 +292,8 @@
 }
 
 body {
+  font-size: 14px;
+  line-height: 1.45;
   background: var(--background);
   color: var(--foreground);
   font-family:
@@ -70,4 +315,96 @@ body {
 
 .font-script {
   font-family: var(--font-caveat), cursive;
+}
+
+/* Plans page motion (taste-skill "shutter image" + section entrances). Content is visible without it. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes shutter-open {
+    from {
+      clip-path: inset(0 100% 0 0 round 14px);
+    }
+    to {
+      clip-path: inset(0 0 0 0 round 14px);
+    }
+  }
+  @keyframes shutter-settle {
+    from {
+      transform: scale(1.12);
+    }
+  }
+  .shutter {
+    animation: shutter-open 1.1s cubic-bezier(0.7, 0, 0.2, 1) 0.15s both;
+  }
+  .shutter > * {
+    animation: shutter-settle 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.15s both;
+  }
+  @keyframes rise-up {
+    from {
+      opacity: 0;
+      transform: translateY(24px);
+    }
+  }
+  .rise {
+    animation: rise-up 700ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: var(--rise-delay, 0ms);
+  }
+  @supports (animation-timeline: view()) {
+    @keyframes drift-up {
+      from {
+        transform: translateY(32px);
+      }
+    }
+    /* Transform only: a section that has not entered yet is still readable to any measure. */
+    .reveal {
+      animation: drift-up linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry var(--reveal-end, 55%);
+    }
+  }
+}
+
+/* Dashboard background light: slow ambient motion, off when the user asks for reduced motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Halo and beam drift from the top right across the headline toward the sidebar, then back. */
+  @keyframes glow-breathe {
+    50% {
+      transform: translate(-720px, 140px);
+      opacity: 0.85;
+    }
+  }
+  @keyframes glow-sway {
+    50% {
+      transform: translate(-780px, 160px);
+      opacity: 0.9;
+    }
+  }
+  @keyframes glow-pulse {
+    50% {
+      opacity: 0.45;
+      transform: scale(1.015);
+    }
+  }
+  @keyframes glow-orbit {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .glow-breathe {
+    animation: glow-breathe 14s ease-in-out infinite;
+  }
+  .glow-sway {
+    animation: glow-sway 14s ease-in-out infinite;
+  }
+  .glow-pulse {
+    animation: glow-pulse 7s ease-in-out infinite;
+  }
+  .glow-orbit {
+    animation: glow-orbit 18s linear infinite;
+    will-change: transform;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .glow-orbit {
+    display: none;
+  }
 }

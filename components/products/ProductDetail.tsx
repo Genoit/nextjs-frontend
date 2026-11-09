@@ -181,7 +181,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -196,8 +196,8 @@ export function ProductDetail({
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="h-8 w-8 animate-spin rounded-full border-4 border-[#C2410C] border-t-transparent" />
-          <p className="mt-4 text-sm text-zinc-500">Loading product...</p>
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-trend-orange border-t-transparent" />
+          <p className="mt-4 text-sm text-ink-muted">Loading product...</p>
         </div>
       </div>
     );
@@ -211,7 +211,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -226,9 +226,9 @@ export function ProductDetail({
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-soft">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-6 w-6 text-danger"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -241,20 +241,20 @@ export function ProductDetail({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-red-800">Error loading product</h3>
-          <p className="mt-2 text-sm text-red-600">{error || deleteError}</p>
+          <h3 className="mt-4 text-lg font-semibold text-danger">Error loading product</h3>
+          <p className="mt-2 text-sm text-danger">{error || deleteError}</p>
           <div className="mt-4 flex gap-3">
             <button
               type="button"
               onClick={() => refresh()}
-              className="rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200 transition"
+              className="rounded-lg bg-danger-soft px-4 py-2 text-sm font-medium text-danger hover:bg-red-200 transition"
             >
               Try again
             </button>
             <button
               type="button"
               onClick={handleBack}
-              className="rounded-lg border border-zinc-200 bg-white px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+              className="rounded-lg border border-line bg-studio-ground px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
             >
               Back to Products
             </button>
@@ -272,7 +272,7 @@ export function ProductDetail({
           <button
             type="button"
             onClick={handleBack}
-            className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+            className="flex items-center gap-2 rounded-lg border border-line bg-studio-ground px-3 py-2 text-sm font-medium text-ink-soft hover:bg-studio-surface transition"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path
@@ -287,9 +287,9 @@ export function ProductDetail({
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-studio-raised">
             <svg
-              className="h-6 w-6 text-zinc-600"
+              className="h-6 w-6 text-ink-soft"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -308,14 +308,14 @@ export function ProductDetail({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-zinc-900">Product not found</h3>
-          <p className="mt-2 text-sm text-zinc-500">
+          <h3 className="mt-4 text-lg font-semibold text-ink">Product not found</h3>
+          <p className="mt-2 text-sm text-ink-muted">
             The product you&apos;re looking for doesn&apos;t exist or has been deleted.
           </p>
           <button
             type="button"
             onClick={handleBack}
-            className="mt-4 rounded-lg bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-200 transition"
+            className="mt-4 rounded-lg bg-studio-raised px-4 py-2 text-sm font-medium text-ink-soft hover:bg-studio-rule transition"
           >
             Back to Products
           </button>
@@ -325,331 +325,153 @@ export function ProductDetail({
   }
 
   // Success state - Product detail
+  const pill =
+    'studio-chip focus-visible:outline-2 focus-visible:outline-trend-orange disabled:cursor-not-allowed disabled:opacity-50';
+  const rows: [string, React.ReactNode][] = [
+    ['Brand', product.brand || 'N/A'],
+    ['Category', product.category || 'N/A'],
+    ['Platform', getPlatformText(product.source_platform)],
+    ['Availability', getAvailabilityText(product.availability)],
+    [
+      'Extraction',
+      `${getExtractionStatusText(product.extraction_status)} · ${getExtractionMethodText(product.extraction_method)}`,
+    ],
+    ['Added', formatDate(product.created_at)],
+    ['Updated', formatDate(product.updated_at)],
+  ];
+  if (product.rating !== null && !isNaN(Number(product.rating)))
+    rows.push([
+      'Rating',
+      `${Number(product.rating).toFixed(1)}${product.reviews_count !== null ? ` · ${product.reviews_count} reviews` : ''}`,
+    ]);
+  if (product.seller_name) rows.push(['Seller', product.seller_name]);
+
   return (
-    <div className={`space-y-6 ${className}`}>
-      {/* Header */}
+    <div className={`flex flex-col ${className}`}>
+      {/* Viewer header: back, title and its facts, like the reference library viewer. */}
       <div className="flex items-center gap-4">
         <button
           type="button"
           onClick={handleBack}
-          className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
+          aria-label="Back"
+          className="studio-chip !size-9 shrink-0 justify-center !p-0 focus-visible:outline-2 focus-visible:outline-trend-orange"
         >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <svg className="size-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden>
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M15 19l-7-7 7-7"
+            />
           </svg>
-          Back
         </button>
+        <div className="min-w-0">
+          <h1 className="truncate text-xl font-semibold tracking-[-0.01em] text-studio-text">
+            {product.title}
+          </h1>
+          <p className="truncate text-[13px] text-studio-meta tabular-nums">
+            {formatCurrency(product.price, product.currency)}
+            {product.compare_at_price !== null && product.compare_at_price > 0 && (
+              <span className="ml-2 line-through">
+                {formatCurrency(product.compare_at_price, product.currency)}
+              </span>
+            )}
+            {' · '}
+            {getPlatformText(product.source_platform)}
+          </p>
+        </div>
+      </div>
 
-        <div className="flex-1" />
+      {/* The product, centred and large. */}
+      <div className="mx-auto mt-8 w-full max-w-md">
+        <ProductImages
+          images={product.images || []}
+          mainImageUrl={product.main_image_url}
+          showGallery={(product.images?.length ?? 0) > 1}
+        />
+      </div>
 
-        {showActions && (
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => router.push(`/products/${product.id}/creative`)}
-              className="flex items-center gap-2 rounded-lg bg-[#BA3807] hover:bg-[#9A2D04] px-3.5 py-2 text-sm font-semibold text-white shadow-xs transition"
+      {product.description && (
+        <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-relaxed text-ink-muted line-clamp-3">
+          {product.description}
+        </p>
+      )}
+
+      {showActions && (
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button type="button" onClick={handleEdit} className={pill}>
+            Edit
+          </button>
+          <button
+            type="button"
+            onClick={() => router.push(`/products/${product.id}/creative`)}
+            className="inline-flex h-[38px] items-center gap-2 rounded-[10px] bg-trend-orange px-5 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange active:scale-[0.98]"
+          >
+            Create the ad
+          </button>
+          <button
+            type="button"
+            onClick={handleDelete}
+            disabled={isDeleting}
+            className={`${pill} hover:bg-danger hover:text-on-accent`}
+          >
+            {isDeleting ? 'Deleting…' : 'Delete'}
+          </button>
+        </div>
+      )}
+
+      <details className="group mx-auto mt-10 w-full max-w-3xl rounded-[13px] border border-studio-rule bg-studio-surface p-4">
+        <summary className="flex min-h-8 cursor-pointer list-none items-center justify-between text-[13px] font-semibold text-studio-text">
+          Product details
+          <svg
+            className="size-4 text-ink-muted transition group-open:rotate-180"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            aria-hidden
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2.5}
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </summary>
+        <dl className="mt-4 grid grid-cols-1 gap-x-8 gap-y-3 sm:grid-cols-2">
+          {rows.map(([k, v]) => (
+            <div
+              key={k}
+              className="flex items-baseline justify-between gap-4 border-t border-white/5 pt-3"
             >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
-                />
-              </svg>
-              Créer une vidéo UGC
-            </button>
-
-            <button
-              type="button"
-              onClick={handleEdit}
-              className="flex items-center gap-2 rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 transition"
-            >
-              <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                />
-              </svg>
-              Edit
-            </button>
-
-            <button
-              type="button"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm font-medium text-red-700 hover:bg-red-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {isDeleting ? (
-                <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-500 border-t-transparent" />
-              ) : (
-                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-              )}
-              Delete
-            </button>
+              <dt className="text-xs text-ink-muted">{k}</dt>
+              <dd className="truncate text-right text-sm text-white">{v}</dd>
+            </div>
+          ))}
+        </dl>
+        {product.canonical_url && (
+          <a
+            href={product.canonical_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-4 block truncate text-xs text-ink-muted hover:text-trend-orange"
+          >
+            {product.canonical_url}
+          </a>
+        )}
+        {(product.variants?.length ?? 0) > 0 && (
+          <div className="mt-6">
+            <h2 className="mb-3 text-sm font-bold text-white">
+              Variants ({product.variants?.length})
+            </h2>
+            <ProductVariants
+              variants={product.variants || []}
+              showPrice={true}
+              showAvailability={true}
+            />
           </div>
         )}
-      </div>
-
-      {/* Product detail */}
-      <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-        {/* Images */}
-        <div className="space-y-4">
-          <ProductImages
-            images={product.images || []}
-            mainImageUrl={product.main_image_url}
-            showGallery={(product.images?.length ?? 0) > 1}
-          />
-
-          {/* Image count */}
-          {(product.images?.length ?? 0) > 0 && (
-            <p className="text-center text-sm text-zinc-500">
-              {product.images?.length} image{(product.images?.length ?? 0) > 1 ? 's' : ''}
-            </p>
-          )}
-        </div>
-
-        {/* Details */}
-        <div className="space-y-6">
-          {/* Title and price */}
-          <div className="space-y-3">
-            <h1 className="text-2xl font-bold text-zinc-900">{product.title}</h1>
-
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl font-bold text-zinc-900">
-                  {formatCurrency(product.price, product.currency)}
-                </span>
-                {product.compare_at_price !== null && product.compare_at_price > 0 && (
-                  <span className="text-xl text-zinc-500 line-through">
-                    {formatCurrency(product.compare_at_price, product.currency)}
-                  </span>
-                )}
-              </div>
-
-              <span
-                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                  product.availability === 'in_stock'
-                    ? 'bg-emerald-100 text-emerald-700'
-                    : product.availability === 'out_of_stock'
-                      ? 'bg-red-100 text-red-700'
-                      : 'bg-zinc-100 text-zinc-700'
-                }`}
-              >
-                {getAvailabilityText(product.availability)}
-              </span>
-            </div>
-          </div>
-
-          {/* Description */}
-          {product.description && (
-            <div className="prose max-w-none text-zinc-600">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-2">Description</h3>
-              <p className="text-sm leading-relaxed">{product.description}</p>
-            </div>
-          )}
-
-          {/* Product information */}
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-            <dl className="space-y-3">
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Brand
-                </dt>
-                <dd className="text-sm text-zinc-900">{product.brand || 'N/A'}</dd>
-              </div>
-
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Category
-                </dt>
-                <dd className="text-sm text-zinc-900">{product.category || 'N/A'}</dd>
-              </div>
-
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Platform
-                </dt>
-                <dd className="text-sm text-zinc-900">
-                  {getPlatformText(product.source_platform)}
-                </dd>
-              </div>
-
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Currency
-                </dt>
-                <dd className="text-sm text-zinc-900">{product.currency || 'N/A'}</dd>
-              </div>
-
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  External ID
-                </dt>
-                <dd className="text-sm font-mono text-zinc-700 truncate">
-                  {product.external_id || 'N/A'}
-                </dd>
-              </div>
-
-              {product.canonical_url && (
-                <div className="sm:col-span-2">
-                  <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                    Canonical URL
-                  </dt>
-                  <dd className="text-sm text-zinc-700 break-all">
-                    <a
-                      href={product.canonical_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:text-[#C2410C] transition"
-                    >
-                      {product.canonical_url}
-                    </a>
-                  </dd>
-                </div>
-              )}
-            </dl>
-          </div>
-
-          {/* Seller information */}
-          {(product.seller_name || product.seller_url) && (
-            <div className="border-t border-zinc-200 pt-6">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">Seller Information</h3>
-              <div className="space-y-2">
-                {product.seller_name && (
-                  <div>
-                    <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                      Seller Name
-                    </dt>
-                    <dd className="text-sm text-zinc-900">{product.seller_name}</dd>
-                  </div>
-                )}
-                {product.seller_url && (
-                  <div>
-                    <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                      Seller URL
-                    </dt>
-                    <dd className="text-sm text-zinc-700">
-                      <a
-                        href={product.seller_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:text-[#C2410C] transition"
-                      >
-                        {product.seller_url}
-                      </a>
-                    </dd>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Rating and reviews */}
-          {(product.rating !== null || product.reviews_count !== null) && (
-            <div className="border-t border-zinc-200 pt-6">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">Customer Reviews</h3>
-              <div className="flex items-center gap-6">
-                <div>
-                  <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                    Rating
-                  </dt>
-                  <dd className="text-2xl font-bold text-zinc-900 mt-1">
-                    {product.rating !== null && !isNaN(Number(product.rating))
-                      ? Number(product.rating).toFixed(1)
-                      : 'N/A'}
-                  </dd>
-                </div>
-                {product.reviews_count !== null && (
-                  <div>
-                    <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                      Reviews
-                    </dt>
-                    <dd className="text-2xl font-bold text-zinc-900 mt-1">
-                      {product.reviews_count}
-                    </dd>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Extraction information */}
-          <div className="border-t border-zinc-200 pt-6">
-            <h3 className="text-sm font-semibold text-zinc-900 mb-4">Extraction Information</h3>
-            <div className="space-y-2">
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Status
-                </dt>
-                <dd className="text-sm text-zinc-900">
-                  {getExtractionStatusText(product.extraction_status)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                  Method
-                </dt>
-                <dd className="text-sm text-zinc-900">
-                  {getExtractionMethodText(product.extraction_method)}
-                </dd>
-              </div>
-              {product.extracted_at && (
-                <div>
-                  <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-                    Extracted At
-                  </dt>
-                  <dd className="text-sm text-zinc-900">{formatDate(product.extracted_at)}</dd>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Variants */}
-          {(product.variants?.length ?? 0) > 0 && (
-            <div className="border-t border-zinc-200 pt-6">
-              <h3 className="text-sm font-semibold text-zinc-900 mb-4">
-                Variants ({product.variants?.length})
-              </h3>
-              <ProductVariants
-                variants={product.variants || []}
-                showPrice={true}
-                showAvailability={true}
-              />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Metadata */}
-      <div className="border-t border-zinc-200 pt-6">
-        <h3 className="text-sm font-semibold text-zinc-900 mb-4">Metadata</h3>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-          <div>
-            <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">Created</dt>
-            <dd className="text-sm text-zinc-900">{formatDate(product.created_at)}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">Updated</dt>
-            <dd className="text-sm text-zinc-900">{formatDate(product.updated_at)}</dd>
-          </div>
-          <div>
-            <dt className="text-xs font-medium uppercase tracking-wider text-zinc-500">
-              Product ID
-            </dt>
-            <dd className="text-sm font-mono text-zinc-700">{product.id}</dd>
-          </div>
-        </div>
-      </div>
+      </details>
     </div>
   );
 }

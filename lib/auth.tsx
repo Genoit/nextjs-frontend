@@ -10,6 +10,7 @@ import {
   startGoogleRedirectSignIn,
 } from './firebase/auth';
 import { AuthResponse, LoginPayload, RegisterPayload, User } from './types';
+import { resetThemeCache } from './theme';
 
 interface AuthContextType {
   user: User | null;
@@ -21,14 +22,54 @@ interface AuthContextType {
   loginWithGoogleRedirect: () => Promise<void>;
   register: (payload: RegisterPayload) => Promise<User>;
   logout: () => void;
+  /** Replace the cached user after a profile edit. */
+  updateUser: (user: User) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const GOOGLE_REDIRECT_FALLBACK_KEY = 'trended_google_redirect_fallback';
 
-export function getPostAuthenticationPath(user: User): '/onboarding' | '/dashboard' {
-  return user.onboarding_completed ? '/dashboard' : '/onboarding';
+const RETURN_KEY = 'trended.returnTo';
+
+/** Remember where to send the user back once they have signed in (survives register + onboarding). */
+export function rememberReturnTo(path: string) {
+  try {
+    sessionStorage.setItem(RETURN_KEY, path);
+  } catch {
+    // storage blocked: the user lands on the dashboard instead
+  }
+}
+
+/** The remembered page (consumed once), or null. Only same-site paths, never back to an auth page. */
+export function takeReturnTo(): string | null {
+  let path: string | null = null;
+  try {
+    path = sessionStorage.getItem(RETURN_KEY);
+    sessionStorage.removeItem(RETURN_KEY);
+  } catch {
+    return null;
+  }
+  if (
+    !path ||
+    !path.startsWith('/') ||
+    path.startsWith('//') ||
+    /^\/(login|register)\b/.test(path)
+  ) {
+    return null;
+  }
+  return path;
+}
+
+/** Send a signed-out visitor to the login page, then back to `path`. */
+export function goToLogin(router: { push: (href: string) => void }, path: string, query = '') {
+  rememberReturnTo(path);
+  router.push(`/login${query}`);
+}
+
+export function getPostAuthenticationPath(user: User): string {
+  if (!user.onboarding_completed) return '/onboarding';
+  return takeReturnTo() ?? '/dashboard';
 }
 
 function shouldFallbackToGoogleRedirect(error: unknown): boolean {
@@ -88,7 +129,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               const pathname = typeof window !== 'undefined' ? window.location.pathname : '';
               if (pathname !== '/login' && pathname !== '/register') {
                 startTransition(() => {
-                  router.push('/login?expired=true');
+                  goToLogin(router, pathname + window.location.search, '?expired=true');
                 });
               }
             }
@@ -171,6 +212,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
+    resetThemeCache();
     setToken(null);
     setUser(null);
     startTransition(() => {
@@ -190,6 +232,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         loginWithGoogleRedirect,
         register,
         logout,
+        updateUser: setUser,
       }}
     >
       {children}

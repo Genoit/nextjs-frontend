@@ -82,7 +82,7 @@ export function ProductImages({
   return (
     <div className={`flex flex-col gap-4 ${className}`}>
       {/* Main image display */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-zinc-200 bg-zinc-50">
+      <div className="relative aspect-square w-full overflow-hidden rounded-2xl border border-line bg-studio-surface">
         {hasImages ? (
           <Image
             src={getImageDisplayUrl(selectedImage)}
@@ -94,7 +94,7 @@ export function ProductImages({
             priority={selectedImageIndex === 0}
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center bg-zinc-100">
+          <div className="flex h-full w-full items-center justify-center bg-studio-raised">
             <Image
               src={PLACEHOLDER_IMAGE}
               alt="No image available"
@@ -127,8 +127,8 @@ export function ProductImages({
                 onClick={() => handleSelectImage(index)}
                 className={`relative aspect-square h-16 w-16 flex-shrink-0 overflow-hidden rounded-xl border-2 transition-all ${
                   isSelected
-                    ? 'border-[#C2410C] ring-2 ring-[#C2410C]/20'
-                    : 'border-transparent hover:border-zinc-300'
+                    ? 'border-trend-orange ring-2 ring-trend-orange/20'
+                    : 'border-transparent hover:border-line'
                 }`}
                 aria-label={`Select image ${index + 1}`}
               >
@@ -143,15 +143,15 @@ export function ProductImages({
 
                 {/* Selection indicator */}
                 {isSelected && (
-                  <div className="absolute inset-0 bg-[#C2410C]/10 flex items-center justify-center">
-                    <div className="h-5 w-5 rounded-full border-2 border-white bg-[#C2410C]" />
+                  <div className="absolute inset-0 bg-trend-orange/10 flex items-center justify-center">
+                    <div className="h-5 w-5 rounded-full border-2 border-white bg-trend-orange" />
                   </div>
                 )}
 
                 {/* Primary image indicator */}
                 {image.is_primary && (
                   <div className="absolute top-1 right-1 z-10">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-amber-500 text-white text-xs font-bold">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-warning text-on-accent text-xs font-bold">
                       *
                     </span>
                   </div>
@@ -164,7 +164,7 @@ export function ProductImages({
 
       {/* Single image indicator (no gallery) */}
       {!showGallery && hasImages && (
-        <p className="text-xs text-center text-zinc-500">
+        <p className="text-xs text-center text-ink-muted">
           {images.length} image{images.length > 1 ? 's' : ''}
         </p>
       )}
@@ -172,7 +172,7 @@ export function ProductImages({
       {/* No images state */}
       {!hasImages && !showGallery && (
         <div className="flex items-center justify-center py-4">
-          <p className="text-sm text-zinc-500">No images available</p>
+          <p className="text-sm text-ink-muted">No images available</p>
         </div>
       )}
     </div>
@@ -216,7 +216,7 @@ export function ProductImageSingle({
 
   return (
     <div
-      className={`relative overflow-hidden rounded-xl border border-zinc-200 bg-zinc-50 ${sizeClasses[size]} ${className}`}
+      className={`relative overflow-hidden rounded-xl border border-line bg-studio-surface ${sizeClasses[size]} ${className}`}
     >
       {displayImage && !hasError ? (
         <Image
@@ -241,7 +241,7 @@ export function ProductImageSingle({
       {/* Primary indicator */}
       {image?.is_primary && (
         <div className="absolute top-1 right-1 z-10">
-          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-amber-500 text-white text-[10px] font-bold">
+          <span className="flex h-4 w-4 items-center justify-center rounded-full bg-warning text-on-accent text-[10px] font-bold">
             *
           </span>
         </div>

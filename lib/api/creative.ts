@@ -15,6 +15,7 @@ import {
   TrainingConsent,
   AdPerformanceMetric,
   DatasetManifest,
+  EditSettings,
   ExportAspectRatio,
   MusicTrack,
   VideoExport,
@@ -214,10 +215,13 @@ export const creativeApi = {
     return fetchWithAuth<VideoExport[]>(url, { method: 'GET' });
   },
 
-  /** Build another format on demand (202; idempotent per ratio, EDL version and track). */
+  /**
+   * Build another format or a Studio edit on demand (202; idempotent per ratio, EDL version,
+   * track and edits). `track_id: null` = no music. Editor renders cost no credits.
+   */
   async createExport(
     jobId: string,
-    body: { aspect_ratio: ExportAspectRatio; track_id?: string },
+    body: { aspect_ratio: ExportAspectRatio; track_id?: string | null; edits?: EditSettings },
   ): Promise<VideoExport> {
     const url = `${CREATIVE_BASE_PATH}/video/jobs/${jobId}/exports`;
     return fetchWithAuth<VideoExport>(url, { method: 'POST', body: JSON.stringify(body) });
@@ -239,6 +243,12 @@ export const creativeApi = {
       method: 'POST',
       body: form,
     });
+  },
+
+  /** Waveform bars (0-1) of a track, for the Studio music lane. */
+  async trackPeaks(trackId: string): Promise<number[]> {
+    const url = `${CREATIVE_BASE_PATH}/music/tracks/${trackId}/peaks`;
+    return fetchWithAuth<number[]>(url, { method: 'GET' });
   },
 
   async deleteMusicTrack(trackId: string): Promise<void> {

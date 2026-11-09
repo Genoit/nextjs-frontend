@@ -114,10 +114,10 @@ export function ProductList({
     return (
       <div className={`space-y-6 ${className}`}>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Products</h2>
+          <h2 className="text-lg font-semibold text-ink">Products</h2>
           <Link
             href="/products/new"
-            className="rounded-lg bg-[#C2410C] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#9A3412] transition"
+            className="rounded-[10px] bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition"
           >
             Add Product
           </Link>
@@ -127,12 +127,12 @@ export function ProductList({
           {Array.from({ length: 8 }).map((_, index) => (
             <div
               key={index}
-              className="h-64 w-full animate-pulse rounded-2xl border border-zinc-200 bg-zinc-50"
+              className="h-64 w-full animate-pulse rounded-2xl border border-line bg-studio-surface"
             />
           ))}
         </div>
 
-        <p className="text-center text-sm text-zinc-500">Loading products...</p>
+        <p className="text-center text-sm text-ink-muted">Loading products...</p>
       </div>
     );
   }
@@ -142,19 +142,19 @@ export function ProductList({
     return (
       <div className={`space-y-6 ${className}`}>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Products</h2>
+          <h2 className="text-lg font-semibold text-ink">Products</h2>
           <Link
             href="/products/new"
-            className="rounded-lg bg-[#C2410C] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#9A3412] transition"
+            className="rounded-[10px] bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition"
           >
             Add Product
           </Link>
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-red-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-danger-soft">
             <svg
-              className="h-6 w-6 text-red-600"
+              className="h-6 w-6 text-danger"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -167,12 +167,12 @@ export function ProductList({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-red-800">Error loading products</h3>
-          <p className="mt-2 text-sm text-red-600">{error}</p>
+          <h3 className="mt-4 text-lg font-semibold text-danger">Error loading products</h3>
+          <p className="mt-2 text-sm text-danger">{error}</p>
           <button
             type="button"
             onClick={() => window.location.reload()}
-            className="mt-4 rounded-lg bg-red-100 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-200 transition"
+            className="mt-4 rounded-lg bg-danger-soft px-4 py-2 text-sm font-medium text-danger hover:bg-red-200 transition"
           >
             Try again
           </button>
@@ -186,19 +186,19 @@ export function ProductList({
     return (
       <div className={`space-y-6 ${className}`}>
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-zinc-900">Products</h2>
+          <h2 className="text-lg font-semibold text-ink">Products</h2>
           <Link
             href="/products/new"
-            className="rounded-lg bg-[#C2410C] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#9A3412] transition"
+            className="rounded-[10px] bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition"
           >
             Add Product
           </Link>
         </div>
 
         <div className="flex flex-col items-center justify-center py-12">
-          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-zinc-100">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-studio-raised">
             <svg
-              className="h-6 w-6 text-zinc-600"
+              className="h-6 w-6 text-ink-soft"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -211,13 +211,13 @@ export function ProductList({
               />
             </svg>
           </div>
-          <h3 className="mt-4 text-lg font-semibold text-zinc-900">No products found</h3>
-          <p className="mt-2 text-sm text-zinc-500">
+          <h3 className="mt-4 text-lg font-semibold text-ink">No products found</h3>
+          <p className="mt-2 text-sm text-ink-muted">
             You don&apos;t have any products yet. Start by adding your first product.
           </p>
           <Link
             href="/products/new"
-            className="mt-4 rounded-lg bg-[#C2410C] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#9A3412] transition"
+            className="mt-4 rounded-[10px] bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition"
           >
             Add Your First Product
           </Link>
@@ -232,14 +232,14 @@ export function ProductList({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <h2 className="text-lg font-semibold text-zinc-900">
-            Products <span className="text-zinc-500 font-normal">({total})</span>
+          <h2 className="text-lg font-semibold text-ink">
+            Products <span className="text-ink-muted font-normal">({total})</span>
           </h2>
         </div>
 
         <Link
           href="/products/new"
-          className="rounded-lg bg-[#C2410C] px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-[#9A3412] transition"
+          className="rounded-[10px] bg-trend-orange px-4 py-2 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition"
         >
           Add Product
         </Link>
@@ -257,9 +257,9 @@ export function ProductList({
                 handleProductClick(product);
               }
             }}
-            className="group block overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm hover:shadow-md hover:border-[#C2410C] transition"
+            className="group block overflow-hidden rounded-2xl border border-line bg-studio-ground hover:border-studio-rule-strong transition"
           >
-            <div className="aspect-square w-full overflow-hidden bg-zinc-50">
+            <div className="aspect-square w-full overflow-hidden bg-studio-surface">
               {product.main_image_url ? (
                 <ProductImageSingle
                   image={product.images?.find((img) => img.is_primary) || null}
@@ -268,9 +268,9 @@ export function ProductList({
                   size="lg"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-zinc-100">
+                <div className="flex h-full w-full items-center justify-center bg-studio-raised">
                   <svg
-                    className="h-8 w-8 text-zinc-400"
+                    className="h-8 w-8 text-ink-muted"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -287,17 +287,17 @@ export function ProductList({
             </div>
 
             <div className="p-4">
-              <h3 className="truncate text-sm font-semibold text-zinc-900 group-hover:text-[#C2410C] transition">
+              <h3 className="truncate text-sm font-semibold text-ink group-hover:text-trend-orange transition">
                 {product.title}
               </h3>
 
               <div className="mt-2 flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="font-semibold text-zinc-900">
+                  <span className="font-semibold text-ink">
                     {formatCurrency(product.price, product.currency)}
                   </span>
                   {product.compare_at_price !== null && product.compare_at_price > 0 && (
-                    <span className="text-xs text-zinc-500 line-through">
+                    <span className="text-xs text-ink-muted line-through">
                       {formatCurrency(product.compare_at_price, product.currency)}
                     </span>
                   )}
@@ -307,27 +307,27 @@ export function ProductList({
               <div className="mt-3 flex flex-wrap items-center justify-between gap-2 text-xs">
                 <div className="flex flex-wrap gap-1">
                   {product.source_platform && (
-                    <span className="bg-zinc-100 px-2 py-1 rounded">
+                    <span className="bg-studio-raised px-2 py-1 rounded">
                       {getPlatformText(product.source_platform)}
                     </span>
                   )}
                   {product.brand && (
-                    <span className="bg-zinc-100 px-2 py-1 rounded">{product.brand}</span>
+                    <span className="bg-studio-raised px-2 py-1 rounded">{product.brand}</span>
                   )}
                 </div>
 
                 <span
                   className={`px-2 py-1 rounded ${
                     product.availability === 'in_stock'
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'bg-zinc-100 text-zinc-700'
+                      ? 'bg-success-soft text-success'
+                      : 'bg-studio-raised text-ink-soft'
                   }`}
                 >
                   {getAvailabilityText(product.availability)}
                 </span>
               </div>
 
-              <div className="mt-2 text-xs text-zinc-500">
+              <div className="mt-2 text-xs text-ink-muted">
                 Added: {formatDate(product.created_at)}
               </div>
             </div>
@@ -338,7 +338,7 @@ export function ProductList({
       {/* Pagination */}
       {showPagination && totalPages > 1 && (
         <nav
-          className="flex items-center justify-between border-t border-zinc-200 pt-4"
+          className="flex items-center justify-between border-t border-line pt-4"
           aria-label="Pagination"
         >
           <div className="flex items-center gap-2">
@@ -346,7 +346,7 @@ export function ProductList({
               type="button"
               onClick={goToPreviousPage}
               disabled={!canGoToPreviousPage}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-line text-ink-soft hover:bg-studio-surface disabled:opacity-50 disabled:cursor-not-allowed transition"
               aria-label="Previous page"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -359,7 +359,7 @@ export function ProductList({
               </svg>
             </button>
 
-            <span className="text-sm text-zinc-600">
+            <span className="text-sm text-ink-soft">
               Page {page} of {totalPages}
             </span>
 
@@ -367,7 +367,7 @@ export function ProductList({
               type="button"
               onClick={goToNextPage}
               disabled={!canGoToNextPage}
-              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-zinc-200 text-zinc-600 hover:bg-zinc-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
+              className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-line text-ink-soft hover:bg-studio-surface disabled:opacity-50 disabled:cursor-not-allowed transition"
               aria-label="Next page"
             >
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -382,7 +382,7 @@ export function ProductList({
           </div>
 
           <div className="flex items-center gap-2">
-            <span className="text-sm text-zinc-600">
+            <span className="text-sm text-ink-soft">
               Showing {(page - 1) * pageSize + 1}-{Math.min(page * pageSize, total)} of {total}
             </span>
           </div>
@@ -428,7 +428,7 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
   if (!products || products.length === 0) {
     return (
       <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
-        <p className="text-sm text-zinc-500">No products to display</p>
+        <p className="text-sm text-ink-muted">No products to display</p>
       </div>
     );
   }
@@ -447,9 +447,9 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
               onProductClick(product);
             }
           }}
-          className="group block overflow-hidden rounded-2xl border border-zinc-200 bg-white shadow-sm hover:shadow-md hover:border-[#C2410C] transition"
+          className="group block overflow-hidden rounded-2xl border border-line bg-studio-ground hover:border-studio-rule-strong transition"
         >
-          <div className="aspect-square w-full overflow-hidden bg-zinc-50">
+          <div className="aspect-square w-full overflow-hidden bg-studio-surface">
             {product.main_image_url ? (
               <ProductImageSingle
                 image={product.images?.find((img) => img.is_primary) || null}
@@ -458,9 +458,9 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
                 size="lg"
               />
             ) : (
-              <div className="flex h-full w-full items-center justify-center bg-zinc-100">
+              <div className="flex h-full w-full items-center justify-center bg-studio-raised">
                 <svg
-                  className="h-8 w-8 text-zinc-400"
+                  className="h-8 w-8 text-ink-muted"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -477,19 +477,19 @@ export function ProductGrid({ products, className = '', onProductClick }: Produc
           </div>
 
           <div className="p-4">
-            <h3 className="truncate text-sm font-semibold text-zinc-900 group-hover:text-[#C2410C] transition">
+            <h3 className="truncate text-sm font-semibold text-ink group-hover:text-trend-orange transition">
               {product.title}
             </h3>
 
             <div className="mt-2 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="font-semibold text-zinc-900">
+                <span className="font-semibold text-ink">
                   {formatCurrency(product.price, product.currency)}
                 </span>
               </div>
             </div>
 
-            <div className="mt-3 text-xs text-zinc-500">
+            <div className="mt-3 text-xs text-ink-muted">
               Added: {formatDate(product.created_at)}
             </div>
           </div>

@@ -1,5 +1,5 @@
 import localFont from 'next/font/local';
-import { Inter, Playfair_Display, Instrument_Serif, Caveat } from 'next/font/google';
+import { Inter, Playfair_Display, Instrument_Serif, Caveat, Outfit } from 'next/font/google';
 
 export const inter = Inter({
   subsets: ['latin'],
@@ -31,4 +31,11 @@ export const tempting = localFont({
   src: './fonts/Tempting.otf',
   display: 'swap',
   variable: '--font-tempting',
+});
+
+/** Studio dashboard headline (geometric sans of the dashboard mockup). */
+export const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['400', '500'],
+  display: 'swap',
 });

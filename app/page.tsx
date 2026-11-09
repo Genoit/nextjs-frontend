@@ -32,6 +32,7 @@ import {
 import { useAuth } from '../lib/auth';
 import { SparkleIcon, TrendedBrandLogo } from '../components/Icons';
 import Navbar from '../components/Navbar';
+import { tempting } from './fonts';
 
 function AnimatedStat({
   target,
@@ -199,36 +200,38 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white text-zinc-900 selection:bg-[#C2410C]/15 selection:text-[#C2410C]">
+    <div className="min-h-screen overflow-x-clip bg-studio-ground text-ink selection:bg-trend-orange/15 selection:text-trend-orange">
       <Navbar />
       {/* ============================================================ */}
       {/* 01 — HERO SECTION                                             */}
       {/* ============================================================ */}
-      <section className="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden bg-gradient-to-b from-[#FFFDF9] via-[#FFF7E6]/30 to-white">
+      <section className="relative pt-8 pb-16 lg:pt-14 lg:pb-24 overflow-hidden bg-gradient-to-b from-cream/40 via-cream/30 to-studio-ground">
         {/* Subtle decorative background light */}
-        <div className="absolute top-10 right-1/4 w-[650px] h-[650px] rounded-full bg-[#EAB308]/10 blur-3xl pointer-events-none -z-10" />
-        <div className="absolute top-0 right-10 w-[500px] h-[500px] rounded-full bg-[#C2410C]/10 blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-10 right-1/4 w-[650px] h-[650px] rounded-full bg-trend-gold/10 blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-0 right-10 w-[500px] h-[500px] rounded-full bg-trend-orange/10 blur-3xl pointer-events-none -z-10" />
 
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-14 items-center">
             {/* Left Column: Hero Content */}
             <div className="lg:col-span-6 space-y-6 text-center lg:text-center">
               {/* Eyebrow badge */}
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-200/80 bg-amber-50/70 px-3.5 py-1.5 text-xs font-medium text-amber-800 shadow-sm mx-auto">
-                <SparkleIcon className="h-3.5 w-3.5 text-[#EAB308]" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-trend-gold/40 bg-cream/70 px-3.5 py-1.5 text-xs font-medium text-trend-orange-strong shadow-sm mx-auto">
+                <SparkleIcon className="h-3.5 w-3.5 text-trend-gold" />
                 <span>AI-powered creative platform</span>
               </div>
 
               {/* Headline */}
-              <h1 className="text-5xl sm:text-6xl xl:text-[5rem] font-extrabold tracking-[-0.06em] text-zinc-950 leading-[0.92] mx-auto max-w-[680px]">
+              <h1 className="text-5xl sm:text-6xl xl:text-[5rem] font-extrabold tracking-[-0.06em] text-ink leading-[0.92] mx-auto max-w-[680px]">
                 Turn your products into scroll-stopping{' '}
-                <span className="font-editorial italic text-[#C2410C] font-normal tracking-normal">
+                <span
+                  className={`${tempting.className} mt-5 mb-2 inline-block text-[0.7em] leading-[1.15] text-trend-orange font-normal tracking-normal`}
+                >
                   UGC.
                 </span>
               </h1>
 
               {/* Supporting Text */}
-              <p className="text-base sm:text-lg text-zinc-800 font-bold leading-relaxed max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg text-ink font-bold leading-relaxed max-w-2xl mx-auto">
                 Create authentic product videos for TikTok, Instagram and Facebook in minutes —
                 without a camera, creator or production team.
               </p>
@@ -238,7 +241,7 @@ export default function LandingPage() {
                 {isAuthenticated ? (
                   <Link
                     href="/dashboard"
-                    className="rounded-xl bg-[#C2410C] px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-[#C2410C]/25 hover:bg-[#9A3412] hover:shadow-[#9A3412]/30 transition duration-200 flex items-center gap-2"
+                    className="rounded-xl bg-trend-orange px-7 py-3.5 text-base font-semibold text-on-accent shadow-md shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/30 transition duration-200 flex items-center gap-2"
                   >
                     <SparkleIcon className="h-4 w-4 text-white" />
                     <span>Go to Dashboard</span>
@@ -249,18 +252,18 @@ export default function LandingPage() {
                 ) : (
                   <Link
                     href="/register"
-                    className="rounded-xl bg-[#C2410C] px-7 py-3.5 text-base font-semibold text-white shadow-md shadow-[#C2410C]/25 hover:bg-[#9A3412] hover:shadow-[#9A3412]/30 transition duration-200 flex items-center gap-2 group"
+                    className="rounded-xl bg-trend-orange px-7 py-3.5 text-base font-semibold text-on-accent shadow-md shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/30 transition duration-200 flex items-center gap-2 group"
                   >
-                    <SparkleIcon className="h-4 w-4 text-amber-300" />
+                    <SparkleIcon className="h-4 w-4 text-trend-gold" />
                     <span>Create your first video</span>
                   </Link>
                 )}
 
                 <Link
                   href="#how-it-works"
-                  className="rounded-xl border border-zinc-200 bg-white px-6 py-3.5 text-base font-semibold text-zinc-800 shadow-sm hover:bg-zinc-50 hover:border-zinc-300 transition duration-200 flex items-center gap-2 group"
+                  className="rounded-xl border border-line bg-studio-ground px-6 py-3.5 text-base font-semibold text-ink shadow-sm hover:bg-studio-surface hover:border-line transition duration-200 flex items-center gap-2 group"
                 >
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-[#C2410C] group-hover:scale-110 transition">
+                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-cream text-trend-orange group-hover:scale-110 transition">
                     <Play className="h-3.5 w-3.5 fill-current" />
                   </span>
                   <span>See how it works</span>
@@ -268,9 +271,9 @@ export default function LandingPage() {
               </div>
 
               {/* Reassurance text */}
-              <div className="pt-2 flex items-center justify-center gap-2 text-xs sm:text-sm text-zinc-800 font-bold text-center">
+              <div className="pt-2 flex items-center justify-center gap-2 text-xs sm:text-sm text-ink font-bold text-center">
                 <svg
-                  className="h-4 w-4 text-amber-600 shrink-0"
+                  className="h-4 w-4 text-trend-orange-strong shrink-0"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -308,14 +311,15 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 02 — SOCIAL PROOF / TRUST SECTION                             */}
       {/* ============================================================ */}
-      <section className="py-16 sm:py-20 bg-white border-y border-zinc-100">
+      <section className="py-16 sm:py-20 bg-studio-ground border-y border-line">
         <div className="w-full px-4 sm:px-6 lg:px-8 text-center space-y-12">
           {/* Headings */}
           <div className="space-y-3 max-w-4xl mx-auto">
-            <h2 className="font-editorial text-5xl sm:text-6xl lg:text-[4.25rem] leading-[0.95] text-zinc-950 font-normal">
-              Built for modern <span className="italic text-[#C2410C]">e-commerce creators.</span>
+            <h2 className="font-editorial text-5xl sm:text-6xl lg:text-[4.25rem] leading-[0.95] text-ink font-normal">
+              Built for modern{' '}
+              <span className="italic text-trend-orange">e-commerce creators.</span>
             </h2>
-            <p className="text-zinc-600 text-base sm:text-lg lg:text-xl">
+            <p className="text-ink-soft text-base sm:text-lg lg:text-xl">
               From your first product idea to your next winning creative.
             </p>
           </div>
@@ -326,7 +330,7 @@ export default function LandingPage() {
               {[...platformBrands, ...platformBrands].map((platform, index) => (
                 <div
                   key={`${platform.name}-${index}`}
-                  className="flex min-w-[150px] items-center justify-center gap-3 px-2 py-2 text-zinc-700"
+                  className="flex min-w-[150px] items-center justify-center gap-3 px-2 py-2 text-ink-soft"
                 >
                   <Image
                     src={platform.src}
@@ -336,7 +340,7 @@ export default function LandingPage() {
                     unoptimized
                     className="h-8 w-8 object-contain sm:h-9 sm:w-9 lg:h-10 lg:w-10"
                   />
-                  <span className="text-sm font-semibold tracking-tight text-zinc-700 sm:text-base lg:text-lg">
+                  <span className="text-sm font-semibold tracking-tight text-ink-soft sm:text-base lg:text-lg">
                     {platform.name}
                   </span>
                 </div>
@@ -361,56 +365,56 @@ export default function LandingPage() {
           `}</style>
 
           {/* 3 Credibility Statistics */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-zinc-100 max-w-5xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 pt-6 border-t border-line max-w-5xl mx-auto">
             <div className="space-y-3">
               <div className="flex items-center justify-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100/80 text-[#EAB308]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/80 text-trend-gold">
                   <Sparkles className="h-4 w-4" />
                 </span>
                 <AnimatedStat
                   target={10}
                   suffix="K+"
-                  className="font-editorial text-5xl sm:text-6xl lg:text-7xl font-bold text-[#C2410C] leading-none"
+                  className="font-editorial text-5xl sm:text-6xl lg:text-7xl font-bold text-trend-orange leading-none"
                 />
               </div>
-              <p className="text-base lg:text-lg font-medium text-zinc-600">Creatives generated</p>
+              <p className="text-base lg:text-lg font-medium text-ink-soft">Creatives generated</p>
             </div>
 
-            <div className="space-y-3 border-t md:border-t-0 md:border-x border-zinc-100 pt-6 md:pt-0">
+            <div className="space-y-3 border-t md:border-t-0 md:border-x border-line pt-6 md:pt-0">
               <div className="flex items-center justify-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100/80 text-[#EAB308]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/80 text-trend-gold">
                   <Clock3 className="h-4 w-4" />
                 </span>
                 <AnimatedStat
                   target={2.4}
                   suffix="M+"
                   decimals={1}
-                  className="font-editorial text-5xl sm:text-6xl lg:text-7xl font-bold text-[#C2410C] leading-none"
+                  className="font-editorial text-5xl sm:text-6xl lg:text-7xl font-bold text-trend-orange leading-none"
                 />
               </div>
-              <p className="text-base lg:text-lg font-medium text-zinc-600">Minutes saved</p>
+              <p className="text-base lg:text-lg font-medium text-ink-soft">Minutes saved</p>
             </div>
 
-            <div className="space-y-3 border-t md:border-t-0 border-zinc-100 pt-6 md:pt-0">
+            <div className="space-y-3 border-t md:border-t-0 border-line pt-6 md:pt-0">
               <div className="flex items-center justify-center gap-3">
-                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100/80 text-[#EAB308]">
+                <span className="flex h-8 w-8 items-center justify-center rounded-full bg-cream/80 text-trend-gold">
                   <BarChart3 className="h-4 w-4" />
                 </span>
                 <AnimatedStat
                   target={87}
                   suffix="%"
-                  className="font-editorial text-5xl sm:text-6xl lg:text-7xl font-bold text-[#C2410C] leading-none"
+                  className="font-editorial text-5xl sm:text-6xl lg:text-7xl font-bold text-trend-orange leading-none"
                 />
               </div>
-              <p className="text-base lg:text-lg font-medium text-zinc-600">
+              <p className="text-base lg:text-lg font-medium text-ink-soft">
                 Faster creative production
               </p>
             </div>
           </div>
 
           {/* Testimonial Card */}
-          <div className="max-w-xl mx-auto rounded-2xl border border-zinc-200/80 bg-zinc-50/70 p-6 shadow-sm flex items-center gap-5 text-left">
-            <div className="relative h-14 w-14 shrink-0 rounded-full overflow-hidden ring-2 ring-amber-200">
+          <div className="max-w-xl mx-auto rounded-2xl border border-line/80 bg-studio-surface/70 p-6 shadow-sm flex items-center gap-5 text-left">
+            <div className="relative h-14 w-14 shrink-0 rounded-full overflow-hidden ring-2 ring-trend-gold/40">
               <Image
                 src="/login-profile-2.jpg"
                 alt="Alex Morgan"
@@ -420,11 +424,13 @@ export default function LandingPage() {
               />
             </div>
             <div className="space-y-1">
-              <div className="text-amber-500 text-lg leading-none font-serif">““</div>
-              <p className="text-sm sm:text-base text-zinc-800 font-medium leading-snug">
+              <div className="text-trend-orange-strong text-lg leading-none font-serif">““</div>
+              <p className="text-sm sm:text-base text-ink font-medium leading-snug">
                 TrendED completely changed how quickly we can test new products.
               </p>
-              <p className="text-xs text-zinc-500 font-normal">— Alex Morgan, E-commerce Founder</p>
+              <p className="text-xs text-ink-muted font-normal">
+                — Alex Morgan, E-commerce Founder
+              </p>
             </div>
           </div>
         </div>
@@ -433,7 +439,10 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 03 — PROBLÈME → SOLUTION                                      */}
       {/* ============================================================ */}
-      <section id="problem-solution" className="py-20 bg-gradient-to-b from-white to-[#FFFDF9]">
+      <section
+        id="problem-solution"
+        className="py-20 bg-gradient-to-b from-studio-ground to-cream/40"
+      >
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="space-y-10 text-center">
             <div className="flex justify-center">
@@ -441,22 +450,22 @@ export default function LandingPage() {
             </div>
 
             <div className="space-y-3 max-w-5xl mx-auto">
-              <h2 className="font-editorial text-4xl sm:text-5xl lg:text-[5rem] leading-[0.9] text-zinc-950 font-normal">
+              <h2 className="font-editorial text-4xl sm:text-5xl lg:text-[5rem] leading-[0.9] text-ink font-normal">
                 Great products{' '}
-                <span className="italic text-[#C2410C]">deserve better creative.</span>
+                <span className="italic text-trend-orange">deserve better creative.</span>
               </h2>
-              <p className="text-zinc-600 text-base sm:text-lg lg:text-[1.05rem] italic">
+              <p className="text-ink-soft text-base sm:text-lg lg:text-[1.05rem] italic">
                 Traditional product advertising takes too much time, money and coordination.
               </p>
             </div>
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(140px,0.7fr)_minmax(48px,0.22fr)_minmax(572px,2.7fr)_minmax(140px,0.7fr)] lg:items-end lg:gap-2 xl:grid-cols-[minmax(200px,0.75fr)_minmax(72px,0.28fr)_minmax(692px,2.3fr)_minmax(200px,0.75fr)] xl:gap-3">
-              <div className="relative rounded-[1.8rem] border border-zinc-200/80 bg-[#F4F2EE] p-5 lg:p-6 text-left shadow-sm">
-                <h3 className="mb-5 text-[1.05rem] sm:text-[1.2rem] font-medium text-zinc-900">
+              <div className="relative rounded-[1.8rem] border border-line/80 bg-cream p-5 lg:p-6 text-left shadow-sm">
+                <h3 className="mb-5 text-[1.05rem] sm:text-[1.2rem] font-medium text-ink">
                   Traditional UGC production
                 </h3>
 
-                <div className="space-y-4 text-sm sm:text-[0.95rem] font-medium text-zinc-800">
+                <div className="space-y-4 text-sm sm:text-[0.95rem] font-medium text-ink">
                   {[
                     'Find creator',
                     'Send product',
@@ -466,7 +475,7 @@ export default function LandingPage() {
                     'Publish',
                   ].map((step, index) => (
                     <div key={step} className="flex items-center gap-3">
-                      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-white text-zinc-500 ring-1 ring-zinc-200 shadow-sm">
+                      <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-studio-ground text-ink-muted ring-1 ring-line shadow-sm">
                         <span className="text-[0.62rem] font-bold">{index + 1}</span>
                       </div>
                       <span>{step}</span>
@@ -474,7 +483,7 @@ export default function LandingPage() {
                   ))}
                 </div>
 
-                <div className="mt-6 border-t border-zinc-200 pt-3 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-zinc-500">
+                <div className="mt-6 border-t border-line pt-3 text-[0.7rem] font-semibold uppercase tracking-[0.08em] text-ink-muted">
                   High friction · Costly · Weeks per test
                 </div>
               </div>
@@ -487,10 +496,15 @@ export default function LandingPage() {
                   fill="none"
                   preserveAspectRatio="none"
                 >
-                  <path d="M3 14H87" stroke="#A1A1AA" strokeWidth="2" strokeLinecap="round" />
+                  <path
+                    d="M3 14H87"
+                    stroke="var(--color-ink-muted)"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                  />
                   <path
                     d="M77 4L88 14L77 24"
-                    stroke="#A1A1AA"
+                    stroke="var(--color-ink-muted)"
                     strokeWidth="2"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -499,7 +513,7 @@ export default function LandingPage() {
               </div>
 
               <div className="flex items-end justify-center pt-2 lg:pt-5 xl:translate-x-6">
-                <div className="relative h-[248px] w-[160px] shrink-0 overflow-hidden rounded-[1.7rem] border border-zinc-200 bg-[#E9E2D9] shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
+                <div className="relative h-[248px] w-[160px] shrink-0 overflow-hidden rounded-[1.7rem] border border-line bg-cream shadow-[0_10px_30px_rgba(0,0,0,0.12)]">
                   <Image
                     src="/landing_page/landing_3_product.png"
                     alt="Product bottle"
@@ -515,10 +529,15 @@ export default function LandingPage() {
                   viewBox="0 0 48 28"
                   fill="none"
                 >
-                  <path d="M2 14H37" stroke="#EA580C" strokeWidth="2.5" strokeLinecap="round" />
+                  <path
+                    d="M2 14H37"
+                    stroke="var(--color-trend-orange)"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                  />
                   <path
                     d="M28 5L38 14L28 23"
-                    stroke="#EA580C"
+                    stroke="var(--color-trend-orange)"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
@@ -550,7 +569,7 @@ export default function LandingPage() {
                       }`}
                     >
                       <div className="relative h-full w-full origin-bottom transition-transform duration-[250ms] ease-out group-hover:-translate-y-2 group-hover:scale-[1.1] group-focus-visible:-translate-y-2 group-focus-visible:scale-[1.1] motion-reduce:transition-none">
-                        <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] border border-white/80 bg-[#FAF5F0] shadow-[0_16px_28px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] transition-shadow duration-[250ms] ease-out group-hover:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-hover:ring-2 group-hover:ring-[#EA580C]/35 group-focus-visible:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-focus-visible:ring-2 group-focus-visible:ring-[#EA580C]/45 motion-reduce:transition-none">
+                        <div className="absolute inset-0 overflow-hidden rounded-[1.2rem] border border-white/80 bg-cream shadow-[0_16px_28px_rgba(0,0,0,0.12)] ring-1 ring-black/[0.04] transition-shadow duration-[250ms] ease-out group-hover:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-hover:ring-2 group-hover:ring-trend-orange/35 group-focus-visible:shadow-[0_24px_42px_rgba(0,0,0,0.24)] group-focus-visible:ring-2 group-focus-visible:ring-trend-orange/45 motion-reduce:transition-none">
                           <Image
                             src={`/landing_page/landing_3_image_${card}.png`}
                             alt={`UGC concept ${card}`}
@@ -583,19 +602,19 @@ export default function LandingPage() {
                 </div>
               </div>
 
-              <div className="rounded-[1.8rem] border border-[#F0C79D] bg-[#FDF6F0] p-5 lg:p-6 text-left shadow-[0_10px_24px_rgba(194,65,12,0.08)]">
+              <div className="rounded-[1.8rem] border border-trend-orange/30 bg-cream p-5 lg:p-6 text-left shadow-[0_10px_24px_rgba(194,65,12,0.08)]">
                 <div className="mb-5 flex items-center justify-between gap-3">
-                  <h3 className="text-[1.1rem] sm:text-[1.2rem] font-medium text-zinc-900">
+                  <h3 className="text-[1.1rem] sm:text-[1.2rem] font-medium text-ink">
                     With TrendED
                   </h3>
-                  <SparkleIcon className="h-5 w-5 text-[#C2410C]" />
+                  <SparkleIcon className="h-5 w-5 text-trend-orange" />
                 </div>
 
-                <div className="space-y-4 text-sm sm:text-[0.95rem] font-medium text-zinc-800">
+                <div className="space-y-4 text-sm sm:text-[0.95rem] font-medium text-ink">
                   {['Product', 'AI Script', 'AI Creator', 'Generate', 'Publish'].map(
                     (step, index) => (
                       <div key={step} className="flex items-center gap-3">
-                        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-[#F9E3CE] text-[#C2410C] ring-1 ring-[#F0C79D] shadow-sm">
+                        <div className="relative flex h-7 w-7 items-center justify-center rounded-full bg-cream text-trend-orange ring-1 ring-trend-orange/30 shadow-sm">
                           <span className="text-[0.62rem] font-bold">{index + 1}</span>
                         </div>
                         <span>{step}</span>
@@ -606,7 +625,7 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-3 text-sm font-semibold text-zinc-700">
+            <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-3 text-sm font-semibold text-ink-soft">
               {[
                 { icon: Package, label: '1 product' },
                 { icon: FileText, label: '4 concepts' },
@@ -619,8 +638,8 @@ export default function LandingPage() {
                     key={item.label}
                     className={`flex items-center gap-2 rounded-full border px-4 py-2 ${
                       item.label === 'Minutes, not weeks'
-                        ? 'border-[#F0C79D] bg-[#FFF7F0] text-[#C2410C]'
-                        : 'border-zinc-200 bg-white text-zinc-700'
+                        ? 'border-trend-orange/30 bg-cream text-trend-orange'
+                        : 'border-line bg-studio-ground text-ink-soft'
                     }`}
                   >
                     <Icon className="h-4 w-4" />
@@ -636,34 +655,34 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 04 — COMMENT TRENDed FONCTIONNE (How it works — 01 → 02 → 03) */}
       {/* ============================================================ */}
-      <section id="how-it-works" className="border-t border-[#eee8e1] bg-[#FFFEFC] py-20 lg:py-24">
+      <section id="how-it-works" className="border-t border-line bg-cream/20 py-20 lg:py-24">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <header className="mx-auto max-w-5xl text-center">
-            <div className="mb-5 text-xs font-bold uppercase tracking-[0.18em] text-[#C2410C]">
+            <div className="mb-5 text-xs font-bold uppercase tracking-[0.18em] text-trend-orange">
               HOW IT WORKS
             </div>
 
-            <h2 className="font-editorial text-[2.8rem] leading-[0.95] text-zinc-950 sm:text-[3.2rem] lg:text-[4.7rem]">
-              From product to <span className="italic text-[#C2410C]">UGC</span> in minutes.
+            <h2 className="font-editorial text-[2.8rem] leading-[0.95] text-ink sm:text-[3.2rem] lg:text-[4.7rem]">
+              From product to <span className="italic text-trend-orange">UGC</span> in minutes.
             </h2>
 
-            <p className="mt-5 text-base text-zinc-600 sm:text-lg lg:text-[1.05rem]">
+            <p className="mt-5 text-base text-ink-soft sm:text-lg lg:text-[1.05rem]">
               Three simple steps. One powerful creative workflow.
             </p>
           </header>
 
           <div className="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-[minmax(0,1fr)_48px_minmax(0,1fr)_48px_minmax(0,1fr)] lg:items-center xl:gap-7 xl:grid-cols-[minmax(0,1fr)_56px_minmax(0,1fr)_56px_minmax(0,1fr)]">
-            <article className="min-w-0 rounded-[1.35rem] border border-[#e8e3dd] bg-white p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
+            <article className="min-w-0 rounded-[1.35rem] border border-line bg-studio-ground p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
               <div className="mb-5 flex items-center gap-3">
-                <span className="font-editorial text-[3.25rem] leading-none text-[#ea580c]">
+                <span className="font-editorial text-[3.25rem] leading-none text-trend-orange">
                   01
                 </span>
-                <h3 className="text-xl font-bold tracking-[-0.04em] text-zinc-900 sm:text-2xl">
+                <h3 className="text-xl font-bold tracking-[-0.04em] text-ink sm:text-2xl">
                   Add your product
                 </h3>
               </div>
               <div className="grid grid-cols-[minmax(105px,1fr)_minmax(145px,1fr)] gap-4 sm:gap-5">
-                <div className="relative min-h-[270px] overflow-hidden rounded-lg bg-[#f6f2ee]">
+                <div className="relative min-h-[270px] overflow-hidden rounded-lg bg-cream">
                   <Image
                     src="/landing_page/landing_4_01_produit_necktek.png"
                     alt="Nekteck neck massager"
@@ -673,22 +692,22 @@ export default function LandingPage() {
                   />
                 </div>
                 <div className="min-w-0 space-y-3">
-                  <label className="block text-xs font-semibold text-zinc-800">
+                  <label className="block text-xs font-semibold text-ink">
                     Product name
-                    <div className="mt-1.5 rounded-lg border border-zinc-200 px-2.5 py-2 text-[0.66rem] font-normal leading-snug text-zinc-700">
+                    <div className="mt-1.5 rounded-lg border border-line px-2.5 py-2 text-[0.66rem] font-normal leading-snug text-ink-soft">
                       Nekteck Shiatsu Neck &amp; Shoulder Massager
                     </div>
                   </label>
-                  <label className="block text-xs font-semibold text-zinc-800">
+                  <label className="block text-xs font-semibold text-ink">
                     Product URL
-                    <div className="mt-1.5 rounded-lg border border-zinc-200 px-2.5 py-2 text-[0.58rem] font-normal leading-snug text-zinc-500 break-all">
+                    <div className="mt-1.5 rounded-lg border border-line px-2.5 py-2 text-[0.58rem] font-normal leading-snug text-ink-muted break-all">
                       https://nekteck.com/products/shiatsu-neck-shoulder-massager
                     </div>
                   </label>
                   <div>
-                    <span className="text-xs font-semibold text-zinc-800">Upload images</span>
-                    <div className="mt-1.5 grid grid-cols-3 gap-1.5 rounded-lg border border-zinc-200 p-1.5">
-                      <div className="relative aspect-square overflow-hidden rounded bg-[#f8f4f0]">
+                    <span className="text-xs font-semibold text-ink">Upload images</span>
+                    <div className="mt-1.5 grid grid-cols-3 gap-1.5 rounded-lg border border-line p-1.5">
+                      <div className="relative aspect-square overflow-hidden rounded bg-studio-surface">
                         <Image
                           src="/landing_page/landing_4_03_photo_produit.png"
                           alt="Product detail"
@@ -697,7 +716,7 @@ export default function LandingPage() {
                           className="object-cover"
                         />
                       </div>
-                      <div className="relative aspect-square overflow-hidden rounded bg-[#f8f4f0]">
+                      <div className="relative aspect-square overflow-hidden rounded bg-studio-surface">
                         <Image
                           src="/landing_page/landing_4_04_sac_transport.png"
                           alt="Product bag"
@@ -706,7 +725,7 @@ export default function LandingPage() {
                           className="object-cover"
                         />
                       </div>
-                      <div className="flex aspect-square items-center justify-center rounded border border-dashed border-zinc-300 text-lg text-zinc-400">
+                      <div className="flex aspect-square items-center justify-center rounded border border-dashed border-line text-lg text-ink-muted">
                         +
                       </div>
                     </div>
@@ -715,16 +734,16 @@ export default function LandingPage() {
               </div>
               <button
                 type="button"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-[#fff9ee] px-4 py-3 text-sm font-semibold text-zinc-800 transition hover:bg-[#fff1d8]"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-cream px-4 py-3 text-sm font-semibold text-ink transition hover:bg-cream"
               >
-                <Upload className="h-5 w-5 text-[#ea580c]" />
+                <Upload className="h-5 w-5 text-trend-orange" />
                 Import from URL or upload
               </button>
             </article>
 
             <div
               aria-hidden="true"
-              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-[#f2c49c] bg-white text-[#ea580c] shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
+              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-trend-orange/30 bg-studio-ground text-trend-orange shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -737,17 +756,17 @@ export default function LandingPage() {
               </svg>
             </div>
 
-            <article className="min-w-0 rounded-[1.35rem] border border-[#e8e3dd] bg-white p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
+            <article className="min-w-0 rounded-[1.35rem] border border-line bg-studio-ground p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
               <div className="mb-5 flex items-center justify-between gap-3">
                 <div className="flex items-center gap-3">
-                  <span className="font-editorial text-[3.25rem] leading-none text-[#ea580c]">
+                  <span className="font-editorial text-[3.25rem] leading-none text-trend-orange">
                     02
                   </span>
-                  <h3 className="text-xl font-bold tracking-[-0.04em] text-zinc-900 sm:text-2xl">
+                  <h3 className="text-xl font-bold tracking-[-0.04em] text-ink sm:text-2xl">
                     Build your creative
                   </h3>
                 </div>
-                <span className="shrink-0 rounded-md bg-[#fff0bf] px-2 py-1 text-[0.58rem] font-semibold text-[#8c5a00] flex items-center gap-1">
+                <span className="shrink-0 rounded-md bg-trend-gold/20 px-2 py-1 text-[0.58rem] font-semibold text-ink flex items-center gap-1">
                   <Sparkles className="h-3 w-3 text-[#eaa500]" />
                   AI optimized
                 </span>
@@ -776,7 +795,7 @@ export default function LandingPage() {
                     key={label}
                     className="grid grid-cols-[34px_minmax(75px,0.85fr)_minmax(116px,1.4fr)] items-center gap-2"
                   >
-                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-[#faf8f6] text-zinc-800">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-md bg-cream text-ink">
                       <svg
                         viewBox="0 0 24 24"
                         fill="none"
@@ -787,11 +806,11 @@ export default function LandingPage() {
                         <path d={path} strokeLinecap="round" strokeLinejoin="round" />
                       </svg>
                     </div>
-                    <span className="text-xs font-medium text-zinc-800">{label}</span>
-                    <div className="flex min-w-0 items-center justify-between rounded-lg border border-zinc-200 bg-white px-2.5 py-2 text-[0.66rem] text-zinc-700">
+                    <span className="text-xs font-medium text-ink">{label}</span>
+                    <div className="flex min-w-0 items-center justify-between rounded-lg border border-line bg-studio-ground px-2.5 py-2 text-[0.66rem] text-ink-soft">
                       <span className="truncate">{value}</span>
                       <svg
-                        className="ml-1 h-3.5 w-3.5 shrink-0 text-zinc-400"
+                        className="ml-1 h-3.5 w-3.5 shrink-0 text-ink-muted"
                         viewBox="0 0 24 24"
                         fill="none"
                         stroke="currentColor"
@@ -803,12 +822,10 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <div className="mt-5 flex gap-2.5 rounded-lg bg-[#fff9ee] p-3 text-[0.67rem] leading-relaxed text-zinc-600">
+              <div className="mt-5 flex gap-2.5 rounded-lg bg-cream p-3 text-[0.67rem] leading-relaxed text-ink-soft">
                 <SparkleIcon className="mt-0.5 h-4 w-4 shrink-0 text-[#e6a400]" />
                 <p>
-                  <strong className="block text-zinc-800">
-                    AI optimized for maximum engagement
-                  </strong>
+                  <strong className="block text-ink">AI optimized for maximum engagement</strong>
                   Our AI analyzes top performing UGC to optimize your script, pacing, and CTA.
                 </p>
               </div>
@@ -816,7 +833,7 @@ export default function LandingPage() {
 
             <div
               aria-hidden="true"
-              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-[#f2c49c] bg-white text-[#ea580c] shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
+              className="hidden lg:flex h-11 w-11 items-center justify-center rounded-full border border-trend-orange/30 bg-studio-ground text-trend-orange shadow-[0_4px_12px_rgba(234,88,12,0.1)]"
             >
               <svg
                 viewBox="0 0 24 24"
@@ -829,12 +846,12 @@ export default function LandingPage() {
               </svg>
             </div>
 
-            <article className="min-w-0 rounded-[1.35rem] border border-[#e8e3dd] bg-white p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
+            <article className="min-w-0 rounded-[1.35rem] border border-line bg-studio-ground p-5 text-left shadow-[0_12px_30px_rgba(62,47,34,0.045)] sm:p-6">
               <div className="mb-5 flex items-center gap-3">
-                <span className="font-editorial text-[3.25rem] leading-none text-[#ea580c]">
+                <span className="font-editorial text-[3.25rem] leading-none text-trend-orange">
                   03
                 </span>
-                <h3 className="text-xl font-bold tracking-[-0.04em] text-zinc-900 sm:text-2xl">
+                <h3 className="text-xl font-bold tracking-[-0.04em] text-ink sm:text-2xl">
                   Generate &amp; publish
                 </h3>
               </div>
@@ -878,13 +895,13 @@ export default function LandingPage() {
                   <div className="mt-2 flex items-center gap-2 border-t border-white/40 pt-1.5 text-[0.52rem]">
                     <Play className="h-3 w-3 fill-current" />
                     <span>00:00 / 00:27</span>
-                    <span className="ml-auto h-2 w-2 rounded-full bg-white" />
+                    <span className="ml-auto h-2 w-2 rounded-full bg-studio-ground" />
                   </div>
                 </div>
               </div>
               <button
                 type="button"
-                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-[#ed5109] px-5 py-3.5 text-base font-semibold text-white shadow-[0_8px_18px_rgba(194,65,12,0.22)] transition hover:bg-[#c94109]"
+                className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-trend-orange px-5 py-3.5 text-base font-semibold text-on-accent shadow-[0_8px_18px_rgba(194,65,12,0.22)] transition hover:bg-trend-orange-strong"
               >
                 <ArrowRight className="h-5 w-5" />
                 Export video
@@ -897,60 +914,57 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 05 — FEATURE : PRODUCT → VIDEO                                */}
       {/* ============================================================ */}
-      <section
-        id="product-to-video"
-        className="border-t border-zinc-100 bg-[#FFFDF9] py-20 lg:py-24"
-      >
+      <section id="product-to-video" className="border-t border-line bg-cream/40 py-20 lg:py-24">
         <div className="w-full px-3 sm:px-5 lg:px-6">
           <div className="mx-auto w-full max-w-[1800px]">
             <div className="grid grid-cols-1 items-center gap-8 lg:grid-cols-[0.72fr_1.88fr]">
               <div className="max-w-[580px] lg:max-w-none">
                 <div className="mb-6 flex items-center gap-3">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-[#F1C79F] bg-[#FFF5ED] shadow-sm">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-xl border border-line bg-cream shadow-sm">
                     <TrendedBrandLogo className="items-center" />
                   </div>
                 </div>
 
                 <div className="space-y-3 text-left">
-                  <h2 className="font-editorial text-[2.8rem] leading-[0.92] text-zinc-950 sm:text-[3.3rem] lg:text-[4.6rem]">
-                    <span className="italic text-[#C2410C]">One product.</span>
+                  <h2 className="font-editorial text-[2.8rem] leading-[0.92] text-ink sm:text-[3.3rem] lg:text-[4.6rem]">
+                    <span className="italic text-trend-orange">One product.</span>
                     <br />
                     Endless creative
                     <br />
                     possibilities.
                   </h2>
 
-                  <p className="max-w-[440px] text-base leading-relaxed text-zinc-700 sm:text-lg">
+                  <p className="max-w-[440px] text-base leading-relaxed text-ink-soft sm:text-lg">
                     Give TrendED your product and let AI turn it into advertising concepts built for
                     social.
                   </p>
                 </div>
 
                 <div className="mt-8 flex items-center justify-start gap-5">
-                  <div className="flex h-[96px] w-[96px] items-center justify-center rounded-[1.5rem] border border-zinc-200 bg-[#F8F6F4] shadow-sm">
+                  <div className="flex h-[96px] w-[96px] items-center justify-center rounded-[1.5rem] border border-line bg-studio-surface shadow-sm">
                     <svg
                       viewBox="0 0 64 64"
-                      className="h-9 w-9 fill-current text-[#C2410C]"
+                      className="h-9 w-9 fill-current text-trend-orange"
                       aria-hidden="true"
                     >
                       <path d="M17 18.5c0-2.2 1.8-4 4-4h22c2.2 0 4 1.8 4 4v27c0 2.2-1.8 4-4 4H21c-2.2 0-4-1.8-4-4v-27zm8 4h16v-2H25v2zm0 7h16v-2H25v2zm0 7h12v-2H25v2z" />
                     </svg>
                   </div>
 
-                  <div className="flex h-[96px] w-[96px] items-center justify-center rounded-[1.5rem] border border-zinc-200 bg-[#F8F6F4] shadow-sm">
+                  <div className="flex h-[96px] w-[96px] items-center justify-center rounded-[1.5rem] border border-line bg-studio-surface shadow-sm">
                     <svg
                       viewBox="0 0 64 64"
-                      className="h-9 w-9 fill-current text-[#C2410C]"
+                      className="h-9 w-9 fill-current text-trend-orange"
                       aria-hidden="true"
                     >
                       <path d="M32 10c-3.5 0-6.2 2.7-6.2 6.2v6.8h12.4v-6.8C38.2 12.7 35.5 10 32 10zm-8.6 15.6v18.8h17.2V25.6H23.4zm-5.2 0a5.2 5.2 0 00-5.2 5.2v13.4a5.2 5.2 0 005.2 5.2h27.6a5.2 5.2 0 005.2-5.2V30.8a5.2 5.2 0 00-5.2-5.2H18.2z" />
                     </svg>
                   </div>
 
-                  <div className="flex h-[96px] w-[96px] items-center justify-center rounded-[1.5rem] border border-zinc-200 bg-[#F8F6F4] shadow-sm">
+                  <div className="flex h-[96px] w-[96px] items-center justify-center rounded-[1.5rem] border border-line bg-studio-surface shadow-sm">
                     <svg
                       viewBox="0 0 64 64"
-                      className="h-9 w-9 fill-current text-[#C2410C]"
+                      className="h-9 w-9 fill-current text-trend-orange"
                       aria-hidden="true"
                     >
                       <path d="M29.9 10.9c-6.5 0-11.8 5.3-11.8 11.8v8.5c.1 5.6 4.5 10 10 10.3h4.9c5.5-.3 9.9-4.7 10-10.3v-8.5c0-6.5-5.3-11.8-11.8-11.8zm8.2 22.5h-16c-1.3 0-2.4 1.1-2.4 2.4v5.2c0 2.2 1.7 4 4 4h12.8c2.3 0 4-1.8 4-4v-5.2c0-1.3-1.1-2.4-2.4-2.4zm-8.2-4.5c4.1 0 7.4-3.3 7.4-7.4s-3.3-7.4-7.4-7.4-7.4 3.3-7.4 7.4c0 4.1 3.3 7.4 7.4 7.4z" />
@@ -959,22 +973,22 @@ export default function LandingPage() {
                 </div>
 
                 <div className="mt-8 flex items-center gap-7 text-left">
-                  <div className="flex items-center gap-2 text-[0.9rem] font-medium text-zinc-700">
-                    <div className="h-3 w-3 rounded-full border-2 border-[#C2410C] bg-white" />
+                  <div className="flex items-center gap-2 text-[0.9rem] font-medium text-ink-soft">
+                    <div className="h-3 w-3 rounded-full border-2 border-trend-orange bg-studio-ground" />
                     <span>Product</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[0.9rem] font-medium text-zinc-700">
-                    <div className="h-3 w-3 rounded-full border-2 border-[#C2410C] bg-[#C2410C]" />
+                  <div className="flex items-center gap-2 text-[0.9rem] font-medium text-ink-soft">
+                    <div className="h-3 w-3 rounded-full border-2 border-trend-orange bg-trend-orange" />
                     <span>AI engine</span>
                   </div>
-                  <div className="flex items-center gap-2 text-[0.9rem] font-medium text-zinc-700">
-                    <div className="h-3 w-3 rounded-full border-2 border-[#C2410C] bg-transparent" />
+                  <div className="flex items-center gap-2 text-[0.9rem] font-medium text-ink-soft">
+                    <div className="h-3 w-3 rounded-full border-2 border-trend-orange bg-transparent" />
                     <span>Creative concepts</span>
                   </div>
                 </div>
               </div>
 
-              <div className="relative w-full rounded-[2rem] border border-zinc-200 bg-white p-2 shadow-[0_14px_36px_rgba(15,23,42,0.08)] lg:p-3">
+              <div className="relative w-full rounded-[2rem] border border-line bg-studio-ground p-2 shadow-[0_14px_36px_rgba(15,23,42,0.08)] lg:p-3">
                 <Image
                   src="/landing_page/landing_5_image_a_droite.png"
                   alt="TrendED product-to-video dashboard mockup"
@@ -995,23 +1009,24 @@ export default function LandingPage() {
       {/* ============================================================ */}
       <section
         id="ugc-generator"
-        className="py-24 bg-gradient-to-b from-[#FFFDF9] via-[#FFF7E6]/40 to-white text-zinc-900 relative overflow-hidden border-t border-zinc-100"
+        className="py-24 bg-gradient-to-b from-cream/40 via-cream/40 to-studio-ground text-ink relative overflow-hidden border-t border-line"
       >
         {/* Subtle warm radial lighting */}
-        <div className="absolute top-0 right-1/3 w-[600px] h-[600px] rounded-full bg-orange-100/40 blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full bg-amber-100/30 blur-3xl pointer-events-none" />
+        <div className="absolute top-0 right-1/3 w-[600px] h-[600px] rounded-full bg-cream/40 blur-3xl pointer-events-none" />
+        <div className="absolute bottom-0 left-1/4 w-[500px] h-[500px] rounded-full bg-cream/30 blur-3xl pointer-events-none" />
 
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-16 relative z-10">
           {/* Header */}
           <div className="max-w-3xl space-y-4 text-left">
-            <div className="inline-flex items-center gap-2 rounded-full border border-orange-200 bg-orange-50 px-3.5 py-1 text-xs font-bold text-[#C2410C]">
-              <SparkleIcon className="h-3.5 w-3.5 text-[#EAB308]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-trend-orange/20 bg-cream px-3.5 py-1 text-xs font-bold text-trend-orange">
+              <SparkleIcon className="h-3.5 w-3.5 text-trend-gold" />
               <span>AI UGC VIDEO GENERATOR</span>
             </div>
-            <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-normal text-zinc-950 leading-tight">
-              <span className="italic text-[#C2410C]">Create UGC</span> without booking a creator.
+            <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-normal text-ink leading-tight">
+              <span className="italic text-trend-orange">Create UGC</span> without booking a
+              creator.
             </h2>
-            <p className="text-zinc-800 text-base sm:text-lg font-bold max-w-2xl">
+            <p className="text-ink text-base sm:text-lg font-bold max-w-2xl">
               Choose your creator, voice, style and message. TrendED handles the production.
             </p>
           </div>
@@ -1019,19 +1034,19 @@ export default function LandingPage() {
           {/* Interactive Generator Workspace */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Column: Floating Controls Panel */}
-            <div className="lg:col-span-4 rounded-2xl border border-zinc-200/90 bg-white p-6 space-y-5 text-left shadow-xl">
-              <div className="flex items-center justify-between pb-3 border-b border-zinc-100">
-                <span className="text-xs font-extrabold uppercase tracking-wider text-zinc-900">
+            <div className="lg:col-span-4 rounded-2xl border border-line/90 bg-studio-ground p-6 space-y-5 text-left shadow-xl">
+              <div className="flex items-center justify-between pb-3 border-b border-line">
+                <span className="text-xs font-extrabold uppercase tracking-wider text-ink">
                   Generation Controls
                 </span>
-                <span className="text-[10px] bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-full">
+                <span className="text-[10px] bg-cream text-trend-orange-strong font-bold px-2 py-0.5 rounded-full">
                   PRO ENGINE
                 </span>
               </div>
 
               {/* Creator Selector Buttons */}
               <div className="space-y-1.5">
-                <label className="text-xs font-bold text-zinc-900">Creator Selection</label>
+                <label className="text-xs font-bold text-ink">Creator Selection</label>
                 <div className="grid grid-cols-3 gap-2">
                   {creators.map((c, idx) => (
                     <button
@@ -1040,8 +1055,8 @@ export default function LandingPage() {
                       onClick={() => setActiveCreatorIndex(idx)}
                       className={`rounded-xl py-2 px-3 text-xs font-bold border transition ${
                         activeCreatorIndex === idx
-                          ? 'border-[#C2410C] bg-orange-50 text-[#C2410C] shadow-sm'
-                          : 'border-zinc-200 bg-zinc-50 text-zinc-700 hover:bg-zinc-100 hover:text-zinc-950'
+                          ? 'border-trend-orange bg-cream text-trend-orange shadow-sm'
+                          : 'border-line bg-studio-surface text-ink-soft hover:bg-studio-raised hover:text-ink'
                       }`}
                     >
                       {c.name}
@@ -1052,32 +1067,32 @@ export default function LandingPage() {
 
               {/* Controls attributes */}
               <div className="space-y-3 text-xs">
-                <div className="flex items-center justify-between py-2 border-b border-zinc-100">
-                  <span className="font-bold text-zinc-900">Voice Tone</span>
-                  <span className="font-bold text-zinc-900 bg-zinc-100 px-2 py-1 rounded">
+                <div className="flex items-center justify-between py-2 border-b border-line">
+                  <span className="font-bold text-ink">Voice Tone</span>
+                  <span className="font-bold text-ink bg-studio-raised px-2 py-1 rounded">
                     {creators[activeCreatorIndex].tone}
                   </span>
                 </div>
-                <div className="flex items-center justify-between py-2 border-b border-zinc-100">
-                  <span className="font-bold text-zinc-900">Hook Strategy</span>
-                  <span className="font-bold text-[#C2410C] bg-orange-50 px-2 py-1 rounded border border-orange-200">
+                <div className="flex items-center justify-between py-2 border-b border-line">
+                  <span className="font-bold text-ink">Hook Strategy</span>
+                  <span className="font-bold text-trend-orange bg-cream px-2 py-1 rounded border border-trend-orange/20">
                     Problem-Solution
                   </span>
                 </div>
-                <div className="flex items-center justify-between py-2 border-b border-zinc-100">
-                  <span className="font-bold text-zinc-900">Duration</span>
-                  <span className="font-bold text-zinc-900">30 Seconds</span>
+                <div className="flex items-center justify-between py-2 border-b border-line">
+                  <span className="font-bold text-ink">Duration</span>
+                  <span className="font-bold text-ink">30 Seconds</span>
                 </div>
                 <div className="flex items-center justify-between py-2">
-                  <span className="font-bold text-zinc-900">Platform Preset</span>
-                  <span className="font-bold text-zinc-900">TikTok (9:16)</span>
+                  <span className="font-bold text-ink">Platform Preset</span>
+                  <span className="font-bold text-ink">TikTok (9:16)</span>
                 </div>
               </div>
 
               {/* Prominent CTA */}
               <Link
                 href="/register"
-                className="w-full flex items-center justify-center gap-2 rounded-xl bg-[#C2410C] py-3.5 text-sm font-bold text-white shadow-lg shadow-[#C2410C]/25 hover:bg-[#9A3412] transition"
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-trend-orange py-3.5 text-sm font-bold text-on-accent shadow-lg shadow-trend-orange/25 hover:bg-trend-orange-strong transition"
               >
                 <Sparkles className="h-4 w-4" />
                 <span>Generate UGC Video</span>
@@ -1092,8 +1107,8 @@ export default function LandingPage() {
                   onClick={() => setActiveCreatorIndex(i)}
                   className={`cursor-pointer overflow-hidden border transition-all duration-300 relative group aspect-[9/16] max-h-[460px] shadow-md rounded-[1.15rem] ${
                     activeCreatorIndex === i
-                      ? 'border-[#C2410C] shadow-xl shadow-[#C2410C]/20 ring-2 ring-[#C2410C]/40 scale-[1.01]'
-                      : 'border-zinc-200 hover:border-zinc-300'
+                      ? 'border-trend-orange shadow-xl shadow-trend-orange/20 ring-2 ring-trend-orange/40 scale-[1.01]'
+                      : 'border-line hover:border-line'
                   }`}
                 >
                   {/* Mock video background using real profile images and realistic overlays */}
@@ -1113,7 +1128,7 @@ export default function LandingPage() {
                     <span className="text-[10px] font-bold bg-black/60 text-white px-2 py-0.5 rounded backdrop-blur-sm">
                       Creator {creator.id}
                     </span>
-                    <span className="text-[10px] font-bold bg-amber-500 text-zinc-950 px-2 py-0.5 rounded-full flex items-center gap-1">
+                    <span className="text-[10px] font-bold bg-trend-gold text-on-accent px-2 py-0.5 rounded-full flex items-center gap-1">
                       <Sparkles className="h-3 w-3" />
                       <span>AI</span>
                     </span>
@@ -1148,7 +1163,7 @@ export default function LandingPage() {
                       {creator.caption}
                     </p>
 
-                    <div className="flex items-center justify-between text-[10px] text-zinc-400 pt-1 border-t border-white/10">
+                    <div className="flex items-center justify-between text-[10px] text-ink-muted pt-1 border-t border-white/10">
                       <span>{creator.time}</span>
                       <div className="flex items-center gap-2">
                         <span className="inline-flex items-center gap-1">
@@ -1166,41 +1181,41 @@ export default function LandingPage() {
           </div>
 
           {/* 4 Feature Highlights Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-zinc-200 text-left">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-line text-left">
             <div className="space-y-1">
-              <div className="text-[#C2410C] font-bold text-sm flex items-center gap-2">
+              <div className="text-trend-orange font-bold text-sm flex items-center gap-2">
                 <UserRound className="h-4 w-4" />
                 <span>AI Creators</span>
               </div>
-              <p className="text-xs text-zinc-700 font-semibold">
+              <p className="text-xs text-ink-soft font-semibold">
                 Realistic & diverse creator options
               </p>
             </div>
 
             <div className="space-y-1">
-              <div className="text-[#C2410C] font-bold text-sm flex items-center gap-2">
+              <div className="text-trend-orange font-bold text-sm flex items-center gap-2">
                 <PenTool className="h-4 w-4" />
                 <span>Smart Scripts</span>
               </div>
-              <p className="text-xs text-zinc-700 font-semibold">
+              <p className="text-xs text-ink-soft font-semibold">
                 Hook-driven captions that convert
               </p>
             </div>
 
             <div className="space-y-1">
-              <div className="text-[#C2410C] font-bold text-sm flex items-center gap-2">
+              <div className="text-trend-orange font-bold text-sm flex items-center gap-2">
                 <Target className="h-4 w-4" />
                 <span>Product Focused</span>
               </div>
-              <p className="text-xs text-zinc-700 font-semibold">Natural placement that sells</p>
+              <p className="text-xs text-ink-soft font-semibold">Natural placement that sells</p>
             </div>
 
             <div className="space-y-1">
-              <div className="text-[#C2410C] font-bold text-sm flex items-center gap-2">
+              <div className="text-trend-orange font-bold text-sm flex items-center gap-2">
                 <Smartphone className="h-4 w-4" />
                 <span>Multi-Platform Ready</span>
               </div>
-              <p className="text-xs text-zinc-700 font-semibold">
+              <p className="text-xs text-ink-soft font-semibold">
                 Optimized for TikTok, Reels, Shorts
               </p>
             </div>
@@ -1211,33 +1226,33 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 07 — MULTI-PLATFORM                                           */}
       {/* ============================================================ */}
-      <section id="multi-platform" className="py-20 bg-white">
+      <section id="multi-platform" className="py-20 bg-studio-ground">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12 text-center">
           {/* Headings */}
           <div className="space-y-3 max-w-3xl mx-auto">
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-zinc-950 font-normal">
-              One creative. <span className="italic text-[#C2410C]">Every channel.</span>
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-ink font-normal">
+              One creative. <span className="italic text-trend-orange">Every channel.</span>
             </h2>
-            <p className="text-zinc-600 text-base sm:text-lg">
+            <p className="text-ink-soft text-base sm:text-lg">
               Generate content adapted to the platforms where your customers scroll.
             </p>
           </div>
 
           {/* Badges */}
           <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-semibold">
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3.5 py-1 text-amber-800 border border-amber-200">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-cream px-3.5 py-1 text-trend-orange-strong border border-trend-gold/40">
               <Lightbulb className="h-3.5 w-3.5" /> Hook optimized
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-3.5 py-1 text-[#C2410C] border border-orange-200">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-cream px-3.5 py-1 text-trend-orange border border-trend-orange/20">
               <MessageSquareText className="h-3.5 w-3.5" /> Captions included
             </span>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-zinc-100 px-3.5 py-1 text-zinc-800 border border-zinc-200">
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-studio-raised px-3.5 py-1 text-ink border border-line">
               <Target className="h-3.5 w-3.5" /> CTA adapted
             </span>
           </div>
 
           {/* Central Visual Showcase Cutout */}
-          <div className="relative max-w-5xl mx-auto drop-shadow-xl rounded-2xl overflow-hidden border border-zinc-100 p-2 sm:p-4 bg-zinc-50/50">
+          <div className="relative max-w-5xl mx-auto drop-shadow-xl rounded-2xl overflow-hidden border border-line p-2 sm:p-4 bg-studio-surface/50">
             <Image
               src="/landing_page/landing_7_image_des_reseaux_sociaux_en_bas_.png"
               alt="Multi-platform creative distribution graphic"
@@ -1257,24 +1272,24 @@ export default function LandingPage() {
                   onClick={() =>
                     setActivePlatformFilter(activePlatformFilter === p.id ? 'all' : p.id)
                   }
-                  className={`cursor-pointer rounded-xl border p-4 bg-white transition ${
+                  className={`cursor-pointer rounded-xl border p-4 bg-studio-ground transition ${
                     activePlatformFilter === p.id
-                      ? 'border-[#C2410C] shadow-md ring-2 ring-[#C2410C]/20'
-                      : 'border-zinc-200 hover:border-[#C2410C]/40 hover:shadow-sm'
+                      ? 'border-trend-orange shadow-md ring-2 ring-trend-orange/20'
+                      : 'border-line hover:border-trend-orange/40 hover:shadow-sm'
                   } ${!isSelected ? 'opacity-60' : 'opacity-100'}`}
                 >
-                  <div className="flex items-center justify-between text-zinc-900 font-bold text-sm mb-1">
+                  <div className="flex items-center justify-between text-ink font-bold text-sm mb-1">
                     <div className="flex items-center gap-2">
-                      <span className={activePlatformFilter === p.id ? 'text-[#C2410C]' : ''}>
+                      <span className={activePlatformFilter === p.id ? 'text-trend-orange' : ''}>
                         {p.icon}
                       </span>
                       <span>{p.name}</span>
                     </div>
-                    <span className="text-[10px] bg-zinc-100 px-1.5 py-0.5 rounded text-zinc-600 font-medium">
+                    <span className="text-[10px] bg-studio-raised px-1.5 py-0.5 rounded text-ink-soft font-medium">
                       {p.ratio}
                     </span>
                   </div>
-                  <p className="text-xs text-zinc-500">{p.tagline}</p>
+                  <p className="text-xs text-ink-muted">{p.tagline}</p>
                 </div>
               );
             })}
@@ -1285,42 +1300,42 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 08 — CREATIVE LIBRARY                                         */}
       {/* ============================================================ */}
-      <section id="creative-library" className="py-20 bg-[#FFFDF9] border-t border-zinc-100">
+      <section id="creative-library" className="py-20 bg-cream/40 border-t border-line">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Content */}
             <div className="lg:col-span-4 space-y-6 text-left">
               <div className="space-y-3">
-                <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-zinc-950 font-normal leading-tight">
-                  Every creative. <span className="italic text-[#C2410C]">One workspace.</span>
+                <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-ink font-normal leading-tight">
+                  Every creative. <span className="italic text-trend-orange">One workspace.</span>
                 </h2>
-                <p className="text-zinc-800 font-bold text-base sm:text-lg">
+                <p className="text-ink font-bold text-base sm:text-lg">
                   Keep your generated videos, concepts and campaigns organized in one place.
                 </p>
               </div>
 
-              <div className="space-y-3 text-sm text-zinc-800">
+              <div className="space-y-3 text-sm text-ink">
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-[#C2410C]">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cream text-trend-orange">
                     <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="font-bold text-zinc-900">
+                  <span className="font-bold text-ink">
                     Categorize by product, concept and channel
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-[#C2410C]">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cream text-trend-orange">
                     <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="font-bold text-zinc-900">
+                  <span className="font-bold text-ink">
                     Track real-time CTR & ROAS performance metrics
                   </span>
                 </div>
                 <div className="flex items-center gap-2.5">
-                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-orange-100 text-[#C2410C]">
+                  <span className="flex h-5 w-5 items-center justify-center rounded-full bg-cream text-trend-orange">
                     <Check className="h-3.5 w-3.5" />
                   </span>
-                  <span className="font-bold text-zinc-900">
+                  <span className="font-bold text-ink">
                     Instant 1-click export in 9:16 and 1:1 formats
                   </span>
                 </div>
@@ -1329,7 +1344,7 @@ export default function LandingPage() {
               <div className="pt-2">
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#C2410C] px-6 py-3.5 text-sm font-bold text-white shadow-md shadow-[#C2410C]/20 hover:bg-[#9A3412] transition"
+                  className="inline-flex items-center gap-2 rounded-xl bg-trend-orange px-6 py-3.5 text-sm font-bold text-on-accent shadow-md shadow-trend-orange/20 hover:bg-trend-orange-strong transition"
                 >
                   <span>Explore your creatives</span>
                   <ArrowRight className="h-4 w-4" />
@@ -1339,7 +1354,7 @@ export default function LandingPage() {
 
             {/* Right Mockup Cutout */}
             <div className="lg:col-span-8 drop-shadow-2xl">
-              <div className="rounded-2xl overflow-hidden border border-zinc-200 bg-white p-2">
+              <div className="rounded-2xl overflow-hidden border border-line bg-studio-ground p-2">
                 <Image
                   src="/landing_page/landing_8_image_a_droite.png"
                   alt="TrendED Creative Library Showcase"
@@ -1358,61 +1373,61 @@ export default function LandingPage() {
       {/* ============================================================ */}
       <section
         id="ai-intelligence"
-        className="py-24 bg-gradient-to-b from-[#FFFDF9] via-[#FFF7E6]/40 to-white text-zinc-900 relative overflow-hidden border-t border-zinc-100"
+        className="py-24 bg-gradient-to-b from-cream/40 via-cream/40 to-studio-ground text-ink relative overflow-hidden border-t border-line"
       >
         {/* Ambient glow */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-orange-100/40 blur-3xl pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full bg-cream/40 blur-3xl pointer-events-none" />
 
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-14 relative z-10 text-center">
           {/* Header */}
           <div className="max-w-3xl mx-auto space-y-3">
-            <div className="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-amber-50 px-3.5 py-1 text-xs font-bold text-amber-900">
-              <SparkleIcon className="h-3.5 w-3.5 text-[#EAB308]" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-trend-gold/40 bg-cream px-3.5 py-1 text-xs font-bold text-trend-orange-strong">
+              <SparkleIcon className="h-3.5 w-3.5 text-trend-gold" />
               <span>AI INTELLIGENCE</span>
             </div>
-            <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-normal text-zinc-950">
-              Don’t just create. Create <span className="italic text-[#C2410C]">smarter.</span>
+            <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl font-normal text-ink">
+              Don’t just create. Create <span className="italic text-trend-orange">smarter.</span>
             </h2>
-            <p className="text-zinc-800 text-base sm:text-lg font-bold">
+            <p className="text-ink text-base sm:text-lg font-bold">
               TrendED analyzes your creative inputs and helps you make better advertising decisions.
             </p>
           </div>
 
           {/* AI Creative Insight UI Dashboard Card */}
-          <div className="max-w-4xl mx-auto rounded-3xl border border-zinc-200/90 bg-white p-6 sm:p-8 shadow-xl space-y-8 text-left">
+          <div className="max-w-4xl mx-auto rounded-3xl border border-line/90 bg-studio-ground p-6 sm:p-8 shadow-xl space-y-8 text-left">
             {/* Top Insight Alert & Score Metrics */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center pb-6 border-b border-zinc-100">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center pb-6 border-b border-line">
               <div className="md:col-span-6 space-y-2">
-                <div className="text-xs font-bold text-[#C2410C] uppercase tracking-wider flex items-center gap-2">
+                <div className="text-xs font-bold text-trend-orange uppercase tracking-wider flex items-center gap-2">
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>AI Creative Insight</span>
                 </div>
-                <p className="text-base sm:text-lg font-bold text-zinc-950">
+                <p className="text-base sm:text-lg font-bold text-ink">
                   “Your current hook may lose attention in the first 2 seconds.”
                 </p>
-                <p className="text-xs text-zinc-600">
-                  <strong className="text-zinc-900 font-bold">Recommendation:</strong> Try a
-                  stronger problem-first opening.
+                <p className="text-xs text-ink-soft">
+                  <strong className="text-ink font-bold">Recommendation:</strong> Try a stronger
+                  problem-first opening.
                 </p>
               </div>
 
               {/* 4 Score Badges */}
               <div className="md:col-span-6 grid grid-cols-4 gap-2 text-center">
-                <div className="rounded-xl bg-zinc-50 p-2.5 border border-zinc-200">
-                  <div className="text-xs text-zinc-500 font-medium">Hook</div>
-                  <div className="text-lg sm:text-xl font-bold text-amber-600">92</div>
+                <div className="rounded-xl bg-studio-surface p-2.5 border border-line">
+                  <div className="text-xs text-ink-muted font-medium">Hook</div>
+                  <div className="text-lg sm:text-xl font-bold text-trend-orange-strong">92</div>
                 </div>
-                <div className="rounded-xl bg-zinc-50 p-2.5 border border-zinc-200">
-                  <div className="text-xs text-zinc-500 font-medium">Authentic</div>
-                  <div className="text-lg sm:text-xl font-bold text-zinc-900">88</div>
+                <div className="rounded-xl bg-studio-surface p-2.5 border border-line">
+                  <div className="text-xs text-ink-muted font-medium">Authentic</div>
+                  <div className="text-lg sm:text-xl font-bold text-ink">88</div>
                 </div>
-                <div className="rounded-xl bg-zinc-50 p-2.5 border border-zinc-200">
-                  <div className="text-xs text-zinc-500 font-medium">CTA</div>
-                  <div className="text-lg sm:text-xl font-bold text-zinc-900">91</div>
+                <div className="rounded-xl bg-studio-surface p-2.5 border border-line">
+                  <div className="text-xs text-ink-muted font-medium">CTA</div>
+                  <div className="text-lg sm:text-xl font-bold text-ink">91</div>
                 </div>
-                <div className="rounded-xl bg-orange-50 p-2.5 border border-orange-200">
-                  <div className="text-xs text-[#C2410C] font-semibold">Overall</div>
-                  <div className="text-lg sm:text-xl font-bold text-[#C2410C]">90</div>
+                <div className="rounded-xl bg-cream p-2.5 border border-trend-orange/20">
+                  <div className="text-xs text-trend-orange font-semibold">Overall</div>
+                  <div className="text-lg sm:text-xl font-bold text-trend-orange">90</div>
                 </div>
               </div>
             </div>
@@ -1420,42 +1435,42 @@ export default function LandingPage() {
             {/* Before / After Hook Comparison */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* CURRENT HOOK (Weaker) */}
-              <div className="rounded-2xl border border-red-200 bg-red-50/40 p-5 space-y-3">
+              <div className="rounded-2xl border border-danger/30 bg-danger-soft/40 p-5 space-y-3">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-zinc-800">Current Hook</span>
-                  <span className="bg-red-100 text-red-700 px-2 py-0.5 rounded font-bold">
+                  <span className="font-bold text-ink">Current Hook</span>
+                  <span className="bg-danger-soft text-danger px-2 py-0.5 rounded font-bold">
                     Weaker
                   </span>
                 </div>
-                <div className="text-sm font-bold text-zinc-900 bg-white p-3 rounded-xl border border-red-200 shadow-sm">
+                <div className="text-sm font-bold text-ink bg-studio-ground p-3 rounded-xl border border-danger/30 shadow-sm">
                   “Check out this amazing portable blender!”
                 </div>
-                <p className="text-xs text-zinc-600 leading-relaxed font-medium">
+                <p className="text-xs text-ink-soft leading-relaxed font-medium">
                   While this hook introduces the product, it does not immediately create a strong
                   reason to keep watching.
                 </p>
-                <div className="text-[11px] text-red-600 font-bold flex items-center gap-1.5">
+                <div className="text-[11px] text-danger font-bold flex items-center gap-1.5">
                   <TriangleAlert className="h-3.5 w-3.5" />
                   <span>Generic opening · Low urgency</span>
                 </div>
               </div>
 
               {/* AI SUGGESTED HOOK (Stronger) */}
-              <div className="rounded-2xl border-2 border-orange-300 bg-orange-50/40 p-5 space-y-3 shadow-md">
+              <div className="rounded-2xl border-2 border-trend-orange/20 bg-cream/40 p-5 space-y-3 shadow-md">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-zinc-900">AI Suggested Hook</span>
-                  <span className="bg-amber-100 text-amber-900 px-2 py-0.5 rounded font-bold">
+                  <span className="font-bold text-ink">AI Suggested Hook</span>
+                  <span className="bg-cream text-trend-orange-strong px-2 py-0.5 rounded font-bold">
                     Stronger
                   </span>
                 </div>
-                <div className="text-sm font-bold text-[#C2410C] bg-white p-3 rounded-xl border border-orange-200 shadow-sm">
+                <div className="text-sm font-bold text-trend-orange bg-studio-ground p-3 rounded-xl border border-trend-orange/20 shadow-sm">
                   “Still using bulky blenders that are hard to clean?”
                 </div>
-                <p className="text-xs text-zinc-700 leading-relaxed font-medium">
+                <p className="text-xs text-ink-soft leading-relaxed font-medium">
                   This problem-first approach creates immediate relevance and curiosity, drastically
                   increasing viewer retention.
                 </p>
-                <div className="text-[11px] text-[#C2410C] font-bold flex items-center gap-1.5">
+                <div className="text-[11px] text-trend-orange font-bold flex items-center gap-1.5">
                   <Trophy className="h-3.5 w-3.5" />
                   <span>High impact opening · +43% watch time</span>
                 </div>
@@ -1464,20 +1479,20 @@ export default function LandingPage() {
 
             {/* Bottom Actions */}
             <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-              <div className="flex flex-wrap items-center gap-4 text-xs text-zinc-700">
+              <div className="flex flex-wrap items-center gap-4 text-xs text-ink-soft">
                 <span className="flex items-center gap-1.5 font-bold">
-                  <Check className="h-3.5 w-3.5 text-[#C2410C]" /> Grabs attention with a relatable
-                  problem
+                  <Check className="h-3.5 w-3.5 text-trend-orange" /> Grabs attention with a
+                  relatable problem
                 </span>
                 <span className="flex items-center gap-1.5 font-bold">
-                  <Check className="h-3.5 w-3.5 text-[#C2410C]" /> Creates curiosity and tension
+                  <Check className="h-3.5 w-3.5 text-trend-orange" /> Creates curiosity and tension
                 </span>
               </div>
 
               <div className="flex items-center gap-3">
                 <Link
                   href="/register"
-                  className="rounded-xl bg-[#C2410C] px-5 py-2.5 text-xs font-bold text-white hover:bg-[#9A3412] transition shadow-md shadow-[#C2410C]/25 flex items-center gap-2"
+                  className="rounded-xl bg-trend-orange px-5 py-2.5 text-xs font-bold text-on-accent hover:bg-trend-orange-strong transition shadow-md shadow-trend-orange/25 flex items-center gap-2"
                 >
                   <Sparkles className="h-3.5 w-3.5" />
                   <span>Apply Suggested Hook</span>
@@ -1491,22 +1506,22 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 10 — TESTIMONIALS                                             */}
       {/* ============================================================ */}
-      <section className="border-y border-amber-100 bg-[#F8F4F0] py-20">
+      <section className="border-y border-trend-gold/40 bg-studio-surface py-20">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="mx-auto max-w-[1240px] text-center">
             <div className="mb-8 flex items-center justify-center">
               <div className="flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F1E8DE] shadow-sm ring-1 ring-[#E7D4BD]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cream shadow-sm ring-1 ring-line">
                   <TrendedBrandLogo className="items-center" />
                 </div>
               </div>
             </div>
 
             <div className="mx-auto max-w-[1100px] space-y-4">
-              <h2 className="font-editorial text-[2.8rem] leading-[0.92] text-zinc-950 sm:text-[3.25rem] lg:text-[6rem]">
-                Built for <span className="italic text-[#C2410C]">people who move fast.</span>
+              <h2 className="font-editorial text-[2.8rem] leading-[0.92] text-ink sm:text-[3.25rem] lg:text-[6rem]">
+                Built for <span className="italic text-trend-orange">people who move fast.</span>
               </h2>
-              <p className="text-[1.05rem] text-zinc-700 sm:text-[1.4rem] lg:text-[2rem]">
+              <p className="text-[1.05rem] text-ink-soft sm:text-[1.4rem] lg:text-[2rem]">
                 Less production. More testing. More opportunities to grow.
               </p>
             </div>
@@ -1519,7 +1534,7 @@ export default function LandingPage() {
                   role: 'DTC Founder',
                   company: 'Velora.co',
                   stat: '5x faster creative testing',
-                  statClass: 'bg-[#FCEFE3] text-[#C2410C] border-[#F3C89C]',
+                  statClass: 'bg-cream text-trend-orange border-line',
                   avatar: '/login-profile.jpg',
                   icon: BarChart3,
                 },
@@ -1529,7 +1544,7 @@ export default function LandingPage() {
                   role: 'E-commerce Entrepreneur',
                   company: 'Northline Basics',
                   stat: '70% less production time',
-                  statClass: 'bg-[#F5E8D4] text-[#B85B1B] border-[#E7C89C]',
+                  statClass: 'bg-cream text-[#B85B1B] border-line',
                   avatar: '/login-profile-2.jpg',
                   icon: Clock3,
                 },
@@ -1539,26 +1554,26 @@ export default function LandingPage() {
                   role: 'Performance Marketer',
                   company: 'Peak Scale Media',
                   stat: '3.8x average ROAS',
-                  statClass: 'bg-[#EAF7F0] text-[#1D7B5C] border-[#B9DDC7]',
+                  statClass: 'bg-success-soft text-success border-success/30',
                   avatar: '/profile1-login.jpg',
                   icon: TrendingUp,
                 },
               ].map((card) => (
                 <article
                   key={card.name}
-                  className="flex min-h-[440px] flex-col justify-between rounded-[1.5rem] border border-[#E7DDD4] bg-[#F5F1ED] p-6 text-left shadow-[0_10px_24px_rgba(0,0,0,0.02)]"
+                  className="flex min-h-[440px] flex-col justify-between rounded-[1.5rem] border border-line bg-cream p-6 text-left shadow-[0_10px_24px_rgba(0,0,0,0.02)]"
                 >
                   <div className="space-y-6">
-                    <div className="text-[4.25rem] font-bold leading-none text-[#C2410C]">“</div>
+                    <div className="text-[4.25rem] font-bold leading-none text-trend-orange">“</div>
 
-                    <p className="max-w-[310px] text-[2rem] leading-[1.1] tracking-[-0.05em] text-zinc-900">
+                    <p className="max-w-[310px] text-[2rem] leading-[1.1] tracking-[-0.05em] text-ink">
                       {card.quote}
                     </p>
                   </div>
 
-                  <div className="mt-8 space-y-5 border-t border-zinc-200/80 pt-5">
+                  <div className="mt-8 space-y-5 border-t border-line/80 pt-5">
                     <div className="flex items-center gap-4">
-                      <div className="relative h-[74px] w-[74px] overflow-hidden rounded-full ring-2 ring-[#E7DDD4] bg-white">
+                      <div className="relative h-[74px] w-[74px] overflow-hidden rounded-full ring-2 ring-line bg-studio-ground">
                         <Image
                           src={card.avatar}
                           alt={card.name}
@@ -1569,10 +1584,10 @@ export default function LandingPage() {
                       </div>
 
                       <div className="space-y-0.5">
-                        <div className="text-[1.1rem] font-semibold text-zinc-900">{card.name}</div>
-                        <div className="text-[0.8rem] text-zinc-500">{card.role}</div>
-                        <div className="flex items-center gap-2 text-[0.8rem] text-zinc-600">
-                          <span className="h-2 w-2 rounded-full bg-[#C2410C]" />
+                        <div className="text-[1.1rem] font-semibold text-ink">{card.name}</div>
+                        <div className="text-[0.8rem] text-ink-muted">{card.role}</div>
+                        <div className="flex items-center gap-2 text-[0.8rem] text-ink-soft">
+                          <span className="h-2 w-2 rounded-full bg-trend-orange" />
                           <span>{card.company}</span>
                         </div>
                       </div>
@@ -1595,29 +1610,29 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 11 — PRICING                                                  */}
       {/* ============================================================ */}
-      <section id="pricing" className="py-20 bg-white">
+      <section id="pricing" className="py-20 bg-studio-ground">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12 text-center">
           {/* Headings */}
           <div className="space-y-3 max-w-3xl mx-auto">
-            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-zinc-950 font-normal">
-              <span className="italic text-[#C2410C]">Start creating.</span> Scale when you’re
+            <h2 className="font-editorial text-3xl sm:text-4xl lg:text-5xl text-ink font-normal">
+              <span className="italic text-trend-orange">Start creating.</span> Scale when you’re
               ready.
             </h2>
-            <p className="text-zinc-600 text-base sm:text-lg">
+            <p className="text-ink-soft text-base sm:text-lg">
               Simple plans designed for e-commerce creators.
             </p>
           </div>
 
           {/* Monthly / Yearly Toggle */}
           <div className="flex items-center justify-center gap-3">
-            <div className="inline-flex rounded-full border border-zinc-200 bg-zinc-50 p-1">
+            <div className="inline-flex rounded-full border border-line bg-studio-surface p-1">
               <button
                 type="button"
                 onClick={() => setBillingCycle('monthly')}
                 className={`rounded-full px-5 py-2 text-xs font-semibold transition ${
                   billingCycle === 'monthly'
-                    ? 'bg-white text-zinc-900 shadow-sm'
-                    : 'text-zinc-500 hover:text-zinc-900'
+                    ? 'bg-studio-ground text-ink shadow-sm'
+                    : 'text-ink-muted hover:text-ink'
                 }`}
               >
                 Monthly
@@ -1627,12 +1642,12 @@ export default function LandingPage() {
                 onClick={() => setBillingCycle('yearly')}
                 className={`rounded-full px-5 py-2 text-xs font-semibold transition flex items-center gap-1.5 ${
                   billingCycle === 'yearly'
-                    ? 'bg-[#C2410C] text-white shadow-sm'
-                    : 'text-zinc-500 hover:text-zinc-900'
+                    ? 'bg-trend-orange text-on-accent shadow-sm'
+                    : 'text-ink-muted hover:text-ink'
                 }`}
               >
                 <span>Yearly</span>
-                <span className="bg-amber-400 text-zinc-950 text-[10px] px-1.5 py-0.2 rounded-full font-bold">
+                <span className="bg-trend-gold text-on-accent text-[10px] px-1.5 py-0.2 rounded-full font-bold">
                   Save 20%
                 </span>
               </button>
@@ -1642,159 +1657,159 @@ export default function LandingPage() {
           {/* 3 Pricing Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto text-left items-stretch">
             {/* STARTER */}
-            <div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
+            <div className="rounded-3xl border border-line bg-studio-ground p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-zinc-900">STARTER</h3>
-                  <p className="text-xs text-zinc-500 mt-1">For creators testing AI UGC.</p>
+                  <h3 className="text-xl font-bold text-ink">STARTER</h3>
+                  <p className="text-xs text-ink-muted mt-1">For creators testing AI UGC.</p>
                 </div>
 
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-zinc-950">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-ink">
                     ${starterPrice}
                   </span>
-                  <span className="text-xs text-zinc-500 font-medium">/month</span>
+                  <span className="text-xs text-ink-muted font-medium">/month</span>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-3.5 text-xs text-zinc-700">
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">AI video generations</span>
-                    <span className="font-bold text-zinc-900">20 / month</span>
+                <div className="space-y-3.5 text-xs text-ink-soft">
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">AI video generations</span>
+                    <span className="font-bold text-ink">20 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">Creative exports</span>
-                    <span className="font-bold text-zinc-900">50 / month</span>
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">Creative exports</span>
+                    <span className="font-bold text-ink">50 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">AI scripts</span>
-                    <span className="font-bold text-zinc-900">10 / month</span>
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">AI scripts</span>
+                    <span className="font-bold text-ink">10 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">Creative library</span>
-                    <span className="font-bold text-zinc-900">2,000+ assets</span>
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">Creative library</span>
+                    <span className="font-bold text-ink">2,000+ assets</span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-zinc-500">Support</span>
-                    <span className="font-bold text-zinc-900">Email support</span>
+                    <span className="text-ink-muted">Support</span>
+                    <span className="font-bold text-ink">Email support</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/register"
-                className="w-full block text-center rounded-xl bg-[#C2410C] py-3 text-sm font-semibold text-white hover:bg-[#9A3412] transition shadow-sm"
+                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition shadow-sm"
               >
                 Start creating
               </Link>
             </div>
 
             {/* GROWTH (Most Popular) */}
-            <div className="rounded-3xl border-2 border-[#C2410C] bg-gradient-to-b from-orange-50/40 via-white to-amber-50/20 p-8 shadow-xl relative flex flex-col justify-between space-y-8 ring-4 ring-[#C2410C]/10">
-              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#C2410C] text-white text-[11px] font-bold px-3 py-0.5 rounded-full shadow-md flex items-center gap-1">
+            <div className="rounded-3xl border-2 border-trend-orange bg-gradient-to-b from-cream/40 via-studio-ground to-cream/20 p-8 shadow-xl relative flex flex-col justify-between space-y-8 ring-4 ring-trend-orange/10">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-trend-orange text-on-accent text-[11px] font-bold px-3 py-0.5 rounded-full shadow-md flex items-center gap-1">
                 <Star className="h-3 w-3 fill-current" />
                 <span>Most popular</span>
               </div>
 
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-[#C2410C]">GROWTH</h3>
-                  <p className="text-xs text-zinc-500 mt-1">For growing e-commerce businesses.</p>
+                  <h3 className="text-xl font-bold text-trend-orange">GROWTH</h3>
+                  <p className="text-xs text-ink-muted mt-1">For growing e-commerce businesses.</p>
                 </div>
 
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-[#C2410C]">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-trend-orange">
                     ${growthPrice}
                   </span>
-                  <span className="text-xs text-zinc-500 font-medium">/month</span>
+                  <span className="text-xs text-ink-muted font-medium">/month</span>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-3.5 text-xs text-zinc-800">
-                  <div className="flex items-center justify-between py-1 border-b border-orange-100">
-                    <span className="text-zinc-600">AI video generations</span>
-                    <span className="font-bold text-zinc-950">100 / month</span>
+                <div className="space-y-3.5 text-xs text-ink">
+                  <div className="flex items-center justify-between py-1 border-b border-trend-orange/20">
+                    <span className="text-ink-soft">AI video generations</span>
+                    <span className="font-bold text-ink">100 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-orange-100">
-                    <span className="text-zinc-600">Creative exports</span>
-                    <span className="font-bold text-zinc-950">250 / month</span>
+                  <div className="flex items-center justify-between py-1 border-b border-trend-orange/20">
+                    <span className="text-ink-soft">Creative exports</span>
+                    <span className="font-bold text-ink">250 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-orange-100">
-                    <span className="text-zinc-600">AI scripts</span>
-                    <span className="font-bold text-zinc-950">50 / month</span>
+                  <div className="flex items-center justify-between py-1 border-b border-trend-orange/20">
+                    <span className="text-ink-soft">AI scripts</span>
+                    <span className="font-bold text-ink">50 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-orange-100">
-                    <span className="text-zinc-600">Creative library</span>
-                    <span className="font-bold text-zinc-950">10,000+ assets</span>
+                  <div className="flex items-center justify-between py-1 border-b border-trend-orange/20">
+                    <span className="text-ink-soft">Creative library</span>
+                    <span className="font-bold text-ink">10,000+ assets</span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-zinc-600">Support</span>
-                    <span className="font-bold text-zinc-950">Priority support</span>
+                    <span className="text-ink-soft">Support</span>
+                    <span className="font-bold text-ink">Priority support</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/register"
-                className="w-full block text-center rounded-xl bg-[#C2410C] py-3 text-sm font-semibold text-white shadow-md shadow-[#C2410C]/30 hover:bg-[#9A3412] transition"
+                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-on-accent shadow-md shadow-trend-orange/30 hover:bg-trend-orange-strong transition"
               >
                 Start creating
               </Link>
             </div>
 
             {/* SCALE */}
-            <div className="rounded-3xl border border-zinc-200 bg-white p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
+            <div className="rounded-3xl border border-line bg-studio-ground p-8 shadow-sm hover:shadow-md transition flex flex-col justify-between space-y-8">
               <div className="space-y-6">
                 <div>
-                  <h3 className="text-xl font-bold text-zinc-900">SCALE</h3>
-                  <p className="text-xs text-zinc-500 mt-1">
+                  <h3 className="text-xl font-bold text-ink">SCALE</h3>
+                  <p className="text-xs text-ink-muted mt-1">
                     For teams producing creatives at volume.
                   </p>
                 </div>
 
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl sm:text-5xl font-extrabold text-zinc-950">
+                  <span className="text-4xl sm:text-5xl font-extrabold text-ink">
                     ${scalePrice}
                   </span>
-                  <span className="text-xs text-zinc-500 font-medium">/month</span>
+                  <span className="text-xs text-ink-muted font-medium">/month</span>
                 </div>
 
                 {/* Features */}
-                <div className="space-y-3.5 text-xs text-zinc-700">
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">AI video generations</span>
-                    <span className="font-bold text-zinc-900">300 / month</span>
+                <div className="space-y-3.5 text-xs text-ink-soft">
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">AI video generations</span>
+                    <span className="font-bold text-ink">300 / month</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">Creative exports</span>
-                    <span className="font-bold text-zinc-900">Unlimited</span>
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">Creative exports</span>
+                    <span className="font-bold text-ink">Unlimited</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">AI scripts</span>
-                    <span className="font-bold text-zinc-900">Unlimited</span>
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">AI scripts</span>
+                    <span className="font-bold text-ink">Unlimited</span>
                   </div>
-                  <div className="flex items-center justify-between py-1 border-b border-zinc-100">
-                    <span className="text-zinc-500">Creative library</span>
-                    <span className="font-bold text-zinc-900">25,000+ assets</span>
+                  <div className="flex items-center justify-between py-1 border-b border-line">
+                    <span className="text-ink-muted">Creative library</span>
+                    <span className="font-bold text-ink">25,000+ assets</span>
                   </div>
                   <div className="flex items-center justify-between py-1">
-                    <span className="text-zinc-500">Support</span>
-                    <span className="font-bold text-zinc-900">Priority + Live chat</span>
+                    <span className="text-ink-muted">Support</span>
+                    <span className="font-bold text-ink">Priority + Live chat</span>
                   </div>
                 </div>
               </div>
 
               <Link
                 href="/register"
-                className="w-full block text-center rounded-xl bg-[#C2410C] py-3 text-sm font-semibold text-white hover:bg-[#9A3412] transition shadow-sm"
+                className="w-full block text-center rounded-xl bg-trend-orange py-3 text-sm font-semibold text-on-accent hover:bg-trend-orange-strong transition shadow-sm"
               >
                 Start creating
               </Link>
             </div>
           </div>
 
-          <div className="text-xs text-zinc-500 font-medium flex items-center justify-center gap-1.5">
-            <ShieldCheck className="h-3.5 w-3.5 text-[#C2410C]" />
+          <div className="text-xs text-ink-muted font-medium flex items-center justify-center gap-1.5">
+            <ShieldCheck className="h-3.5 w-3.5 text-trend-orange" />
             <span>Cancel anytime. No long-term contracts. 7-day money-back guarantee.</span>
           </div>
         </div>
@@ -1803,24 +1818,24 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 12 — FINAL CTA                                                */}
       {/* ============================================================ */}
-      <section className="py-20 bg-gradient-to-b from-[#FFFDF9] via-[#FFF7E6]/50 to-white relative overflow-hidden border-t border-zinc-100">
+      <section className="py-20 bg-gradient-to-b from-cream/40 via-cream/50 to-studio-ground relative overflow-hidden border-t border-line">
         <div className="w-full px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
             {/* Left Conversion Content */}
             <div className="lg:col-span-6 space-y-6 text-left">
-              <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl text-zinc-950 font-normal leading-[1.12]">
-                Your next <span className="italic text-[#C2410C]">winning creative</span> starts
+              <h2 className="font-editorial text-4xl sm:text-5xl lg:text-6xl text-ink font-normal leading-[1.12]">
+                Your next <span className="italic text-trend-orange">winning creative</span> starts
                 here.
               </h2>
 
-              <p className="text-base sm:text-lg text-zinc-800 font-bold max-w-lg">
+              <p className="text-base sm:text-lg text-ink font-bold max-w-lg">
                 Turn your products into scroll-stopping UGC videos with AI.
               </p>
 
               <div>
                 <Link
                   href="/register"
-                  className="inline-flex items-center gap-2 rounded-xl bg-[#C2410C] px-8 py-4 text-base font-bold text-white shadow-lg shadow-[#C2410C]/25 hover:bg-[#9A3412] hover:shadow-[#9A3412]/35 transition duration-200"
+                  className="inline-flex items-center gap-2 rounded-xl bg-trend-orange px-8 py-4 text-base font-bold text-on-accent shadow-lg shadow-trend-orange/25 hover:bg-trend-orange-strong hover:shadow-trend-orange-strong/35 transition duration-200"
                 >
                   <span>Create your first video</span>
                   <ArrowRight className="h-4 w-4" />
@@ -1828,17 +1843,17 @@ export default function LandingPage() {
               </div>
 
               {/* Guarantees */}
-              <div className="flex flex-wrap items-center gap-5 text-xs text-zinc-900 font-bold pt-2">
+              <div className="flex flex-wrap items-center gap-5 text-xs text-ink font-bold pt-2">
                 <div className="flex items-center gap-1.5">
-                  <Ban className="h-3.5 w-3.5 text-amber-600" />
+                  <Ban className="h-3.5 w-3.5 text-trend-orange-strong" />
                   <span>No camera.</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Ban className="h-3.5 w-3.5 text-amber-600" />
+                  <Ban className="h-3.5 w-3.5 text-trend-orange-strong" />
                   <span>No creator.</span>
                 </div>
                 <div className="flex items-center gap-1.5">
-                  <Ban className="h-3.5 w-3.5 text-amber-600" />
+                  <Ban className="h-3.5 w-3.5 text-trend-orange-strong" />
                   <span>No production team.</span>
                 </div>
               </div>
@@ -1863,26 +1878,30 @@ export default function LandingPage() {
       {/* ============================================================ */}
       {/* 13 — FOOTER                                                   */}
       {/* ============================================================ */}
-      <footer className="bg-[#FAF6ED] text-zinc-900 pt-16 pb-12 border-t border-amber-200/60">
+      <footer className="bg-cream text-ink pt-16 pb-12 border-t border-trend-gold/40">
         <div className="w-full px-4 sm:px-6 lg:px-8 space-y-12">
           {/* Top Area */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-amber-200/60">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 pb-12 border-b border-trend-gold/40">
             {/* Brand column */}
             <div className="md:col-span-4 space-y-4 text-left">
               <Link href="/" className="inline-flex flex-col items-start">
-                <Image
-                  src="/logo.png"
-                  alt="TrendED Logo"
-                  width={260}
-                  height={72}
-                  className="h-14 w-auto sm:h-20 object-contain"
-                  priority
-                />
-                <span className="mt-2 block text-sm font-bold uppercase tracking-wider text-zinc-600">
+                <span className="flex items-center gap-3">
+                  <Image
+                    src="/symbol.png"
+                    alt=""
+                    width={56}
+                    height={56}
+                    className="h-12 w-12 sm:h-14 sm:w-14 object-contain"
+                  />
+                  <span className="text-[40px] sm:text-[52px] font-extrabold leading-none tracking-[-.04em] text-ink">
+                    Trend<span className="text-trend-orange">ED</span>
+                  </span>
+                </span>
+                <span className="mt-2 block text-sm font-bold uppercase tracking-wider text-ink-soft">
                   E-commerce · Dropshipping · Growth
                 </span>
               </Link>
-              <p className="max-w-xs text-sm leading-relaxed text-zinc-600 font-medium">
+              <p className="max-w-xs text-sm leading-relaxed text-ink-soft font-medium">
                 AI-powered tools for creating better e-commerce advertising. From product to
                 high-converting UGC in minutes.
               </p>
@@ -1892,27 +1911,25 @@ export default function LandingPage() {
             <div className="md:col-span-8 grid grid-cols-2 sm:grid-cols-4 gap-6 text-left text-sm">
               {/* Product */}
               <div className="space-y-3">
-                <h4 className="font-bold text-zinc-950 uppercase tracking-wider text-sm">
-                  Product
-                </h4>
-                <ul className="space-y-2 text-zinc-600 font-medium text-sm">
+                <h4 className="font-bold text-ink uppercase tracking-wider text-sm">Product</h4>
+                <ul className="space-y-2 text-ink-soft font-medium text-sm">
                   <li>
-                    <Link href="#ugc-generator" className="hover:text-[#C2410C] transition">
+                    <Link href="#ugc-generator" className="hover:text-trend-orange transition">
                       UGC Video Generator
                     </Link>
                   </li>
                   <li>
-                    <Link href="#product-to-video" className="hover:text-[#C2410C] transition">
+                    <Link href="#product-to-video" className="hover:text-trend-orange transition">
                       Creative Studio
                     </Link>
                   </li>
                   <li>
-                    <Link href="#creative-library" className="hover:text-[#C2410C] transition">
+                    <Link href="#creative-library" className="hover:text-trend-orange transition">
                       Creative Library
                     </Link>
                   </li>
                   <li>
-                    <Link href="#ai-intelligence" className="hover:text-[#C2410C] transition">
+                    <Link href="#ai-intelligence" className="hover:text-trend-orange transition">
                       AI Intelligence
                     </Link>
                   </li>
@@ -1921,27 +1938,25 @@ export default function LandingPage() {
 
               {/* Solutions */}
               <div className="space-y-3">
-                <h4 className="font-bold text-zinc-950 uppercase tracking-wider text-sm">
-                  Solutions
-                </h4>
-                <ul className="space-y-2 text-zinc-600 font-medium text-sm">
+                <h4 className="font-bold text-ink uppercase tracking-wider text-sm">Solutions</h4>
+                <ul className="space-y-2 text-ink-soft font-medium text-sm">
                   <li>
-                    <Link href="#problem-solution" className="hover:text-[#C2410C] transition">
+                    <Link href="#problem-solution" className="hover:text-trend-orange transition">
                       E-commerce Brands
                     </Link>
                   </li>
                   <li>
-                    <Link href="#problem-solution" className="hover:text-[#C2410C] transition">
+                    <Link href="#problem-solution" className="hover:text-trend-orange transition">
                       Dropshipping
                     </Link>
                   </li>
                   <li>
-                    <Link href="#multi-platform" className="hover:text-[#C2410C] transition">
+                    <Link href="#multi-platform" className="hover:text-trend-orange transition">
                       DTC Brands
                     </Link>
                   </li>
                   <li>
-                    <Link href="#pricing" className="hover:text-[#C2410C] transition">
+                    <Link href="#pricing" className="hover:text-trend-orange transition">
                       Agencies
                     </Link>
                   </li>
@@ -1950,27 +1965,25 @@ export default function LandingPage() {
 
               {/* Resources */}
               <div className="space-y-3">
-                <h4 className="font-bold text-zinc-950 uppercase tracking-wider text-sm">
-                  Resources
-                </h4>
-                <ul className="space-y-2 text-zinc-600 font-medium text-sm">
+                <h4 className="font-bold text-ink uppercase tracking-wider text-sm">Resources</h4>
+                <ul className="space-y-2 text-ink-soft font-medium text-sm">
                   <li>
-                    <Link href="#how-it-works" className="hover:text-[#C2410C] transition">
+                    <Link href="#how-it-works" className="hover:text-trend-orange transition">
                       Workflow Guide
                     </Link>
                   </li>
                   <li>
-                    <Link href="#multi-platform" className="hover:text-[#C2410C] transition">
+                    <Link href="#multi-platform" className="hover:text-trend-orange transition">
                       Video Ad Formats
                     </Link>
                   </li>
                   <li>
-                    <Link href="#pricing" className="hover:text-[#C2410C] transition">
+                    <Link href="#pricing" className="hover:text-trend-orange transition">
                       Pricing Plans
                     </Link>
                   </li>
                   <li>
-                    <Link href="/login" className="hover:text-[#C2410C] transition">
+                    <Link href="/login" className="hover:text-trend-orange transition">
                       Help Center
                     </Link>
                   </li>
@@ -1979,27 +1992,25 @@ export default function LandingPage() {
 
               {/* Company */}
               <div className="space-y-3">
-                <h4 className="font-bold text-zinc-950 uppercase tracking-wider text-sm">
-                  Company
-                </h4>
-                <ul className="space-y-2 text-zinc-600 font-medium text-sm">
+                <h4 className="font-bold text-ink uppercase tracking-wider text-sm">Company</h4>
+                <ul className="space-y-2 text-ink-soft font-medium text-sm">
                   <li>
-                    <Link href="/login" className="hover:text-[#C2410C] transition">
+                    <Link href="/login" className="hover:text-trend-orange transition">
                       About Us
                     </Link>
                   </li>
                   <li>
-                    <Link href="/login" className="hover:text-[#C2410C] transition">
+                    <Link href="/login" className="hover:text-trend-orange transition">
                       Contact
                     </Link>
                   </li>
                   <li>
-                    <Link href="/login" className="hover:text-[#C2410C] transition">
+                    <Link href="/login" className="hover:text-trend-orange transition">
                       Careers
                     </Link>
                   </li>
                   <li>
-                    <Link href="/privacy" className="hover:text-[#C2410C] transition">
+                    <Link href="/privacy" className="hover:text-trend-orange transition">
                       Privacy Policy
                     </Link>
                   </li>
@@ -2009,24 +2020,24 @@ export default function LandingPage() {
           </div>
 
           {/* Bottom Row */}
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-zinc-600 font-medium">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-ink-soft font-medium">
             <div>© 2026 TrendED. All rights reserved.</div>
 
             <div className="flex items-center gap-6">
-              <Link href="/privacy" className="hover:text-[#C2410C] transition">
+              <Link href="/privacy" className="hover:text-trend-orange transition">
                 Privacy Policy
               </Link>
-              <Link href="/terms" className="hover:text-[#C2410C] transition">
+              <Link href="/terms" className="hover:text-trend-orange transition">
                 Terms of Service
               </Link>
             </div>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-4 text-zinc-600 font-semibold text-sm">
-              <span className="hover:text-[#C2410C] cursor-pointer transition">TikTok</span>
-              <span className="hover:text-[#C2410C] cursor-pointer transition">Instagram</span>
-              <span className="hover:text-[#C2410C] cursor-pointer transition">LinkedIn</span>
-              <span className="hover:text-[#C2410C] cursor-pointer transition">X</span>
+            <div className="flex items-center gap-4 text-ink-soft font-semibold text-sm">
+              <span className="hover:text-trend-orange cursor-pointer transition">TikTok</span>
+              <span className="hover:text-trend-orange cursor-pointer transition">Instagram</span>
+              <span className="hover:text-trend-orange cursor-pointer transition">LinkedIn</span>
+              <span className="hover:text-trend-orange cursor-pointer transition">X</span>
             </div>
           </div>
         </div>

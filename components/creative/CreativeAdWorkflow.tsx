@@ -33,12 +33,14 @@ const ANALYSIS_MISSING = "Lancez d'abord l'analyse produit";
 interface Props {
   productId: string;
   initialStep?: Step;
+  openSetup?: boolean;
 }
 
 type Step = 1 | 2 | 3 | 4 | 5 | 6;
 
-export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
-  const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(null);
+export function CreativeAdWorkflow({ productId, initialStep = 1, openSetup = false }: Props) {
+  // openSetup (Templates page) shows the creative setup even when one is already saved.
+  const [userSelectedStep, setUserSelectedStep] = useState<Step | null>(openSetup ? 2 : null);
   const [qualityTier, setQualityTier] = useState<QualityTier>('standard');
 
   const {
@@ -150,8 +152,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
   return (
     <div className="space-y-8">
       {/* Step Navigation Header */}
-      <div className="bg-white rounded-2xl border border-zinc-200/80 p-4 shadow-2xs">
-        <div className="relative flex items-center justify-between overflow-x-auto gap-2">
+      <div className="studio-bar mx-auto w-fit max-w-full rounded-[15px] p-[5px]">
+        <div className="relative flex items-center gap-0.5 overflow-x-auto">
           {[
             { num: 1, label: 'Intelligence', icon: Sparkles },
             { num: 2, label: 'Configuration créative', icon: Sliders },
@@ -170,21 +172,17 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                 type="button"
                 onClick={() => setUserSelectedStep(s.num as Step)}
                 aria-current={isActive ? 'step' : undefined}
-                className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-bold transition whitespace-nowrap ${
-                  isActive
-                    ? 'bg-[#BA3807] text-white shadow-xs'
-                    : isPassed
-                      ? 'bg-[#FFF5ED] text-[#BA3807] hover:bg-[#FED7AA]/30'
-                      : 'text-zinc-400 hover:text-zinc-600'
+                className={`studio-tab focus-visible:outline-2 focus-visible:outline-trend-orange ${
+                  isPassed ? '!text-studio-text' : ''
                 }`}
               >
                 <div
-                  className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                  className={`flex size-[18px] items-center justify-center rounded-full text-[10px] font-semibold tabular-nums ${
                     isActive
-                      ? 'bg-white text-[#BA3807]'
+                      ? 'bg-trend-orange text-on-accent'
                       : isPassed
-                        ? 'bg-[#BA3807] text-white'
-                        : 'bg-zinc-200 text-zinc-500'
+                        ? 'bg-accent-soft text-trend-orange'
+                        : 'bg-white/[0.07] text-studio-meta'
                   }`}
                 >
                   <span aria-hidden>{isPassed ? '✓' : s.num}</span>
@@ -202,7 +200,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
       {bannerError && (
         <div
           role="alert"
-          className="p-4 rounded-xl bg-red-50 border border-red-200 flex flex-wrap items-center justify-between gap-3 text-xs text-red-700"
+          className="p-4 rounded-xl bg-danger-soft border border-danger/30 flex flex-wrap items-center justify-between gap-3 text-xs text-danger"
         >
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 shrink-0" aria-hidden />
@@ -216,7 +214,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                   resetError();
                   setUserSelectedStep(1);
                 }}
-                className="px-3 py-1.5 rounded-lg bg-white border border-red-300 text-red-800 font-bold hover:bg-red-100"
+                className="px-3 py-1.5 rounded-lg bg-studio-ground border border-danger/30 text-danger font-bold hover:bg-danger-soft"
               >
                 Aller à l&apos;analyse produit
               </button>
@@ -224,7 +222,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             <button
               type="button"
               onClick={dismissError}
-              className="text-red-500 hover:text-red-800 font-bold"
+              className="text-danger hover:text-danger font-bold"
             >
               Fermer
             </button>
@@ -254,8 +252,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
         <>
           {isGeneratingStrategy && !strategy && (
             <div className="p-12 text-center space-y-3" role="status">
-              <RotateCw className="w-8 h-8 text-[#BA3807] animate-spin mx-auto" aria-hidden />
-              <p className="text-sm font-semibold text-zinc-600">
+              <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" aria-hidden />
+              <p className="text-sm font-semibold text-ink-soft">
                 Génération du brief et des angles en cours…
               </p>
             </div>
@@ -271,7 +269,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             />
           )}
           {!isGeneratingStrategy && !strategy && (
-            <p className="p-12 text-center text-sm text-zinc-500">
+            <p className="p-12 text-center text-sm text-ink-muted">
               Aucune stratégie : enregistrez d&apos;abord la configuration créative.
             </p>
           )}
@@ -306,13 +304,13 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             />
           ) : isGeneratingStoryboard ? (
             <div className="p-12 text-center space-y-3" role="status">
-              <RotateCw className="w-8 h-8 text-[#BA3807] animate-spin mx-auto" aria-hidden />
-              <p className="text-sm font-semibold text-zinc-600">
+              <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" aria-hidden />
+              <p className="text-sm font-semibold text-ink-soft">
                 Scénarisation et découpage des plans en cours…
               </p>
             </div>
           ) : (
-            <p className="p-12 text-center text-sm text-zinc-500">
+            <p className="p-12 text-center text-sm text-ink-muted">
               Aucun storyboard : choisissez d&apos;abord un angle.
             </p>
           )}
@@ -348,7 +346,7 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
                   value={qualityTier}
                   onChange={(e) => setQualityTier(e.target.value as QualityTier)}
                   disabled={isStartingJob}
-                  className="min-h-11 rounded-lg border border-line bg-white px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+                  className="min-h-11 rounded-lg border border-line bg-studio-ground px-3 text-sm text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
                 >
                   {QUALITY_TIERS.map((t) => (
                     <option key={t.value} value={t.value}>
@@ -379,8 +377,8 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
         <>
           {isStartingJob && (
             <div className="p-12 text-center space-y-3">
-              <RotateCw className="w-8 h-8 text-[#BA3807] animate-spin mx-auto" />
-              <p className="text-sm font-semibold text-zinc-600">
+              <RotateCw className="w-8 h-8 text-trend-orange animate-spin mx-auto" />
+              <p className="text-sm font-semibold text-ink-soft">
                 Initialisation du job de génération vidéo...
               </p>
             </div>
@@ -396,18 +394,19 @@ export function CreativeAdWorkflow({ productId, initialStep = 1 }: Props) {
             />
           )}
           {!isStartingJob && !activeJob && (
-            <p className="p-12 text-center text-sm text-zinc-500">
+            <p className="p-12 text-center text-sm text-ink-muted">
               Aucune génération en cours : lancez la vidéo depuis l&apos;étape Visuels produit.
             </p>
           )}
-          <VideoHistory
-            productId={productId}
-            refreshKey={`${activeJob?.id ?? ''}:${activeJob?.status ?? ''}`}
-            activeJobId={activeJob?.id ?? null}
-            onOpen={openVideoJob}
-          />
         </>
       )}
+      {/* Video history: the studio's right rail on every step (a list on phones). */}
+      <VideoHistory
+        productId={productId}
+        refreshKey={`${activeJob?.id ?? ''}:${activeJob?.status ?? ''}`}
+        activeJobId={activeJob?.id ?? null}
+        onOpen={openVideoJob}
+      />
     </div>
   );
 }

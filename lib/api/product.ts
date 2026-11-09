@@ -191,6 +191,14 @@ export const productApi = {
     });
   },
 
+  /** Parse a page the browser extension captured (sites that block our server). */
+  async extractFromHtml(url: string, html: string): Promise<ProductPreview> {
+    return fetchWithAuth<ProductPreview>(`${PRODUCTS_BASE_PATH}/extract-html`, {
+      method: 'POST',
+      body: JSON.stringify({ url, html }),
+    });
+  },
+
   /**
    * Run Product Intelligence on a product. Identical successful runs are reused
    * server-side (no new paid call) unless force is true.

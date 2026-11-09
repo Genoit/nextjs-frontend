@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { AuthProvider } from '../lib/auth';
+import { ThemeSync } from '../components/ThemeToggle';
 import { inter, playfair, instrumentSerif, caveat } from './fonts';
 
 export const metadata: Metadata = {
@@ -12,6 +13,9 @@ export const metadata: Metadata = {
   },
 };
 
+// Runs before paint so a light-theme visitor never sees a dark flash. Same rules as resolveTheme in lib/theme.ts.
+const THEME_BOOT = `try{var p=localStorage.getItem('trended_theme');var d=p==='light'?0:p==='system'?matchMedia('(prefers-color-scheme: dark)').matches:1;document.documentElement.dataset.theme=d?'dark':'light'}catch(e){}`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -20,10 +24,16 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${inter.className} ${playfair.variable} ${instrumentSerif.variable} ${caveat.variable}`}
+      data-theme="dark"
+      suppressHydrationWarning
+      className={`h-full antialiased ${inter.className} ${inter.variable} ${playfair.variable} ${instrumentSerif.variable} ${caveat.variable}`}
     >
-      <body className="min-h-full flex flex-col bg-white text-zinc-900 font-sans">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
+      </head>
+      <body className="min-h-full flex flex-col bg-studio-ground text-ink font-sans">
         <AuthProvider>
+          <ThemeSync />
           <div className="flex flex-1 flex-col min-w-0">{children}</div>
         </AuthProvider>
       </body>

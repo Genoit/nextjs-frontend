@@ -1,11 +1,17 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
-import { ArrowLeft, Video } from 'lucide-react';
+import { useParams, useSearchParams } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import ProtectedRoute from '../../../../components/ProtectedRoute';
 import { CreativeAdWorkflow } from '../../../../components/creative/CreativeAdWorkflow';
+
+// ?step=setup comes from the Templates page: open the creative setup the template just filled.
+function Workflow({ productId }: { productId: string }) {
+  const openSetup = useSearchParams().get('step') === 'setup';
+  return <CreativeAdWorkflow productId={productId} openSetup={openSetup} />;
+}
 
 export default function ProductCreativePage() {
   const params = useParams();
@@ -13,33 +19,27 @@ export default function ProductCreativePage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-[#FBFBFC] text-zinc-900 flex flex-col font-sans">
-        {/* Header */}
-        <header className="sticky top-0 z-40 h-[70px] bg-white border-b border-zinc-200/80 px-4 sm:px-8 flex items-center justify-between shadow-2xs">
-          <div className="flex items-center gap-4">
-            <Link
-              href={`/products/${productId}`}
-              className="p-2 text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-xl transition"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </Link>
-            <div>
-              <h1 className="text-base font-bold text-zinc-900 flex items-center gap-2">
-                <Video className="w-4 h-4 text-[#BA3807]" />
-                <span>Générateur de Publicités Vidéo UGC</span>
-              </h1>
-              <p className="text-xs text-zinc-500">
-                Pipeline complet de création publicitaire assistée par IA & Montage FFmpeg
-              </p>
-            </div>
-          </div>
-        </header>
-
-        {/* Main Content */}
-        <main className="flex-1 max-w-7xl mx-auto w-full p-4 sm:p-8">
-          <CreativeAdWorkflow productId={productId} />
-        </main>
-      </div>
+      {/* Studio frame: centred title, step chips, work area; the video history rail sits on the right (md+). */}
+      <main className="relative w-full flex-1 px-4 py-8 md:pr-28 md:pl-6">
+        <Link
+          href={`/products/${productId}`}
+          aria-label="Back to the product"
+          className="studio-chip absolute top-7 left-4 !size-9 justify-center !p-0 md:left-6"
+        >
+          <ArrowLeft className="size-4" aria-hidden />
+        </Link>
+        <div className="mb-6 flex flex-col items-center px-12 text-center">
+          <h1 className="text-xl font-semibold tracking-[-0.01em] text-studio-text">Ad studio</h1>
+          <p className="mt-[9px] max-w-[52ch] text-[13px] text-studio-meta">
+            Product sheet, strategy, storyboard, visuals, then each shot generated and checked.
+          </p>
+        </div>
+        <div className="mx-auto w-full max-w-7xl">
+          <Suspense>
+            <Workflow productId={productId} />
+          </Suspense>
+        </div>
+      </main>
     </ProtectedRoute>
   );
 }

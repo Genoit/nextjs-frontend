@@ -1,18 +1,20 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BookOpen } from 'lucide-react';
+import { AppShell } from '../../components/AppShell';
 import ProtectedRoute from '../../components/ProtectedRoute';
 import { ActionBar } from '../../components/product-input/ActionBar';
 import { GuideDialog, Lightbox } from '../../components/product-input/dialogs';
 import { ImportPanel } from '../../components/product-input/ImportPanel';
 import { ProductInfoForm } from '../../components/product-input/ProductInfoForm';
-import { StepLine, StepRail } from '../../components/product-input/StepRail';
-import { UserMenu } from '../../components/product-input/UserMenu';
+import { Stepper } from '../../components/product-input/StepRail';
 import { useProductDraft } from '../../components/product-input/use-product-draft';
 import { nextStepHref } from '../../lib/product-input-rules.mjs';
+import { tempting } from '../fonts';
+import { takePendingPhotos } from '../../lib/pending-photos';
+import { CAPTURE_EVENT, takeExtensionCapture } from '../../lib/extension-capture';
 
 const focusField = (id: string) => document.getElementById(id)?.focus();
 
@@ -24,13 +26,41 @@ export default function ProductInputPage() {
   const closeLightbox = useCallback(() => setLightbox(null), []);
   const closeGuide = useCallback(() => setGuideOpen(false), []);
 
-  // The dashboard composer sends `?url=`: open the link import with it prefilled.
-  const { setMode, setUrl } = draft;
+  // The dashboard sends `?url=` (imported on arrival: the sheet opens prefilled to review),
+  // `?mode=upload`, or `?mode=manual` with an optional `describe=` typed in its composer.
+  const { setMode, setUrl, setField, addFiles, runExtract } = draft;
+  const arrived = useRef(false);
   useEffect(() => {
-    const pasted = new URLSearchParams(window.location.search).get('url');
-    if (!pasted) return;
-    setMode('url');
-    setUrl(pasted);
+    if (arrived.current) return; // dev StrictMode runs effects twice: import once
+    arrived.current = true;
+    const params = new URLSearchParams(window.location.search);
+    const pasted = params.get('url');
+    const mode = params.get('mode');
+    if (params.get('from') === 'extension') {
+      setMode('url');
+      const importCapture = () => {
+        const c = takeExtensionCapture();
+        if (!c) return false;
+        setUrl(c.url);
+        void runExtract(c.url, c.html);
+        return true;
+      };
+      // The extension may write the page before or after this effect runs.
+      if (!importCapture()) window.addEventListener(CAPTURE_EVENT, importCapture, { once: true });
+    } else if (pasted) {
+      setMode('url');
+      setUrl(pasted);
+      void runExtract(pasted);
+    } else if (mode === 'manual') {
+      setMode('manual');
+      const described = params.get('describe');
+      if (described) setField('description', described);
+    } else if (mode === 'upload') {
+      setMode('upload');
+    }
+    // Photos picked in the dashboard composer (kept across the login detour).
+    const photos = takePendingPhotos();
+    if (photos.length) addFiles(photos);
     // eslint-disable-next-line react-hooks/exhaustive-deps -- read the query once on arrival
   }, []);
 
@@ -47,61 +77,55 @@ export default function ProductInputPage() {
     else if (errors.price) focusField('product-price');
   };
 
+  const topbar = (
+    <>
+      <button
+        type="button"
+        onClick={() => setGuideOpen(true)}
+        className="ml-auto inline-flex h-10 shrink-0 items-center gap-2 rounded-lg px-3 text-sm font-medium text-studio-muted transition hover:bg-studio-surface hover:text-studio-text focus-visible:outline-2 focus-visible:outline-trend-orange"
+      >
+        <BookOpen className="h-4 w-4" strokeWidth={1.75} aria-hidden />
+        <span className="hidden sm:inline">Tips for a good sheet</span>
+        <span className="sr-only sm:hidden">Tips for a good sheet</span>
+      </button>
+    </>
+  );
+
   return (
     <ProtectedRoute>
-      <div className="flex min-h-dvh flex-col bg-cream text-ink">
-        <header className="flex h-14 shrink-0 items-center justify-between px-4 lg:px-6">
-          <Link
-            href="/dashboard"
-            className="flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-trend-orange"
-          >
-            <Image src="/symbol.png" alt="" width={28} height={28} className="object-contain" />
-            <span className="text-lg font-bold tracking-tight">TrendED</span>
-            <span className="sr-only">: retour au tableau de bord</span>
-          </Link>
-          <UserMenu />
-        </header>
-
-        <div className="flex flex-1">
-          <aside className="hidden w-60 shrink-0 px-3 pb-6 pt-4 lg:block">
-            <div className="sticky top-4 h-[calc(100dvh-5.5rem)]">
-              <StepRail onOpenGuide={() => setGuideOpen(true)} />
-            </div>
-          </aside>
-
-          <main className="flex min-w-0 flex-1 flex-col bg-white lg:mb-2 lg:mr-2 lg:rounded-2xl lg:border lg:border-line">
-            <div className="flex-1 px-4 pb-10 pt-6 sm:px-6 lg:px-10 lg:pt-8">
-              <div className="mb-8 space-y-2">
-                <StepLine />
-                <h1 className="text-[26px] font-black leading-tight tracking-tight text-ink md:text-[32px]">
-                  Ajouter un produit
+      <AppShell active="/product-input" topbar={topbar}>
+        <main className="flex flex-1 flex-col">
+          <div className="mx-auto w-full max-w-[1100px] flex-1 px-4 pt-8 pb-12 sm:px-6 lg:pt-12">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div className="min-w-0">
+                <h1 className="font-sans text-[44px] leading-[1] font-extrabold tracking-[-0.035em] text-studio-text sm:text-[60px] lg:text-[68px]">
+                  Add a product
                 </h1>
-                <p className="max-w-2xl text-[15px] text-ink-muted">
-                  Importez-le depuis sa page ou remplissez sa fiche. Vous relirez tout avant de
-                  lancer l&apos;analyse.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => setGuideOpen(true)}
-                  className="min-h-11 text-sm font-semibold text-trend-orange hover:text-trend-orange-strong focus-visible:outline-2 focus-visible:outline-trend-orange lg:hidden"
+                <p
+                  className={`${tempting.className} mt-3 max-w-xl text-[22px] leading-[1.35] text-studio-muted sm:text-[26px]`}
                 >
-                  Conseils pour la fiche
-                </button>
+                  Import it or fill in the sheet. You review everything before the analysis starts.
+                </p>
               </div>
+              <Stepper current={0} />
+            </div>
 
-              <div className="grid items-start gap-12 xl:grid-cols-2 xl:gap-14">
+            <div className="mt-8 divide-y divide-studio-rule border-t border-studio-rule">
+              <div className="py-8">
                 <ImportPanel
                   draft={draft}
                   onOpenImage={setLightbox}
                   onStartManual={() => focusField('product-title')}
                 />
+              </div>
+              <div className="py-8">
                 <ProductInfoForm draft={draft} />
               </div>
             </div>
+          </div>
 
-            <ActionBar draft={draft} onContinue={() => void handleContinue()} />
-          </main>
-        </div>
+          <ActionBar draft={draft} onContinue={() => void handleContinue()} />
+        </main>
 
         <Lightbox
           images={draft.images}
@@ -114,7 +138,7 @@ export default function ProductInputPage() {
           }}
         />
         <GuideDialog open={guideOpen} onClose={closeGuide} />
-      </div>
+      </AppShell>
     </ProtectedRoute>
   );
 }

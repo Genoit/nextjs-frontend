@@ -36,15 +36,18 @@ const focusRing =
   'focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange';
 
 const PILL: Record<string, { className: string; Icon: typeof Check }> = {
-  pending: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: Clock },
-  processing: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: Loader2 },
-  direct: { className: 'border-ink bg-ink text-white', Icon: Check },
-  processed: { className: 'border-emerald-200 bg-emerald-50 text-emerald-800', Icon: Check },
-  simulated: { className: 'border-amber-300 bg-amber-100 text-amber-900', Icon: FlaskConical },
-  fallback: { className: 'border-amber-300 bg-amber-100 text-amber-900', Icon: ShieldAlert },
-  failed: { className: 'border-red-200 bg-red-50 text-red-800', Icon: AlertTriangle },
-  missing_original: { className: 'border-red-200 bg-red-50 text-red-800', Icon: ImageOff },
-  unverified: { className: 'border-line bg-zinc-100 text-zinc-700', Icon: ShieldAlert },
+  pending: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Clock },
+  processing: { className: 'border-line bg-studio-raised text-ink-soft', Icon: Loader2 },
+  direct: {
+    className: 'border-studio-rule-strong bg-studio-raised-2 text-studio-text',
+    Icon: Check,
+  },
+  processed: { className: 'border-success/30 bg-success-soft text-success', Icon: Check },
+  simulated: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: FlaskConical },
+  fallback: { className: 'border-warning/30 bg-warning-soft text-warning', Icon: ShieldAlert },
+  failed: { className: 'border-danger/30 bg-danger-soft text-danger', Icon: AlertTriangle },
+  missing_original: { className: 'border-danger/30 bg-danger-soft text-danger', Icon: ImageOff },
+  unverified: { className: 'border-line bg-studio-raised text-ink-soft', Icon: ShieldAlert },
 };
 
 const LICENCE_LABELS: Record<string, string> = {
@@ -103,7 +106,7 @@ function Thumb({ url, failed, loading, alt, caption, used, overlay, size }: Thum
       <div
         className={`relative overflow-hidden rounded-lg ${box} ${
           used ? 'ring-2 ring-ink ring-offset-2' : ''
-        } ${url ? 'bg-cream' : loading ? 'bg-zinc-100' : 'border border-dashed border-line'}`}
+        } ${url ? 'bg-cream' : loading ? 'bg-studio-raised' : 'border border-dashed border-line'}`}
       >
         {url ? (
           // Blob URL of an authenticated asset: next/image cannot optimise it.
@@ -122,7 +125,7 @@ function Thumb({ url, failed, loading, alt, caption, used, overlay, size }: Thum
           </span>
         )}
         {overlay && (
-          <span className="absolute bottom-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-white">
+          <span className="absolute bottom-1 left-1 rounded bg-ink px-1.5 py-0.5 text-[11px] font-semibold text-on-accent">
             {overlay}
           </span>
         )}
@@ -164,7 +167,7 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
 
   if (status.key === 'not_required') {
     return (
-      <li className="flex min-h-14 flex-wrap items-center gap-x-2 rounded-xl border border-line bg-zinc-50 px-5 py-3 text-sm text-ink-muted">
+      <li className="flex min-h-14 flex-wrap items-center gap-x-2 rounded-xl border border-line bg-studio-surface px-5 py-3 text-sm text-ink-muted">
         <h3 className="font-semibold text-ink">Plan {n}</h3>
         <span aria-hidden>·</span>
         <span>{reasonText('no_product_reference')}</span>
@@ -233,7 +236,7 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
   );
 
   return (
-    <li className="rounded-xl border border-line bg-white p-5">
+    <li className="rounded-xl border border-line bg-studio-ground p-5">
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[120px_196px_minmax(0,1fr)_200px_208px]">
         {/* Identity */}
         <div className="flex items-start justify-between gap-3 xl:block xl:space-y-0.5">
@@ -268,7 +271,7 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
           </div>
           {reasonLine && <p className="text-sm text-ink">{reasonLine}</p>}
           {hasReason(plan, 'low_resolution') && (
-            <p className="flex items-start gap-1.5 text-sm text-amber-900">
+            <p className="flex items-start gap-1.5 text-sm text-warning">
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
               {reasonText('low_resolution')}
             </p>
@@ -277,9 +280,9 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
             <p
               className={`flex items-start gap-1.5 text-sm tabular-nums ${
                 fidelity.tone === 'ok'
-                  ? 'text-emerald-800'
+                  ? 'text-success'
                   : fidelity.tone === 'warn'
-                    ? 'text-amber-900'
+                    ? 'text-warning'
                     : 'text-ink-muted'
               }`}
             >
@@ -291,7 +294,7 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
             </p>
           )}
           {licence && (
-            <p className="flex items-start gap-1.5 text-sm font-semibold text-red-800">
+            <p className="flex items-start gap-1.5 text-sm font-semibold text-danger">
               <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden />
               {licence}
             </p>
@@ -327,7 +330,7 @@ export function ShotAssetRow({ plan, busy, anyBusy, productId, onOverride, onRet
                   onClick={() => onRetry(plan.id)}
                   disabled={anyBusy}
                   aria-busy={busy}
-                  className={`inline-flex min-h-11 items-center gap-2 rounded-lg border border-line px-3 text-sm font-semibold text-ink hover:bg-zinc-50 disabled:opacity-60 ${focusRing}`}
+                  className={`inline-flex min-h-11 items-center gap-2 rounded-lg border border-line px-3 text-sm font-semibold text-ink hover:bg-studio-surface disabled:opacity-60 ${focusRing}`}
                 >
                   <RotateCw
                     className={`size-4 ${busy ? 'animate-spin motion-reduce:animate-none' : ''}`}

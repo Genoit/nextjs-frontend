@@ -21,12 +21,12 @@ export interface CustomerReviewItem {
 }
 
 export const AUDIENCES = [
-  'Jeunes actifs',
-  'Sportifs et adeptes de la salle',
-  'Parents occupés',
-  'Étudiants',
-  'Voyageurs et nomades digitaux',
-  'Passionnés de bien-être',
+  'Young professionals',
+  'Athletes and gym-goers',
+  'Busy parents',
+  'Students',
+  'Travelers and digital nomads',
+  'Wellness enthusiasts',
 ];
 
 export const CURRENCIES: { code: string; label: string }[] = [
