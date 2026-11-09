@@ -1,6 +1,17 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
-import { SYNC_LABEL, canSend, diffLabel, storeLimitText } from '../lib/shopify-rules.mjs';
+import {
+  STORE_LIMIT,
+  SYNC_LABEL,
+  canSend,
+  conflictChoices,
+  diffLabel,
+  readShopifyCallback,
+  sendBlocker,
+  shopifyErrorText,
+  storeLimitText,
+  stripInstallParams,
+} from '../lib/shopify-rules.mjs';
 
 describe('shopify rules', () => {
   it('labels sync states', () => {
@@ -31,12 +42,82 @@ describe('shopify rules', () => {
     assert.strictEqual(canSend({ missing_costs: [], previews: { s1: ok } }), true);
     assert.strictEqual(canSend({ missing_costs: ['v1'], previews: {} }), false);
     assert.strictEqual(
-      canSend({ missing_costs: [], previews: { s1: ok, s2: { error: 'fx_unavailable', currency: 'CNY' } } }),
+      canSend({
+        missing_costs: [],
+        previews: { s1: ok, s2: { error: 'fx_unavailable', currency: 'CNY' } },
+      }),
       false,
     );
     assert.strictEqual(
-      canSend({ missing_costs: [], previews: { s1: { error: 'missing_purchase_cost', variants: ['v1'] } } }),
+      canSend({
+        missing_costs: [],
+        previews: { s1: { error: 'missing_purchase_cost', variants: ['v1'] } },
+      }),
       false,
     );
+  });
+
+  it('maps plans to store limits', () => {
+    assert.deepStrictEqual(STORE_LIMIT, { free: 0, starter: 1, pro: 3, business: 10 });
+  });
+
+  it('reads the Shopify callback params', () => {
+    assert.deepStrictEqual(readShopifyCallback('?shopify=confirm&install=t1'), {
+      kind: 'confirm',
+      ticket: 't1',
+    });
+    assert.deepStrictEqual(readShopifyCallback('shopify=error'), { kind: 'error' });
+    // A ticket without the confirm marker is still stripped, and never confirmed.
+    assert.deepStrictEqual(readShopifyCallback('?install=t1'), { kind: 'error' });
+    assert.deepStrictEqual(readShopifyCallback('?shopify=confirm'), { kind: 'error' });
+    assert.strictEqual(readShopifyCallback(''), null);
+    assert.strictEqual(readShopifyCallback('?tab=x'), null);
+  });
+
+  it('strips the install ticket from a return path', () => {
+    assert.strictEqual(stripInstallParams('/settings?shopify=confirm&install=secret'), '/settings');
+    assert.strictEqual(
+      stripInstallParams('/settings?a=1&install=s#stores'),
+      '/settings?a=1#stores',
+    );
+    assert.strictEqual(stripInstallParams('/products/1'), '/products/1');
+  });
+
+  it('turns backend codes into English', () => {
+    assert.match(shopifyErrorText('install_expired'), /expired/);
+    assert.match(shopifyErrorText('install_user_mismatch'), /another TrendED account/);
+    assert.match(shopifyErrorText('store_limit_reached'), /limit/);
+    assert.match(shopifyErrorText('shop_already_connected'), /already connected/);
+    assert.match(shopifyErrorText('whatever'), /Try again/);
+  });
+
+  it('offers only safe conflict choices', () => {
+    assert.deepStrictEqual(conflictChoices('title'), ['trended', 'shopify']);
+    assert.deepStrictEqual(conflictChoices('price:v1'), ['trended', 'shopify']);
+    assert.deepStrictEqual(conflictChoices('options:v1'), ['trended']);
+    assert.deepStrictEqual(conflictChoices('unmanaged_variant:gid://x/1'), []);
+  });
+
+  it('says why a send is blocked', () => {
+    const ok = [{ price: '9.99' }];
+    const listing = { title: 'Lamp', missing_costs: [], previews: { s1: ok, s2: ok } };
+    assert.strictEqual(sendBlocker(listing, { dirty: false, picked: ['s1'] }), null);
+    assert.match(sendBlocker(listing, { dirty: true, picked: ['s1'] }), /Save/);
+    assert.match(sendBlocker(listing, { dirty: false, picked: [] }), /Pick/);
+    assert.match(
+      sendBlocker({ ...listing, title: ' ' }, { dirty: false, picked: ['s1'] }),
+      /title/,
+    );
+    assert.match(
+      sendBlocker({ ...listing, missing_costs: ['default'] }, { dirty: false, picked: ['s1'] }),
+      /purchase cost/,
+    );
+    const fx = {
+      ...listing,
+      previews: { s1: ok, s2: { error: 'fx_unavailable', currency: 'CNY' } },
+    };
+    // Only the picked stores' previews count.
+    assert.strictEqual(sendBlocker(fx, { dirty: false, picked: ['s1'] }), null);
+    assert.match(sendBlocker(fx, { dirty: false, picked: ['s2'] }), /CNY/);
   });
 });

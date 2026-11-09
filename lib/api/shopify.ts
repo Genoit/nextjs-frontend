@@ -1,4 +1,4 @@
-import { fetchWithAuth } from './core';
+import { ApiRequestError, fetchWithAuth } from './core';
 
 // ============================================
 // Shopify Connect API. Mirrors fastapi-backend app/api/v1/shopify.py.
@@ -176,3 +176,14 @@ export const shopifyApi = {
     return fetchWithAuth<ShopifyAlert[]>(`${BASE}/alerts`, { method: 'GET' });
   },
 };
+
+/** The backend's error code: a `detail` string, or `detail.error` for structured 422s. */
+export function shopifyErrorCode(err: unknown): string | undefined {
+  if (!(err instanceof ApiRequestError)) return undefined;
+  const detail = (err.data as { detail?: unknown } | null)?.detail;
+  if (typeof detail === 'string') return detail;
+  if (detail && typeof detail === 'object' && 'error' in detail) {
+    return String((detail as { error: unknown }).error);
+  }
+  return undefined;
+}

@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import Link from 'next/link';
+import { useRouter, useSearchParams } from 'next/navigation';
 import {
   Bell,
   Check,
@@ -10,6 +11,7 @@ import {
   Loader2,
   Palette,
   Puzzle,
+  ShoppingBag,
   Store,
   User as UserIcon,
   UserRound,
@@ -26,6 +28,9 @@ import {
 } from '../../lib/api/settings';
 import { storeThemePref, resolveTheme } from '../../lib/theme';
 import { PLAN_LABEL } from '../../lib/billing-rules.mjs';
+import { shopifyApi, shopifyErrorCode } from '../../lib/api/shopify';
+import { readShopifyCallback, shopifyErrorText } from '../../lib/shopify-rules.mjs';
+import { StoresSection, type StoresNotice } from '../../components/settings/StoresSection';
 import type { BillingSummary } from '../../lib/api/billing';
 import type {
   OnboardingBusinessType,
@@ -42,7 +47,8 @@ import type {
 const SECTIONS = [
   { id: 'account', label: 'Account', Icon: UserIcon },
   { id: 'profile', label: 'Profile', Icon: UserRound },
-  { id: 'store', label: 'Store', Icon: Store },
+  { id: 'store', label: 'Store profile', Icon: Store },
+  { id: 'stores', label: 'Stores', Icon: ShoppingBag },
   { id: 'notifications', label: 'Notifications', Icon: Bell },
   { id: 'billing', label: 'Billing', Icon: CreditCard },
   { id: 'integrations', label: 'Integrations', Icon: Puzzle },
@@ -828,8 +834,43 @@ function IntegrationsView() {
 
 // ---------------------------------------------------------------- page
 
-export default function SettingsPage() {
+// Install tickets already redeemed in this page load: React StrictMode runs effects twice.
+const redeemed = new Set<string>();
+
+function Settings() {
+  const router = useRouter();
+  const params = useSearchParams();
+  const { isAuthenticated, isLoading } = useAuth();
   const [section, setSection] = useState<SectionId>('account');
+  const [callback, setCallback] = useState<ReturnType<typeof readShopifyCallback>>(null);
+  const [notice, setNotice] = useState<StoresNotice>(null);
+  // The Shopify callback carries a one-time install ticket: take it into memory, strip it from
+  // the URL, and render nothing (so nothing loads) until the URL is clean.
+  const query = params.toString();
+  const inUrl = readShopifyCallback(query) !== null;
+
+  useEffect(() => {
+    const cb = readShopifyCallback(query);
+    if (!cb) return;
+    router.replace('/settings#stores', { scroll: false });
+    /* eslint-disable react-hooks/set-state-in-effect -- the URL is the source, read once */
+    setCallback(cb);
+    setSection('stores');
+    if (cb.kind === 'error')
+      setNotice({ tone: 'danger', text: shopifyErrorText('callback_failed') });
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [query, router]);
+
+  // Redeem the ticket once, only for a signed-in user (it is bound to the account that started it).
+  const ticket = callback?.kind === 'confirm' ? callback.ticket : null;
+  useEffect(() => {
+    if (!ticket || !isAuthenticated || redeemed.has(ticket)) return;
+    redeemed.add(ticket);
+    shopifyApi.confirmInstall(ticket).then(
+      (store) => setNotice({ tone: 'success', text: `Store connected: ${store.shop_domain}.` }),
+      (err) => setNotice({ tone: 'danger', text: shopifyErrorText(shopifyErrorCode(err)) }),
+    );
+  }, [ticket, isAuthenticated]);
 
   // One view per area, addressable as /settings#appearance.
   useEffect(() => {
@@ -841,6 +882,31 @@ export default function SettingsPage() {
     window.addEventListener('hashchange', read);
     return () => window.removeEventListener('hashchange', read);
   }, []);
+
+  if (inUrl) return null;
+
+  if (ticket && !isLoading && !isAuthenticated) {
+    // Never through the login redirect: the user restarts the install once signed in.
+    return (
+      <main className="flex min-h-dvh items-center justify-center bg-studio-ground px-4">
+        <div className="max-w-[420px] rounded-[12px] border border-studio-rule bg-studio-surface p-6">
+          <h1 className="text-[18px] font-semibold text-studio-text">
+            Log in, then connect the store again
+          </h1>
+          <p className="mt-2 text-[13px] text-studio-muted">
+            The Shopify install could not be finished because you are signed out. Log in, open
+            Settings, Stores, and connect the store again.
+          </p>
+          <Link
+            href="/login"
+            className={`mt-5 inline-flex h-[38px] items-center rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong ${focusRing}`}
+          >
+            Log in
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <DashShell>
@@ -872,6 +938,7 @@ export default function SettingsPage() {
               {section === 'account' && <AccountView />}
               {section === 'profile' && <ProfileView />}
               {section === 'store' && <StoreView />}
+              {section === 'stores' && <StoresSection summary={summary} notice={notice} />}
               {section === 'notifications' && <NotificationsView />}
               {section === 'billing' && <BillingView summary={summary} />}
               {section === 'integrations' && <IntegrationsView />}
@@ -881,5 +948,13 @@ export default function SettingsPage() {
         </main>
       )}
     </DashShell>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={null}>
+      <Settings />
+    </Suspense>
   );
 }

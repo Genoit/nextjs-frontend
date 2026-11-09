@@ -10,6 +10,7 @@ import {
   startGoogleRedirectSignIn,
 } from './firebase/auth';
 import { AuthResponse, LoginPayload, RegisterPayload, User } from './types';
+import { stripInstallParams } from './shopify-rules.mjs';
 import { resetThemeCache } from './theme';
 
 interface AuthContextType {
@@ -35,7 +36,8 @@ const RETURN_KEY = 'trended.returnTo';
 /** Remember where to send the user back once they have signed in (survives register + onboarding). */
 export function rememberReturnTo(path: string) {
   try {
-    sessionStorage.setItem(RETURN_KEY, path);
+    // A Shopify install ticket is single-use and bound to the account: never carry it through login.
+    sessionStorage.setItem(RETURN_KEY, stripInstallParams(path));
   } catch {
     // storage blocked: the user lands on the dashboard instead
   }

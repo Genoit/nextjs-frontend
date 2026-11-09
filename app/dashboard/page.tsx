@@ -17,6 +17,7 @@ import { jobBadge, latestJob, timeAgo } from '../../lib/dashboard-rules.mjs';
 import { rememberReturnTo, useAuth } from '../../lib/auth';
 import { inter, tempting } from '../fonts';
 import { Composer } from '../../components/dashboard/Composer';
+import { ShopifyAlertsNotice } from '../../components/shopify/AlertsNotice';
 
 /** The orange light of the mockup: a beam from the top right and a wide arc below it. */
 function Glow() {
@@ -291,6 +292,8 @@ export default function DashboardPage() {
               Create authentic product videos with AI in minutes.
             </p>
           </section>
+
+          {isAuthenticated && <ShopifyAlertsNotice />}
 
           <Composer credits={summary?.credits ?? null} />
 

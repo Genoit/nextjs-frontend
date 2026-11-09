@@ -31,6 +31,11 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  // The Shopify install callback lands on /settings with a one-time ticket in the URL:
+  // no request made from that page may send it on as a Referer.
+  async headers() {
+    return [{ source: '/settings', headers: [{ key: 'Referrer-Policy', value: 'no-referrer' }] }];
+  },
   async rewrites() {
     return [
       {
