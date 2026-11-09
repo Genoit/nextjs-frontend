@@ -80,6 +80,8 @@ export interface ShopifyListing {
   shop_domain: string;
   state: SyncState;
   last_error: string | null;
+  /** `fixed` after keeping Shopify's price in a conflict, until the rule is turned back on. */
+  price_source: 'rule' | 'override' | 'fixed';
   /** Only filled for listings in conflict. */
   diffs: FieldDiff[];
 }

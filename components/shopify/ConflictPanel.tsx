@@ -37,10 +37,13 @@ export function ConflictPanel({
   listing,
   variantName,
   onResolved,
+  onStale,
 }: {
   listing: ShopifyListing;
   variantName: (key: string) => string;
   onResolved: (next: ShopifyListing) => void;
+  /** Shopify changed since these diffs were read: reload them. */
+  onStale: () => void;
 }) {
   const fields = listing.diffs.filter((d) => conflictChoices(d.field).length > 0);
   const added = listing.diffs.filter((d) => conflictChoices(d.field).length === 0);
@@ -52,6 +55,11 @@ export function ConflictPanel({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const missing = fields.filter((d) => !picked[d.field]).length;
+
+  // A price with no Shopify value means the variant was deleted there (422 variant_missing_in_shopify);
+  // a missing compare-at or description is a real value and stays choosable.
+  const gone = (d: { field: string; shopify: unknown }) =>
+    d.field.startsWith('price:') && d.shopify == null;
 
   const label = (field: string) => {
     const i = field.indexOf(':');
@@ -66,8 +74,10 @@ export function ConflictPanel({
     try {
       onResolved(await shopifyApi.resolve(listing.id, picked));
     } catch (err) {
-      setError(shopifyErrorText(shopifyErrorCode(err)));
+      const code = shopifyErrorCode(err);
+      setError(shopifyErrorText(code));
       setBusy(false);
+      if (code === 'missing_choices' || code === 'not_in_conflict') onStale();
     }
   };
 
@@ -105,7 +115,7 @@ export function ConflictPanel({
               </legend>
               <div className="grid gap-2 sm:grid-cols-2">
                 {(['trended', 'shopify'] as const).map((side) => {
-                  const allowed = sides.includes(side);
+                  const allowed = sides.includes(side) && !(side === 'shopify' && gone(d));
                   const on = picked[d.field] === side;
                   return (
                     <label
@@ -141,7 +151,9 @@ export function ConflictPanel({
                         <span className="mt-0.5 block text-[12.5px] break-words text-studio-muted">
                           {allowed
                             ? show(side === 'trended' ? d.trended : d.shopify)
-                            : 'Shopify’s options cannot be kept yet.'}
+                            : gone(d)
+                              ? 'Deleted in Shopify.'
+                              : 'Shopify’s options cannot be kept yet.'}
                         </span>
                       </span>
                     </label>

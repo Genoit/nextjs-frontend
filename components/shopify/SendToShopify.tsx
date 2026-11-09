@@ -16,7 +16,7 @@ import type { Product } from '../../lib/types/product';
 import { STORE_STATUS_LABEL, sendBlocker, shopifyErrorText } from '../../lib/shopify-rules.mjs';
 import { SyncBadges } from './SyncBadges';
 import { ConflictPanel } from './ConflictPanel';
-import { Notice, field, labelText, panel, primaryBtn, secondaryBtn } from './ui';
+import { Notice, field, labelText, panel, secondaryBtn } from './ui';
 
 const LANGUAGES: [string, string][] = [
   ['en', 'English'],
@@ -151,7 +151,7 @@ export function SendToShopify({ productId }: { productId: string }) {
           <p className="text-[13px] text-studio-muted">
             Connect a Shopify store to send this product as a draft.
           </p>
-          <Link href="/settings#stores" className={primaryBtn}>
+          <Link href="/settings#stores" className={secondaryBtn}>
             <Store className="size-4" aria-hidden />
             Connect a store
           </Link>
@@ -194,8 +194,10 @@ export function SendToShopify({ productId }: { productId: string }) {
         ),
         pricing_override: view.pricing_override,
       });
-      setData({ ...data, view: next });
       setForm(formFrom(next));
+      // A saved edit marks sent listings `syncing`: show it, which also starts the poll.
+      const fresh = await shopifyApi.listings(productId).catch(() => null);
+      setData((d) => (d ? { ...d, view: next, listings: fresh ?? d.listings } : d));
       setResult({ tone: 'success', text: 'Listing saved.' });
     } catch (err) {
       setResult({ tone: 'danger', text: errorText(err) });
@@ -209,7 +211,7 @@ export function SendToShopify({ productId }: { productId: string }) {
     setResult(null);
     try {
       const next = await shopifyApi.generateCopy(productId, form.language);
-      setData({ ...data, view: next });
+      setData((d) => (d ? { ...d, view: next } : d));
       // The copy is saved server side; unsaved cost edits stay in the form.
       setForm({
         ...form,
@@ -230,7 +232,7 @@ export function SendToShopify({ productId }: { productId: string }) {
     try {
       await shopifyApi.send(productId, picked);
       const fresh = await shopifyApi.listings(productId);
-      setData({ ...data, listings: fresh });
+      setData((d) => (d ? { ...d, listings: fresh } : d));
       setResult({
         tone: 'success',
         text: `Sent as a draft to ${picked.length} store${picked.length === 1 ? '' : 's'}. Publish it from Shopify when you are ready.`,
@@ -241,6 +243,16 @@ export function SendToShopify({ productId }: { productId: string }) {
       setBusy(null);
     }
   };
+
+  const setListing = (next: ShopifyListing) =>
+    setData((d) =>
+      d ? { ...d, listings: d.listings.map((x) => (x.id === next.id ? next : x)) } : d,
+    );
+  const reloadListings = () =>
+    shopifyApi
+      .listings(productId)
+      .then((fresh) => setData((d) => (d ? { ...d, listings: fresh } : d)))
+      .catch(() => undefined); // the panel keeps its error line
 
   const languages = LANGUAGES.some(([c]) => c === form.language)
     ? LANGUAGES
@@ -253,20 +265,17 @@ export function SendToShopify({ productId }: { productId: string }) {
       {listings.length > 0 && (
         <div className="mt-5 space-y-3">
           <h3 className="text-[13px] font-semibold text-studio-text">Sent to</h3>
-          <SyncBadges listings={listings} />
+          <SyncBadges listings={listings} onChange={setListing} />
           {listings
             .filter((l) => l.state === 'conflict')
             .map((l) => (
               <ConflictPanel
-                key={l.id}
+                // A new set of diffs (after a poll or a reload) starts the choices over.
+                key={`${l.id}:${l.diffs.map((d) => d.field).join(',')}`}
                 listing={l}
                 variantName={variantName}
-                onResolved={(next) =>
-                  setData({
-                    ...data,
-                    listings: listings.map((x) => (x.id === next.id ? next : x)),
-                  })
-                }
+                onResolved={setListing}
+                onStale={reloadListings}
               />
             ))}
         </div>
@@ -458,7 +467,7 @@ export function SendToShopify({ productId }: { productId: string }) {
             onClick={send}
             disabled={busy !== null || blocker !== null}
             aria-describedby="send-reason"
-            className={primaryBtn}
+            className={`${secondaryBtn} font-semibold`}
           >
             {busy === 'send' ? (
               <Loader2 className="size-4 animate-spin" aria-hidden />

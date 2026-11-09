@@ -5,7 +5,7 @@ import { focusRing } from '../dashboard/DashShell';
 
 export const primaryBtn = `inline-flex h-[38px] shrink-0 items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong active:scale-[0.98] disabled:cursor-not-allowed disabled:bg-studio-raised-2 disabled:text-studio-meta disabled:active:scale-100 ${focusRing}`;
 
-export const secondaryBtn = `inline-flex h-[38px] shrink-0 items-center justify-center gap-2 rounded-[10px] border border-studio-rule-strong bg-studio-surface px-3.5 text-[13px] font-medium text-studio-text transition hover:bg-studio-raised-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:text-studio-meta disabled:hover:bg-studio-surface ${focusRing}`;
+export const secondaryBtn = `inline-flex h-[38px] shrink-0 items-center justify-center gap-2 rounded-[10px] border border-studio-rule-strong bg-studio-raised px-3.5 text-[13px] font-medium text-studio-text transition hover:bg-studio-raised-2 active:scale-[0.98] disabled:cursor-not-allowed disabled:text-studio-meta disabled:hover:bg-studio-raised ${focusRing}`;
 
 export const textBtn = `inline-flex h-[38px] shrink-0 items-center gap-1.5 rounded-[10px] px-2 text-[13px] font-medium transition ${focusRing}`;
 
