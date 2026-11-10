@@ -12,12 +12,12 @@ import { isPolling, statusLabel } from '../../../lib/autopilot-rules.mjs';
 const POLL_MS = 3000;
 
 const VARIANT_LABEL: Record<AutopilotVariant['status'], string> = {
-  pending: 'En attente',
-  storyboarding: 'Écriture du script',
-  rendering: 'Tournage des plans',
-  exporting: 'Montage',
-  ready: 'Prête',
-  failed: 'Échec',
+  pending: 'Waiting',
+  storyboarding: 'Writing the script',
+  rendering: 'Shooting the shots',
+  exporting: 'Editing',
+  ready: 'Ready',
+  failed: 'Failed',
 };
 
 function messageOf(err: unknown, fallback: string): string {
@@ -37,7 +37,7 @@ export default function AutopilotRunPage() {
           setRun(r);
           setError(null);
         },
-        (e) => setError(messageOf(e, 'Impossible de charger cette publicité.')),
+        (e) => setError(messageOf(e, "We couldn't load this ad.")),
       ),
     [runId],
   );
@@ -60,7 +60,7 @@ export default function AutopilotRunPage() {
       setRun(await autopilotApi.confirm(runId, facts));
       setError(null);
     } catch (e) {
-      setError(messageOf(e, "Impossible d'envoyer la vérification."));
+      setError(messageOf(e, "We couldn't send your check."));
     } finally {
       setBusy(false);
     }
@@ -68,34 +68,34 @@ export default function AutopilotRunPage() {
 
   return (
     <ProtectedRoute>
-      <main className="min-h-dvh bg-cream px-4 py-8 text-ink sm:px-6">
-        <div className="mx-auto max-w-2xl space-y-6">
+      <main className="min-w-0 px-4 pb-14 text-white sm:px-5 lg:pr-8 lg:pl-9">
+        <div className="max-w-2xl space-y-6">
           <nav className="flex items-center justify-between text-sm">
-            <Link href="/ads" className="font-semibold text-ink-muted hover:text-ink">
-              ← Vos pubs
+            <Link href="/ads/runs" className="font-semibold text-studio-muted hover:text-white">
+              ← Autopilot runs
             </Link>
             {run && (
               <Link
                 href={`/products/${encodeURIComponent(run.product_id)}/creative`}
                 className="text-ink-muted underline-offset-2 hover:underline"
               >
-                Mode avancé
+                Advanced mode
               </Link>
             )}
           </nav>
 
           <header className="space-y-1">
-            <h1 className="text-[26px] font-black leading-tight tracking-tight md:text-[32px]">
-              {run ? statusLabel(run.status) : 'Chargement…'}
+            <h1 className="text-[20px] leading-tight font-semibold">
+              {run ? statusLabel(run.status) : error ? "We couldn't load this ad" : 'Loading…'}
             </h1>
             {run?.status === 'awaiting_confirmation' && (
               <p className="text-ink-muted">
-                10 secondes : on ne publie que des faits vrais. Corrigez si besoin, puis lancez.
+                10 seconds: we only publish true facts. Fix anything wrong, then start.
               </p>
             )}
             {run && polling && (
               <p className="text-ink-muted" aria-live="polite">
-                Vous pouvez quitter cette page : vos pubs continuent de se créer.
+                You can leave this page: your ads keep being made.
               </p>
             )}
           </header>
@@ -107,7 +107,7 @@ export default function AutopilotRunPage() {
           )}
 
           {run?.status === 'awaiting_confirmation' && run.facts && (
-            <section className="rounded-2xl border border-line bg-white p-5">
+            <section className="rounded-2xl border border-line bg-dash-panel p-5">
               <FactCheck
                 facts={run.facts}
                 adCount={run.variant_count}
@@ -121,14 +121,17 @@ export default function AutopilotRunPage() {
           {run && run.variants.length > 0 && (
             <ul className="grid gap-4 sm:grid-cols-2">
               {run.variants.map((v) => (
-                <li key={v.id} className="space-y-3 rounded-2xl border border-line bg-white p-4">
+                <li
+                  key={v.id}
+                  className="space-y-3 rounded-2xl border border-line bg-dash-panel p-4"
+                >
                   <p className="text-xs font-semibold uppercase tracking-wide text-ink-muted">
                     {VARIANT_LABEL[v.status]}
                   </p>
-                  <p className="font-bold">{v.angle_label ?? 'Angle de vente'}</p>
+                  <p className="font-bold">{v.angle_label ?? 'Sales angle'}</p>
                   {v.simulated && (
-                    <p className="rounded-lg bg-cream px-3 py-2 text-sm font-semibold text-trend-orange-strong">
-                      Simulation : moteur vidéo de test, ce n&apos;est pas une vraie pub.
+                    <p className="rounded-lg bg-dash-raised px-3 py-2 text-sm font-semibold text-trend-orange-strong">
+                      Simulation: test video engine, this is not a real ad.
                     </p>
                   )}
                   {v.status === 'ready' && v.download_url ? (
@@ -138,18 +141,18 @@ export default function AutopilotRunPage() {
                         poster={v.thumbnail_url ?? undefined}
                         controls
                         playsInline
-                        className="aspect-[9/16] w-full rounded-lg bg-ink object-cover"
+                        className="aspect-[9/16] w-full rounded-lg bg-dash-raised object-cover"
                       />
                       <a
                         href={v.download_url}
                         download
                         className="block rounded-xl bg-trend-orange px-4 py-2.5 text-center font-bold text-white hover:bg-trend-orange-strong"
                       >
-                        Télécharger
+                        Download
                       </a>
                     </>
                   ) : v.status === 'failed' ? (
-                    <p className="text-sm text-danger">{v.error ?? 'Cette version a échoué.'}</p>
+                    <p className="text-sm text-danger">{v.error ?? 'This version failed.'}</p>
                   ) : (
                     <div className="aspect-[9/16] w-full animate-pulse rounded-lg bg-studio-raised" />
                   )}

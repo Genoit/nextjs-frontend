@@ -3,7 +3,7 @@
 import type { ReactNode } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Bookmark, Search, Star, Store } from 'lucide-react';
+import { Bookmark, Rocket, Search, Star, Store } from 'lucide-react';
 import { DashShell, focusRing } from '../../components/dashboard/DashShell';
 
 const TABS = [
@@ -11,6 +11,7 @@ const TABS = [
   { href: '/ads/advertisers', label: 'Advertisers', Icon: Store },
   { href: '/ads/following', label: 'Following', Icon: Star },
   { href: '/ads/captures', label: 'My captures', Icon: Bookmark },
+  { href: '/ads/runs', label: 'Autopilot runs', Icon: Rocket },
 ];
 
 const current = (path: string) =>

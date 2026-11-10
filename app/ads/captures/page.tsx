@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { adsApi, type SearchPage } from '../../../lib/api/ads';
-import { AdGrid, EXTENSION_HELP_URL } from '../../../components/ads/AdCard';
+import { AdGrid, CaptureSteps } from '../../../components/ads/AdCard';
 import {
   AdsError,
   EmptyState,
   GridSkeleton,
   LoadMore,
 } from '../../../components/ads/AdvertiserRow';
-import { focusRing } from '../../../components/dashboard/DashShell';
 
 export default function CapturesPage() {
   const [page, setPage] = useState<SearchPage | null>(null);
@@ -48,16 +47,7 @@ export default function CapturesPage() {
           A capture saves an ad&apos;s video or images from Meta&apos;s Ad Library, so you can watch
           it here and remake it for your product. Captures are private to you.
         </p>
-        <p>
-          <a
-            href={EXTENSION_HELP_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`rounded text-white underline ${focusRing}`}
-          >
-            How to capture ads with the extension
-          </a>
-        </p>
+        <CaptureSteps />
       </EmptyState>
     );
   }

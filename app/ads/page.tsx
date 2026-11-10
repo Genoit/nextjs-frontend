@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { adsApi, type AdSearchParams, type SearchPage } from '../../lib/api/ads';
 import { AdFilters } from '../../components/ads/AdFilters';
@@ -15,16 +15,19 @@ export default function AdSearchPage() {
   const [page, setPage] = useState<SearchPage | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
+  // Set once the user loads more: a late poll must not replace the pages they added.
+  const paged = useRef(false);
   const [more, setMore] = useState<{ busy: boolean; error: unknown }>({ busy: false, error: null });
 
   useEffect(() => {
     let alive = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
     let polls = 0;
+    paged.current = false;
     const run = () =>
       adsApi.search(params).then(
         (p) => {
-          if (!alive) return;
+          if (!alive || paged.current) return;
           setPage(p);
           setError(null);
           setLoading(false);
@@ -34,7 +37,7 @@ export default function AdSearchPage() {
           }
         },
         (e) => {
-          if (!alive) return;
+          if (!alive || paged.current) return;
           setError(e);
           setLoading(false);
         },
@@ -48,6 +51,7 @@ export default function AdSearchPage() {
 
   const loadMore = async () => {
     if (!page?.next_cursor) return;
+    paged.current = true;
     setMore({ busy: true, error: null });
     try {
       const next = await adsApi.search({ ...params, cursor: page.next_cursor });

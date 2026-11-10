@@ -23,9 +23,9 @@ describe('isPolling', () => {
 
 describe('statusLabel', () => {
   it('speaks French and never calls an unknown status a success', () => {
-    assert.strictEqual(statusLabel('awaiting_confirmation'), 'Vérifiez les infos produit');
-    assert.strictEqual(statusLabel('ready'), 'Vos pubs sont prêtes');
-    assert.strictEqual(statusLabel('weird'), 'En cours');
+    assert.strictEqual(statusLabel('awaiting_confirmation'), 'Check the product facts');
+    assert.strictEqual(statusLabel('ready'), 'Your ads are ready');
+    assert.strictEqual(statusLabel('weird'), 'In progress');
   });
 });
 

@@ -19,9 +19,19 @@ import { adsApi, type AdOut } from '../../lib/api/ads';
 import { reachLabel, runTimeLabel } from '../../lib/ads-rules.mjs';
 import { Popover, focusRing } from '../dashboard/DashShell';
 
-// The capture how-to; the section is written with the extension (Task 11).
-export const EXTENSION_HELP_URL =
-  'https://github.com/Genoit/nextjs-frontend/blob/HEAD/browser-extension/README.md#capture-meta-ads';
+/** How to capture an ad with the browser extension, in three steps. */
+export function CaptureSteps() {
+  return (
+    <ol className="list-decimal space-y-1 pl-4 marker:text-studio-meta">
+      <li>Install the TrendED browser extension.</li>
+      <li>Open the ad in Meta&apos;s Ad Library.</li>
+      <li>
+        Click the extension, then <span className="text-white">Capture</span>. The video or images
+        are saved here, visible only to you.
+      </li>
+    </ol>
+  );
+}
 
 const PLATFORM_LABEL: Record<string, string> = {
   FACEBOOK: 'Facebook',
@@ -120,21 +130,9 @@ function CaptureHint() {
         button={<CircleHelp className="size-4" aria-hidden />}
       >
         {() => (
-          <div className="space-y-2 text-[12.5px] leading-[1.5] text-dash-soft">
-            <p>
-              Open this ad in Meta&apos;s Ad Library with the TrendED extension installed, then
-              click <span className="text-white">Capture</span>. The video or image is saved here,
-              visible only to you.
-            </p>
-            <a
-              href={EXTENSION_HELP_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`inline-flex items-center gap-1 rounded text-white underline underline-offset-2 hover:text-dash-soft ${focusRing}`}
-            >
-              How to capture ads
-              <ExternalLink className="size-3.5" aria-hidden />
-            </a>
+          <div className="text-[12.5px] leading-[1.5] text-dash-soft">
+            <p className="mb-1.5 font-semibold text-white">Capture this ad</p>
+            <CaptureSteps />
           </div>
         )}
       </Popover>
@@ -157,7 +155,11 @@ export function AdCard({ ad, onRemake }: { ad: AdOut; onRemake?: (ad: AdOut) => 
   return (
     <article className="flex w-full min-w-0 flex-col rounded-[14px] border border-dash-line bg-dash-panel">
       {ad.my_capture_ids.length > 0 && (
-        <CaptureMedia id={ad.my_capture_ids[0]} more={ad.my_capture_ids.length - 1} />
+        <CaptureMedia
+          key={ad.my_capture_ids[0]} // a new capture remounts: no stale or revoked URL
+          id={ad.my_capture_ids[0]}
+          more={ad.my_capture_ids.length - 1}
+        />
       )}
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-baseline justify-between gap-3">
@@ -199,7 +201,7 @@ export function AdCard({ ad, onRemake }: { ad: AdOut; onRemake?: (ad: AdOut) => 
             onClick={() => onRemake?.(ad)}
             disabled={!onRemake}
             title={onRemake ? undefined : 'Available soon'}
-            className={`inline-flex h-[38px] items-center justify-center gap-2 rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60 disabled:active:scale-100 ${focusRing}`}
+            className={`inline-flex h-[38px] items-center justify-center gap-2 rounded-[10px] border border-dash-edge bg-dash-raised px-4 text-[13px] font-semibold text-white transition hover:border-dash-edge-hover active:scale-[0.98] disabled:cursor-not-allowed disabled:text-studio-muted disabled:hover:border-dash-edge disabled:active:scale-100 ${focusRing}`}
           >
             <Wand2 className="size-4" aria-hidden />
             Remake this ad

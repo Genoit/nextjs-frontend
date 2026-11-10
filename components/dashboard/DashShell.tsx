@@ -210,6 +210,7 @@ const NAV: { label: string; Icon: typeof House; href: string }[] = [
 
 const isActive = (href: string, path: string) => path === href || path.startsWith(`${href}/`);
 
+// The rail shrinks on short windows so the plan card stays on screen (1440x900, 1366x768).
 function RailItem({ item, onNavigate }: { item: (typeof NAV)[number]; onNavigate?: () => void }) {
   const { label, Icon, href } = item;
   const active = isActive(href, usePathname() ?? '');
@@ -218,13 +219,17 @@ function RailItem({ item, onNavigate }: { item: (typeof NAV)[number]; onNavigate
       href={href}
       onClick={onNavigate}
       aria-current={active ? 'page' : undefined}
-      className={`flex h-[86px] w-[82px] flex-col items-center justify-center gap-2 rounded-[14px] text-[14px] transition ${
+      className={`flex h-[86px] w-[82px] flex-col items-center justify-center gap-2 rounded-[14px] text-[14px] transition [@media(max-height:1000px)]:h-[74px] [@media(max-height:820px)]:h-[58px] [@media(max-height:820px)]:gap-1 [@media(max-height:820px)]:text-[12.5px] ${
         active
           ? 'bg-ember-deep/25 text-ember-text shadow-[inset_0_1px_0_rgb(255_255_255/0.05)]'
           : 'text-dash-nav hover:bg-white/[0.05] hover:text-white'
       } ${focusRing}`}
     >
-      <Icon className="size-[25px]" strokeWidth={1.6} aria-hidden />
+      <Icon
+        className="size-[25px] [@media(max-height:820px)]:size-[21px]"
+        strokeWidth={1.6}
+        aria-hidden
+      />
       {label}
     </Link>
   );
@@ -318,17 +323,20 @@ function Rail({
   onNavigate?: () => void;
 }) {
   return (
-    <div className="pointer-events-auto flex min-h-full w-[93px] flex-col items-center pt-6 pb-4 pl-[5px]">
+    <div className="pointer-events-auto flex min-h-full w-[93px] flex-col items-center pt-6 pb-4 pl-[5px] [@media(max-height:820px)]:pt-4">
       <Link href="/dashboard" aria-label="TrendED home" className={`rounded-lg ${focusRing}`}>
         <BrandSymbol priority className="h-[55px] w-[56px]" />
       </Link>
-      <nav aria-label="Main" className="mt-[90px] flex flex-col items-center gap-[7px]">
+      <nav
+        aria-label="Main"
+        className="mt-[90px] flex flex-col items-center gap-[7px] [@media(max-height:1000px)]:mt-6 [@media(max-height:820px)]:mt-4 [@media(max-height:820px)]:gap-1"
+      >
         {NAV.map((item) => (
           <RailItem key={item.href} item={item} onNavigate={onNavigate} />
         ))}
       </nav>
       {/* The plan card is wider than the rail column and spills toward the content, as in the mockup. */}
-      <div className="mt-auto flex w-full flex-col gap-3 pt-8">
+      <div className="mt-auto flex w-full flex-col gap-3 pt-8 [@media(max-height:820px)]:gap-2 [@media(max-height:820px)]:pt-4">
         <div className="ml-[5px]">
           <PlanCard billing={billing} onNavigate={onNavigate} />
         </div>

@@ -92,7 +92,7 @@ export function AdFilters({
         </label>
         <button
           type="submit"
-          className={`h-[38px] shrink-0 rounded-[10px] border border-dash-edge bg-dash-raised px-4 text-[13px] font-semibold text-white transition hover:border-dash-edge-hover active:scale-[0.98] ${focusRing}`}
+          className={`h-[38px] shrink-0 rounded-[10px] bg-trend-orange px-4 text-[13px] font-semibold text-on-accent transition hover:bg-trend-orange-strong active:scale-[0.98] ${focusRing}`}
         >
           Search
         </button>
