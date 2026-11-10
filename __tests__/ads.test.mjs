@@ -1,0 +1,73 @@
+import { describe, it } from 'node:test';
+import assert from 'node:assert';
+import {
+  ADS_ERROR_TEXT,
+  adIdFromLibraryUrl,
+  adsErrorText,
+  isAdLibraryUrl,
+  reachLabel,
+  runTimeLabel,
+} from '../lib/ads-rules.mjs';
+
+describe('reachLabel', () => {
+  it('formats compactly and labels the estimate', () => {
+    assert.strictEqual(reachLabel(1234567), '1.2M EU reach (Meta estimate)');
+    assert.strictEqual(reachLabel(12345), '12K EU reach (Meta estimate)');
+    assert.strictEqual(reachLabel(999), '999 EU reach (Meta estimate)');
+    assert.strictEqual(reachLabel(0), '0 EU reach (Meta estimate)');
+  });
+  it('handles null', () => {
+    assert.strictEqual(reachLabel(null), 'Reach not reported');
+  });
+});
+
+describe('runTimeLabel', () => {
+  it('singular for 0 and 1', () => {
+    assert.strictEqual(runTimeLabel(0), '1 day');
+    assert.strictEqual(runTimeLabel(1), '1 day');
+    assert.strictEqual(runTimeLabel(14), '14 days');
+  });
+});
+
+describe('error text', () => {
+  const codes = [
+    'search_limit_reached',
+    'follow_limit_reached',
+    'capture_limit_reached',
+    'capture_lookup_limit',
+    'meta_not_configured',
+    'meta_busy',
+    'ad_not_found',
+    'advertiser_not_found',
+    'capture_not_found',
+    'unsupported_media',
+    'file_too_large',
+    'invalid_cursor',
+  ];
+  it('covers every backend code', () => {
+    for (const c of codes) assert.ok(ADS_ERROR_TEXT[c], c);
+  });
+  it('falls back for unknown codes', () => {
+    assert.ok(adsErrorText('nope').length > 0);
+    assert.ok(adsErrorText(undefined).length > 0);
+    assert.strictEqual(adsErrorText('meta_busy'), ADS_ERROR_TEXT.meta_busy);
+  });
+});
+
+describe('library urls', () => {
+  it('recognises Ad Library urls', () => {
+    assert.ok(isAdLibraryUrl('https://www.facebook.com/ads/library/?id=123'));
+    assert.ok(isAdLibraryUrl('https://facebook.com/ads/library/?id=123'));
+    assert.ok(!isAdLibraryUrl('https://evil.com/ads/library/?id=123'));
+    assert.ok(!isAdLibraryUrl('https://www.facebook.com.evil.com/ads/library/'));
+    assert.ok(!isAdLibraryUrl('https://www.facebook.com/somepage'));
+    assert.ok(!isAdLibraryUrl('not a url'));
+  });
+  it('reads the digits of ?id=', () => {
+    assert.strictEqual(adIdFromLibraryUrl('https://www.facebook.com/ads/library/?id=12345'), '12345');
+    assert.strictEqual(adIdFromLibraryUrl('https://www.facebook.com/ads/library/?id=12a'), null);
+    assert.strictEqual(adIdFromLibraryUrl('https://www.facebook.com/ads/library/'), null);
+    assert.strictEqual(adIdFromLibraryUrl('https://evil.com/ads/library/?id=1'), null);
+    assert.strictEqual(adIdFromLibraryUrl('garbage'), null);
+  });
+});

@@ -241,6 +241,7 @@ export interface CreativeStrategy extends CreativeGenerationMeta {
   brief: CreativeBrief | null;
   angles: CreativeAngle[];
   chosen_angle_id: string | null;
+  ref_ad_id?: string | null;
   status?: string;
   analysis_id?: string | null;
   id: string;
@@ -278,6 +279,16 @@ export interface CreativeStrategyGeneratePayload {
   config_id?: string;
   custom_instructions?: string;
   force?: boolean;
+  /** Remake this indexed Meta ad (structure only). */
+  ref_ad_id?: string;
+}
+
+export interface StrategySummary {
+  id: string;
+  ref_ad_id: string | null;
+  ref_page_name: string | null;
+  status: CreativeGenerationStatus;
+  created_at: string;
 }
 
 export interface StoryboardVersionSummary {

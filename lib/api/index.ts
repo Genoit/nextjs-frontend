@@ -6,3 +6,5 @@ export * from './assets';
 export * from './billing';
 export * from './autopilot';
 export * from './shopify';
+export * from './ads';
+export * from './notifications';

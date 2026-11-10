@@ -4,6 +4,7 @@ import {
   CreativeConfigCreatePayload,
   CreativeStrategy,
   CreativeStrategyGeneratePayload,
+  StrategySummary,
   Storyboard,
   StoryboardUpdatePayload,
   StoryboardVersionSummary,
@@ -59,6 +60,12 @@ export const creativeApi = {
     });
   },
 
+  /** Strategies of a product, newest first: the standard one and every remake. */
+  async listStrategies(productId: string): Promise<StrategySummary[]> {
+    const url = `${CREATIVE_BASE_PATH}/products/${productId}/strategies`;
+    return fetchWithAuth<StrategySummary[]>(url, { method: 'GET' });
+  },
+
   /**
    * Fetch current creative strategy for a product
    */
@@ -70,8 +77,9 @@ export const creativeApi = {
   /**
    * Latest strategy of a product, or null when none exists (the API answers 200 `null`).
    */
-  async getLatestStrategy(productId: string): Promise<CreativeStrategy | null> {
-    const url = `${CREATIVE_BASE_PATH}/products/${productId}/strategy`;
+  async getLatestStrategy(productId: string, refAdId?: string): Promise<CreativeStrategy | null> {
+    const query = refAdId ? `?ref_ad_id=${encodeURIComponent(refAdId)}` : '';
+    const url = `${CREATIVE_BASE_PATH}/products/${productId}/strategy${query}`;
     return configOrNull(await fetchWithAuth<CreativeStrategy | null>(url, { method: 'GET' }));
   },
 
