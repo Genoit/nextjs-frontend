@@ -271,7 +271,7 @@ export function SendToShopify({ productId }: { productId: string }) {
             .map((l) => (
               <ConflictPanel
                 // A new set of diffs (after a poll or a reload) starts the choices over.
-                key={`${l.id}:${l.diffs.map((d) => d.field).join(',')}`}
+                key={`${l.id}:${(l.diffs ?? []).map((d) => d.field).join(',')}`}
                 listing={l}
                 variantName={variantName}
                 onResolved={setListing}

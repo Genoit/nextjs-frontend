@@ -82,8 +82,8 @@ export interface ShopifyListing {
   last_error: string | null;
   /** `fixed` after keeping Shopify's price in a conflict, until the rule is turned back on. */
   price_source: 'rule' | 'override' | 'fixed';
-  /** Only filled for listings in conflict. */
-  diffs: FieldDiff[];
+  /** Only filled for listings in conflict; null when Shopify could not be read. */
+  diffs: FieldDiff[] | null;
 }
 
 export interface ShopifyAlert {

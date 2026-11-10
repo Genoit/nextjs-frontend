@@ -45,8 +45,10 @@ export function ConflictPanel({
   /** Shopify changed since these diffs were read: reload them. */
   onStale: () => void;
 }) {
-  const fields = listing.diffs.filter((d) => conflictChoices(d.field).length > 0);
-  const added = listing.diffs.filter((d) => conflictChoices(d.field).length === 0);
+  const unreachable = listing.diffs === null;
+  const diffs = listing.diffs ?? [];
+  const fields = diffs.filter((d) => conflictChoices(d.field).length > 0);
+  const added = diffs.filter((d) => conflictChoices(d.field).length === 0);
   const [picked, setPicked] = useState<Record<string, ResolveChoice>>(() =>
     Object.fromEntries(
       fields.filter((d) => conflictChoices(d.field).length === 1).map((d) => [d.field, 'trended']),
@@ -99,9 +101,14 @@ export function ConflictPanel({
         </div>
       </div>
 
-      {listing.diffs.length === 0 && (
+      {unreachable && (
         <p className="mt-4 text-[13px] text-studio-muted">
           Shopify could not be reached to show the differences. Reload the page in a minute.
+        </p>
+      )}
+      {!unreachable && fields.length === 0 && (
+        <p className="mt-4 text-[13px] text-studio-muted">
+          No differences left to choose. Sync again to resume automatic updates.
         </p>
       )}
 
@@ -174,7 +181,7 @@ export function ConflictPanel({
         ))}
       </div>
 
-      {fields.length > 0 && (
+      {!unreachable && (
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -183,7 +190,7 @@ export function ConflictPanel({
             className={secondaryBtn}
           >
             {busy && <Loader2 className="size-4 animate-spin" aria-hidden />}
-            Apply and sync
+            {fields.length > 0 ? 'Apply and sync' : 'Sync again'}
           </button>
           {missing > 0 && (
             <span className="text-[12.5px] text-studio-muted">
