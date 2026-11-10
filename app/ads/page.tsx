@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Loader2 } from 'lucide-react';
-import { adsApi, type AdSearchParams, type SearchPage } from '../../lib/api/ads';
+import { adsApi, type AdOut, type AdSearchParams, type SearchPage } from '../../lib/api/ads';
+import { RemakeDialog } from '../../components/ads/RemakeDialog';
 import { AdFilters } from '../../components/ads/AdFilters';
 import { AdGrid } from '../../components/ads/AdCard';
 import { AdsError, EmptyState, GridSkeleton, LoadMore } from '../../components/ads/AdvertiserRow';
@@ -12,6 +13,7 @@ const POLL_MS = 4000;
 
 export default function AdSearchPage() {
   const [params, setParams] = useState<AdSearchParams>({ sort: 'recent' });
+  const [remake, setRemake] = useState<AdOut | null>(null);
   const [page, setPage] = useState<SearchPage | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
@@ -114,7 +116,8 @@ export default function AdSearchPage() {
           </EmptyState>
         ) : (
           <div className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
-            <AdGrid ads={items} />
+            <AdGrid ads={items} onRemake={setRemake} />
+            <RemakeDialog ad={remake} onClose={() => setRemake(null)} />
             {page?.next_cursor && <LoadMore busy={more.busy} onClick={loadMore} />}
             {more.error != null && <AdsError error={more.error} className="mt-3 text-center" />}
           </div>

@@ -66,6 +66,12 @@ export const creativeApi = {
     return fetchWithAuth<StrategySummary[]>(url, { method: 'GET' });
   },
 
+  /** One strategy by id (the strategy picker switches between them). */
+  async getStrategyById(strategyId: string): Promise<CreativeStrategy> {
+    const url = `${CREATIVE_BASE_PATH}/strategy/${strategyId}`;
+    return fetchWithAuth<CreativeStrategy>(url, { method: 'GET' });
+  },
+
   /**
    * Fetch current creative strategy for a product
    */

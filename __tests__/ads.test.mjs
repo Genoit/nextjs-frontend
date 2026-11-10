@@ -7,6 +7,7 @@ import {
   isAdLibraryUrl,
   reachLabel,
   runTimeLabel,
+  strategyChoices,
 } from '../lib/ads-rules.mjs';
 
 describe('reachLabel', () => {
@@ -64,10 +65,37 @@ describe('library urls', () => {
     assert.ok(!isAdLibraryUrl('not a url'));
   });
   it('reads the digits of ?id=', () => {
-    assert.strictEqual(adIdFromLibraryUrl('https://www.facebook.com/ads/library/?id=12345'), '12345');
+    assert.strictEqual(
+      adIdFromLibraryUrl('https://www.facebook.com/ads/library/?id=12345'),
+      '12345',
+    );
     assert.strictEqual(adIdFromLibraryUrl('https://www.facebook.com/ads/library/?id=12a'), null);
     assert.strictEqual(adIdFromLibraryUrl('https://www.facebook.com/ads/library/'), null);
     assert.strictEqual(adIdFromLibraryUrl('https://evil.com/ads/library/?id=1'), null);
     assert.strictEqual(adIdFromLibraryUrl('garbage'), null);
+  });
+});
+
+describe('strategyChoices', () => {
+  const s = (id, ref, name = null) => ({ id, ref_ad_id: ref, ref_page_name: name });
+  it('keeps the newest of each kind, standard first', () => {
+    const got = strategyChoices([
+      s('r2', '111', 'Nike'),
+      s('st2', null),
+      s('r1', '111', 'Nike'),
+      s('x', '222'),
+      s('st1', null),
+    ]);
+    assert.deepStrictEqual(got, [
+      { id: 'st2', refAdId: null, label: 'Standard' },
+      { id: 'r2', refAdId: '111', label: "Inspired by Nike's ad" },
+      { id: 'x', refAdId: '222', label: 'Inspired by a removed ad' },
+    ]);
+  });
+  it('has no standard option before one exists', () => {
+    assert.deepStrictEqual(
+      strategyChoices([s('r', '1', 'A')]).map((c) => c.id),
+      ['r'],
+    );
   });
 });

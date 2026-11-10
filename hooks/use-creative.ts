@@ -19,6 +19,8 @@ import { isTerminalJob, shotTransitionMessage } from '../lib/render-rules.mjs';
 export interface UseCreativeReturn {
   // State
   configLoaded: boolean;
+  /** True once the saved strategy (standard, or the `refAdId` remake) was looked up. */
+  strategyChecked: boolean;
   creativeConfig: CreativeConfig | null;
   strategy: CreativeStrategy | null;
   storyboard: Storyboard | null;
@@ -45,8 +47,15 @@ export interface UseCreativeReturn {
   saveCreativeConfig: (payload: CreativeConfigCreatePayload) => Promise<CreativeConfig | null>;
   generateStrategy: (
     productId: string,
-    options?: { configId?: string; customInstructions?: string; force?: boolean },
+    options?: {
+      configId?: string;
+      customInstructions?: string;
+      force?: boolean;
+      refAdId?: string;
+    },
   ) => Promise<CreativeStrategy | null>;
+  /** Show another saved strategy of the product (the standard one or a remake). */
+  openStrategy: (strategyId: string) => Promise<CreativeStrategy | null>;
   generateStoryboardForAngle: (
     strategyId: string,
     angleId: string,
@@ -74,7 +83,8 @@ export interface UseCreativeReturn {
   resetError: () => void;
 }
 
-export function useCreative(initialProductId?: string): UseCreativeReturn {
+/** `refAdId`: restore the latest remake of that Meta ad instead of the standard strategy. */
+export function useCreative(initialProductId?: string, refAdId?: string): UseCreativeReturn {
   const [creativeConfig, setCreativeConfig] = useState<CreativeConfig | null>(null);
   const [strategy, setStrategy] = useState<CreativeStrategy | null>(null);
   const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
@@ -84,6 +94,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
 
   // False until the saved config (or its absence) is known: the setup step waits on it.
   const [configLoaded, setConfigLoaded] = useState(false);
+  const [strategyChecked, setStrategyChecked] = useState(false);
   const [isSavingConfig, setIsSavingConfig] = useState(false);
   const [isGeneratingStrategy, setIsGeneratingStrategy] = useState(false);
   const [isGeneratingStoryboard, setIsGeneratingStoryboard] = useState(false);
@@ -169,7 +180,12 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
   const generateStrategy = useCallback(
     async (
       productId: string,
-      options: { configId?: string; customInstructions?: string; force?: boolean } = {},
+      options: {
+        configId?: string;
+        customInstructions?: string;
+        force?: boolean;
+        refAdId?: string;
+      } = {},
     ) => {
       if (!claim('strategy')) return null;
       const epoch = ++epochRef.current;
@@ -181,6 +197,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
           config_id: options.configId,
           custom_instructions: options.customInstructions,
           force: options.force,
+          ref_ad_id: options.refAdId,
         });
         if (epoch !== epochRef.current) return null;
         sbSeqRef.current += 1;
@@ -197,6 +214,27 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
       } finally {
         release('strategy');
         setIsGeneratingStrategy(false);
+      }
+    },
+    [fail],
+  );
+
+  const openStrategy = useCallback(
+    async (strategyId: string) => {
+      const epoch = ++epochRef.current;
+      setErrorState(null);
+      try {
+        const data = await creativeApi.getStrategyById(strategyId);
+        if (epoch !== epochRef.current) return null;
+        sbSeqRef.current += 1;
+        setStrategy(data);
+        setStoryboard(null);
+        setStoryboardVersions([]);
+        setCost(null);
+        return data;
+      } catch (err: unknown) {
+        if (epoch === epochRef.current) fail(err, 'Could not load this strategy.');
+        return null;
       }
     },
     [fail],
@@ -521,6 +559,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
       const epoch = epochRef.current;
       const stale = () => isCancelled || epoch !== epochRef.current;
       setConfigLoaded(false);
+      setStrategyChecked(false);
       try {
         const data = await creativeApi.getCreativeConfig(initialProductId);
         if (!isCancelled) setCreativeConfig(data);
@@ -532,7 +571,8 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
       // Restore the work after a reload: latest strategy, then its accepted (else latest)
       // storyboard version through loadStoryboard, then versions + cost. Never blocks the page.
       try {
-        const latest = await creativeApi.getLatestStrategy(initialProductId);
+        const latest = await creativeApi.getLatestStrategy(initialProductId, refAdId);
+        if (!stale()) setStrategyChecked(true);
         if (stale() || !latest) return;
         setStrategy(latest);
         const versions = await creativeApi.listStoryboards(latest.id);
@@ -557,10 +597,11 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     return () => {
       isCancelled = true;
     };
-  }, [initialProductId, fail, stopPolling, loadStoryboard, refreshStoryboardContext]);
+  }, [initialProductId, refAdId, fail, stopPolling, loadStoryboard, refreshStoryboardContext]);
 
   return {
     configLoaded,
+    strategyChecked,
     creativeConfig,
     strategy,
     storyboard,
@@ -580,6 +621,7 @@ export function useCreative(initialProductId?: string): UseCreativeReturn {
     fetchCreativeConfig,
     saveCreativeConfig,
     generateStrategy,
+    openStrategy,
     generateStoryboardForAngle,
     loadStoryboard,
     updateStoryboard,

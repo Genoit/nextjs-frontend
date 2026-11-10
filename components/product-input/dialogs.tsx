@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight, ExternalLink, Star, X } from 'lucide-react';
 import { ProductImageItem } from './types';
 
 /** Native modal <dialog>: top layer, inert page, Escape, focus returns to the opener on close. */
-function useModal(open: boolean, onClose: () => void) {
+export function useModal(open: boolean, onClose: () => void) {
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
     const d = ref.current;

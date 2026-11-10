@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adsApi, type SearchPage } from '../../../lib/api/ads';
+import { adsApi, type AdOut, type SearchPage } from '../../../lib/api/ads';
+import { RemakeDialog } from '../../../components/ads/RemakeDialog';
 import { AdGrid, CaptureSteps } from '../../../components/ads/AdCard';
 import {
   AdsError,
@@ -12,6 +13,7 @@ import {
 
 export default function CapturesPage() {
   const [page, setPage] = useState<SearchPage | null>(null);
+  const [remake, setRemake] = useState<AdOut | null>(null);
   const [error, setError] = useState<unknown>(null);
   const [more, setMore] = useState<{ busy: boolean; error: unknown }>({ busy: false, error: null });
 
@@ -53,7 +55,8 @@ export default function CapturesPage() {
   }
   return (
     <>
-      <AdGrid ads={page.items} />
+      <AdGrid ads={page.items} onRemake={setRemake} />
+      <RemakeDialog ad={remake} onClose={() => setRemake(null)} />
       {page.next_cursor && <LoadMore busy={more.busy} onClick={loadMore} />}
       {more.error != null && <AdsError error={more.error} className="mt-3 text-center" />}
     </>

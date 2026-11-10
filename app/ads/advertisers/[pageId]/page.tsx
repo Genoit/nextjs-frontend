@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
-import { adsApi, type AdvertiserDetail } from '../../../../lib/api/ads';
+import { adsApi, type AdOut, type AdvertiserDetail } from '../../../../lib/api/ads';
+import { RemakeDialog } from '../../../../components/ads/RemakeDialog';
 import { reachLabel } from '../../../../lib/ads-rules.mjs';
 import { AdGrid, shortDate } from '../../../../components/ads/AdCard';
 import {
@@ -27,6 +28,7 @@ function Stat({ label, value }: { label: string; value: string }) {
 export default function AdvertiserPage() {
   const { pageId } = useParams<{ pageId: string }>();
   const [adv, setAdv] = useState<AdvertiserDetail | null>(null);
+  const [remake, setRemake] = useState<AdOut | null>(null);
   const [error, setError] = useState<unknown>(null);
 
   useEffect(() => {
@@ -106,7 +108,10 @@ export default function AdvertiserPage() {
           <p>Follow it to get an alert when it launches new ads.</p>
         </EmptyState>
       ) : (
-        <AdGrid ads={adv.ads} />
+        <>
+          <AdGrid ads={adv.ads} onRemake={setRemake} />
+          <RemakeDialog ad={remake} onClose={() => setRemake(null)} />
+        </>
       )}
     </>
   );

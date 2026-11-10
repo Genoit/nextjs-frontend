@@ -36,7 +36,10 @@ function ProductInputPage() {
   const router = useRouter();
   // Once saved, the product stays on this page (?product=) through the format, the angle and
   // the video; a reload resumes where the workflow stands.
-  const productId = useSearchParams().get('product');
+  const query = useSearchParams();
+  const productId = query.get('product');
+  // "Remake this ad" (Ad Library): kept through the import so the remake applies once saved.
+  const refAdId = query.get('ref_ad') ?? undefined;
   const [selectedStep, setSelectedStep] = useState<Step | null>(null);
   const [shownStep, setShownStep] = useState<Step>(2);
   const draft = useProductDraft();
@@ -98,7 +101,9 @@ function ProductInputPage() {
     const id = await draft.submit();
     if (id) {
       setSelectedStep(null);
-      router.replace(nextStepHref(id));
+      router.replace(
+        refAdId ? `${nextStepHref(id)}&ref_ad=${encodeURIComponent(refAdId)}` : nextStepHref(id),
+      );
       return;
     }
     // Blocked: errors are now shown under each field; take the merchant to the first one.
@@ -187,8 +192,9 @@ function ProductInputPage() {
           {productId ? (
             <div className="mt-8">
               <CreativeAdWorkflow
-                key={productId}
+                key={`${productId}:${refAdId ?? ''}`}
                 productId={productId}
+                refAdId={refAdId}
                 autoAnalyze
                 selectedStep={selectedStep}
                 onSelectStep={setSelectedStep}

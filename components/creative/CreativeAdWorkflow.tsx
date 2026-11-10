@@ -8,6 +8,7 @@ import { useCreative } from '../../hooks/use-creative';
 import { useProductAnalysis } from '../../hooks/use-product-analysis';
 import { CreativeConfigForm } from './CreativeConfigForm';
 import { StrategyPreview } from './StrategyPreview';
+import { StrategyPicker } from './StrategyPicker';
 import { VideoHistory } from './VideoHistory';
 import { CreativeConfigCreatePayload, Storyboard, TargetPlatform } from '../../lib/types/creative';
 import { AD_SETTINGS_KEY, parseAdSettings } from '../../lib/ad-settings-rules.mjs';
@@ -21,6 +22,8 @@ interface Props {
   onStepChange?: (step: Step) => void;
   /** Start the product analysis on arrival so it is ready when the setup is saved. */
   autoAnalyze?: boolean;
+  /** Remake this Meta ad: the strategy step makes (or reopens) a strategy inspired by it. */
+  refAdId?: string;
 }
 
 /**
@@ -61,6 +64,7 @@ export function CreativeAdWorkflow({
   onSelectStep,
   onStepChange,
   autoAnalyze = false,
+  refAdId,
 }: Props) {
   // openSetup (Templates page) shows the setup even when one is already saved.
   const [localStep, setLocalStep] = useState<Step | null>(openSetup ? 2 : null);
@@ -73,6 +77,7 @@ export function CreativeAdWorkflow({
 
   const {
     configLoaded,
+    strategyChecked,
     creativeConfig,
     strategy,
     activeJob,
@@ -81,12 +86,13 @@ export function CreativeAdWorkflow({
     error,
     saveCreativeConfig,
     generateStrategy,
+    openStrategy,
     generateStoryboardForAngle,
     acceptStoryboard,
     startVideoGeneration,
     openVideoJob,
     resetError,
-  } = useCreative(productId);
+  } = useCreative(productId, refAdId);
 
   // The product sheet is for the system only: it is prepared silently, never shown.
   const productAnalysis = useProductAnalysis(productId);
@@ -114,23 +120,40 @@ export function CreativeAdWorkflow({
     onStepChange?.(currentStep);
   }, [currentStep, onStepChange]);
 
+  const ensureReadable = useCallback(async () => {
+    setChainError(null);
+    const ready = await ensureAnalysis();
+    if (ready && USABLE_ANALYSIS.has(ready.status)) return true;
+    setChainError(
+      'We could not read this product. Check its title and description, then try again.',
+    );
+    return false;
+  }, [ensureAnalysis]);
+
   const handleConfigSubmit = useCallback(
     async (payload: CreativeConfigCreatePayload) => {
-      setChainError(null);
-      const ready = await ensureAnalysis();
-      if (!ready || !USABLE_ANALYSIS.has(ready.status)) {
-        setChainError(
-          'We could not read this product. Check its title and description, then try again.',
-        );
-        return;
-      }
+      if (!(await ensureReadable())) return;
       const saved = await saveCreativeConfig(payload);
       if (!saved) return;
-      const strat = await generateStrategy(productId, { configId: saved.id });
+      const strat = await generateStrategy(productId, { configId: saved.id, refAdId });
       if (strat) setPicked(3);
     },
-    [ensureAnalysis, saveCreativeConfig, generateStrategy, productId, setPicked],
+    [ensureReadable, saveCreativeConfig, generateStrategy, productId, refAdId, setPicked],
   );
+
+  // Remake with a saved setup: open the angles and make the inspired strategy if none exists.
+  // Without a setup, the setup step shows and its submit makes the remake.
+  const makeRemake = useCallback(async () => {
+    if (!refAdId || !creativeConfig || !(await ensureReadable())) return;
+    await generateStrategy(productId, { configId: creativeConfig.id, refAdId });
+  }, [refAdId, creativeConfig, ensureReadable, generateStrategy, productId]);
+  const remakeStarted = useRef(false);
+  useEffect(() => {
+    if (!refAdId || remakeStarted.current || !strategyChecked || !creativeConfig) return;
+    remakeStarted.current = true;
+    setPicked(3);
+    if (!strategy) void Promise.resolve().then(makeRemake); // after this render, not inside it
+  }, [refAdId, strategyChecked, creativeConfig, strategy, setPicked, makeRemake]);
 
   // Format, length and language already picked in the dashboard composer: skip the setup.
   const skipChecked = useRef(false);
@@ -208,7 +231,7 @@ export function CreativeAdWorkflow({
       )}
 
       {currentStep === 2 &&
-        (autoSetup || (!configLoaded && !openSetup) ? (
+        (autoSetup || (!configLoaded && !openSetup) || (refAdId && !strategyChecked && !error) ? (
           <Working
             title="Finding the angles that sell this product…"
             detail="Using the format, length and language you picked."
@@ -237,19 +260,46 @@ export function CreativeAdWorkflow({
         ) : isGeneratingStrategy && !strategy ? (
           <Working
             title="Finding the angles that sell this product…"
-            detail="Audience, hook and style are chosen for the sale."
+            detail={
+              refAdId
+                ? 'Taking the structure of the ad you picked, never its words or footage.'
+                : 'Audience, hook and style are chosen for the sale.'
+            }
           />
         ) : strategy ? (
-          <StrategyPreview
-            key={strategy.id}
-            strategy={strategy}
-            onChooseAngle={handleChooseAngle}
-            onRegenerate={async () => {
-              await generateStrategy(productId, { configId: creativeConfig?.id, force: true });
-            }}
-            isProducing={producing !== null}
-            isRegenerating={isGeneratingStrategy}
-          />
+          <div className="space-y-6">
+            <StrategyPicker
+              productId={productId}
+              strategy={strategy}
+              onOpen={openStrategy}
+              disabled={producing !== null || isGeneratingStrategy}
+            />
+            <StrategyPreview
+              key={strategy.id}
+              strategy={strategy}
+              onChooseAngle={handleChooseAngle}
+              onRegenerate={async () => {
+                await generateStrategy(productId, {
+                  configId: creativeConfig?.id,
+                  force: true,
+                  // Regenerate the strategy shown: the remake stays a remake.
+                  refAdId: strategy.ref_ad_id ?? undefined,
+                });
+              }}
+              isProducing={producing !== null}
+              isRegenerating={isGeneratingStrategy}
+            />
+          </div>
+        ) : refAdId && creativeConfig ? (
+          <div className="py-16">
+            <button
+              type="button"
+              onClick={() => void makeRemake()}
+              className="inline-flex min-h-11 items-center rounded-xl bg-trend-orange px-5 text-sm font-semibold text-on-accent transition hover:bg-trend-orange-strong focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-trend-orange"
+            >
+              Try the remake again
+            </button>
+          </div>
         ) : (
           <p className="py-16 text-sm text-studio-muted">Save the format and length first.</p>
         ))}
