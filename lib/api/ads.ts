@@ -87,7 +87,9 @@ function query(params: object): string {
  * which core.ts keeps as the message, so fall back to it when there is no code.
  */
 export function adsErrorCode(err: unknown): string | undefined {
-  return err instanceof ApiRequestError ? (err.code ?? err.message) : undefined;
+  if (!(err instanceof ApiRequestError)) return undefined;
+  // The API's handler adds a generic `HTTP_402`-style code; the real code is the detail.
+  return err.code && !err.code.startsWith('HTTP_') ? err.code : err.message;
 }
 
 export const adsApi = {

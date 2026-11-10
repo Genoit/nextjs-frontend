@@ -1,67 +1,121 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import ProtectedRoute from '../../components/ProtectedRoute';
-import { autopilotApi } from '../../lib/api/autopilot';
-import { AutopilotRun } from '../../lib/types/autopilot';
-import { statusLabel } from '../../lib/autopilot-rules.mjs';
+import { Loader2 } from 'lucide-react';
+import { adsApi, type AdSearchParams, type SearchPage } from '../../lib/api/ads';
+import { AdFilters } from '../../components/ads/AdFilters';
+import { AdGrid } from '../../components/ads/AdCard';
+import { AdsError, EmptyState, GridSkeleton, LoadMore } from '../../components/ads/AdvertiserRow';
 
-export default function AdsPage() {
-  const [runs, setRuns] = useState<AutopilotRun[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+const POLLS = 2; // while Meta is asked for more, re-run the search twice, 4 s apart
+const POLL_MS = 4000;
+
+export default function AdSearchPage() {
+  const [params, setParams] = useState<AdSearchParams>({ sort: 'recent' });
+  const [page, setPage] = useState<SearchPage | null>(null);
+  const [error, setError] = useState<unknown>(null);
+  const [loading, setLoading] = useState(true);
+  const [more, setMore] = useState<{ busy: boolean; error: unknown }>({ busy: false, error: null });
 
   useEffect(() => {
-    autopilotApi.list().then(setRuns, () => setError('Impossible de charger vos pubs.'));
-  }, []);
+    let alive = true;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let polls = 0;
+    const run = () =>
+      adsApi.search(params).then(
+        (p) => {
+          if (!alive) return;
+          setPage(p);
+          setError(null);
+          setLoading(false);
+          if (p.refreshing && polls < POLLS) {
+            polls += 1;
+            timer = setTimeout(run, POLL_MS);
+          }
+        },
+        (e) => {
+          if (!alive) return;
+          setError(e);
+          setLoading(false);
+        },
+      );
+    run();
+    return () => {
+      alive = false;
+      clearTimeout(timer);
+    };
+  }, [params]);
+
+  const loadMore = async () => {
+    if (!page?.next_cursor) return;
+    setMore({ busy: true, error: null });
+    try {
+      const next = await adsApi.search({ ...params, cursor: page.next_cursor });
+      setPage({ ...next, items: [...page.items, ...next.items] });
+      setMore({ busy: false, error: null });
+    } catch (e) {
+      setMore({ busy: false, error: e });
+    }
+  };
+
+  const filtered = Boolean(
+    params.q ||
+    params.country ||
+    params.platform ||
+    params.started_after ||
+    params.active !== undefined,
+  );
+  const items = page?.items ?? [];
 
   return (
-    <ProtectedRoute>
-      <main className="min-h-dvh bg-cream px-4 py-8 text-ink sm:px-6">
-        <div className="mx-auto max-w-2xl space-y-6">
-          <nav className="flex items-center justify-between text-sm">
-            <Link href="/dashboard" className="font-semibold text-ink-muted hover:text-ink">
-              ← Studio
-            </Link>
-            <Link
-              href="/product-input"
-              className="rounded-xl bg-trend-orange px-4 py-2 font-bold text-white hover:bg-trend-orange-strong"
-            >
-              Nouvelle pub
-            </Link>
-          </nav>
-          <h1 className="text-[26px] font-black tracking-tight md:text-[32px]">Vos pubs</h1>
-          {error && (
-            <p role="alert" className="text-danger">
-              {error}
+    <>
+      <AdFilters
+        value={params}
+        onChange={(next) => {
+          setLoading(true);
+          setParams(next);
+        }}
+      />
+
+      <div className="mt-6" aria-live="polite">
+        {page?.refreshing && !loading && (
+          <p className="mb-4 flex items-center gap-2 text-[13px] text-studio-muted">
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+            Asking Meta&apos;s Ad Library for more ads on this search. New ones appear here within
+            minutes.
+          </p>
+        )}
+        {loading && !page ? (
+          <GridSkeleton />
+        ) : error ? (
+          <AdsError error={error} />
+        ) : items.length === 0 && !filtered ? (
+          <EmptyState title="The ad index is still filling up">
+            <p>
+              Ads come from Meta&apos;s official Ad Library API: ads shown to people in the EU, with
+              Meta&apos;s reach estimates. Every 10 minutes we index popular product searches, and
+              every search you run asks Meta for more.
             </p>
-          )}
-          {runs?.length === 0 && (
-            <p className="text-ink-muted">
-              Aucune pub pour l&apos;instant. Collez le lien d&apos;un produit pour commencer.
+            <p>Search for a product or a brand to start.</p>
+          </EmptyState>
+        ) : items.length === 0 ? (
+          <EmptyState
+            title={params.q ? `No ads match "${params.q}" yet` : 'No ads match these filters'}
+          >
+            <p>
+              {page?.refreshing
+                ? 'We asked Meta for this search. Results land here within a few minutes.'
+                : 'Try a broader word, another country or fewer filters.'}
             </p>
-          )}
-          <ul className="space-y-3">
-            {runs?.map((r) => (
-              <li key={r.id}>
-                <Link
-                  href={`/ads/${encodeURIComponent(r.id)}`}
-                  className="flex items-center justify-between gap-4 rounded-2xl border border-line bg-white p-4 hover:border-ink-muted"
-                >
-                  <span className="min-w-0">
-                    <span className="block truncate font-bold">{r.facts?.name ?? 'Produit'}</span>
-                    <span className="text-sm text-ink-muted">{statusLabel(r.status)}</span>
-                  </span>
-                  <span className="shrink-0 text-sm text-ink-muted">
-                    {r.variants.filter((v) => v.status === 'ready').length}/{r.variant_count} prête
-                    {r.variant_count > 1 ? 's' : ''}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      </main>
-    </ProtectedRoute>
+          </EmptyState>
+        ) : (
+          <div className={loading ? 'opacity-60 transition-opacity' : 'transition-opacity'}>
+            <AdGrid ads={items} />
+            {page?.next_cursor && <LoadMore busy={more.busy} onClick={loadMore} />}
+            {more.error != null && <AdsError error={more.error} className="mt-3 text-center" />}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

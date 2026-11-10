@@ -6,13 +6,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import {
-  Bell,
   ChevronDown,
   Clapperboard,
   Crown,
   Folder,
   House,
   Image as ImageIcon,
+  Library,
   LogOut,
   Menu,
   MoreHorizontal,
@@ -30,6 +30,7 @@ import ProtectedRoute from '../ProtectedRoute';
 import { rememberReturnTo, useAuth } from '../../lib/auth';
 import { useStudioTheme } from '../../lib/theme';
 import { BrandSymbol } from '../Icons';
+import { NotificationBell } from '../notifications/NotificationBell';
 import { productApi } from '../../lib/api/product';
 import { creativeApi } from '../../lib/api/creative';
 import { billingApi, type BillingPlan, type BillingSummary } from '../../lib/api/billing';
@@ -201,6 +202,7 @@ const NAV: { label: string; Icon: typeof House; href: string }[] = [
   { label: 'New ad', Icon: Plus, href: '/product-input' },
   { label: 'Home', Icon: House, href: '/dashboard' },
   { label: 'Generate', Icon: Clapperboard, href: '/generate' },
+  { label: 'Ad library', Icon: Library, href: '/ads' },
   { label: 'Studio', Icon: Sparkles, href: '/studio' },
   { label: 'Library', Icon: Folder, href: '/projects' },
   { label: 'Assets', Icon: ImageIcon, href: '/products' },
@@ -444,14 +446,7 @@ function Header({
         </span>
       </Link>
       <div className="ml-auto flex items-center gap-6 lg:gap-9">
-        <Popover
-          label="Notifications"
-          className="top-11 right-0 w-64"
-          buttonClassName="size-10 text-white"
-          button={<Bell className="size-[22px]" strokeWidth={1.6} aria-hidden />}
-        >
-          {() => <p className="px-3 py-3 text-[13px] text-studio-muted">No notifications yet.</p>}
-        </Popover>
+        <NotificationBell />
         <AccountMenu />
       </div>
     </header>
