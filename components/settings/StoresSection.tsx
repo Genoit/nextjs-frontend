@@ -20,13 +20,7 @@ import {
   type ShopifyAlert,
   type ShopifyStore,
 } from '../../lib/api/shopify';
-import type { BillingSummary } from '../../lib/api/billing';
-import {
-  STORE_LIMIT,
-  STORE_STATUS_LABEL,
-  shopifyErrorText,
-  storeLimitText,
-} from '../../lib/shopify-rules.mjs';
+import { STORE_STATUS_LABEL, shopifyErrorText, storeLimitText } from '../../lib/shopify-rules.mjs';
 import {
   Badge,
   Notice,
@@ -59,19 +53,21 @@ function StoreBadge({ status }: { status: string }) {
 }
 
 /** Settings → Stores: the connected Shopify stores, their pricing rule, and listings needing attention. */
-export function StoresSection({
-  summary,
-  notice,
-}: {
-  summary: BillingSummary | null;
-  notice: StoresNotice;
-}) {
+export function StoresSection({ notice }: { notice: StoresNotice }) {
   const [stores, setStores] = useState<ShopifyStore[] | null>(null);
+  // From the backend: limit is null when plan limits are not enforced.
+  const [limit, setLimit] = useState<{ limit: number | null; used: number } | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const load = useCallback(() => {
     setLoadError(null);
-    shopifyApi.stores().then(setStores, (err) => setLoadError(errorText(err)));
+    Promise.all([shopifyApi.stores(), shopifyApi.storeLimit()]).then(
+      ([s, l]) => {
+        setStores(s);
+        setLimit(l);
+      },
+      (err) => setLoadError(errorText(err)),
+    );
   }, []);
 
   useEffect(() => {
@@ -91,14 +87,9 @@ export function StoresSection({
               Connect Shopify stores to send products as drafts and keep them in sync.
             </p>
           </div>
-          {summary && stores && (
+          {limit && limit.limit !== null && (
             <p className="text-[13px] text-studio-muted tabular-nums">
-              {STORE_LIMIT[summary.plan] > 0
-                ? storeLimitText(
-                    stores.filter((s) => s.status === 'active').length,
-                    STORE_LIMIT[summary.plan],
-                  )
-                : 'Free plan'}
+              {limit.limit > 0 ? storeLimitText(limit.used, limit.limit) : 'Free plan'}
             </p>
           )}
         </div>
@@ -120,7 +111,7 @@ export function StoresSection({
           </div>
         )}
 
-        <ConnectForm summary={summary} stores={stores} />
+        <ConnectForm limit={limit} />
 
         <div className="mt-7">
           {loadError ? (
@@ -166,17 +157,15 @@ export function StoresSection({
 }
 
 function ConnectForm({
-  summary,
-  stores,
+  limit: storeLimit,
 }: {
-  summary: BillingSummary | null;
-  stores: ShopifyStore[] | null;
+  limit: { limit: number | null; used: number } | null;
 }) {
   const [shop, setShop] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const limit = summary ? STORE_LIMIT[summary.plan] : null;
+  const limit = storeLimit?.limit ?? null;
   if (limit === 0) {
     return (
       <div className="mt-6 flex flex-wrap items-center justify-between gap-4 rounded-[10px] bg-studio-raised px-4 py-4">
@@ -189,8 +178,7 @@ function ConnectForm({
       </div>
     );
   }
-  const used = stores?.filter((s) => s.status === 'active').length ?? 0;
-  const full = limit !== null && used >= limit;
+  const full = limit !== null && (storeLimit?.used ?? 0) >= limit;
 
   const submit = async (e: FormEvent) => {
     e.preventDefault();
@@ -301,7 +289,7 @@ function StoreRow({
   const disconnect = async () => {
     if (
       !window.confirm(
-        `Disconnect ${store.shop_domain}? Products already sent stay in Shopify, but TrendED stops syncing them.`,
+        `Disconnect ${store.shop_domain}? Products already sent stay in Shopify, but TrendED stops syncing them. If you reconnect this store later, sending a product again creates a new copy in Shopify.`,
       )
     )
       return;

@@ -53,6 +53,8 @@ export interface ListingView {
   purchase_costs: Record<string, string | null>;
   currency: string | null;
   missing_costs: string[];
+  /** A cost is saved but its currency is not, so prices cannot be computed. */
+  missing_currency: boolean;
   pricing_override: PricingRule | null;
   /** Keyed by store id. */
   previews: Record<string, StorePreview>;
@@ -82,6 +84,8 @@ export interface ShopifyListing {
   last_error: string | null;
   /** `fixed` after keeping Shopify's price in a conflict, until the rule is turned back on. */
   price_source: 'rule' | 'override' | 'fixed';
+  /** A push waits while its store is not active. */
+  store_status: ShopifyStore['status'];
   /** Only filled for listings in conflict; null when Shopify could not be read. */
   diffs: FieldDiff[] | null;
 }
@@ -154,10 +158,17 @@ export const shopifyApi = {
     });
   },
 
-  listings(productId: string): Promise<ShopifyListing[]> {
-    return fetchWithAuth<ShopifyListing[]>(`${BASE}/products/${productId}/listings`, {
-      method: 'GET',
-    });
+  /** `diffs: false` skips the live Shopify read of conflicts (for polling). */
+  listings(productId: string, diffs = true): Promise<ShopifyListing[]> {
+    return fetchWithAuth<ShopifyListing[]>(
+      `${BASE}/products/${productId}/listings${diffs ? '' : '?diffs=false'}`,
+      { method: 'GET' },
+    );
+  },
+
+  /** `limit` is null when plan limits are not enforced. */
+  storeLimit(): Promise<{ limit: number | null; used: number }> {
+    return fetchWithAuth(`${BASE}/store-limit`, { method: 'GET' });
   },
 
   /** `choices` maps a diff field to the side that wins. */

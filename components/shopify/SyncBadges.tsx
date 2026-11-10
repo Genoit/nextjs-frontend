@@ -1,7 +1,15 @@
 'use client';
 
 import { useState } from 'react';
-import { AlertTriangle, CheckCircle2, CircleDashed, GitCompare, Loader2, Lock } from 'lucide-react';
+import {
+  AlertTriangle,
+  CheckCircle2,
+  CircleDashed,
+  GitCompare,
+  Loader2,
+  Lock,
+  PauseCircle,
+} from 'lucide-react';
 import {
   shopifyApi,
   shopifyErrorCode,
@@ -78,7 +86,15 @@ function ListingRow({
           Fixed price
         </Badge>
       )}
-      <SyncBadge state={l.state} />
+      {l.state === 'syncing' && l.store_status !== 'active' ? (
+        <Badge tone="warning" icon={<PauseCircle className={ic} aria-hidden />}>
+          {l.store_status === 'uninstalled'
+            ? 'Waiting: store uninstalled'
+            : 'Waiting: store paused'}
+        </Badge>
+      ) : (
+        <SyncBadge state={l.state} />
+      )}
       {l.state === 'error' && l.last_error && (
         <span className="w-full text-[12.5px] break-words text-studio-muted">{l.last_error}</span>
       )}

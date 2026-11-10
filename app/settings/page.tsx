@@ -856,8 +856,7 @@ function Settings() {
     /* eslint-disable react-hooks/set-state-in-effect -- the URL is the source, read once */
     setCallback(cb);
     setSection('stores');
-    if (cb.kind === 'error')
-      setNotice({ tone: 'danger', text: shopifyErrorText('callback_failed') });
+    if (cb.kind === 'error') setNotice({ tone: 'danger', text: shopifyErrorText(cb.reason) });
     /* eslint-enable react-hooks/set-state-in-effect */
   }, [query, router]);
 
@@ -938,7 +937,7 @@ function Settings() {
               {section === 'account' && <AccountView />}
               {section === 'profile' && <ProfileView />}
               {section === 'store' && <StoreView />}
-              {section === 'stores' && <StoresSection summary={summary} notice={notice} />}
+              {section === 'stores' && <StoresSection notice={notice} />}
               {section === 'notifications' && <NotificationsView />}
               {section === 'billing' && <BillingView summary={summary} />}
               {section === 'integrations' && <IntegrationsView />}

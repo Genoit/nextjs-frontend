@@ -1,7 +1,6 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import {
-  STORE_LIMIT,
   SYNC_LABEL,
   canSend,
   conflictChoices,
@@ -57,19 +56,21 @@ describe('shopify rules', () => {
     );
   });
 
-  it('maps plans to store limits', () => {
-    assert.deepStrictEqual(STORE_LIMIT, { free: 0, starter: 1, pro: 3, business: 10 });
-  });
-
   it('reads the Shopify callback params', () => {
     assert.deepStrictEqual(readShopifyCallback('?shopify=confirm&install=t1'), {
       kind: 'confirm',
       ticket: 't1',
     });
-    assert.deepStrictEqual(readShopifyCallback('shopify=error'), { kind: 'error' });
+    const failed = { kind: 'error', reason: 'callback_failed' };
+    assert.deepStrictEqual(readShopifyCallback('shopify=error'), failed);
+    assert.deepStrictEqual(readShopifyCallback('shopify=error&reason=store_limit_reached'), {
+      kind: 'error',
+      reason: 'store_limit_reached',
+    });
+    assert.deepStrictEqual(readShopifyCallback('shopify=error&reason=<script>'), failed);
     // A ticket without the confirm marker is still stripped, and never confirmed.
-    assert.deepStrictEqual(readShopifyCallback('?install=t1'), { kind: 'error' });
-    assert.deepStrictEqual(readShopifyCallback('?shopify=confirm'), { kind: 'error' });
+    assert.deepStrictEqual(readShopifyCallback('?install=t1'), failed);
+    assert.deepStrictEqual(readShopifyCallback('?shopify=confirm'), failed);
     assert.strictEqual(readShopifyCallback(''), null);
     assert.strictEqual(readShopifyCallback('?tab=x'), null);
   });
@@ -119,5 +120,17 @@ describe('shopify rules', () => {
     // Only the picked stores' previews count.
     assert.strictEqual(sendBlocker(fx, { dirty: false, picked: ['s1'] }), null);
     assert.match(sendBlocker(fx, { dirty: false, picked: ['s2'] }), /CNY/);
+  });
+});
+
+describe('sendBlocker currency', () => {
+  it('asks for the currency when only it is missing', () => {
+    assert.strictEqual(
+      sendBlocker(
+        { title: 'T', missing_costs: [], missing_currency: true, previews: {} },
+        { dirty: false, picked: ['s'] },
+      ),
+      'Choose the currency of the purchase cost first.',
+    );
   });
 });

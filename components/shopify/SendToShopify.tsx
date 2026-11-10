@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { AlertTriangle, Check, Loader2, PenLine, Send, Store } from 'lucide-react';
 import {
@@ -95,15 +95,32 @@ export function SendToShopify({ productId }: { productId: string }) {
     load();
   }, [load]);
 
-  // Follow pushes in flight until they settle.
-  const syncing = data?.listings.some((l) => l.state === 'syncing') ?? false;
+  // Follow pushes in flight until they settle. A paused or uninstalled store never pushes, so
+  // it is not polled. Polls skip the live Shopify diff read; a new conflict triggers one.
+  const syncing =
+    data?.listings.some((l) => l.state === 'syncing' && l.store_status === 'active') ?? false;
+  const listingsRef = useRef<ShopifyListing[]>([]);
+  useEffect(() => {
+    listingsRef.current = data?.listings ?? [];
+  }, [data]);
   useEffect(() => {
     if (!syncing) return;
-    const t = window.setInterval(() => {
-      shopifyApi
-        .listings(productId)
-        .then((listings) => setData((d) => (d ? { ...d, listings } : d)))
-        .catch(() => undefined); // the next tick retries
+    const t = window.setInterval(async () => {
+      try {
+        const prev = new Map(listingsRef.current.map((l) => [l.id, l]));
+        let listings = await shopifyApi.listings(productId, false);
+        const newConflict = listings.some(
+          (l) => l.state === 'conflict' && prev.get(l.id)?.state !== 'conflict',
+        );
+        listings = newConflict
+          ? await shopifyApi.listings(productId)
+          : listings.map((l) =>
+              l.state === 'conflict' ? { ...l, diffs: prev.get(l.id)?.diffs ?? null } : l,
+            );
+        setData((d) => (d ? { ...d, listings } : d));
+      } catch {
+        // the next tick retries
+      }
     }, 4000);
     return () => window.clearInterval(t);
   }, [syncing, productId]);
@@ -206,19 +223,23 @@ export function SendToShopify({ productId }: { productId: string }) {
     }
   };
 
-  const writeCopy = async () => {
+  const writeCopy = async (language = form.language) => {
     setBusy('copy');
     setResult(null);
     try {
-      const next = await shopifyApi.generateCopy(productId, form.language);
+      const next = await shopifyApi.generateCopy(productId, language);
       setData((d) => (d ? { ...d, view: next } : d));
       // The copy is saved server side; unsaved cost edits stay in the form.
-      setForm({
-        ...form,
-        title: next.title ?? '',
-        description: next.description ?? '',
-        language: next.language,
-      });
+      setForm((f) =>
+        f
+          ? {
+              ...f,
+              title: next.title ?? '',
+              description: next.description ?? '',
+              language: next.language,
+            }
+          : f,
+      );
     } catch (err) {
       setResult({ tone: 'danger', text: errorText(err) });
     } finally {
@@ -312,7 +333,11 @@ export function SendToShopify({ productId }: { productId: string }) {
                 <select
                   className={`${field} cursor-pointer`}
                   value={form.language}
-                  onChange={(e) => set({ language: e.target.value })}
+                  onChange={(e) => {
+                    set({ language: e.target.value });
+                    void writeCopy(e.target.value); // the copy follows its language
+                  }}
+                  disabled={busy !== null}
                 >
                   {languages.map(([code, name]) => (
                     <option key={code} value={code}>
@@ -323,7 +348,7 @@ export function SendToShopify({ productId }: { productId: string }) {
               </label>
               <button
                 type="button"
-                onClick={writeCopy}
+                onClick={() => writeCopy()}
                 disabled={busy !== null}
                 className={secondaryBtn}
               >
