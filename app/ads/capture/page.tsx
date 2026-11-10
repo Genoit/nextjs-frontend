@@ -9,8 +9,9 @@ import { joinBase64 } from '../../../lib/capture-chunks.mjs';
 import {
   AD_CAPTURE_EVENT,
   deleteAdCapture,
-  readAdCapture,
-  type AdCaptureRecord,
+  readAdChunks,
+  readAdManifest,
+  type AdCaptureManifest,
 } from '../../../lib/extension-capture';
 import { focusRing } from '../../../components/dashboard/DashShell';
 
@@ -18,11 +19,12 @@ const WAIT_MS = 60_000;
 
 type State = { s: 'waiting' } | { s: 'uploading' } | { s: 'done' } | { s: 'error'; text: string };
 
-async function upload(r: AdCaptureRecord) {
-  const files = r.files.map(
-    (f) => new File([joinBase64(f.chunks) as BlobPart], f.name, { type: f.type }),
+async function upload(m: AdCaptureManifest) {
+  const chunks = await readAdChunks(m);
+  const files = m.files.map(
+    (f, i) => new File([joinBase64(chunks[i]) as BlobPart], f.name, { type: f.type }),
   );
-  await adsApi.uploadCapture(r.adId, r.pageId, files);
+  await adsApi.uploadCapture(m.adId, m.pageId, files);
 }
 
 export default function AdCapturePage() {
@@ -31,17 +33,20 @@ export default function AdCapturePage() {
   useEffect(() => {
     let alive = true;
     let started = false;
+    // The extension tags each hand-off; records of any other (older) hand-off are never uploaded.
+    const nonce = new URLSearchParams(window.location.search).get('h') ?? '';
     const set = (v: State) => alive && setState(v);
 
     // Not a fixed deadline: every event from the extension (one per chunk) is progress and
-    // restarts the wait, so a slow 100 MB hand-off is not cut off.
+    // restarts the wait, so a slow 100 MB hand-off is not cut off. An event reads only the small
+    // manifest; chunk data is read once, after the manifest is complete.
     let timer: ReturnType<typeof setTimeout>;
     const arm = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         if (started) return;
         started = true;
-        deleteAdCapture().catch(() => {});
+        if (nonce) deleteAdCapture(nonce).catch(() => {});
         set({
           s: 'error',
           text: "We didn't receive the ad from the extension. Open the ad in Meta's Ad Library and click the extension again.",
@@ -52,23 +57,24 @@ export default function AdCapturePage() {
     const attempt = async () => {
       if (started) return;
       arm();
-      let rec: AdCaptureRecord | null = null;
+      if (!nonce) return; // opened without a hand-off: wait, then time out
+      let manifest: AdCaptureManifest | null = null;
       try {
-        rec = await readAdCapture();
+        manifest = await readAdManifest(nonce);
       } catch {
         return;
       }
-      if (!rec || started) return;
+      if (!manifest || started) return;
       started = true;
       clearTimeout(timer);
       set({ s: 'uploading' });
       try {
-        await upload(rec);
+        await upload(manifest);
         set({ s: 'done' });
       } catch (e) {
         set({ s: 'error', text: adsErrorText(adsErrorCode(e)) });
       } finally {
-        deleteAdCapture().catch(() => {});
+        deleteAdCapture(nonce).catch(() => {});
       }
     };
 

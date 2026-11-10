@@ -26,8 +26,8 @@ export function CaptureSteps() {
       <li>Install the TrendED browser extension.</li>
       <li>Open the ad in Meta&apos;s Ad Library.</li>
       <li>
-        Click the extension, then <span className="text-white">Capture</span>. The video or images
-        are saved here, visible only to you.
+        Click the TrendED extension icon in your browser toolbar. The video or images are saved
+        here, visible only to you.
       </li>
     </ol>
   );

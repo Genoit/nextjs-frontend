@@ -127,8 +127,11 @@ function adFail(tabId, why) {
   chrome.action.setTitle({ title: `TrendED: ${why}`, tabId });
 }
 
-// Runs in the app tab. op: start | chunk | done. Same key, store and event as lib/extension-capture.ts.
-// Every op fires the event: the page re-reads on it, and each one counts as progress for its timeout.
+// Runs in the app tab (self-contained: executeScript cannot see this file's helpers).
+// op: start | chunk | done. A small manifest under KEY plus one record per chunk under
+// `${KEY}:<nonce>:<file>:<chunk>` (duplicates chunkKey in lib/capture-chunks.mjs), so no op ever
+// rewrites the whole capture. Every op fires the event: the page re-reads only the manifest on
+// it, and each one counts as progress for its timeout.
 function writeHandoff(op, a) {
   const KEY = 'trended:ad-capture';
   return new Promise((resolve, reject) => {
@@ -137,32 +140,33 @@ function writeHandoff(op, a) {
     open.onerror = () => reject(open.error);
     open.onsuccess = () => {
       const db = open.result;
-      const fail = (e) => {
-        db.close();
-        reject(e || new Error('handoff failed'));
-      };
       const tx = db.transaction('handoff', 'readwrite');
-      tx.onerror = () => fail(tx.error);
-      tx.onabort = () => fail(tx.error);
+      tx.onerror = tx.onabort = () => {
+        db.close();
+        reject(tx.error || new Error('handoff failed'));
+      };
+      tx.oncomplete = () => {
+        db.close();
+        window.dispatchEvent(new Event('trended:ad-capture'));
+        resolve();
+      };
       const store = tx.objectStore('handoff');
+      if (op === 'start') {
+        // A new hand-off first drops every older one (tab closed mid-upload, failed run).
+        store.delete(IDBKeyRange.bound(`${KEY}:`, `${KEY}:\uffff`));
+        store.put(
+          { nonce: a.nonce, adId: a.adId, pageId: a.pageId, files: a.files, complete: false },
+          KEY,
+        );
+        return;
+      }
       const get = store.get(KEY);
-      get.onerror = () => fail(get.error);
       get.onsuccess = () => {
-        let r = get.result;
-        if (op === 'start') r = { adId: a.adId, pageId: a.pageId, complete: false, files: [] };
-        else if (!r) return fail(new Error('handoff record missing'));
-        else if (op === 'chunk') {
-          let f = r.files[a.file];
-          if (!f) f = r.files[a.file] = { name: a.name, type: a.type, chunks: [] };
-          f.chunks.push(a.chunk);
-        } else r.complete = true;
-        const put = store.put(r, KEY);
-        put.onerror = () => fail(put.error);
-        tx.oncomplete = () => {
-          db.close();
-          window.dispatchEvent(new Event('trended:ad-capture'));
-          resolve();
-        };
+        const m = get.result;
+        // The page gave up (and cleaned up) or a newer hand-off took over: stop writing.
+        if (!m || m.nonce !== a.nonce) return tx.abort();
+        if (op === 'chunk') store.put(a.chunk, `${KEY}:${a.nonce}:${a.file}:${a.n}`);
+        else store.put({ ...m, complete: true }, KEY);
       };
     };
   });
@@ -239,14 +243,25 @@ async function sendAd(tab) {
   if (!files.length) return adFail(tab.id, 'no usable media found in this ad');
   const run = (tabId, op, args) =>
     chrome.scripting.executeScript({ target: { tabId }, func: writeHandoff, args: [op, args] });
+  const nonce = crypto.randomUUID();
+  const step = Math.floor(MAX_CHUNK / 4) * 3; // bytes per chunk, as in splitBase64
   const handOff = async (tabId) => {
-    await run(tabId, 'start', { adId: page.adId, pageId: page.pageId });
+    await run(tabId, 'start', {
+      nonce,
+      adId: page.adId,
+      pageId: page.pageId,
+      files: files.map((f) => ({
+        name: f.name,
+        type: f.type,
+        chunks: Math.ceil(f.bytes.length / step),
+      })),
+    });
     for (const [i, f] of files.entries()) {
-      for (const chunk of splitBase64(f.bytes)) {
-        await run(tabId, 'chunk', { file: i, name: f.name, type: f.type, chunk });
+      for (const [n, chunk] of splitBase64(f.bytes).entries()) {
+        await run(tabId, 'chunk', { nonce, file: i, n, chunk });
       }
     }
-    await run(tabId, 'done', {});
+    await run(tabId, 'done', { nonce });
     chrome.action.setBadgeText({ text: '', tabId: tab.id });
   };
   // Listen before creating the tab, and also check its status after: a fast 'complete' is never missed.
@@ -262,7 +277,9 @@ async function sendAd(tab) {
     if (tabId === appId && info.status === 'complete') go(tabId);
   };
   chrome.tabs.onUpdated.addListener(onUpdated);
-  const app = await chrome.tabs.create({ url: `${APP_ORIGIN}/ads/capture?from=extension` });
+  const app = await chrome.tabs.create({
+    url: `${APP_ORIGIN}/ads/capture?from=extension&h=${nonce}`,
+  });
   appId = app.id;
   const now = await chrome.tabs.get(appId);
   if (now.status === 'complete' && (now.url || '').startsWith(APP_ORIGIN)) go(appId);

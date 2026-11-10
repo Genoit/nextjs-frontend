@@ -1,6 +1,13 @@
 // The "Send to TrendED" browser extension (browser-extension/) loads the product page in the
 // user's own browser, so their IP and session pass anti-bot walls our server cannot.
 // It drops the page here, in this tab's sessionStorage, then fires CAPTURE_EVENT.
+import {
+  MANIFEST_KEY,
+  handoffPrefix,
+  isReadyManifest,
+  manifestChunkKeys,
+} from './capture-chunks.mjs';
+
 const KEY = 'trended:capture';
 export const CAPTURE_EVENT = 'trended:capture';
 
@@ -21,45 +28,71 @@ export function takeExtensionCapture(): ExtensionCapture | null {
 }
 
 // Ad Library capture: media can reach 100 MB, too big for sessionStorage (~5 MB), so the
-// extension appends base64 chunks to IndexedDB here (see browser-extension/background.js).
-export const AD_CAPTURE_KEY = 'trended:ad-capture';
+// extension writes a small manifest plus one IndexedDB record per base64 chunk
+// (see browser-extension/background.js and lib/capture-chunks.mjs).
 export const AD_CAPTURE_EVENT = 'trended:ad-capture';
 
-export type AdCaptureRecord = {
+export type AdCaptureManifest = {
+  nonce: string;
   adId: string;
   pageId: string;
   complete: boolean;
-  files: { name: string; type: string; chunks: string[] }[];
+  files: { name: string; type: string; chunks: number }[];
 };
 
-function handoffStore<T>(mode: IDBTransactionMode, run: (s: IDBObjectStore) => IDBRequest<T>) {
+function handoffTx<T>(mode: IDBTransactionMode, run: (s: IDBObjectStore) => () => T) {
   return new Promise<T>((resolve, reject) => {
     const open = indexedDB.open('trended', 1);
     open.onupgradeneeded = () => open.result.createObjectStore('handoff');
     open.onerror = () => reject(open.error);
     open.onsuccess = () => {
       const db = open.result;
-      const req = run(db.transaction('handoff', mode).objectStore('handoff'));
-      req.onsuccess = () => {
+      const tx = db.transaction('handoff', mode);
+      const result = run(tx.objectStore('handoff'));
+      tx.oncomplete = () => {
         db.close();
-        resolve(req.result);
+        resolve(result());
       };
-      req.onerror = () => {
+      tx.onerror = tx.onabort = () => {
         db.close();
-        reject(req.error);
+        reject(tx.error);
       };
     };
   });
 }
 
-/** The extension's finished ad capture, or null while it is missing or still being written. */
-export async function readAdCapture(): Promise<AdCaptureRecord | null> {
-  const r = await handoffStore<AdCaptureRecord | undefined>('readonly', (s) =>
-    s.get(AD_CAPTURE_KEY),
-  );
-  return r && r.complete && typeof r.adId === 'string' && Array.isArray(r.files) ? r : null;
+/** This hand-off's manifest once complete, else null. Reads only the small manifest record. */
+export async function readAdManifest(nonce: string): Promise<AdCaptureManifest | null> {
+  const m = await handoffTx('readonly', (s) => {
+    const req = s.get(MANIFEST_KEY);
+    return () => req.result as unknown;
+  });
+  return isReadyManifest(m, nonce) ? (m as AdCaptureManifest) : null;
 }
 
-export async function deleteAdCapture(): Promise<void> {
-  await handoffStore('readwrite', (s) => s.delete(AD_CAPTURE_KEY));
+/** Each file's base64 chunks, in order, read in one transaction. */
+export async function readAdChunks(m: AdCaptureManifest): Promise<string[][]> {
+  return handoffTx('readonly', (s) => {
+    const reqs = (manifestChunkKeys(m) as string[][]).map((keys) => keys.map((k) => s.get(k)));
+    return () =>
+      reqs.map((file) =>
+        file.map((r) => {
+          if (typeof r.result !== 'string') throw new Error('capture chunk missing');
+          return r.result;
+        }),
+      );
+  });
+}
+
+/** Deletes this hand-off's chunks, and the manifest while it still belongs to it. */
+export async function deleteAdCapture(nonce: string): Promise<void> {
+  await handoffTx('readwrite', (s) => {
+    const prefix = handoffPrefix(nonce);
+    s.delete(IDBKeyRange.bound(prefix, `${prefix}\uffff`));
+    const req = s.get(MANIFEST_KEY);
+    req.onsuccess = () => {
+      if ((req.result as { nonce?: string } | undefined)?.nonce === nonce) s.delete(MANIFEST_KEY);
+    };
+    return () => undefined;
+  });
 }

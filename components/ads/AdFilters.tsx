@@ -4,6 +4,7 @@ import { useState } from 'react';
 import type { FormEvent, ReactNode } from 'react';
 import { Search } from 'lucide-react';
 import type { AdSearchParams, AdSort } from '../../lib/api/ads';
+import { startedAfterFilter } from '../../lib/ads-rules.mjs';
 import { focusRing } from '../dashboard/DashShell';
 
 /** Input and select look of the studio screens. */
@@ -57,7 +58,7 @@ export function Select({
   );
 }
 
-/** Search box plus filters; the words apply on submit, the selects at once. */
+/** Search box plus filters; the words apply on submit, the date on blur or Enter, the selects at once. */
 export function AdFilters({
   value,
   onChange,
@@ -66,6 +67,12 @@ export function AdFilters({
   onChange: (next: AdSearchParams) => void;
 }) {
   const [q, setQ] = useState(value.q ?? '');
+  const [date, setDate] = useState(value.started_after ?? '');
+  // Each distinct filter set is a counted search: never search on a half-typed date.
+  const applyDate = () => {
+    const next = startedAfterFilter(date);
+    if (next !== null && next !== value.started_after) set({ started_after: next });
+  };
   const set = (patch: AdSearchParams) => onChange({ ...value, ...patch, cursor: undefined });
   const submit = (e: FormEvent) => {
     e.preventDefault();
@@ -137,8 +144,12 @@ export function AdFilters({
           <span className="shrink-0 text-studio-muted">Started after</span>
           <input
             type="date"
-            value={value.started_after ?? ''}
-            onChange={(e) => set({ started_after: e.target.value || undefined })}
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            onBlur={applyDate}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') applyDate();
+            }}
             className="min-w-0 flex-1 bg-transparent text-white outline-none"
           />
         </label>

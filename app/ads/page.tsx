@@ -87,8 +87,8 @@ export default function AdSearchPage() {
         {page?.refreshing && !loading && (
           <p className="mb-4 flex items-center gap-2 text-[13px] text-studio-muted">
             <Loader2 className="size-4 animate-spin" aria-hidden />
-            Asking Meta&apos;s Ad Library for more ads on this search. New ones appear here within
-            minutes.
+            Asking Meta&apos;s Ad Library for more ads on this search. Run the search again in a few
+            minutes to see new ones.
           </p>
         )}
         {loading && !page ? (
@@ -110,7 +110,7 @@ export default function AdSearchPage() {
           >
             <p>
               {page?.refreshing
-                ? 'We asked Meta for this search. Results land here within a few minutes.'
+                ? 'We asked Meta for this search. Run it again in a few minutes to see the results.'
                 : 'Try a broader word, another country or fewer filters.'}
             </p>
           </EmptyState>
