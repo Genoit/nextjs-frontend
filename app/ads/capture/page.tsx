@@ -33,8 +33,25 @@ export default function AdCapturePage() {
     let started = false;
     const set = (v: State) => alive && setState(v);
 
+    // Not a fixed deadline: every event from the extension (one per chunk) is progress and
+    // restarts the wait, so a slow 100 MB hand-off is not cut off.
+    let timer: ReturnType<typeof setTimeout>;
+    const arm = () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        if (started) return;
+        started = true;
+        deleteAdCapture().catch(() => {});
+        set({
+          s: 'error',
+          text: "We didn't receive the ad from the extension. Open the ad in Meta's Ad Library and click the extension again.",
+        });
+      }, WAIT_MS);
+    };
+
     const attempt = async () => {
       if (started) return;
+      arm();
       let rec: AdCaptureRecord | null = null;
       try {
         rec = await readAdCapture();
@@ -43,6 +60,7 @@ export default function AdCapturePage() {
       }
       if (!rec || started) return;
       started = true;
+      clearTimeout(timer);
       set({ s: 'uploading' });
       try {
         await upload(rec);
@@ -56,13 +74,6 @@ export default function AdCapturePage() {
 
     window.addEventListener(AD_CAPTURE_EVENT, attempt);
     void attempt();
-    const timer = setTimeout(() => {
-      if (!started)
-        set({
-          s: 'error',
-          text: "We didn't receive the ad from the extension. Open the ad in Meta's Ad Library and click the extension again.",
-        });
-    }, WAIT_MS);
     return () => {
       alive = false;
       window.removeEventListener(AD_CAPTURE_EVENT, attempt);

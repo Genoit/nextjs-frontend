@@ -44,6 +44,18 @@ function adLibraryUrl(url) {
 }
 const isAdLibraryUrl = (url) => adLibraryUrl(url) !== null;
 
+// Duplicate of isFbcdnUrl in lib/capture-chunks.mjs (unit-tested there).
+function isFbcdnUrl(url) {
+  try {
+    const u = new URL(url);
+    return (
+      u.protocol === 'https:' && (u.hostname === 'fbcdn.net' || u.hostname.endsWith('.fbcdn.net'))
+    );
+  } catch {
+    return false;
+  }
+}
+
 // Runs in the Ad Library tab. Returns only small data; the files are fetched by the worker.
 function readAdPage() {
   const u = new URL(location.href);
@@ -56,7 +68,7 @@ function readAdPage() {
   const MEDIA = 'video[src], img';
   const ADVERTISER_LINK = 'a[href*="facebook.com/"]';
   // --- selectors end ---
-  let box = document.body;
+  let box = null;
   const label = [...document.querySelectorAll('span, div')].find(
     (e) => e.children.length === 0 && (e.textContent || '').includes(ID_TEXT),
   );
@@ -66,6 +78,8 @@ function readAdPage() {
       break;
     }
   }
+  // Never fall back to the whole page: media or links outside the ad's card are not this ad's.
+  if (!box) return { error: 'no_ad' };
   let pageId = null;
   for (const a of box.querySelectorAll(ADVERTISER_LINK)) {
     try {
@@ -114,6 +128,7 @@ function adFail(tabId, why) {
 }
 
 // Runs in the app tab. op: start | chunk | done. Same key, store and event as lib/extension-capture.ts.
+// Every op fires the event: the page re-reads on it, and each one counts as progress for its timeout.
 function writeHandoff(op, a) {
   const KEY = 'trended:ad-capture';
   return new Promise((resolve, reject) => {
@@ -122,19 +137,30 @@ function writeHandoff(op, a) {
     open.onerror = () => reject(open.error);
     open.onsuccess = () => {
       const db = open.result;
-      const store = db.transaction('handoff', 'readwrite').objectStore('handoff');
+      const fail = (e) => {
+        db.close();
+        reject(e || new Error('handoff failed'));
+      };
+      const tx = db.transaction('handoff', 'readwrite');
+      tx.onerror = () => fail(tx.error);
+      tx.onabort = () => fail(tx.error);
+      const store = tx.objectStore('handoff');
       const get = store.get(KEY);
+      get.onerror = () => fail(get.error);
       get.onsuccess = () => {
         let r = get.result;
         if (op === 'start') r = { adId: a.adId, pageId: a.pageId, complete: false, files: [] };
+        else if (!r) return fail(new Error('handoff record missing'));
         else if (op === 'chunk') {
           let f = r.files[a.file];
           if (!f) f = r.files[a.file] = { name: a.name, type: a.type, chunks: [] };
           f.chunks.push(a.chunk);
         } else r.complete = true;
-        store.put(r, KEY).onsuccess = () => {
+        const put = store.put(r, KEY);
+        put.onerror = () => fail(put.error);
+        tx.oncomplete = () => {
           db.close();
-          if (op === 'done') window.dispatchEvent(new Event('trended:ad-capture'));
+          window.dispatchEvent(new Event('trended:ad-capture'));
           resolve();
         };
       };
@@ -142,7 +168,42 @@ function writeHandoff(op, a) {
   });
 }
 
+// Reads one media URL into bytes, or null when it is not usable. Checks the type and the size
+// before and during the read, so a hostile or huge body is never fully buffered.
+async function fetchMedia(url, budget, onProgress) {
+  if (!isFbcdnUrl(url)) return null;
+  const res = await fetch(url, { credentials: 'omit' });
+  if (!res.ok || !isFbcdnUrl(res.url)) return null; // a redirect must stay on the CDN too
+  const type = (res.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
+  if (!ALLOWED.includes(type)) return null;
+  const len = Number(res.headers.get('content-length'));
+  if (len > budget) return null;
+  const parts = [];
+  let got = 0;
+  const reader = res.body.getReader();
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    got += value.length;
+    if (got > budget) {
+      await reader.cancel();
+      return null;
+    }
+    parts.push(value);
+    onProgress(got);
+  }
+  const bytes = new Uint8Array(got);
+  let at = 0;
+  for (const p of parts) {
+    bytes.set(p, at);
+    at += p.length;
+  }
+  return { type, bytes };
+}
+
 async function sendAd(tab) {
+  // A new attempt clears the previous failure.
+  chrome.action.setBadgeText({ text: '', tabId: tab.id });
   const [{ result: page }] = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
     func: readAdPage,
@@ -150,39 +211,64 @@ async function sendAd(tab) {
   if (!page || page.error || !page.pageId) return adFail(tab.id, "couldn't read this ad");
   const files = [];
   let total = 0;
+  let lastTick = 0;
   for (const m of page.media) {
     try {
-      const res = await fetch(m.url);
-      if (!res.ok) continue;
-      const bytes = new Uint8Array(await res.arrayBuffer());
-      const type = (res.headers.get('content-type') || '').split(';')[0].trim().toLowerCase();
-      if (!ALLOWED.includes(type) || total + bytes.length > MAX_TOTAL) continue;
-      total += bytes.length;
-      const ext = type.split('/')[1].replace('jpeg', 'jpg');
-      files.push({ name: `ad-${page.adId}-${files.length + 1}.${ext}`, type, bytes });
+      // Badge updates are extension API calls: they reset the service worker's idle timer, so a
+      // long download is not killed mid-fetch (Chrome stops an idle worker after ~30 s).
+      const f = await fetchMedia(m.url, MAX_TOTAL - total, (got) => {
+        if (Date.now() - lastTick < 2000) return;
+        lastTick = Date.now();
+        chrome.action.setBadgeText({
+          text: `${Math.round((total + got) / 1048576)}M`,
+          tabId: tab.id,
+        });
+      });
+      if (!f) continue;
+      total += f.bytes.length;
+      const ext = f.type.split('/')[1].replace('jpeg', 'jpg');
+      files.push({
+        name: `ad-${page.adId}-${files.length + 1}.${ext}`,
+        type: f.type,
+        bytes: f.bytes,
+      });
     } catch {
       /* unreachable media: skip */
     }
   }
   if (!files.length) return adFail(tab.id, 'no usable media found in this ad');
-  const app = await chrome.tabs.create({ url: `${APP_ORIGIN}/ads/capture?from=extension` });
-  chrome.tabs.onUpdated.addListener(function handOff(tabId, info) {
-    if (tabId !== app.id || info.status !== 'complete') return;
-    chrome.tabs.onUpdated.removeListener(handOff);
-    const run = (op, args) =>
-      chrome.scripting.executeScript({ target: { tabId }, func: writeHandoff, args: [op, args] });
-    (async () => {
-      await run('start', { adId: page.adId, pageId: page.pageId });
-      for (const [i, f] of files.entries()) {
-        for (const chunk of splitBase64(f.bytes)) {
-          await run('chunk', { file: i, name: f.name, type: f.type, chunk });
-        }
+  const run = (tabId, op, args) =>
+    chrome.scripting.executeScript({ target: { tabId }, func: writeHandoff, args: [op, args] });
+  const handOff = async (tabId) => {
+    await run(tabId, 'start', { adId: page.adId, pageId: page.pageId });
+    for (const [i, f] of files.entries()) {
+      for (const chunk of splitBase64(f.bytes)) {
+        await run(tabId, 'chunk', { file: i, name: f.name, type: f.type, chunk });
       }
-      await run('done', {});
-    })().catch(() => adFail(tab.id, 'hand-off to TrendED failed'));
-  });
+    }
+    await run(tabId, 'done', {});
+    chrome.action.setBadgeText({ text: '', tabId: tab.id });
+  };
+  // Listen before creating the tab, and also check its status after: a fast 'complete' is never missed.
+  let appId = null;
+  let started = false;
+  const go = (tabId) => {
+    if (started) return;
+    started = true;
+    chrome.tabs.onUpdated.removeListener(onUpdated);
+    handOff(tabId).catch(() => adFail(tab.id, 'hand-off to TrendED failed'));
+  };
+  const onUpdated = (tabId, info) => {
+    if (tabId === appId && info.status === 'complete') go(tabId);
+  };
+  chrome.tabs.onUpdated.addListener(onUpdated);
+  const app = await chrome.tabs.create({ url: `${APP_ORIGIN}/ads/capture?from=extension` });
+  appId = app.id;
+  const now = await chrome.tabs.get(appId);
+  if (now.status === 'complete' && (now.url || '').startsWith(APP_ORIGIN)) go(appId);
 }
 
-chrome.action.onClicked.addListener((tab) =>
-  tab.id && isAdLibraryUrl(tab.url || '') ? sendAd(tab) : sendTab(tab),
-);
+chrome.action.onClicked.addListener((tab) => {
+  if (tab.id) chrome.action.setBadgeText({ text: '', tabId: tab.id });
+  return tab.id && isAdLibraryUrl(tab.url || '') ? sendAd(tab) : sendTab(tab);
+});
