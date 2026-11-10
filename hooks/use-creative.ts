@@ -127,7 +127,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         setCreativeConfig(data);
         return data;
       } catch (err: unknown) {
-        fail(err, 'Impossible de charger la configuration créative.');
+        fail(err, 'Could not load the ad setup.');
         return null;
       }
     },
@@ -143,7 +143,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         setCreativeConfig(data);
         return data;
       } catch (err: unknown) {
-        fail(err, "Erreur lors de l'enregistrement de la configuration créative.");
+        fail(err, 'Could not save the ad setup.');
         return null;
       } finally {
         setIsSavingConfig(false);
@@ -208,7 +208,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         return data;
       } catch (err: unknown) {
         if (epoch === epochRef.current) {
-          fail(err, 'Erreur lors de la génération des angles créatifs.');
+          fail(err, 'Could not generate the ad angles.');
         }
         return null;
       } finally {
@@ -271,7 +271,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         await refreshStoryboardContext(strategyId, epoch);
         return data;
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, 'Erreur lors de la génération du storyboard.');
+        if (epoch === epochRef.current) fail(err, 'Could not write the script.');
         return null;
       } finally {
         release('storyboard');
@@ -293,7 +293,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         return data;
       } catch (err: unknown) {
         if (seq === sbSeqRef.current) {
-          fail(err, 'Impossible de charger cette version du storyboard.');
+          fail(err, 'Could not load this version of the script.');
         }
         return null;
       }
@@ -316,7 +316,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         await refreshStoryboardContext(data.strategy_id, epoch);
         return data;
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, "Erreur lors de l'enregistrement du storyboard.");
+        if (epoch === epochRef.current) fail(err, 'Could not save the script.');
         return null;
       } finally {
         release('update');
@@ -340,7 +340,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         await refreshStoryboardContext(data.strategy_id, epoch);
         return data;
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, "Erreur lors de l'acceptation du storyboard.");
+        if (epoch === epochRef.current) fail(err, 'Could not accept the script.');
         return null;
       } finally {
         release('accept');
@@ -443,7 +443,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         return job;
       } catch (err: unknown) {
         if (epoch === epochRef.current) {
-          fail(err, 'Erreur lors du lancement de la génération vidéo.');
+          fail(err, 'Could not start the video.');
         }
         return null;
       } finally {
@@ -462,7 +462,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         // In-flight attempts are still polled server-side for their cost: follow them a bit.
         trackJob(job, 2);
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, "Erreur lors de l'annulation de la vidéo.");
+        if (epoch === epochRef.current) fail(err, 'Could not cancel the video.');
       }
     },
     [fail, trackJob],
@@ -480,7 +480,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         trackJob(job);
         return job;
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, 'Erreur lors de la reprise du rendu vidéo.');
+        if (epoch === epochRef.current) fail(err, 'Could not resume the video render.');
         return null;
       } finally {
         setIsStartingJob(false);
@@ -496,7 +496,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
       try {
         await creativeApi.rerenderShot(jobId, shotId, { confirm_cost: true });
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, 'Erreur lors de la relance du plan.');
+        if (epoch === epochRef.current) fail(err, 'Could not re-render the shot.');
         return false;
       }
       // The paid rerender is accepted: never report failure from here on (no second click).
@@ -524,7 +524,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         if (epoch === epochRef.current) trackJob(job);
         return true;
       } catch (err: unknown) {
-        if (epoch === epochRef.current) fail(err, "Erreur lors de l'acceptation du plan.");
+        if (epoch === epochRef.current) fail(err, 'Could not accept the shot.');
         return false;
       }
     },
@@ -564,7 +564,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         const data = await creativeApi.getCreativeConfig(initialProductId);
         if (!isCancelled) setCreativeConfig(data);
       } catch (err: unknown) {
-        if (!isCancelled) fail(err, 'Impossible de charger la configuration créative.');
+        if (!isCancelled) fail(err, 'Could not load the ad setup.');
       }
       if (!isCancelled) setConfigLoaded(true);
       if (stale()) return;
@@ -590,7 +590,7 @@ export function useCreative(initialProductId?: string, refAdId?: string): UseCre
         setStoryboard(null);
         setStoryboardVersions([]);
         setCost(null);
-        setErrorState({ message: 'Impossible de restaurer la stratégie.', status: null });
+        setErrorState({ message: 'Could not restore your ad angles.', status: null });
       }
     };
     void load();

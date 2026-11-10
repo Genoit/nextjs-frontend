@@ -14,6 +14,7 @@ import { useProductDraft } from '../../components/product-input/use-product-draf
 import { useProduct } from '../../hooks/use-products';
 import { CreativeAdWorkflow, type Step } from '../../components/creative/CreativeAdWorkflow';
 import { nextStepHref } from '../../lib/product-input-rules.mjs';
+import { parseRefAd } from '../../lib/ads-rules.mjs';
 import { takePendingPhotos } from '../../lib/pending-photos';
 import { CAPTURE_EVENT, takeExtensionCapture } from '../../lib/extension-capture';
 
@@ -39,7 +40,7 @@ function ProductInputPage() {
   const query = useSearchParams();
   const productId = query.get('product');
   // "Remake this ad" (Ad Library): kept through the import so the remake applies once saved.
-  const refAdId = query.get('ref_ad') ?? undefined;
+  const refAdId = parseRefAd(query.get('ref_ad'));
   const [selectedStep, setSelectedStep] = useState<Step | null>(null);
   const [shownStep, setShownStep] = useState<Step>(2);
   const draft = useProductDraft();

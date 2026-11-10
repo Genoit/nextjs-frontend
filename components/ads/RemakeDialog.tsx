@@ -10,7 +10,7 @@ import type { Product } from '../../lib/types/product';
 import { useModal } from '../product-input/dialogs';
 import { focusRing } from '../dashboard/DashShell';
 
-// The products API caps a page at 100; beyond that the search narrows what is listed.
+// The products API caps a page at 100: the search only filters those, and the list says so.
 const PAGE_SIZE = 100;
 const SEARCH_FROM = 7;
 
@@ -41,13 +41,18 @@ export function RemakeDialog({ ad, onClose }: { ad: AdOut | null; onClose: () =>
 
 function Picker({ ad, onClose }: { ad: AdOut; onClose: () => void }) {
   const [products, setProducts] = useState<Product[] | null>(null);
+  const [total, setTotal] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [term, setTerm] = useState('');
 
   useEffect(() => {
     let alive = true;
     productApi.getProducts({ page: 1, page_size: PAGE_SIZE }).then(
-      (res) => alive && setProducts(res.products),
+      (res) => {
+        if (!alive) return;
+        setProducts(res.products);
+        setTotal(res.total);
+      },
       (e) => alive && setError(adsErrorText(adsErrorCode(e))),
     );
     return () => {
@@ -153,6 +158,12 @@ function Picker({ ad, onClose }: { ad: AdOut; onClose: () => void }) {
           </ul>
         )}
       </div>
+
+      {products && total > products.length && (
+        <p className="px-5 pb-2 text-[12.5px] text-studio-meta">
+          Showing the first {products.length} of {total} products
+        </p>
+      )}
 
       <div className="border-t border-dash-line px-2.5 py-2.5">
         <Link href={remakeHref(ad)} className={rowClass}>

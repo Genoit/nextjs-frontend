@@ -7,6 +7,7 @@ import {
   isAdLibraryUrl,
   reachLabel,
   runTimeLabel,
+  parseRefAd,
   strategyChoices,
 } from '../lib/ads-rules.mjs';
 
@@ -97,5 +98,16 @@ describe('strategyChoices', () => {
       strategyChoices([s('r', '1', 'A')]).map((c) => c.id),
       ['r'],
     );
+  });
+});
+
+describe('parseRefAd', () => {
+  it('keeps digit-only ad ids', () => {
+    assert.strictEqual(parseRefAd('900100000102'), '900100000102');
+  });
+  it('drops anything else', () => {
+    for (const v of [null, undefined, '', 'abc', '12a', '1&x=2', ' 12', '../1', '１２']) {
+      assert.strictEqual(parseRefAd(v), undefined, String(v));
+    }
   });
 });
