@@ -23,6 +23,7 @@ import {
   Plus,
   Settings,
   Sparkles,
+  Store,
   X,
   Zap,
 } from 'lucide-react';
@@ -203,6 +204,7 @@ const NAV: { label: string; Icon: typeof House; href: string }[] = [
   { label: 'Home', Icon: House, href: '/dashboard' },
   { label: 'Generate', Icon: Clapperboard, href: '/generate' },
   { label: 'Ad library', Icon: Library, href: '/ads' },
+  { label: 'Stores', Icon: Store, href: '/stores' },
   { label: 'Studio', Icon: Sparkles, href: '/studio' },
   { label: 'Library', Icon: Folder, href: '/projects' },
   { label: 'Assets', Icon: ImageIcon, href: '/products' },
