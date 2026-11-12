@@ -3,25 +3,59 @@
 // shortcut: local Docker app only; set the production origin here and in manifest host_permissions at deploy.
 const APP_ORIGIN = 'http://localhost:3000';
 
-async function sendTab(tab) {
-  if (!tab.id || !/^https?:\/\//.test(tab.url || '')) return;
-  const [{ result: capture }] = await chrome.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: () => ({ url: location.href, html: document.documentElement.outerHTML }),
-  });
-  const app = await chrome.tabs.create({ url: `${APP_ORIGIN}/product-input?from=extension` });
+// A store page keeps under sessionStorage's quota even on a heavy theme.
+const STORE_HTML_MAX = 2_500_000;
+
+// Runs in the tab: only what the page the user opened already contains. No request is made.
+function readPage() {
+  const html = document.documentElement.outerHTML;
+  const shopify =
+    !!document.querySelector('script[src*="cdn.shopify.com"], link[href*="cdn.shopify.com"]') ||
+    html.includes('Shopify.theme');
+  return {
+    url: location.href,
+    html,
+    shopify,
+    product: /\/products\/[^/]+/.test(location.pathname),
+  };
+}
+
+// Opens a TrendED page and drops the capture in its sessionStorage (same key and event as
+// lib/extension-capture.ts).
+async function handToApp(path, key, capture) {
+  const app = await chrome.tabs.create({ url: `${APP_ORIGIN}${path}` });
   chrome.tabs.onUpdated.addListener(function handOff(tabId, info) {
     if (tabId !== app.id || info.status !== 'complete') return;
     chrome.tabs.onUpdated.removeListener(handOff);
     chrome.scripting.executeScript({
       target: { tabId },
-      args: [capture],
-      // Same key and event as lib/extension-capture.ts.
-      func: (c) => {
-        sessionStorage.setItem('trended:capture', JSON.stringify(c));
-        window.dispatchEvent(new Event('trended:capture'));
+      args: [key, capture],
+      func: (k, c) => {
+        sessionStorage.setItem(k, JSON.stringify(c));
+        window.dispatchEvent(new Event(k));
       },
     });
+  });
+}
+
+async function sendTab(tab) {
+  if (!tab.id || !/^https?:\/\//.test(tab.url || '')) return;
+  const [{ result: page }] = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: readPage,
+  });
+  if (!page) return;
+  // A Shopify store's home or collection page: show what the store runs and sells.
+  // A product page (any site) stays a product import.
+  if (page.shopify && !page.product) {
+    return handToApp('/stores/inspect?from=extension', 'trended:store-capture', {
+      url: page.url,
+      html: page.html.slice(0, STORE_HTML_MAX),
+    });
+  }
+  return handToApp('/product-input?from=extension', 'trended:capture', {
+    url: page.url,
+    html: page.html,
   });
 }
 

@@ -13,11 +13,11 @@ export const CAPTURE_EVENT = 'trended:capture';
 
 export type ExtensionCapture = { url: string; html: string };
 
-export function takeExtensionCapture(): ExtensionCapture | null {
+function take(key: string): ExtensionCapture | null {
   try {
-    const raw = sessionStorage.getItem(KEY);
+    const raw = sessionStorage.getItem(key);
     if (!raw) return null;
-    sessionStorage.removeItem(KEY);
+    sessionStorage.removeItem(key);
     const c = JSON.parse(raw) as Partial<ExtensionCapture>;
     return typeof c.url === 'string' && typeof c.html === 'string'
       ? { url: c.url, html: c.html }
@@ -25,6 +25,17 @@ export function takeExtensionCapture(): ExtensionCapture | null {
   } catch {
     return null;
   }
+}
+
+export function takeExtensionCapture(): ExtensionCapture | null {
+  return take(KEY);
+}
+
+// A Shopify store's home or collection page, for the store panel (/stores/inspect).
+export const STORE_CAPTURE_EVENT = 'trended:store-capture';
+
+export function takeStoreCapture(): ExtensionCapture | null {
+  return take(STORE_CAPTURE_EVENT);
 }
 
 // Ad Library capture: media can reach 100 MB, too big for sessionStorage (~5 MB), so the

@@ -70,6 +70,30 @@ export interface ProductPage {
 
 export type ProductSort = 'recent' | 'price_asc' | 'price_desc';
 
+export interface ListedProduct {
+  rank: number;
+  handle: string;
+  title: string | null;
+  url: string;
+}
+
+/** A store page read from the user's own browser by the extension. */
+export interface InspectOut {
+  domain: string;
+  is_shopify: boolean;
+  title: string | null;
+  theme: string | null;
+  currency: string | null;
+  pixels: string[];
+  apps: string[];
+  page_kind: 'home' | 'collection' | 'product' | 'other';
+  best_selling: boolean;
+  products: ListedProduct[];
+  ads_count: number;
+  store_id: string | null;
+  paused: boolean;
+}
+
 const one = (id: string) => `${BASE}/${encodeURIComponent(id)}`;
 
 export const storesApi = {
@@ -79,6 +103,13 @@ export const storesApi = {
 
   follow(url: string): Promise<StoreOut> {
     return fetchWithAuth<StoreOut>(BASE, { method: 'POST', body: JSON.stringify({ url }) });
+  },
+
+  inspect(url: string, html: string): Promise<InspectOut> {
+    return fetchWithAuth<InspectOut>(`${BASE}/inspect`, {
+      method: 'POST',
+      body: JSON.stringify({ url, html }),
+    });
   },
 
   get(id: string): Promise<StoreDetail> {

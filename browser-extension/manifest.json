@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
   "name": "Send to TrendED",
-  "version": "0.2.0",
-  "description": "Import the product page you are viewing, or capture a Meta Ad Library ad, into TrendED through your own browser.",
+  "version": "0.3.0",
+  "description": "Import the product page you are viewing, look into a Shopify store, or capture a Meta Ad Library ad, into TrendED through your own browser.",
   "action": {
-    "default_title": "Send this product or ad to TrendED"
+    "default_title": "Send this product, store or ad to TrendED"
   },
   "background": {
     "service_worker": "background.js",

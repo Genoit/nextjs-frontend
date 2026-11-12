@@ -1,9 +1,11 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert';
 import {
+  bestSellersUrl,
   changeText,
   countLabel,
   isSettling,
+  listingInfo,
   money,
   readAgo,
   storeState,
@@ -95,5 +97,26 @@ describe('labels', () => {
     assert.strictEqual(countLabel(1200, 'product', 'products'), '1,200 products');
     assert.match(storesErrorText('store_limit_reached'), /Pause a store or upgrade/);
     assert.strictEqual(storesErrorText('nope'), 'Something went wrong. Please try again.');
+  });
+});
+
+describe('listingInfo', () => {
+  it('calls it best sellers only when the page is in best-selling order', () => {
+    const best = listingInfo({ is_shopify: true, best_selling: true, products: [1] });
+    assert.strictEqual(best.heading, 'Best sellers');
+    assert.strictEqual(best.suggestBestSellers, false);
+    const plain = listingInfo({ is_shopify: true, best_selling: false, products: [1] });
+    assert.strictEqual(plain.heading, 'Products on this page');
+    assert.match(plain.note, /not a sales ranking/);
+    assert.strictEqual(plain.suggestBestSellers, true);
+  });
+  it('says when nothing was found and never suggests on a non-Shopify page', () => {
+    const none = listingInfo({ is_shopify: false, best_selling: false, products: [] });
+    assert.match(none.note, /No product link/);
+    assert.strictEqual(none.suggestBestSellers, false);
+    assert.strictEqual(
+      bestSellersUrl('acme.com'),
+      'https://acme.com/collections/all?sort_by=best-selling',
+    );
   });
 });

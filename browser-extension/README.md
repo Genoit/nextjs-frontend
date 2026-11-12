@@ -20,3 +20,13 @@ Saves the media of one ad from Meta's Ad Library (EU) as a private capture in Tr
 4. The capture appears in My captures (`/ads/captures`).
 
 If the icon shows a red `!`, hover it for the reason (no readable ad, or no usable media). Files are JPG, PNG, WebP, MP4 or WebM, 100 MB in total.
+
+## Look into a Shopify store
+
+Shows what a store runs (theme, ad pixels, apps) and what it lists, from the page you have open.
+
+1. Open the store's home page, or its best sellers: `<store>/collections/all?sort_by=best-selling`.
+2. Click the extension icon. A TrendED tab opens with the store's tools and the products on the page, in the page's order.
+3. Follow the store from there to get its daily changes.
+
+The extension reads only the page you opened. It makes no request to the store. On a product page the click still imports the product.
